@@ -1,0 +1,10 @@
+[package]
+name = "mathlikeanim-rs"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+cairo-rs = "0.18.5"
+indicatif = "0.17.7"
+lightningcss = "1.0.0-alpha.52"
+svg = "0.15.0"

@@ -1,0 +1,8 @@
+/target
+temp*.svg
+temp.typ
+*.mp4
+*.tex
+*.log
+*.aux
+*.dvi
