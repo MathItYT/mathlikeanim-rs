@@ -2,6 +2,7 @@
 name = "mathlikeanim-rs"
 version = "0.1.0"
 edition = "2021"
+readme = "README.md"
 
 [dependencies]
 cairo-rs = "0.18.5"
