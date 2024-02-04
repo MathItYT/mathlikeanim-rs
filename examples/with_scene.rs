@@ -9,7 +9,7 @@ fn main() {
     let width = 1920;
     let height = 1080;
     let fps = 60;
-    let mut scene = Scene::new(width, height, fps, "reto.mp4".to_string());
+    let mut scene = Scene::new(width, height, fps, Some("with_scene.mp4".to_string()));
     let mut vec_obj = latex_to_vector(
         r#"$$\int_{-\infty}^{\infty} e^{-x^2} dx$$"#,
         None,

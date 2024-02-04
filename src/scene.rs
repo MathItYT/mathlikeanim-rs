@@ -7,23 +7,28 @@ pub struct Scene {
     pub width: u64,
     pub height: u64,
     pub fps: u64,
-    pub file_name: String,
+    pub file_name: Option<String>,
     pub current_frame: u64,
-    n_plays: u64
+    n_plays: u64,
+    wasm_stream_func: Option<fn(&[u8], usize, usize) -> ()>
 }
 
 
 impl Scene {
-    pub fn new(width: u64, height: u64, fps: u64, file_name: String) -> Scene {
+    pub fn new(width: u64, height: u64, fps: u64, file_name: Option<String>) -> Scene {
         return Scene {
             objects: Vec::new(),
             width,
             height,
             fps,
-            file_name,
+            file_name: file_name,
             current_frame: 0,
-            n_plays: 0
+            n_plays: 0,
+            wasm_stream_func: None
         };
+    }
+    pub fn init_wasm_stream_func(&mut self, wasm_stream_func: fn(&[u8], usize, usize) -> ()) {
+        self.wasm_stream_func = Some(wasm_stream_func);
     }
     pub fn add(&mut self, vec_obj: VectorFeatures) {
         let max_index = self.objects.iter().map(|obj| obj.index).max();
@@ -62,12 +67,26 @@ impl Scene {
                     return obj;
                 }
             ).collect();
-            self.current_frame += 1;
             return render_all_vectors(&self.objects.clone(), self.width, self.height);
         };
-        let partial_movie_file_name = format!("{}_{}.mp4", self.file_name[..self.file_name.len() - 4].to_string(), self.n_plays);
-        render_video(&mut make_frame_func, self.width, self.height, self.fps, duration_in_frames, &partial_movie_file_name);
+        if self.file_name.is_some() {
+            let partial_movie_file_name = format!("{}_{}.mp4", self.file_name.clone().unwrap()[..self.file_name.clone().unwrap().len() - 4].to_string(), self.n_plays);
+            render_video(&mut make_frame_func, self.width, self.height, self.fps, duration_in_frames, &partial_movie_file_name);
+        } else {
+            for _ in 0..duration_in_frames {
+                let data = make_frame_func(
+                    self.current_frame.clone(),
+                    self.width,
+                    self.height,
+                    duration_in_frames
+                );
+                if self.wasm_stream_func.is_some() {
+                    self.wasm_stream_func.unwrap()(&data, self.width as usize, self.height as usize);
+                }
+            }
+        }
         self.n_plays += 1;
+        self.current_frame += duration_in_frames;
         make_frame_func(duration_in_frames, self.width, self.height, duration_in_frames);
     }
     pub fn wait(&mut self, duration_in_frames: u64) {
@@ -86,7 +105,7 @@ impl Scene {
         return objects;
     }
     pub fn finish(&self) {
-        let files = (0..self.n_plays).map(|i| format!("{}_{}.mp4", self.file_name[..self.file_name.len() - 4].to_string(), i)).collect::<Vec<String>>();
-        concat_videos(files, &self.file_name);
+        let files = (0..self.n_plays).map(|i| format!("{}_{}.mp4", self.file_name.clone().unwrap()[..self.file_name.clone().unwrap().len() - 4].to_string(), i)).collect::<Vec<String>>();
+        concat_videos(files, &self.file_name.clone().unwrap());
     }
 }

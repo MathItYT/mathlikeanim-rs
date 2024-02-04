@@ -3,6 +3,7 @@ pub mod utils;
 pub mod renderer;
 pub mod scene;
 pub mod animations;
+pub mod stream_to_canvas;
 
 // #[cfg(test)]
 // mod tests {

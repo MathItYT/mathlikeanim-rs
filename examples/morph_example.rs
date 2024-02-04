@@ -1,7 +1,7 @@
 use mathlikeanim_rs::{animations::morph::morph, objects::{latex_to_vector::latex_to_vector, vector_object::VectorObject}, scene::Scene, utils::smooth};
 
 fn main() {
-    let mut scene = Scene::new(1920, 1080, 60, "morph_example.mp4".to_string());
+    let mut scene = Scene::new(1920, 1080, 60, Some("morph_example.mp4".to_string()));
     let vec_obj1 = latex_to_vector(
         r#"$$\int_{-\infty}^{\infty} e^{-x^2} dx$$"#,
         None,

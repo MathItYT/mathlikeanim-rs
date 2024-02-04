@@ -25,7 +25,7 @@ fn bounce_ball(ground: VectorFeatures) -> impl Fn(VectorFeatures, f64) -> Vector
 
 
 fn main() {
-    let mut scene = Scene::new(1920, 1080, 60, "physics_example.mp4".to_string());
+    let mut scene = Scene::new(1920, 1080, 60, Some("physics_example.mp4".to_string()));
     let ball = circle(
         (1920.0 / 2.0, 100.0),
         10.0,
