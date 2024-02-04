@@ -3,6 +3,16 @@ name = "mathlikeanim-rs"
 version = "0.1.0"
 edition = "2021"
 readme = "README.md"
+exclude = [
+    "/target",
+    "temp*.svg",
+    "temp.typ",
+    "*.mp4",
+    "*.tex",
+    "*.log",
+    "*.aux",
+    "*.dvi"
+]
 
 [dependencies]
 cairo-rs = "0.18.5"
