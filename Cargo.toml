@@ -3,6 +3,9 @@ name = "mathlikeanim-rs"
 version = "0.1.0"
 edition = "2021"
 readme = "README.md"
+description = "A Rust library for creating mathematical animations"
+license = "MIT"
+repository = "https://github.com/MathItYT/mathlikeanim-rs"
 exclude = [
     "/target",
     "temp*.svg",
