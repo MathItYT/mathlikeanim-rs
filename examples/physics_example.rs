@@ -23,9 +23,9 @@ fn bounce_ball(ground: VectorFeatures) -> impl Fn(VectorFeatures, f64) -> Vector
     return anim_func;
 }
 
-
-fn main() {
-    let mut scene = Scene::new(1920, 1080, 60, Some("physics_example.mp4".to_string()));
+#[async_std::main]
+async fn main() {
+    let mut scene = Scene::new(1920, 1080, 60, "physics_example.mp4");
     let ball = circle(
         (1920.0 / 2.0, 100.0),
         10.0,
@@ -53,6 +53,6 @@ fn main() {
         vec![ball.index],
         300,
         |t| t
-    );
+    ).await;
     scene.finish();
 }

@@ -1,8 +1,8 @@
 /target
-temp*.svg
-temp.typ
+*.svg
 *.mp4
 *.tex
 *.log
 *.aux
 *.dvi
+node_modules

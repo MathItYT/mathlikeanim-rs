@@ -1,6 +1,39 @@
 use std::{f64::consts::PI, vec};
 
 use crate::objects::vector_object::{generate_cubic_bezier_tuples, generate_subpaths, partial_bezier_points, VectorFeatures, VectorObject};
+use wasm_bindgen::prelude::*;
+
+
+#[wasm_bindgen]
+extern "C" {
+    // Use `js_namespace` here to bind `console.log(..)` instead of just
+    // `log(..)`
+    #[wasm_bindgen(js_namespace = console)]
+    pub fn log(s: &str);
+
+    // The `console.log` is quite polymorphic, so we can bind it with multiple
+    // signatures. Note that we need to use `js_name` to ensure we always call
+    // `log` in JS.
+    #[wasm_bindgen(js_namespace = console, js_name = log)]
+    pub fn log_u32(a: u32);
+
+    // Multiple arguments too!
+    #[wasm_bindgen(js_namespace = console, js_name = log)]
+    pub fn log_many(a: &str, b: &str);
+}
+
+
+pub async fn sleep(delay: i32) {
+    let mut cb = |resolve: js_sys::Function, _reject: js_sys::Function| -> () {
+        web_sys::window()
+            .unwrap()
+            .set_timeout_with_callback_and_timeout_and_arguments_0(&resolve, delay).unwrap();};
+
+    let p = js_sys::Promise::new(&mut cb);
+
+    wasm_bindgen_futures::JsFuture::from(p).await.unwrap();
+}
+
 
 pub fn factorial(n: u64) -> u64 {
     if n == 0 {

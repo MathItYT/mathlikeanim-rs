@@ -1,16 +1,23 @@
+#[cfg(not(target_arch = "wasm32"))]
 use std::io::Write;
+
+#[cfg(not(target_arch = "wasm32"))]
 use std::process::{Command, Stdio};
+
 use crate::objects::vector_object::{
-    VectorFeatures,
-    get_subobjects_recursively,
-    generate_subpaths,
-    generate_cubic_bezier_tuples
+    generate_cubic_bezier_tuples, generate_subpaths_wasm, get_subobjects_recursively, VectorFeatures
 };
+#[cfg(not(target_arch = "wasm32"))]
+use crate::objects::vector_object::generate_subpaths;
+
 use crate::utils::consider_points_equals;
-use cairo::{Context, ImageSurface, ImageSurfaceDataOwned};
+#[cfg(not(target_arch = "wasm32"))]
+use cairo::{Context, ImageSurface};
+#[cfg(not(target_arch = "wasm32"))]
 use indicatif::ProgressBar;
+use wasm_bindgen::JsValue;
 
-
+#[cfg(not(target_arch = "wasm32"))]
 fn draw_context_path(context: &Context, points: &Vec<(f64, f64)>) {
     if points.len() == 0 {
         return;
@@ -34,13 +41,13 @@ fn draw_context_path(context: &Context, points: &Vec<(f64, f64)>) {
     }
 }
 
-
+#[cfg(not(target_arch = "wasm32"))]
 fn apply_fill(context: &Context, fill_color: &(f64, f64, f64, f64)) {
     context.set_source_rgba(fill_color.2, fill_color.1, fill_color.0, fill_color.3);
     context.fill_preserve().unwrap();
 }
 
-
+#[cfg(not(target_arch = "wasm32"))]
 fn apply_stroke(context: &Context, stroke_color: &(f64, f64, f64, f64), stroke_width: f64, line_cap: &str, line_join: &str) {
     context.set_source_rgba(stroke_color.2, stroke_color.1, stroke_color.0, stroke_color.3);
     context.set_line_width(stroke_width);
@@ -77,7 +84,7 @@ fn apply_stroke(context: &Context, stroke_color: &(f64, f64, f64, f64), stroke_w
     context.set_line_join(cairo::LineJoin::Miter);
 }
 
-
+#[cfg(not(target_arch = "wasm32"))]
 fn render_vector(context: &Context, vec: &VectorFeatures, width: u64, height: u64) {
     let family = get_subobjects_recursively(&vec);
     let points = vec.points.clone();
@@ -95,19 +102,158 @@ fn render_vector(context: &Context, vec: &VectorFeatures, width: u64, height: u6
 }
 
 
-pub fn render_all_vectors(vecs: &Vec<VectorFeatures>, width: u64, height: u64) -> ImageSurfaceDataOwned {
-    let surface = ImageSurface::create(cairo::Format::ARgb32, width as i32, height as i32).unwrap();
-    let context = Context::new(&surface).unwrap();
-    for vec in vecs {
-        render_vector(&context, &vec, width, height);
+pub fn draw_context_path_wasm(
+    context: &web_sys::CanvasRenderingContext2d,
+    points: &JsValue
+) {
+    let points = js_sys::Array::from(&points.clone());
+    context.begin_path();
+    let subpaths = generate_subpaths_wasm(points);
+    for subpath in subpaths {
+        let quads = generate_cubic_bezier_tuples(&subpath);
+        let start = subpath[0];
+        context.move_to(start.0, start.1);
+        for quad in quads {
+            let p1 = quad.1;
+            let p2 = quad.2;
+            let p3 = quad.3;
+            context.bezier_curve_to(p1.0, p1.1, p2.0, p2.1, p3.0, p3.1);
+        }
+        if consider_points_equals(subpath[0], subpath[subpath.len() - 1]) {
+            context.close_path();
+        }
     }
-    drop(context);
-    return surface.take_data().unwrap();
 }
 
 
+pub fn apply_fill_wasm(
+    context: &web_sys::CanvasRenderingContext2d,
+    fill_color: &JsValue
+) {
+    let fill_color = js_sys::Array::from(&fill_color.clone());
+    let r_string = js_sys::JsString::from(fill_color.get(0).as_string().unwrap());
+    let g_string = js_sys::JsString::from(fill_color.get(1).as_string().unwrap());
+    let b_string = js_sys::JsString::from(fill_color.get(2).as_string().unwrap());
+    let a_string = js_sys::JsString::from(fill_color.get(3).as_string().unwrap());
+    let fill_color = js_sys::JsString::from(format!("rgba({}, {}, {}, {})", r_string, g_string, b_string, a_string));
+    context.set_fill_style(&fill_color);
+    context.fill();
+}
+
+
+pub fn apply_stroke_wasm(
+    context: &web_sys::CanvasRenderingContext2d,
+    stroke_color: &JsValue,
+    stroke_width: f64,
+    line_cap: &str,
+    line_join: &str
+) {
+    if stroke_width == 0.0 {
+        return;
+    }
+    let stroke_color = js_sys::Array::from(&stroke_color.clone());
+    let r_string = js_sys::JsString::from(stroke_color.get(0).as_string().unwrap());
+    let g_string = js_sys::JsString::from(stroke_color.get(1).as_string().unwrap());
+    let b_string = js_sys::JsString::from(stroke_color.get(2).as_string().unwrap());
+    let a_string = js_sys::JsString::from(stroke_color.get(3).as_string().unwrap());
+    let stroke_color = js_sys::JsString::from(format!("rgba({}, {}, {}, {})", r_string, g_string, b_string, a_string));
+    context.set_stroke_style(&stroke_color);
+    context.set_line_width(stroke_width);
+    match line_cap {
+        "butt" => {
+            context.set_line_cap("butt");
+        },
+        "square" => {
+            context.set_line_cap("square");
+        },
+        "round" => {
+            context.set_line_cap("round");
+        },
+        _ => {
+            panic!("Unknown line cap");
+        }
+    }
+    match line_join {
+        "miter" => {
+            context.set_line_join("miter");
+        },
+        "bevel" => {
+            context.set_line_join("bevel");
+        },
+        "round" => {
+            context.set_line_join("round");
+        },
+        _ => {
+            panic!("Unknown line join");
+        }
+    }
+    context.stroke();
+    context.set_line_cap("butt");
+    context.set_line_join("miter");
+}
+
+
+pub fn render_vector_wasm(
+    vec: &VectorFeatures,
+    width: u64,
+    height: u64,
+    context: web_sys::CanvasRenderingContext2d
+) {
+    let family = get_subobjects_recursively(&vec);
+    let points = serde_wasm_bindgen::to_value(&vec.points).unwrap();
+    let fill_color = js_sys::Array::of4(
+        &JsValue::from(((vec.fill_color.0 * 255.0) as u8).to_string()),
+        &JsValue::from(((vec.fill_color.1 * 255.0) as u8).to_string()),
+        &JsValue::from(((vec.fill_color.2 * 255.0) as u8).to_string()),
+        &JsValue::from((vec.fill_color.3).to_string())
+    );
+    let stroke_color = js_sys::Array::of4(
+        &JsValue::from(((vec.stroke_color.0 * 255.0) as u8).to_string()),
+        &JsValue::from(((vec.stroke_color.1 * 255.0) as u8).to_string()),
+        &JsValue::from(((vec.stroke_color.2 * 255.0) as u8).to_string()),
+        &JsValue::from((vec.stroke_color.3).to_string())
+    );
+    let stroke_width = vec.stroke_width;
+    let line_cap = vec.line_cap.to_string();
+    let line_join = vec.line_join.to_string();
+    draw_context_path_wasm(&context, &points);
+    apply_fill_wasm(&context, &fill_color);
+    apply_stroke_wasm(&context, &stroke_color, stroke_width, &line_cap, &line_join);
+    for subvec in family {
+        render_vector_wasm(&subvec, width, height, context.clone());
+    }
+}
+
+
+pub fn render_all_vectors(
+    vecs: &Vec<VectorFeatures>,
+    width: u64,
+    height: u64,
+    context: Option<web_sys::CanvasRenderingContext2d>
+) -> Option<Vec<u8>> {
+    #[cfg(not(target_arch = "wasm32"))]
+    if context.is_none() {
+        let surface = ImageSurface::create(cairo::Format::ARgb32, width as i32, height as i32).unwrap();
+        let context = Context::new(&surface).unwrap();
+        for vec in vecs {
+            render_vector(&context, &vec, width, height);
+        }
+        drop(context);
+        return Some(surface.take_data().unwrap().to_vec());
+    }
+    let context = context.unwrap();
+    context.clear_rect(0.0, 0.0, width as f64, height as f64);
+    context.set_fill_style(&JsValue::from_str("black"));
+    context.fill_rect(0.0, 0.0, width as f64, height as f64);
+    for vec in vecs {
+        render_vector_wasm(&vec, width, height, context.clone());
+    }
+    return None;
+}
+
+#[cfg(not(target_arch = "wasm32"))]
 pub fn render_video(
-    make_frame_function: &mut dyn FnMut(u64, u64, u64, u64) -> ImageSurfaceDataOwned,
+    make_frame_function: &mut dyn FnMut(u64, u64, u64, u64) -> Option<Vec<u8>>,
     width: u64,
     height: u64,
     fps: u64,
@@ -136,13 +282,14 @@ pub fn render_video(
     let progress_bar = ProgressBar::new(total_frames);
     for i in 0..total_frames {
         let data = make_frame_function(i, width, height, total_frames);
-        k.write(data.as_ref()).unwrap();
+        k.write(data.unwrap().as_slice()).unwrap();
         progress_bar.inc(1);
     }
     child.wait().unwrap();
 }
 
 
+#[cfg(not(target_arch = "wasm32"))]
 pub fn concat_videos(files: Vec<String>, output_file: &str) {
     let mut input_files = Vec::new();
     for file in files.clone() {

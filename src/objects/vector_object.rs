@@ -153,6 +153,39 @@ pub fn generate_subpaths(
 }
 
 
+pub fn generate_subpaths_wasm(
+    points: js_sys::Array
+) -> Vec<Vec<(f64, f64)>> {
+    let points = points.to_vec().iter().map(
+        |point| {
+            let point = js_sys::Array::from(point);
+            let x = point.get(0).as_f64().unwrap();
+            let y = point.get(1).as_f64().unwrap();
+            return (x, y);
+        }
+    ).collect::<Vec<(f64, f64)>>();
+    let mut subpaths = Vec::new();
+    let range = (4..points.len()).step_by(4);
+    let filtered = range.filter(|i| {
+        let p1 = points[i - 1];
+        let p2 = points[*i];
+        return !consider_points_equals(p1, p2);
+    });
+    let split_indices = [0].iter()
+        .chain(filtered.collect::<Vec<usize>>().iter())
+        .chain([points.len()].iter())
+        .map(|i| *i)
+        .collect::<Vec<usize>>();
+    for i in 0..split_indices.len() - 1 {
+        let start = split_indices[i];
+        let end = split_indices[i + 1];
+        let subpath = points[start..end].to_vec();
+        subpaths.push(subpath);
+    }
+    return subpaths;
+}
+
+
 pub fn generate_cubic_bezier_tuples(
     points: &Vec<(f64, f64)>
 ) -> Vec<((f64, f64), (f64, f64), (f64, f64), (f64, f64))> {

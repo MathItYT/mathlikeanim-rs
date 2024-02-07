@@ -17,6 +17,7 @@ pub fn draw_stroke_then_fill(vec_obj: VectorFeatures, t: f64) -> VectorFeatures 
             .set_stroke_width(stroke_width, true)
             .get_partial_copy(0.0, subalpha, true)
             .set_fill_opacity(0.0, true);
+        return new_vec_obj;
     } else if index == 1 {
         let vec_obj = vec_obj.clone();
         let stroke_width = if vec_obj.stroke_width == 0.0 {
@@ -27,6 +28,7 @@ pub fn draw_stroke_then_fill(vec_obj: VectorFeatures, t: f64) -> VectorFeatures 
         new_vec_obj = vec_obj
             .set_stroke_width(stroke_width, true)
             .set_fill_opacity(interpolate(0.0, 1.0, subalpha), true);
+        return new_vec_obj;
     }
     return new_vec_obj;
 }

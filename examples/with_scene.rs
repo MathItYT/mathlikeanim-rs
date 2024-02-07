@@ -5,11 +5,12 @@ use mathlikeanim_rs::objects::latex_to_vector::latex_to_vector;
 use mathlikeanim_rs::objects::vector_object::{VectorFeatures, VectorObject};
 use mathlikeanim_rs::utils::{linear, smooth};
 
-fn main() {
+#[async_std::main]
+async fn main() {
     let width = 1920;
     let height = 1080;
     let fps = 60;
-    let mut scene = Scene::new(width, height, fps, Some("with_scene.mp4".to_string()));
+    let mut scene = Scene::new(width, height, fps, "with_scene.mp4");
     let mut vec_obj = latex_to_vector(
         r#"$$\int_{-\infty}^{\infty} e^{-x^2} dx$$"#,
         None,
@@ -28,8 +29,8 @@ fn main() {
         indices.clone(),
         60,
         linear
-    );
-    scene.wait(60);
+    ).await;
+    scene.wait(60).await;
     let new_vec_obj = VectorFeatures {
         index: vec_obj.index,
         subobjects: scene.objects.clone(),
@@ -49,7 +50,7 @@ fn main() {
         vec![new_vec_obj.index],
         60,
         |t| smooth(t, 10.0)
-    );
-    scene.wait(60);
+    ).await;
+    scene.wait(60).await;
     scene.finish();
 }

@@ -1,7 +1,8 @@
 use mathlikeanim_rs::{animations::morph::morph, objects::geometry::{arc::circle, poly::square}, scene::Scene, utils::smooth};
 
-fn main() {
-    let mut scene = Scene::new(1920, 1080, 60, Some("square_to_circle.mp4".to_string()));
+#[async_std::main]
+async fn main() {
+    let mut scene = Scene::new(1920, 1080, 60,"square_to_circle.mp4");
     let circ = circle(
         (1920.0 / 2.0, 1080.0 / 2.0),
         200.0,
@@ -14,7 +15,7 @@ fn main() {
         None
     );
     scene.add(circ.clone());
-    scene.wait(60);
+    scene.wait(60).await;
     let sq = square(
         (1920.0 / 2.0, 1080.0 / 2.0),
         200.0,
@@ -30,9 +31,9 @@ fn main() {
         vec![circ.clone().index],
         60,
         |t| smooth(t, 10.0)
-    );
+    ).await;
     scene.remove(circ.index);
     scene.add(sq.clone());
-    scene.wait(60);
+    scene.wait(60).await;
     scene.finish();
 }

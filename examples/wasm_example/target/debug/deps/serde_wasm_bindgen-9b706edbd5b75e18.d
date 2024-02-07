@@ -1,0 +1,9 @@
+/home/mathlike/mathlikeanim-rs/examples/wasm_example/target/debug/deps/libserde_wasm_bindgen-9b706edbd5b75e18.rmeta: /home/mathlike/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-wasm-bindgen-0.4.5/src/lib.rs /home/mathlike/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-wasm-bindgen-0.4.5/src/de.rs /home/mathlike/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-wasm-bindgen-0.4.5/src/error.rs /home/mathlike/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-wasm-bindgen-0.4.5/src/ser.rs /home/mathlike/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-wasm-bindgen-0.4.5/src/../README.md
+
+/home/mathlike/mathlikeanim-rs/examples/wasm_example/target/debug/deps/serde_wasm_bindgen-9b706edbd5b75e18.d: /home/mathlike/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-wasm-bindgen-0.4.5/src/lib.rs /home/mathlike/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-wasm-bindgen-0.4.5/src/de.rs /home/mathlike/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-wasm-bindgen-0.4.5/src/error.rs /home/mathlike/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-wasm-bindgen-0.4.5/src/ser.rs /home/mathlike/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-wasm-bindgen-0.4.5/src/../README.md
+
+/home/mathlike/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-wasm-bindgen-0.4.5/src/lib.rs:
+/home/mathlike/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-wasm-bindgen-0.4.5/src/de.rs:
+/home/mathlike/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-wasm-bindgen-0.4.5/src/error.rs:
+/home/mathlike/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-wasm-bindgen-0.4.5/src/ser.rs:
+/home/mathlike/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-wasm-bindgen-0.4.5/src/../README.md:

@@ -2,8 +2,9 @@ use std::f64::consts::PI;
 
 use mathlikeanim_rs::{animations::grow_arrow::{grow_arrow_with_final_tip, grow_arrow_with_initial_tip, grow_arrow_with_tips_at_both_ends}, objects::{geometry::{add_tip::{add_both_sides_tips, add_final_tip, add_initial_tip}, arc::{arc, circle}, line::line}, vector_object::{VectorFeatures, VectorObject}}, scene::Scene, utils::smooth};
 
-fn main() {
-    let mut scene = Scene::new(1920, 1080, 60, Some("arrows.mp4".to_string()));
+#[async_std::main]
+async fn main() {
+    let mut scene = Scene::new(1920, 1080, 60, "arrows.mp4");
     let mut arrows = VectorFeatures {
         index: 0,
         subobjects: vec![],
@@ -81,7 +82,7 @@ fn main() {
         arrows_indices,
         60,
         |t| smooth(t, 10.0)
-    );
-    scene.wait(60);
+    ).await;
+    scene.wait(60).await;
     scene.finish();
 }
