@@ -14,9 +14,12 @@ pub fn draw_stroke_then_fill(vec_obj: VectorFeatures, t: f64) -> VectorFeatures 
             vec_obj.stroke_width
         };
         new_vec_obj = vec_obj
-            .set_stroke_width(stroke_width, true)
-            .get_partial_copy(0.0, subalpha, true)
-            .set_fill_opacity(0.0, true);
+            .set_stroke_width(stroke_width, false)
+            .get_partial_copy(0.0, subalpha, false)
+            .set_fill_opacity(0.0, false)
+            .set_subobjects(vec_obj.subobjects.iter().map(|subobj| {
+                draw_stroke_then_fill(subobj.clone(), t)
+            }).collect());
         return new_vec_obj;
     } else if index == 1 {
         let vec_obj = vec_obj.clone();
@@ -26,8 +29,11 @@ pub fn draw_stroke_then_fill(vec_obj: VectorFeatures, t: f64) -> VectorFeatures 
             vec_obj.stroke_width
         };
         new_vec_obj = vec_obj
-            .set_stroke_width(stroke_width, true)
-            .set_fill_opacity(interpolate(0.0, 1.0, subalpha), true);
+            .set_stroke_width(stroke_width, false)
+            .set_fill_opacity(interpolate(0.0, vec_obj.fill_color.3, subalpha), false)
+            .set_subobjects(vec_obj.subobjects.iter().map(|subobj| {
+                draw_stroke_then_fill(subobj.clone(), t)
+            }).collect());
         return new_vec_obj;
     }
     return new_vec_obj;

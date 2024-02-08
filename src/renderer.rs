@@ -229,12 +229,15 @@ pub fn render_all_vectors(
     vecs: &Vec<VectorFeatures>,
     width: u64,
     height: u64,
-    context: Option<web_sys::CanvasRenderingContext2d>
+    context: Option<web_sys::CanvasRenderingContext2d>,
+    background_color: (f64, f64, f64, f64)
 ) -> Option<Vec<u8>> {
     #[cfg(not(target_arch = "wasm32"))]
     if context.is_none() {
         let surface = ImageSurface::create(cairo::Format::ARgb32, width as i32, height as i32).unwrap();
         let context = Context::new(&surface).unwrap();
+        context.set_source_rgba(background_color.2, background_color.1, background_color.0, background_color.3);
+        context.paint().unwrap();
         for vec in vecs {
             render_vector(&context, &vec, width, height);
         }
@@ -243,7 +246,7 @@ pub fn render_all_vectors(
     }
     let context = context.unwrap();
     context.clear_rect(0.0, 0.0, width as f64, height as f64);
-    context.set_fill_style(&JsValue::from_str("black"));
+    context.set_fill_style(&JsValue::from_str(&format!("rgba({}, {}, {}, {})", (background_color.0 * 255.0) as u8, (background_color.1 * 255.0) as u8, (background_color.2 * 255.0) as u8, background_color.3)));
     context.fill_rect(0.0, 0.0, width as f64, height as f64);
     for vec in vecs {
         render_vector_wasm(&vec, width, height, context.clone());

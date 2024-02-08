@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use crate::{objects::vector_object::VectorFeatures, renderer::render_all_vectors, utils::sleep};
 #[cfg(not(target_arch = "wasm32"))]
 use crate::renderer::{render_video, concat_videos};
@@ -10,6 +12,7 @@ pub struct Scene {
     pub fps: u64,
     pub file_name: &'static str,
     pub current_frame: u64,
+    pub background_color: (f64, f64, f64, f64),
     n_plays: u64,
     context: Option<web_sys::CanvasRenderingContext2d>,
 }
@@ -26,7 +29,11 @@ impl Scene {
             current_frame: 0,
             n_plays: 0,
             context: None,
+            background_color: (0.0, 0.0, 0.0, 1.0)
         };
+    }
+    pub fn set_background_color(&mut self, color: (f64, f64, f64, f64)) {
+        self.background_color = color;
     }
     pub fn init_context(&mut self, context: web_sys::CanvasRenderingContext2d) {
         self.context = Some(context);
@@ -50,25 +57,23 @@ impl Scene {
         duration_in_frames: u64,
         rate_func: impl Fn(f64) -> f64
     ) {
-        let objects = self.get_objects_from_indices(object_indices);
+        let objects = self.get_objects_from_indices(object_indices.clone());
         let mut make_frame_func = |frame, _, _, total_frames| -> Option<Vec<u8>> {
             let t = rate_func(frame as f64 / total_frames as f64);
-            let mut new_objects = Vec::new();
+            let mut new_objects = HashMap::new();
             for (i, animation_func) in animation_funcs.iter().enumerate() {
-                let new_object_from_func = animation_func(objects.clone()[i].clone(), t);
-                new_objects.push(new_object_from_func);
+                let new_object_from_func = animation_func(objects[&object_indices[i]].clone(), t);
+                new_objects.insert(new_object_from_func.index, new_object_from_func);
             }
             self.objects = self.objects.clone().into_iter().map(
                 |obj| {
-                    for new_obj in &new_objects {
-                        if obj.index == new_obj.index {
-                            return new_obj.clone();
-                        }
+                    if objects.contains_key(&obj.index) {
+                        return new_objects[&obj.index].clone();
                     }
                     return obj;
                 }
             ).collect();
-            return render_all_vectors(&self.objects.clone(), self.width, self.height, self.context.clone());
+            return render_all_vectors(&self.objects.clone(), self.width, self.height, self.context.clone(), self.background_color);
         };
         #[cfg(not(target_arch = "wasm32"))]
         if self.file_name != "" {
@@ -92,12 +97,12 @@ impl Scene {
         let anim_funcs: Vec<fn(VectorFeatures, f64) -> VectorFeatures> = vec![];
         self.play(anim_funcs.clone(), vec![], duration_in_frames, |t| t).await;
     }
-    pub fn get_objects_from_indices(&self, object_indices: Vec<usize>) -> Vec<VectorFeatures> {
-        let mut objects = Vec::new();
+    pub fn get_objects_from_indices(&self, object_indices: Vec<usize>) -> HashMap<usize, VectorFeatures> {
+        let mut objects = HashMap::new();
         for index in object_indices {
             for obj in &self.objects {
                 if obj.index == index {
-                    objects.push(obj.clone());
+                    objects.insert(index, obj.clone());
                 }
             }
         }

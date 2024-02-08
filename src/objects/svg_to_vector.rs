@@ -211,6 +211,7 @@ fn parse_path(attributes: &std::collections::HashMap<String, Value>, index: usiz
 
 
 pub fn svg_to_vector(svg: &str) -> VectorFeatures {
+    // TODO: Fix color parsing
     let mut id_vec_obj_map = std::collections::HashMap::new();
     let mut subobjects = Vec::new();
     let mut subobjects_indices = Vec::new();

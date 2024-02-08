@@ -23,7 +23,7 @@ fn make_frame(frame: u64, width: u64, height: u64, _: u64) -> Option<Vec<u8>> {
         .move_to((width as f64 / 2.0, height as f64 / 2.0), true)
         .get_partial_copy(0.0, interpolate(0.0, 1.0, (frame as f64).min(60.0) / 60.0), true)
         .set_fill_opacity(interpolate(0.0, 1.0, (frame as f64 - 60.0).max(0.0) / 60.0), true);
-    let surface_data = render_all_vectors(&vec![vec_obj], width, height, None);
+    let surface_data = render_all_vectors(&vec![vec_obj], width, height, None, (0.0, 0.0, 0.0, 0.0));
     return surface_data;
 }
 
