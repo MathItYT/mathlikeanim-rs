@@ -20,6 +20,8 @@ exclude = [
     "package.json",
     "webpack.config.js",
 ]
+keywords = ["animation", "graphics", "easing", "transitions", "WebAssembly"]
+categories = ["mathematics", "graphics", "wasm"]
 
 [dependencies]
 js-sys = "0.3.67"

@@ -6,3 +6,5 @@
 *.aux
 *.dvi
 node_modules
+*_priv.rs
+cache.json
