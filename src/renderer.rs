@@ -5,7 +5,7 @@ use std::io::Write;
 use std::process::{Command, Stdio};
 
 use crate::objects::vector_object::{
-    generate_cubic_bezier_tuples, generate_subpaths_wasm, get_subobjects_recursively, VectorFeatures
+    generate_cubic_bezier_tuples, generate_subpaths_wasm, VectorFeatures
 };
 #[cfg(not(target_arch = "wasm32"))]
 use crate::objects::vector_object::generate_subpaths;
@@ -42,13 +42,19 @@ fn draw_context_path(context: &Context, points: &Vec<(f64, f64)>) {
 }
 
 #[cfg(not(target_arch = "wasm32"))]
-fn apply_fill(context: &Context, fill_color: &(f64, f64, f64, f64)) {
+fn apply_fill(context: &Context, fill_color: &(f64, f64, f64, f64), points: &Vec<(f64, f64)>) {
+    if points.len() == 0 {
+        return;
+    }
     context.set_source_rgba(fill_color.2, fill_color.1, fill_color.0, fill_color.3);
     context.fill_preserve().unwrap();
 }
 
 #[cfg(not(target_arch = "wasm32"))]
-fn apply_stroke(context: &Context, stroke_color: &(f64, f64, f64, f64), stroke_width: f64, line_cap: &str, line_join: &str) {
+fn apply_stroke(context: &Context, stroke_color: &(f64, f64, f64, f64), stroke_width: f64, line_cap: &str, line_join: &str, points: &Vec<(f64, f64)>) {
+    if points.len() == 0 {
+        return;
+    }
     context.set_source_rgba(stroke_color.2, stroke_color.1, stroke_color.0, stroke_color.3);
     context.set_line_width(stroke_width);
     match line_cap {
@@ -84,9 +90,9 @@ fn apply_stroke(context: &Context, stroke_color: &(f64, f64, f64, f64), stroke_w
     context.set_line_join(cairo::LineJoin::Miter);
 }
 
+#[deprecated(note = "Cairo rendering is deprecated, please use WebAssembly with MediaRecorder instead")]
 #[cfg(not(target_arch = "wasm32"))]
 fn render_vector(context: &Context, vec: &VectorFeatures, width: u64, height: u64) {
-    let family = get_subobjects_recursively(&vec);
     let points = vec.points.clone();
     let fill_color = vec.fill_color;
     let stroke_color = vec.stroke_color;
@@ -94,9 +100,9 @@ fn render_vector(context: &Context, vec: &VectorFeatures, width: u64, height: u6
     let line_cap = vec.line_cap;
     let line_join = vec.line_join;
     draw_context_path(&context, &points);
-    apply_fill(&context, &fill_color);
-    apply_stroke(&context, &stroke_color, stroke_width, &line_cap, &line_join);
-    for subvec in family {
+    apply_fill(&context, &fill_color, &points);
+    apply_stroke(&context, &stroke_color, stroke_width, &line_cap, &line_join, &points);
+    for subvec in &vec.subobjects {
         render_vector(&context, &subvec, width, height);
     }
 }
@@ -107,6 +113,9 @@ pub fn draw_context_path_wasm(
     points: &JsValue
 ) {
     let points = js_sys::Array::from(&points.clone());
+    if points.length() == 0 {
+        return;
+    }
     context.begin_path();
     let subpaths = generate_subpaths_wasm(points);
     for subpath in subpaths {
@@ -128,8 +137,13 @@ pub fn draw_context_path_wasm(
 
 pub fn apply_fill_wasm(
     context: &web_sys::CanvasRenderingContext2d,
-    fill_color: &JsValue
+    fill_color: &JsValue,
+    points: &JsValue
 ) {
+    let points = js_sys::Array::from(&points.clone());
+    if points.length() == 0 {
+        return;
+    }
     let fill_color = js_sys::Array::from(&fill_color.clone());
     let r_string = js_sys::JsString::from(fill_color.get(0).as_string().unwrap());
     let g_string = js_sys::JsString::from(fill_color.get(1).as_string().unwrap());
@@ -146,8 +160,13 @@ pub fn apply_stroke_wasm(
     stroke_color: &JsValue,
     stroke_width: f64,
     line_cap: &str,
-    line_join: &str
+    line_join: &str,
+    points: &JsValue
 ) {
+    let points = js_sys::Array::from(&points.clone());
+    if points.length() == 0 {
+        return;
+    }
     if stroke_width == 0.0 {
         return;
     }
@@ -199,7 +218,6 @@ pub fn render_vector_wasm(
     height: u64,
     context: web_sys::CanvasRenderingContext2d
 ) {
-    let family = get_subobjects_recursively(&vec);
     let points = serde_wasm_bindgen::to_value(&vec.points).unwrap();
     let fill_color = js_sys::Array::of4(
         &JsValue::from(((vec.fill_color.0 * 255.0) as u8).to_string()),
@@ -217,9 +235,9 @@ pub fn render_vector_wasm(
     let line_cap = vec.line_cap.to_string();
     let line_join = vec.line_join.to_string();
     draw_context_path_wasm(&context, &points);
-    apply_fill_wasm(&context, &fill_color);
-    apply_stroke_wasm(&context, &stroke_color, stroke_width, &line_cap, &line_join);
-    for subvec in family {
+    apply_fill_wasm(&context, &fill_color, &points);
+    apply_stroke_wasm(&context, &stroke_color, stroke_width, &line_cap, &line_join, &points);
+    for subvec in &vec.subobjects {
         render_vector_wasm(&subvec, width, height, context.clone());
     }
 }
@@ -238,6 +256,7 @@ pub fn render_all_vectors(
         let context = Context::new(&surface).unwrap();
         context.set_source_rgba(background_color.2, background_color.1, background_color.0, background_color.3);
         context.paint().unwrap();
+        #[allow(deprecated)]
         for vec in vecs {
             render_vector(&context, &vec, width, height);
         }

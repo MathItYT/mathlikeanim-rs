@@ -370,6 +370,14 @@ pub trait VectorObject {
         aligned_edge: (f64, f64),
         recursive: bool
     ) -> Self;
+    fn next_to_point(
+        &self,
+        point: (f64, f64),
+        direction: (f64, f64),
+        buff: f64,
+        aligned_edge: (f64, f64),
+        recursive: bool
+    ) -> Self;
 }
 
 #[derive(Clone, Debug)]
@@ -754,6 +762,20 @@ impl VectorObject for VectorFeatures {
         let target_point = other.get_critical_point(key1);
         let point_to_align = self.get_critical_point(key2);
         let shift = (target_point.0 - point_to_align.0 + buff * direction.0, target_point.1 - point_to_align.1 + buff * direction.1);
+        let result = self.shift(shift, recursive);
+        return result;
+    }
+    fn next_to_point(
+        &self,
+        point: (f64, f64),
+        direction: (f64, f64),
+        buff: f64,
+        aligned_edge: (f64, f64),
+        recursive: bool
+    ) -> VectorFeatures {
+        let key2 = (-direction.0 + aligned_edge.0, -direction.1 + aligned_edge.1);
+        let point_to_align = self.get_critical_point(key2);
+        let shift = (point.0 - point_to_align.0 + buff * direction.0, point.1 - point_to_align.1 + buff * direction.1);
         let result = self.shift(shift, recursive);
         return result;
     }

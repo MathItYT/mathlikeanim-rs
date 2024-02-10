@@ -39,12 +39,7 @@ impl Scene {
         self.context = Some(context);
     }
     pub fn add(&mut self, vec_obj: VectorFeatures) {
-        let max_index = self.objects.iter().map(|obj| obj.index).max();
-        let objects_with_obj_index = self.objects.iter().filter(|obj| obj.index == vec_obj.index).collect::<Vec<&VectorFeatures>>();
-        let mut vec_obj = vec_obj.clone();
-        if objects_with_obj_index.len() > 0 {
-            vec_obj.index = max_index.unwrap() + 1;
-        }
+        self.remove(vec_obj.index);
         self.objects.push(vec_obj);
     }
     pub fn remove(&mut self, index: usize) {
@@ -96,6 +91,9 @@ impl Scene {
     pub async fn wait(&mut self, duration_in_frames: u64) {
         let anim_funcs: Vec<fn(VectorFeatures, f64) -> VectorFeatures> = vec![];
         self.play(anim_funcs.clone(), vec![], duration_in_frames, |t| t).await;
+    }
+    pub fn update(&mut self) {
+        render_all_vectors(&self.objects.clone(), self.width, self.height, self.context.clone(), self.background_color);
     }
     pub fn get_objects_from_indices(&self, object_indices: Vec<usize>) -> HashMap<usize, VectorFeatures> {
         let mut objects = HashMap::new();

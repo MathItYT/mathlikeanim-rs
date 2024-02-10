@@ -1,5 +1,4 @@
-use mathlikeanim_rs::{animations::draw_stroke_then_fill::write, objects::{geometry::{arc::circle, poly::square}, svg_to_vector::svg_to_vector}, utils::{linear, log}};
-pub use mathlikeanim_rs::{animations::morph::morph, objects::{latex_to_vector::latex_to_vector, vector_object::VectorObject}, scene::Scene, utils::smooth};
+use mathlikeanim_rs::{animations::{create::create, draw_stroke_then_fill::draw_stroke_then_fill}, objects::{plotting::axes::{axes, plot_in_axes, riemann_rectangles_for_plot}, svg_to_vector::svg_to_vector, vector_object::{VectorFeatures, VectorObject}}, scene::Scene, utils::{log, smooth}};
 use once_cell::sync::Lazy;
 use wasm_bindgen::prelude::*;
 
@@ -14,10 +13,11 @@ extern "C" {
 }
 
 
-pub async fn tex_to_svg(latex: &str) -> String {
-    let tex = JsValue::from_str(latex);
+pub async fn tex_to_vector(latex: String) -> VectorFeatures {
+    let tex = JsValue::from_str(latex.as_str());
     let svg = tex2svg(tex).await;
-    return svg.as_string().unwrap();
+    return svg_to_vector(svg.as_string().unwrap().as_str())
+        .set_stroke_color((1.0, 1.0, 1.0, 1.0), true);
 }
 
 
@@ -39,77 +39,126 @@ pub async fn start() {
     let sn = unsafe { &mut SCENE };
     sn.init_context(context);
     log("Initialized context");
-    let circ = circle(
-        (1920.0 / 2.0, 1080.0 / 2.0),
-        200.0,
-        None,
-        Some((1.0, 0.0, 0.0, 1.0)),
-        Some((1.0, 0.0, 0.0, 0.5)),
-        None,
-        None,
-        None,
-        None
+    let axes = axes(
+        0.0,
+        10.0,
+        1.0,
+        0.0,
+        10.0,
+        1.0,
+        (960.0, 540.0),
+        Some(800.0),
+        Some(800.0),
+        Some((1.0, 1.0, 1.0, 1.0)),
+        Some(4.0),
+        Some("butt"),
+        Some("miter"),
+        Some(0),
+        Some(true),
+        Some(true),
+        Some(20.0),
+        Some(20.0),
+        Some(true),
+        Some(true)
     );
-    sn.add(circ.clone());
-    sn.wait(60).await;
-    let sq = square(
-        (1920.0 / 2.0, 1080.0 / 2.0),
-        200.0,
-        Some((0.0, 0.0, 1.0, 1.0)),
-        Some((0.0, 0.0, 1.0, 0.5)),
-        None,
-        None,
-        None,
-        None
-    );
+    sn.add(axes.clone());
     sn.play(
-        vec![morph(sq.clone())],
-        vec![circ.clone().index],
+        vec![draw_stroke_then_fill],
+        vec![0],
         60,
         |t| smooth(t, 10.0)
     ).await;
-    sn.remove(circ.index);
-    sn.add(sq.clone());
-    let mut txt = svg_to_vector(tex_to_svg(r"$$\int_0^\infty e^{-x^2} dx$$").await.as_str());
-    txt = txt.set_stroke_color((1.0, 1.0, 1.0, 1.0), true);
-    txt = txt.scale(200.0 / txt.get_height(), true);
-    txt = txt.move_to((1920.0 / 2.0, 1080.0 / 2.0), true).shift((0.0, 400.0), true);
-    txt.subobjects.sort_by(|a, b| a.get_center().0.partial_cmp(&b.get_center().0).unwrap());
-    let number_of_subobjects = txt.subobjects.len();
-    for subobj in &txt.subobjects {
-        sn.add(subobj.clone());
-    }
-    let indices = sn.objects[sn.objects.len() - number_of_subobjects..].iter().map(|obj| obj.index).collect::<Vec<usize>>();
+    log("Added axes");
+    let plot = plot_in_axes(
+        |t| t.powi(2) / 10.0,
+        0.0,
+        10.0,
+        0.0,
+        10.0,
+        0.0,
+        10.0,
+        0.005,
+        &axes.clone(),
+        Some((249.0 / 255.0, 105.0 / 255.0, 14.0 / 255.0, 1.0)),
+        Some(4.0),
+        Some("butt"),
+        Some("miter"),
+        Some(1),
+    );
+    sn.add(plot.clone());
     sn.play(
-        write(number_of_subobjects, 0.4),
-        indices.clone(),
+        vec![create],
+        vec![1],
         60,
-        linear
+        |t| smooth(t, 10.0)
     ).await;
-    sn.wait(60).await;
+    log("Added plot");
+    let riemann_rectangles = riemann_rectangles_for_plot(
+        |t| t.powi(2) / 10.0,
+        0.0,
+        10.0,
+        0.0,
+        10.0,
+        1.0,
+        0.0,
+        10.0,
+        10,
+        &axes,
+        Some((0.0, 0.0, 0.0, 1.0)),
+        Some((249.0 / 255.0, 105.0 / 255.0, 14.0 / 255.0, 0.75)),
+        Some(2.0),
+        Some("butt"),
+        Some("miter"),
+        Some(2)
+    );
+    log(format!("Riemann rectangles: {:?}", riemann_rectangles.subobjects.len()).as_str());
+    sn.add(riemann_rectangles);
+    sn.add(axes);
+    sn.play(
+        vec![draw_stroke_then_fill],
+        vec![2],
+        60,
+        |t| smooth(t, 10.0)
+    ).await;
+    let mut func_tex = tex_to_vector("$$f(x) = \\frac{x^2}{10}$$".to_string()).await;
+    func_tex = func_tex.scale(150.0 / func_tex.get_height(), true);
+    func_tex = func_tex.next_to_point((0.0, 0.0), (1.0, 1.0), 20.0, (0.0, 0.0), true);
+    func_tex = func_tex.set_stroke_color((1.0, 1.0, 1.0, 1.0), true);
+    func_tex.index = 3;
+    sn.add(func_tex);
+    sn.play(
+        vec![draw_stroke_then_fill],
+        vec![3],
+        60,
+        |t| smooth(t, 10.0)
+    ).await;
+    sn.update();
 }
 
 
-#[wasm_bindgen(js_name = randomDot)]
-pub async fn random_dot() {
-    let x = js_sys::Math::random() * 1920.0;
-    let y = js_sys::Math::random() * 1080.0;
-    let r = js_sys::Math::random();
-    let g = js_sys::Math::random();
-    let b = js_sys::Math::random();
-    let a = js_sys::Math::random();
-    let dot = circle(
-        (x, y),
-        20.0,
-        None,
-        Some((r, g, b, a)),
-        Some((r, g, b, a)),
-        None,
-        None,
-        None,
-        None
-    );
+#[wasm_bindgen(js_name = changeNRects)]
+pub async fn change_n_rects(n_rects: usize) {
     let sn = unsafe { &mut SCENE };
-    sn.add(dot);
-    sn.wait(1).await; // To make sure the dot is drawn
+    let axes = sn.get_objects_from_indices(vec![0])[&0].clone();
+    let riemann_rectangles = riemann_rectangles_for_plot(
+        |t| t.powi(2) / 10.0,
+        0.0,
+        10.0,
+        0.0,
+        10.0,
+        1.0,
+        0.0,
+        10.0,
+        n_rects,
+        &axes,
+        Some((0.0, 0.0, 0.0, 1.0)),
+        Some((249.0 / 255.0, 105.0 / 255.0, 14.0 / 255.0, 0.75)),
+        Some(2.0),
+        Some("butt"),
+        Some("miter"),
+        Some(2)
+    );
+    sn.add(riemann_rectangles);
+    sn.add(axes);
+    sn.update();
 }

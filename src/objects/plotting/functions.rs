@@ -15,7 +15,7 @@ pub fn parametric_function(
     let mut t = t_min;
     while t <= t_max {
         let (x, y) = f(t);
-        func_points.push((x, -y)); // Negate y to make the y-axis point upwards
+        func_points.push((x, y));
         t += t_step;
     }
     let mut points = Vec::new();

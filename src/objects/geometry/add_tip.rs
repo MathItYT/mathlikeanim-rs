@@ -10,16 +10,17 @@ pub fn add_final_tip(
     let last_point = shape.points[shape.points.len() - 1];
     let second_to_last_point = shape.points[shape.points.len() - 2];
     let angle = (last_point.1 - second_to_last_point.1).atan2(last_point.0 - second_to_last_point.0);
-    let new_tip = equilateral_triangle(
+    let mut new_tip = equilateral_triangle(
         last_point,
         tip_side_length,
-        None,
+        Some(tip_color),
         Some(tip_color),
         Some(0.0),
         None,
         None,
         None
-    ).rotate(angle, false);
+    );
+    new_tip = new_tip.rotate(angle, false).move_to(last_point, false);
     let mut subobjects = shape.subobjects.clone();
     subobjects.push(new_tip);
     let new_vec_obj = shape.clone().set_subobjects(subobjects);
@@ -38,7 +39,7 @@ pub fn add_initial_tip(
     let new_tip = equilateral_triangle(
         first_point,
         tip_side_length,
-        None,
+        Some(tip_color),
         Some(tip_color),
         Some(0.0),
         None,

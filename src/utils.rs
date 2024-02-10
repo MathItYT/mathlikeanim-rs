@@ -1,28 +1,32 @@
+//! # Utility functions
+//! 
+//! Provides a set of utility functions for working with vector objects.
+//! 
+//! The last functions are easing functions that can be used to interpolate differently between two values.
+
 use std::{f64::consts::PI, vec};
 
 use crate::objects::vector_object::{generate_cubic_bezier_tuples, generate_subpaths, partial_bezier_points, VectorFeatures, VectorObject};
 use wasm_bindgen::prelude::*;
 
-
+/// Log utilities for console when using WebAssembly
 #[wasm_bindgen]
 extern "C" {
-    // Use `js_namespace` here to bind `console.log(..)` instead of just
-    // `log(..)`
+    /// Log an `&str` to the console
     #[wasm_bindgen(js_namespace = console)]
     pub fn log(s: &str);
 
-    // The `console.log` is quite polymorphic, so we can bind it with multiple
-    // signatures. Note that we need to use `js_name` to ensure we always call
-    // `log` in JS.
+    /// Log a `u32` to the console
     #[wasm_bindgen(js_namespace = console, js_name = log)]
     pub fn log_u32(a: u32);
 
-    // Multiple arguments too!
+    /// Log two `&str` to the console
     #[wasm_bindgen(js_namespace = console, js_name = log)]
     pub fn log_many(a: &str, b: &str);
 }
 
 
+/// An asynchronous sleep function for WebAssembly
 pub async fn sleep(delay: i32) {
     let mut cb = |resolve: js_sys::Function, _reject: js_sys::Function| -> () {
         web_sys::window()
@@ -35,6 +39,7 @@ pub async fn sleep(delay: i32) {
 }
 
 
+/// A function that returns `n` factorial
 pub fn factorial(n: u64) -> u64 {
     if n == 0 {
         return 1;
@@ -43,6 +48,15 @@ pub fn factorial(n: u64) -> u64 {
 }
 
 
+/// A function that returns a `(f64, f64)` tuple representing the point on a Bezier curve at `t`.
+/// 
+/// ## Example
+/// 
+/// ```
+/// let points = vec![(0.0, 0.0), (1920.0, 540.0), (960.0, 810.0), (0.0, 1080.0)]; // Points for a cubic Bezier curve
+/// let t = 0.5;
+/// let point = bezier(&points, t);
+/// ```
 pub fn bezier(points: &Vec<(f64, f64)>, t: f64) -> (f64, f64) {
     let n = points.len() - 1;
     if n == 0 {
@@ -84,6 +98,7 @@ pub fn bezier(points: &Vec<(f64, f64)>, t: f64) -> (f64, f64) {
 }
 
 
+/// A function that returns a `f64` representing a one-dimensional Bezier polynomial at `t`.
 fn bezier_f64(numbers: Vec<f64>, t: f64) -> f64 {
     let n = numbers.len() - 1;
     if n == 0 {
@@ -107,6 +122,7 @@ fn bezier_f64(numbers: Vec<f64>, t: f64) -> f64 {
 }
 
 
+/// A function that returns the permutation of `n` objects taken `r`.
 pub fn permutation(n: u64, r: u64) -> u64 {
     if n < r {
         return 0;
@@ -115,6 +131,7 @@ pub fn permutation(n: u64, r: u64) -> u64 {
 }
 
 
+/// A function that returns the combination of `n` objects taken `r`.
 pub fn choose(n: u64, r: u64) -> u64 {
     if n < r {
         return 0;
@@ -123,6 +140,7 @@ pub fn choose(n: u64, r: u64) -> u64 {
 }
 
 
+/// A distance function that corresponds to the Euclidean distance squared, just for better performance.
 pub fn distance_squared(p1: (f64, f64), p2: (f64, f64)) -> f64 {
     let dx = p1.0 - p2.0;
     let dy = p1.1 - p2.1;
@@ -130,16 +148,19 @@ pub fn distance_squared(p1: (f64, f64), p2: (f64, f64)) -> f64 {
 }
 
 
+/// A function that returns the interpolation of two `f64` values at `t`.
 pub fn interpolate(x: f64, y: f64, t: f64) -> f64 {
     return (1.0 - t) * x + t * y;
 }
 
 
+/// A function that returns the interpolation of two `(f64, f64)` tuples at `t`.
 pub fn interpolate_tuple(p1: (f64, f64), p2: (f64, f64), t: f64) -> (f64, f64) {
     return (interpolate(p1.0, p2.0, t), interpolate(p1.1, p2.1, t));
 }
 
 
+/// A function that returns the interpolation of two `(f64, f64, f64, f64)` (RGBA) tuples at `t`.
 pub fn interpolate_color(color1: (f64, f64, f64, f64), color2: (f64, f64, f64, f64), t: f64) -> (f64, f64, f64, f64) {
     let (r1, g1, b1, a1) = color1;
     let (r2, g2, b2, a2) = color2;
@@ -412,6 +433,7 @@ pub fn align_data(
 }
 
 
+/// Returns a pair `(i64, f64)` representing the integer interpolation of two `f64` values at `t`.
 pub fn integer_interpolate(x: f64, y: f64, t: f64) -> (i64, f64) {
     if t >= 1.0 {
         return (((y - 1.0) as f64).floor() as i64, 1.0)
@@ -424,6 +446,8 @@ pub fn integer_interpolate(x: f64, y: f64, t: f64) -> (i64, f64) {
     return (value as i64, residue);
 }
 
+
+/// Returns the points that represent a line as a cubic Bezier curve.
 pub fn line_as_cubic_bezier(p1: (f64, f64), p2: (f64, f64)) -> Vec<(f64, f64)> {
     let mut result = Vec::new();
     let (x1, y1) = p1;
@@ -435,6 +459,8 @@ pub fn line_as_cubic_bezier(p1: (f64, f64), p2: (f64, f64)) -> Vec<(f64, f64)> {
     return result;
 }
 
+
+/// Returns the points that represent a quadratic Bezier curve as a cubic Bezier curve.
 pub fn quadratic_bezier_as_cubic_bezier(p1: (f64, f64), p2: (f64, f64), p3: (f64, f64)) -> Vec<(f64, f64)> {
     let mut result = Vec::new();
     let (x1, y1) = p1;
@@ -448,6 +474,7 @@ pub fn quadratic_bezier_as_cubic_bezier(p1: (f64, f64), p2: (f64, f64), p3: (f64
 }
 
 
+/// Checks if two points `(f64, f64)` are equal given a tolerance.
 pub fn consider_points_equals(p1: (f64, f64), p2: (f64, f64)) -> bool {
     return distance_squared(p1, p2) < 0.1;
 }

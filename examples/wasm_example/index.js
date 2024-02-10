@@ -1,11 +1,11 @@
-import start, {randomDot} from './pkg/wasm_example.js';
+import start, {changeNRects} from './pkg/wasm_example.js';
 
 
 async function run() {
     await start();
-    const randomDotButton = document.getElementById('random-dot');
-    randomDotButton.addEventListener('click', async () => {
-        randomDot();
+    const nRectsInput = document.getElementById('n-rects');
+    nRectsInput.addEventListener('input', () => {
+        changeNRects(nRectsInput.value);
     });
 }
 

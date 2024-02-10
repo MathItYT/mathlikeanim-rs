@@ -13,7 +13,8 @@ pub fn number_line(
     length: Option<f64>,
     add_tip: Option<bool>,
     add_ticks: Option<bool>,
-    tick_size: Option<f64>
+    tick_size: Option<f64>,
+    angle: Option<f64>
 ) -> VectorFeatures {
     let mut result = line(
         (center.unwrap().0 - length.unwrap_or(1000.0) / 2.0, center.unwrap().1),
@@ -22,26 +23,27 @@ pub fn number_line(
         stroke_width,
         line_cap,
         line_join,
-        index,
-    );
+        index
+    ).rotate(angle.unwrap_or(0.0), false);
     if add_ticks.unwrap_or(true) {
         let mut x = x_min;
         while x <= x_max {
-            let tick = line(
-                (center.unwrap().0 + (x - x_min) / (x_max - x_min) * length.unwrap_or(1000.0) - length.unwrap_or(1000.0) / 2.0, center.unwrap().1 - tick_size.unwrap_or(20.0) / 2.0),
-                (center.unwrap().0 + (x - x_min) / (x_max - x_min) * length.unwrap_or(1000.0) - length.unwrap_or(1000.0) / 2.0, center.unwrap().1 + tick_size.unwrap_or(20.0) / 2.0),
+            let mut tick = line(
+                (number_to_point(&result, x, x_min, x_max).0, center.unwrap().1 - tick_size.unwrap_or(20.0) / 2.0),
+                (number_to_point(&result, x, x_min, x_max).0, center.unwrap().1 + tick_size.unwrap_or(20.0) / 2.0),
                 color,
                 stroke_width,
                 line_cap,
                 line_join,
                 None,
             );
+            tick = tick.rotate(angle.unwrap_or(0.0), false).move_to(number_to_point(&result, x, x_min, x_max), false);
             result.subobjects.push(tick);
             x += x_step;
         }
     }
     if add_tip.unwrap_or(true) {
-        result = add_final_tip(result, 0.1, (1.0, 1.0, 1.0, 1.0));
+        result = add_final_tip(result, 27.5, (1.0, 1.0, 1.0, 1.0));
     }
     return result;
 }
@@ -77,25 +79,23 @@ pub fn point_to_number(
 
 pub fn get_numbers_tex(
     number_line: VectorFeatures,
+    numbers: Vec<f64>,
+    vector_objects: Vec<VectorFeatures>,
     x_min: f64,
     x_max: f64,
-    step: f64,
-    tex_to_vector: &dyn Fn(String) -> VectorFeatures,
-    tex: impl Fn(f64) -> String,
     height: f64,
-    shift: Option<(f64, f64)>,
+    direction: Option<(f64, f64)>,
+    buff: Option<f64>,
     index: Option<usize>
 ) -> VectorFeatures {
+    assert_eq!(numbers.len(), vector_objects.len());
     let mut result_subobjects = Vec::new();
-    let mut x = x_min;
-    while x <= x_max {
-        let point = number_to_point(&number_line, x, x_min, x_max);
-        let tex_str = tex(x);
-        let mut tex_obj = tex_to_vector(tex_str);
-        tex_obj = tex_obj.scale(height / tex_obj.get_height(), true);
-        tex_obj = tex_obj.move_to(point, true).shift(shift.unwrap_or((0.0, 15.0 + tex_obj.get_height() / 2.0)), true);
-        result_subobjects.push(tex_obj);
-        x += step;
+    for (vec_obj, number) in vector_objects.iter().zip(numbers) {
+        let point = number_to_point(&number_line, number, x_min, x_max);
+        let mut vec_obj = vec_obj.clone();
+        vec_obj = vec_obj.scale(height / vec_obj.get_height(), true);
+        vec_obj = vec_obj.next_to_point(point, direction.unwrap_or((0.0, 1.0)), buff.unwrap_or(20.0), (0.0, 0.0), true);
+        result_subobjects.push(vec_obj);
     }
     return VectorFeatures {
         index: index.unwrap_or(0),
