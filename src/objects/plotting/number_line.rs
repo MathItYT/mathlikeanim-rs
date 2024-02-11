@@ -113,6 +113,7 @@ pub fn get_numbers_tex(
         line_cap: "butt",
         line_join: "miter",
         points: vec![],
-        background_image: background_image
+        background_image: background_image,
+        image_position: (0.0, 0.0),
     };
 }

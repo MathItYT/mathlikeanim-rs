@@ -205,6 +205,7 @@ fn parse_path(attributes: &std::collections::HashMap<String, Value>, index: usiz
         subobjects: vec![],
         index: index,
         background_image: None,
+        image_position: (0.0, 0.0)
     };
     return vec_obj;
 }
@@ -499,5 +500,6 @@ pub fn svg_to_vector(svg: &str) -> VectorFeatures {
         subobjects: subobjects,
         index: 0,
         background_image: None,
+        image_position: (0.0, 0.0)
     };
 }

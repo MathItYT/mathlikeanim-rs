@@ -82,7 +82,8 @@ pub fn axes(
         line_cap: "butt",
         line_join: "miter",
         index: 0,
-        background_image
+        background_image,
+        image_position: (0.0, 0.0)
     };
     let axes_current_center = axes.get_center();
     axes = axes.shift((center.0 - axes_current_center.0, center.1 - axes_current_center.1), true);
@@ -225,7 +226,8 @@ pub fn area_under_curve(
         line_join: "miter",
         index: index.unwrap_or(0),
         subobjects: vec![],
-        background_image
+        background_image,
+        image_position: (0.0, 0.0)
     };
     return area;
 }
@@ -299,7 +301,8 @@ pub fn riemann_rectangles_for_plot(
             line_join: "miter",
             index: index.unwrap_or(0),
             subobjects,
-            background_image: background_image.clone()
+            background_image: background_image.clone(),
+            image_position: (0.0, 0.0)
         };
     } else if direction == 0.0 {
         for i in 0..n_rects {
@@ -348,7 +351,8 @@ pub fn riemann_rectangles_for_plot(
             line_join: "miter",
             index: index.unwrap_or(0),
             subobjects,
-            background_image: background_image.clone()
+            background_image: background_image.clone(),
+            image_position: (0.0, 0.0)
         };
     }
     for i in 0..n_rects {
@@ -397,7 +401,8 @@ pub fn riemann_rectangles_for_plot(
         line_join: "miter",
         index: index.unwrap_or(0),
         subobjects,
-        background_image
+        background_image,
+        image_position: (0.0, 0.0)
     };
 }
 

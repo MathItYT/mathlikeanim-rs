@@ -72,7 +72,8 @@ pub fn arc(
             Some(join) => join,
             None => "miter"
         },
-        background_image
+        background_image,
+        image_position: (0.0, 0.0)
     }.scale(radius, true).move_to(center, true);
 }
 
@@ -190,6 +191,7 @@ pub fn annular_sector(
             Some(join) => join,
             None => "miter"
         },
-        background_image
+        background_image,
+        image_position: (0.0, 0.0)
     };
 }

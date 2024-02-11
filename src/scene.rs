@@ -57,8 +57,8 @@ impl Scene {
             let t = rate_func(frame as f64 / total_frames as f64);
             let mut new_objects = HashMap::new();
             for (i, animation_func) in animation_funcs.iter().enumerate() {
-                let new_object_from_func = animation_func(objects[&object_indices[i]].clone(), t);
-                new_objects.insert(new_object_from_func.index, new_object_from_func);
+                let new_object_from_func = animation_func(new_objects.get(&object_indices[i]).unwrap_or(&objects[&object_indices[i]]).clone(), t);
+                new_objects.insert(object_indices[i], new_object_from_func);
             }
             self.objects = self.objects.clone().into_iter().map(
                 |obj| {

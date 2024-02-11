@@ -15,7 +15,8 @@ use crate::utils::consider_points_equals;
 use cairo::{Context, ImageSurface};
 #[cfg(not(target_arch = "wasm32"))]
 use indicatif::ProgressBar;
-use wasm_bindgen::JsValue;
+use wasm_bindgen::{JsCast, JsValue};
+use web_sys::HtmlCanvasElement;
 
 #[cfg(not(target_arch = "wasm32"))]
 fn draw_context_path(context: &Context, points: &Vec<(f64, f64)>) {
@@ -220,9 +221,16 @@ pub fn render_vector_with_image_wasm(
     stroke_alpha: f64,
     line_cap: String,
     line_join: String,
-    stroke_width: f64
+    stroke_width: f64,
+    image_position: (f64, f64)
 ) {
-    let pattern = context.create_pattern_with_html_image_element(img, "repeat").unwrap().unwrap();
+    let document = web_sys::window().unwrap().document().unwrap();
+    let canvas_img = document.create_element("canvas").unwrap().dyn_into::<HtmlCanvasElement>().unwrap();
+    canvas_img.set_width(img.width());
+    canvas_img.set_height(img.height());
+    let img_context = canvas_img.get_context("2d").unwrap().unwrap().dyn_into::<web_sys::CanvasRenderingContext2d>().unwrap();
+    img_context.draw_image_with_html_image_element_and_dw_and_dh(&img, image_position.0, image_position.1, img.width() as f64, img.height() as f64).unwrap();
+    let pattern = context.create_pattern_with_html_canvas_element(&canvas_img, "no-repeat").unwrap().unwrap();
     draw_context_path_wasm(&context, &points);
     context.set_global_alpha(fill_alpha);
     context.set_fill_style(&pattern);
@@ -288,7 +296,7 @@ pub fn render_vector_wasm(
     let line_cap = vec.line_cap.to_string();
     let line_join = vec.line_join.to_string();
     if vec.background_image.is_some() && vec.points.len() > 0 {
-        render_vector_with_image_wasm(vec.background_image.as_ref().unwrap(), context.clone(), &points, vec.fill_color.3, vec.stroke_color.3, line_cap, line_join, stroke_width);
+        render_vector_with_image_wasm(vec.background_image.as_ref().unwrap(), context.clone(), &points, vec.fill_color.3, vec.stroke_color.3, line_cap, line_join, stroke_width, vec.image_position);
     } else {
         draw_context_path_wasm(&context, &points);
         apply_fill_wasm(&context, &fill_color, &points);

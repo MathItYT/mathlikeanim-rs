@@ -51,7 +51,8 @@ fn get_partial_points(
             line_join: line_join,
             subobjects: subobjects,
             index: vector_features.index,
-            background_image: vector_features.background_image.clone()
+            background_image: vector_features.background_image.clone(),
+            image_position: vector_features.image_position
         };
     }
     let bezier_quads = vector_features.get_cubic_bezier_tuples();
@@ -65,7 +66,8 @@ fn get_partial_points(
             line_join: line_join,
             subobjects: subobjects.iter().map(|subobject| get_partial_points(subobject, start, end, recursive)).collect(),
             index: vector_features.index,
-            background_image: vector_features.background_image.clone()
+            background_image: vector_features.background_image.clone(),
+            image_position: vector_features.image_position
         };
     }
     let (lower_index, lower_residue) = integer_interpolate(0.0, bezier_quads.len() as f64, start);
@@ -89,7 +91,8 @@ fn get_partial_points(
             line_join: line_join,
             subobjects: subobjects.iter().map(|subobject| get_partial_points(subobject, start, end, true)).collect(),
             index: vector_features.index,
-            background_image: vector_features.background_image.clone()
+            background_image: vector_features.background_image.clone(),
+            image_position: vector_features.image_position
         };
     }
     let mut new_points = Vec::new();
@@ -128,7 +131,8 @@ fn get_partial_points(
         line_join: line_join,
         subobjects: subobjects,
         index: vector_features.index,
-        background_image: vector_features.background_image.clone()
+        background_image: vector_features.background_image.clone(),
+        image_position: vector_features.image_position
     };   
 }
 
@@ -371,6 +375,9 @@ pub trait VectorObject {
         recursive: bool
     ) -> Self;
     fn set_background_image(&self, image: web_sys::HtmlImageElement, recursive: bool) -> Self;
+    fn get_background_image(&self) -> Option<web_sys::HtmlImageElement>;
+    fn set_image_position(&self, position: (f64, f64), recursive: bool) -> Self;
+    fn get_image_position(&self) -> (f64, f64);
 }
 
 #[derive(Clone, Debug)]
@@ -384,6 +391,7 @@ pub struct VectorFeatures {
     pub subobjects: Vec<VectorFeatures>,
     pub index: usize,
     pub background_image: Option<web_sys::HtmlImageElement>,
+    pub image_position: (f64, f64)
 }
 
 impl VectorObject for VectorFeatures {
@@ -401,7 +409,8 @@ impl VectorObject for VectorFeatures {
                 line_join: self.line_join,
                 subobjects: self.subobjects.iter().map(|subobject| subobject.increment_index(increment, true)).collect(),
                 index: self.index + increment,
-                background_image: self.background_image.clone()
+                background_image: self.background_image.clone(),
+                image_position: self.image_position
             };
         }
         return VectorFeatures {
@@ -413,7 +422,8 @@ impl VectorObject for VectorFeatures {
             line_join: self.line_join,
             subobjects: self.subobjects.clone(),
             index: self.index + increment,
-            background_image: self.background_image.clone()
+            background_image: self.background_image.clone(),
+            image_position: self.image_position
         };
     }
     fn get_points(&self) -> &Vec<(f64, f64)> {
@@ -451,7 +461,8 @@ impl VectorObject for VectorFeatures {
                 line_join: self.line_join,
                 subobjects: self.subobjects.clone(),
                 index: self.index,
-                background_image: self.background_image.clone()
+                background_image: self.background_image.clone(),
+                image_position: self.image_position
             };
         }
         return VectorFeatures {
@@ -463,7 +474,8 @@ impl VectorObject for VectorFeatures {
             line_join: self.line_join,
             subobjects: self.subobjects.iter().map(|subobject| subobject.scale(scale_factor, true)).collect(),
             index: self.index,
-            background_image: self.background_image.clone()
+            background_image: self.background_image.clone(),
+            image_position: self.image_position
         };
     }
     fn stretch(&self, stretch: (f64, f64), recursive: bool) -> Self {
@@ -478,7 +490,8 @@ impl VectorObject for VectorFeatures {
                 line_join: self.line_join,
                 subobjects: self.subobjects.clone(),
                 index: self.index,
-                background_image: self.background_image.clone()
+                background_image: self.background_image.clone(),
+                image_position: self.image_position
             };
         }
         return VectorFeatures {
@@ -490,7 +503,8 @@ impl VectorObject for VectorFeatures {
             line_join: self.line_join,
             subobjects: self.subobjects.iter().map(|subobject| subobject.stretch(stretch, true)).collect(),
             index: self.index,
-            background_image: self.background_image.clone()
+            background_image: self.background_image.clone(),
+            image_position: self.image_position
         };
     }
     fn shift(&self, shift: (f64, f64), recursive: bool) -> VectorFeatures {
@@ -504,7 +518,8 @@ impl VectorObject for VectorFeatures {
                 line_join: self.line_join,
                 subobjects: self.subobjects.clone(),
                 index: self.index,
-                background_image: self.background_image.clone()
+                background_image: self.background_image.clone(),
+                image_position: self.image_position
             };
         }
         return VectorFeatures {
@@ -516,7 +531,8 @@ impl VectorObject for VectorFeatures {
             line_join: self.line_join,
             subobjects: self.subobjects.iter().map(|subobject| subobject.shift(shift, true)).collect(),
             index: self.index,
-            background_image: self.background_image.clone()
+            background_image: self.background_image.clone(),
+            image_position: self.image_position
         };
     }
     fn move_to(&self, position: (f64, f64), recursive: bool) -> VectorFeatures {
@@ -535,7 +551,8 @@ impl VectorObject for VectorFeatures {
                 line_join: self.line_join,
                 subobjects: self.subobjects.iter().map(|subobject| subobject.set_fill_color(fill_color, true)).collect(),
                 index: self.index,
-                background_image: self.background_image.clone()
+                background_image: self.background_image.clone(),
+                image_position: self.image_position
             };
         }
         return VectorFeatures {
@@ -547,7 +564,8 @@ impl VectorObject for VectorFeatures {
             line_join: self.line_join,
             subobjects: self.subobjects.clone(),
             index: self.index,
-            background_image: self.background_image.clone()
+            background_image: self.background_image.clone(),
+            image_position: self.image_position
         };
     }
     fn set_fill_opacity(&self, opacity: f64, recursive: bool) -> VectorFeatures {
@@ -561,7 +579,8 @@ impl VectorObject for VectorFeatures {
                 line_join: self.line_join,
                 subobjects: self.subobjects.iter().map(|subobject| subobject.set_fill_opacity(opacity, true)).collect(),
                 index: self.index,
-                background_image: self.background_image.clone()
+                background_image: self.background_image.clone(),
+                image_position: self.image_position
             };
         }
         return VectorFeatures {
@@ -573,7 +592,8 @@ impl VectorObject for VectorFeatures {
             line_join: self.line_join,
             subobjects: self.subobjects.clone(),
             index: self.index,
-            background_image: self.background_image.clone()
+            background_image: self.background_image.clone(),
+            image_position: self.image_position
         };
     }
     fn set_stroke_color(&self, stroke_color: (f64, f64, f64, f64), recursive: bool) -> Self {
@@ -587,7 +607,8 @@ impl VectorObject for VectorFeatures {
                 line_join: self.line_join,
                 subobjects: self.subobjects.iter().map(|subobject| subobject.set_stroke_color(stroke_color, true)).collect(),
                 index: self.index,
-                background_image: self.background_image.clone()
+                background_image: self.background_image.clone(),
+                image_position: self.image_position
             };
         }
         return VectorFeatures {
@@ -599,7 +620,8 @@ impl VectorObject for VectorFeatures {
             line_join: self.line_join,
             subobjects: self.subobjects.clone(),
             index: self.index,
-            background_image: self.background_image.clone()
+            background_image: self.background_image.clone(),
+            image_position: self.image_position
         };
     }
     fn set_stroke_opacity(&self, opacity: f64, recursive: bool) -> VectorFeatures {
@@ -613,7 +635,8 @@ impl VectorObject for VectorFeatures {
                 line_join: self.line_join,
                 subobjects: self.subobjects.iter().map(|subobject| subobject.set_stroke_opacity(opacity, true)).collect(),
                 index: self.index,
-                background_image: self.background_image.clone()
+                background_image: self.background_image.clone(),
+                image_position: self.image_position
             };
         }
         return VectorFeatures {
@@ -625,7 +648,8 @@ impl VectorObject for VectorFeatures {
             line_join: self.line_join,
             subobjects: self.subobjects.clone(),
             index: self.index,
-            background_image: self.background_image.clone()
+            background_image: self.background_image.clone(),
+            image_position: self.image_position
         };
     }
     fn set_stroke_width(&self, stroke_width: f64, recursive: bool) -> VectorFeatures {
@@ -639,7 +663,8 @@ impl VectorObject for VectorFeatures {
                 line_join: self.line_join,
                 subobjects: self.subobjects.iter().map(|subobject| subobject.set_stroke_width(stroke_width, true)).collect(),
                 index: self.index,
-                background_image: self.background_image.clone()
+                background_image: self.background_image.clone(),
+                image_position: self.image_position
             };
         }
         return VectorFeatures {
@@ -651,7 +676,8 @@ impl VectorObject for VectorFeatures {
             line_join: self.line_join,
             subobjects: self.subobjects.clone(),
             index: self.index,
-            background_image: self.background_image.clone()
+            background_image: self.background_image.clone(),
+            image_position: self.image_position
         };
     }
     fn set_line_cap(&self, line_cap: &'static str, recursive: bool) -> VectorFeatures {
@@ -665,7 +691,8 @@ impl VectorObject for VectorFeatures {
                 line_join: self.line_join,
                 subobjects: self.subobjects.iter().map(|subobject| subobject.set_line_cap(line_cap, true)).collect(),
                 index: self.index,
-                background_image: self.background_image.clone()
+                background_image: self.background_image.clone(),
+                image_position: self.image_position
             };
         }
         return VectorFeatures {
@@ -677,7 +704,8 @@ impl VectorObject for VectorFeatures {
             line_join: self.line_join,
             subobjects: self.subobjects.clone(),
             index: self.index,
-            background_image: self.background_image.clone()
+            background_image: self.background_image.clone(),
+            image_position: self.image_position
         };
     }
     fn set_line_join(&self, line_join: &'static str, recursive: bool) -> Self {
@@ -691,7 +719,8 @@ impl VectorObject for VectorFeatures {
                 line_join: line_join,
                 subobjects: self.subobjects.iter().map(|subobject| subobject.set_line_join(line_join, true)).collect(),
                 index: self.index,
-                background_image: self.background_image.clone()
+                background_image: self.background_image.clone(),
+                image_position: self.image_position
             };
         }
         return VectorFeatures {
@@ -703,7 +732,8 @@ impl VectorObject for VectorFeatures {
             line_join: line_join,
             subobjects: self.subobjects.clone(),
             index: self.index,
-            background_image: self.background_image.clone()
+            background_image: self.background_image.clone(),
+            image_position: self.image_position
         };
     }
     fn set_points(&self, points: Vec<(f64, f64)>) -> Self {
@@ -716,7 +746,8 @@ impl VectorObject for VectorFeatures {
             line_join: self.line_join,
             subobjects: self.subobjects.clone(),
             index: self.index,
-            background_image: self.background_image.clone()
+            background_image: self.background_image.clone(),
+            image_position: self.image_position
         };
     }
     fn set_subobjects(&self, subobjects: Vec<VectorFeatures>) -> Self {
@@ -729,7 +760,8 @@ impl VectorObject for VectorFeatures {
             line_join: self.line_join,
             subobjects: subobjects,
             index: self.index,
-            background_image: self.background_image.clone()
+            background_image: self.background_image.clone(),
+            image_position: self.image_position
         };
     }
     fn rotate(&self, angle: f64, recursive: bool) -> Self {
@@ -754,7 +786,8 @@ impl VectorObject for VectorFeatures {
                 line_join: self.line_join,
                 subobjects: self.subobjects.clone(),
                 index: self.index,
-                background_image: self.background_image.clone()
+                background_image: self.background_image.clone(),
+                image_position: self.image_position
             };
         }
         return VectorFeatures {
@@ -766,7 +799,8 @@ impl VectorObject for VectorFeatures {
             line_join: self.line_join,
             subobjects: self.subobjects.iter().map(|subobject| subobject.rotate(angle, true)).collect(),
             index: self.index,
-            background_image: self.background_image.clone()
+            background_image: self.background_image.clone(),
+            image_position: self.image_position
         };
     }
     fn next_to_other(
@@ -832,7 +866,8 @@ impl VectorObject for VectorFeatures {
                 line_join: self.line_join,
                 subobjects: self.subobjects.iter().map(|subobject| subobject.set_background_image(image.clone(), true)).collect(),
                 index: self.index,
-                background_image: Some(image)
+                background_image: Some(image),
+                image_position: self.image_position
             };
         }
         return VectorFeatures {
@@ -844,7 +879,42 @@ impl VectorObject for VectorFeatures {
             line_join: self.line_join,
             subobjects: self.subobjects.clone(),
             index: self.index,
-            background_image: Some(image)
+            background_image: Some(image),
+            image_position: self.image_position
         };
+    }
+    fn get_background_image(&self) -> Option<web_sys::HtmlImageElement> {
+        return self.background_image.clone();
+    }
+    fn set_image_position(&self, position: (f64, f64), recursive: bool) -> Self {
+        if recursive {
+            return VectorFeatures {
+                points: self.points.clone(),
+                fill_color: self.fill_color,
+                stroke_color: self.stroke_color,
+                stroke_width: self.stroke_width,
+                line_cap: self.line_cap,
+                line_join: self.line_join,
+                subobjects: self.subobjects.iter().map(|subobject| subobject.set_image_position(position, true)).collect(),
+                index: self.index,
+                background_image: self.background_image.clone(),
+                image_position: position
+            };
+        }
+        return VectorFeatures {
+            points: self.points.clone(),
+            fill_color: self.fill_color,
+            stroke_color: self.stroke_color,
+            stroke_width: self.stroke_width,
+            line_cap: self.line_cap,
+            line_join: self.line_join,
+            subobjects: self.subobjects.clone(),
+            index: self.index,
+            background_image: self.background_image.clone(),
+            image_position: position
+        };
+    }
+    fn get_image_position(&self) -> (f64, f64) {
+        return self.image_position;
     }
 }

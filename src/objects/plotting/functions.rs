@@ -36,6 +36,7 @@ pub fn parametric_function(
         index: index.unwrap_or(0),
         subobjects: vec![],
         background_image: background_image,
+        image_position: (0.0, 0.0)
     };
 }
 

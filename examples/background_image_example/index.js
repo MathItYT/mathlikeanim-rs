@@ -6,7 +6,7 @@ async function run() {
     const canvas = document.getElementById('canvas');
     const videoStream = canvas.captureStream(60);
     const mediaRecorder = new MediaRecorder(videoStream, {
-        videoBitsPerSecond: 8000000, // Best bitrate for 1080p
+        videoBitsPerSecond: 80000000
     });
     let chunks = [];
     mediaRecorder.ondataavailable = (event) => {
@@ -22,7 +22,7 @@ async function run() {
     mediaRecorder.start();
     setTimeout(() => {
         mediaRecorder.stop();
-    }, 2000);
+    }, 4000);
     await start();
 }
 

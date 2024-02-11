@@ -35,6 +35,7 @@ pub fn line(
             Some(join) => join,
             None => "miter"
         },
-        background_image
+        background_image,
+        image_position: (0.0, 0.0)
     };
 }
