@@ -212,6 +212,59 @@ pub fn apply_stroke_wasm(
 }
 
 
+pub fn render_vector_with_image_wasm(
+    img: &web_sys::HtmlImageElement,
+    context: web_sys::CanvasRenderingContext2d,
+    points: &JsValue,
+    fill_alpha: f64,
+    stroke_alpha: f64,
+    line_cap: String,
+    line_join: String,
+    stroke_width: f64
+) {
+    let pattern = context.create_pattern_with_html_image_element(img, "repeat").unwrap().unwrap();
+    draw_context_path_wasm(&context, &points);
+    context.set_global_alpha(fill_alpha);
+    context.set_fill_style(&pattern);
+    context.fill();
+    context.set_global_alpha(stroke_alpha);
+    context.set_stroke_style(&pattern);
+    context.set_line_width(stroke_width);
+    match line_cap.as_str() {
+        "butt" => {
+            context.set_line_cap("butt");
+        },
+        "square" => {
+            context.set_line_cap("square");
+        },
+        "round" => {
+            context.set_line_cap("round");
+        },
+        _ => {
+            panic!("Unknown line cap");
+        }
+    }
+    match line_join.as_str() {
+        "miter" => {
+            context.set_line_join("miter");
+        },
+        "bevel" => {
+            context.set_line_join("bevel");
+        },
+        "round" => {
+            context.set_line_join("round");
+        },
+        _ => {
+            panic!("Unknown line join");
+        }
+    }
+    context.stroke();
+    context.set_global_alpha(1.0);
+    context.set_line_cap("butt");
+    context.set_line_join("miter");
+}
+
+
 pub fn render_vector_wasm(
     vec: &VectorFeatures,
     width: u64,
@@ -234,9 +287,13 @@ pub fn render_vector_wasm(
     let stroke_width = vec.stroke_width;
     let line_cap = vec.line_cap.to_string();
     let line_join = vec.line_join.to_string();
-    draw_context_path_wasm(&context, &points);
-    apply_fill_wasm(&context, &fill_color, &points);
-    apply_stroke_wasm(&context, &stroke_color, stroke_width, &line_cap, &line_join, &points);
+    if vec.background_image.is_some() && vec.points.len() > 0 {
+        render_vector_with_image_wasm(vec.background_image.as_ref().unwrap(), context.clone(), &points, vec.fill_color.3, vec.stroke_color.3, line_cap, line_join, stroke_width);
+    } else {
+        draw_context_path_wasm(&context, &points);
+        apply_fill_wasm(&context, &fill_color, &points);
+        apply_stroke_wasm(&context, &stroke_color, stroke_width, &line_cap, &line_join, &points);
+    }
     for subvec in &vec.subobjects {
         render_vector_wasm(&subvec, width, height, context.clone());
     }

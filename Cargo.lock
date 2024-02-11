@@ -181,6 +181,23 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
 
 [[package]]
+name = "background_image_example"
+version = "0.1.0"
+dependencies = [
+ "async-std",
+ "js-sys",
+ "lightningcss",
+ "mathlikeanim-rs",
+ "once_cell",
+ "serde",
+ "serde-wasm-bindgen",
+ "svg",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "web-sys",
+]
+
+[[package]]
 name = "base64-simd"
 version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -779,6 +796,23 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7a5bbe824c507c5da5956355e86a746d82e0e1464f65d862cc5e71da70e94b2c"
 dependencies = [
  "cfg-if",
+]
+
+[[package]]
+name = "integral_example"
+version = "0.1.0"
+dependencies = [
+ "async-std",
+ "js-sys",
+ "lightningcss",
+ "mathlikeanim-rs",
+ "once_cell",
+ "serde",
+ "serde-wasm-bindgen",
+ "svg",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "web-sys",
 ]
 
 [[package]]
@@ -1731,23 +1765,6 @@ name = "wasm-bindgen-shared"
 version = "0.2.90"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4d91413b1c31d7539ba5ef2451af3f0b833a005eb27a631cec32bc0635a8602b"
-
-[[package]]
-name = "wasm_example"
-version = "0.1.0"
-dependencies = [
- "async-std",
- "js-sys",
- "lightningcss",
- "mathlikeanim-rs",
- "once_cell",
- "serde",
- "serde-wasm-bindgen",
- "svg",
- "wasm-bindgen",
- "wasm-bindgen-futures",
- "web-sys",
-]
 
 [[package]]
 name = "web-sys"

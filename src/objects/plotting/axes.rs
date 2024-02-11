@@ -1,10 +1,11 @@
 use std::f64::consts::PI;
 
+use crate::objects::geometry::line::line;
 use crate::objects::geometry::poly::rectangle;
 use crate::objects::vector_object::{VectorFeatures, VectorObject};
 
 use crate::objects::plotting::number_line::{number_line, number_to_point};
-use crate::utils::line_as_cubic_bezier;
+use crate::utils::{distance_squared, line_as_cubic_bezier};
 
 use super::functions::parametric_function;
 use super::number_line::point_to_number;
@@ -29,7 +30,8 @@ pub fn axes(
     x_tick_size: Option<f64>,
     y_tick_size: Option<f64>,
     add_x_tip: Option<bool>,
-    add_y_tip: Option<bool>
+    add_y_tip: Option<bool>,
+    background_image: Option<web_sys::HtmlImageElement>
 ) -> VectorFeatures {
     let mut subobjects = Vec::new();
     let mut x_axis = number_line(
@@ -46,7 +48,8 @@ pub fn axes(
         add_x_tip,
         add_x_ticks,
         x_tick_size,
-        Some(0.0)
+        Some(0.0),
+        background_image.clone()
     );
     let y_axis = number_line(
         y_min,
@@ -62,7 +65,8 @@ pub fn axes(
         add_y_tip,
         add_y_ticks,
         y_tick_size,
-        Some(-PI / 2.0)
+        Some(-PI / 2.0),
+        background_image.clone()
     );
     let origin_x = number_to_point(&x_axis, 0.0, x_min, x_max);
     let origin_y = number_to_point(&y_axis, 0.0, y_min, y_max);
@@ -77,7 +81,8 @@ pub fn axes(
         stroke_width: 0.0,
         line_cap: "butt",
         line_join: "miter",
-        index: 0
+        index: 0,
+        background_image
     };
     let axes_current_center = axes.get_center();
     axes = axes.shift((center.0 - axes_current_center.0, center.1 - axes_current_center.1), true);
@@ -128,7 +133,8 @@ pub fn parametric_plot_in_axes(
     stroke_width: Option<f64>,
     line_cap: Option<&'static str>,
     line_join: Option<&'static str>,
-    index: Option<usize>
+    index: Option<usize>,
+    background_image: Option<web_sys::HtmlImageElement>
 ) -> VectorFeatures {
     let new_f = |t: f64| {
         let (x, y) = f(t);
@@ -144,7 +150,8 @@ pub fn parametric_plot_in_axes(
         stroke_width,
         line_cap,
         line_join,
-        index
+        index,
+        background_image
     );
 }
 
@@ -163,7 +170,8 @@ pub fn plot_in_axes(
     stroke_width: Option<f64>,
     line_cap: Option<&'static str>,
     line_join: Option<&'static str>,
-    index: Option<usize>
+    index: Option<usize>,
+    background_image: Option<web_sys::HtmlImageElement>
 ) -> VectorFeatures {
     let new_f = |t: f64| {
         let x = t;
@@ -180,7 +188,8 @@ pub fn plot_in_axes(
         stroke_width,
         line_cap,
         line_join,
-        index
+        index,
+        background_image
     );
 }
 
@@ -189,7 +198,8 @@ pub fn area_under_curve(
     axes: &VectorFeatures,
     plot: &VectorFeatures,
     color: Option<(f64, f64, f64, f64)>,
-    index: Option<usize>
+    index: Option<usize>,
+    background_image: Option<web_sys::HtmlImageElement>
 ) -> VectorFeatures {
     let mut points = plot.points.clone();
     points.extend(line_as_cubic_bezier(
@@ -214,7 +224,8 @@ pub fn area_under_curve(
         line_cap: "butt",
         line_join: "miter",
         index: index.unwrap_or(0),
-        subobjects: vec![]
+        subobjects: vec![],
+        background_image
     };
     return area;
 }
@@ -236,7 +247,8 @@ pub fn riemann_rectangles_for_plot(
     stroke_width: Option<f64>,
     line_cap: Option<&'static str>,
     line_join: Option<&'static str>,
-    index: Option<usize>
+    index: Option<usize>,
+    background_image: Option<web_sys::HtmlImageElement>
 ) -> VectorFeatures {
     let mut subobjects = Vec::new();
     let dx = (x_2 - x_1) / n_rects as f64;
@@ -256,7 +268,8 @@ pub fn riemann_rectangles_for_plot(
                 stroke_width,
                 line_cap,
                 line_join,
-                index
+                index,
+                background_image.clone()
             );
             if y > 0.0 {
                 rect = rect.next_to_point(
@@ -285,7 +298,8 @@ pub fn riemann_rectangles_for_plot(
             line_cap: "butt",
             line_join: "miter",
             index: index.unwrap_or(0),
-            subobjects
+            subobjects,
+            background_image: background_image.clone()
         };
     } else if direction == 0.0 {
         for i in 0..n_rects {
@@ -303,7 +317,8 @@ pub fn riemann_rectangles_for_plot(
                 stroke_width,
                 line_cap,
                 line_join,
-                index
+                index,
+                background_image.clone()
             );
             if y > 0.0 {
                 rect = rect.next_to_point(
@@ -332,7 +347,8 @@ pub fn riemann_rectangles_for_plot(
             line_cap: "butt",
             line_join: "miter",
             index: index.unwrap_or(0),
-            subobjects
+            subobjects,
+            background_image: background_image.clone()
         };
     }
     for i in 0..n_rects {
@@ -350,7 +366,8 @@ pub fn riemann_rectangles_for_plot(
             stroke_width,
             line_cap,
             line_join,
-            index
+            index,
+            background_image.clone()
         );
         if y > 0.0 {
             rect = rect.next_to_point(
@@ -379,6 +396,44 @@ pub fn riemann_rectangles_for_plot(
         line_cap: "butt",
         line_join: "miter",
         index: index.unwrap_or(0),
-        subobjects
+        subobjects,
+        background_image
     };
+}
+
+
+pub fn secant_line_for_plot(
+    f: impl Fn(f64) -> f64,
+    x_1: f64,
+    x_2: f64,
+    length: f64,
+    axes: &VectorFeatures,
+    x_min: f64,
+    x_max: f64,
+    y_min: f64,
+    y_max: f64,
+    color: Option<(f64, f64, f64, f64)>,
+    stroke_width: Option<f64>,
+    line_cap: Option<&'static str>,
+    line_join: Option<&'static str>,
+    index: Option<usize>,
+    background_image: Option<web_sys::HtmlImageElement>
+) -> VectorFeatures {
+    let y_1 = f(x_1);
+    let y_2 = f(x_2);
+    let point_1 = coords_to_point(axes, x_1, y_1, x_min, x_max, y_min, y_max);
+    let point_2 = coords_to_point(axes, x_2, y_2, x_min, x_max, y_min, y_max);
+    let mut line = line(
+        point_1,
+        point_2,
+        color,
+        stroke_width,
+        line_cap,
+        line_join,
+        index,
+        background_image
+    );
+    let old_length = distance_squared(point_1, point_2).sqrt();
+    line =  line.scale(length / old_length, true).move_to(line.get_center(), true);
+    return line;
 }

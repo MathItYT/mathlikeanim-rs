@@ -9,7 +9,8 @@ pub fn parametric_function(
     stroke_width: Option<f64>,
     line_cap: Option<&'static str>,
     line_join: Option<&'static str>,
-    index: Option<usize>
+    index: Option<usize>,
+    background_image: Option<web_sys::HtmlImageElement>
 ) -> VectorFeatures {
     let mut func_points = Vec::new();
     let mut t = t_min;
@@ -33,7 +34,8 @@ pub fn parametric_function(
         line_cap: line_cap.unwrap_or("butt"),
         line_join: line_join.unwrap_or("miter"),
         index: index.unwrap_or(0),
-        subobjects: vec![]
+        subobjects: vec![],
+        background_image: background_image,
     };
 }
 
@@ -47,7 +49,8 @@ pub fn function(
     stroke_width: Option<f64>,
     line_cap: Option<&'static str>,
     line_join: Option<&'static str>,
-    index: Option<usize>
+    index: Option<usize>,
+    background_image: Option<web_sys::HtmlImageElement>
 ) -> VectorFeatures {
     return parametric_function(
         |t| (t, f(t)),
@@ -58,6 +61,7 @@ pub fn function(
         stroke_width,
         line_cap,
         line_join,
-        index
+        index,
+        background_image
     );
 }

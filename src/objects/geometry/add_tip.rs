@@ -18,6 +18,7 @@ pub fn add_final_tip(
         Some(0.0),
         None,
         None,
+        None,
         None
     );
     new_tip = new_tip.rotate(angle, false).move_to(last_point, false);
@@ -42,6 +43,7 @@ pub fn add_initial_tip(
         Some(tip_color),
         Some(tip_color),
         Some(0.0),
+        None,
         None,
         None,
         None

@@ -1,7 +1,10 @@
 [package]
-name = "wasm_example"
+name = "background_image_example"
 version = "0.1.0"
 edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
 
 [dependencies]
 mathlikeanim-rs = { path = "../.." }
@@ -21,6 +24,7 @@ web-sys = { version="0.3.67", features=[
     'RequestInit',
     'RequestMode',
     'Response',
+    'CanvasPattern'
 ] }
 serde = { version = "1.0", features = ["derive"] }
 serde-wasm-bindgen = "0.4"
@@ -30,3 +34,4 @@ once_cell = "1.19.0"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
+

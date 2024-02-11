@@ -59,7 +59,8 @@ pub async fn start() {
         Some(20.0),
         Some(20.0),
         Some(true),
-        Some(true)
+        Some(true),
+        None
     );
     sn.add(axes.clone());
     sn.play(
@@ -84,6 +85,7 @@ pub async fn start() {
         Some("butt"),
         Some("miter"),
         Some(1),
+        None
     );
     sn.add(plot.clone());
     sn.play(
@@ -109,7 +111,8 @@ pub async fn start() {
         Some(2.0),
         Some("butt"),
         Some("miter"),
-        Some(2)
+        Some(2),
+        None
     );
     log(format!("Riemann rectangles: {:?}", riemann_rectangles.subobjects.len()).as_str());
     sn.add(riemann_rectangles);
@@ -156,7 +159,8 @@ pub async fn change_n_rects(n_rects: usize) {
         Some(2.0),
         Some("butt"),
         Some("miter"),
-        Some(2)
+        Some(2),
+        None
     );
     sn.add(riemann_rectangles);
     sn.add(axes);

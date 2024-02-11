@@ -9,7 +9,8 @@ pub fn polygon(
     stroke_width: Option<f64>,
     line_cap: Option<&'static str>,
     line_join: Option<&'static str>,
-    index: Option<usize>
+    index: Option<usize>,
+    background_image: Option<web_sys::HtmlImageElement>
 ) -> VectorFeatures {
     let mut new_points = Vec::new();
     for i in 0..points.len()-1 {
@@ -48,7 +49,8 @@ pub fn polygon(
         line_join: match line_join {
             Some(join) => join,
             None => "miter"
-        }
+        },
+        background_image
     };
 }
 
@@ -62,7 +64,8 @@ pub fn regular_polygon(
     stroke_width: Option<f64>,
     line_cap: Option<&'static str>,
     line_join: Option<&'static str>,
-    index: Option<usize>
+    index: Option<usize>,
+    background_image: Option<web_sys::HtmlImageElement>
 ) -> VectorFeatures {
     let mut points = Vec::new();
     let angle = 2.0 * PI / num_sides as f64;
@@ -78,7 +81,8 @@ pub fn regular_polygon(
         stroke_width,
         line_cap,
         line_join,
-        index
+        index,
+        background_image
     );
 }
 
@@ -91,7 +95,8 @@ pub fn square(
     stroke_width: Option<f64>,
     line_cap: Option<&'static str>,
     line_join: Option<&'static str>,
-    index: Option<usize>
+    index: Option<usize>,
+    background_image: Option<web_sys::HtmlImageElement>
 ) -> VectorFeatures {
     return regular_polygon(
         center,
@@ -102,7 +107,8 @@ pub fn square(
         stroke_width,
         line_cap,
         line_join,
-        index
+        index,
+        background_image
     );
 }
 
@@ -116,7 +122,8 @@ pub fn rectangle(
     stroke_width: Option<f64>,
     line_cap: Option<&'static str>,
     line_join: Option<&'static str>,
-    index: Option<usize>
+    index: Option<usize>,
+    background_image: Option<web_sys::HtmlImageElement>
 ) -> VectorFeatures {
     let half_width = width / 2.0;
     let half_height = height / 2.0;
@@ -132,7 +139,8 @@ pub fn rectangle(
         stroke_width,
         line_cap,
         line_join,
-        index
+        index,
+        background_image
     );
 }
 
@@ -145,7 +153,8 @@ pub fn equilateral_triangle(
     stroke_width: Option<f64>,
     line_cap: Option<&'static str>,
     line_join: Option<&'static str>,
-    index: Option<usize>
+    index: Option<usize>,
+    background_image: Option<web_sys::HtmlImageElement>
 ) -> VectorFeatures {
     return regular_polygon(
         center,
@@ -156,7 +165,8 @@ pub fn equilateral_triangle(
         stroke_width,
         line_cap,
         line_join,
-        index
+        index,
+        background_image
     );
 }
 
@@ -170,7 +180,8 @@ pub fn triangle(
     stroke_width: Option<f64>,
     line_cap: Option<&'static str>,
     line_join: Option<&'static str>,
-    index: Option<usize>
+    index: Option<usize>,
+    background_image: Option<web_sys::HtmlImageElement>
 ) -> VectorFeatures {
     return polygon(
         vec![point1, point2, point3],
@@ -179,7 +190,8 @@ pub fn triangle(
         stroke_width,
         line_cap,
         line_join,
-        index
+        index,
+        background_image
     );
 }
 
@@ -192,7 +204,8 @@ pub fn right_triangle(
     stroke_width: Option<f64>,
     line_cap: Option<&'static str>,
     line_join: Option<&'static str>,
-    index: Option<usize>
+    index: Option<usize>,
+    background_image: Option<web_sys::HtmlImageElement>
 ) -> VectorFeatures {
     return polygon(
         vec![point1, point2, (point1.0, point2.1)],
@@ -201,6 +214,7 @@ pub fn right_triangle(
         stroke_width,
         line_cap,
         line_join,
-        index
+        index,
+        background_image
     );
 }

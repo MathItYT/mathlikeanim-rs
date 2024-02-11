@@ -7,7 +7,8 @@ pub fn line(
     stroke_width: Option<f64>,
     line_cap: Option<&'static str>,
     line_join: Option<&'static str>,
-    index: Option<usize>
+    index: Option<usize>,
+    background_image: Option<web_sys::HtmlImageElement>
 ) -> VectorFeatures {
     let new_points = line_as_cubic_bezier(point1, point2);
     return VectorFeatures {
@@ -33,6 +34,7 @@ pub fn line(
         line_join: match line_join {
             Some(join) => join,
             None => "miter"
-        }
+        },
+        background_image
     };
 }

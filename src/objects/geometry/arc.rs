@@ -15,6 +15,7 @@ pub fn arc(
     line_cap: Option<&'static str>,
     line_join: Option<&'static str>,
     index: Option<usize>,
+    background_image: Option<web_sys::HtmlImageElement>
 ) -> VectorFeatures {
     let mut anchors = Vec::new();
     let n_samples = match n_samples {
@@ -70,7 +71,8 @@ pub fn arc(
         line_join: match line_join {
             Some(join) => join,
             None => "miter"
-        }
+        },
+        background_image
     }.scale(radius, true).move_to(center, true);
 }
 
@@ -84,7 +86,8 @@ pub fn circle(
     stroke_width: Option<f64>,
     line_cap: Option<&'static str>,
     line_join: Option<&'static str>,
-    index: Option<usize>
+    index: Option<usize>,
+    background_image: Option<web_sys::HtmlImageElement>
 ) -> VectorFeatures {
     return arc(
         center,
@@ -97,7 +100,8 @@ pub fn circle(
         stroke_width,
         line_cap,
         line_join,
-        index
+        index,
+        background_image
     );
 }
 
@@ -114,7 +118,8 @@ pub fn annular_sector(
     stroke_width: Option<f64>,
     line_cap: Option<&'static str>,
     line_join: Option<&'static str>,
-    index: Option<usize>
+    index: Option<usize>,
+    background_image: Option<web_sys::HtmlImageElement>
 ) -> VectorFeatures {
     let mut points = Vec::new();
     let inner_arc = arc(
@@ -123,6 +128,7 @@ pub fn annular_sector(
         start_angle,
         end_angle,
         num_points,
+        None,
         None,
         None,
         None,
@@ -142,6 +148,7 @@ pub fn annular_sector(
         None,
         None,
         None,
+        None
     );
     let inner_arc_points = inner_arc.points.clone();
     let mut outer_arc_points = outer_arc.points.clone();
@@ -182,6 +189,7 @@ pub fn annular_sector(
         line_join: match line_join {
             Some(join) => join,
             None => "miter"
-        }
+        },
+        background_image
     };
 }

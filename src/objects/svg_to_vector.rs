@@ -204,6 +204,7 @@ fn parse_path(attributes: &std::collections::HashMap<String, Value>, index: usiz
         line_join: line_join,
         subobjects: vec![],
         index: index,
+        background_image: None,
     };
     return vec_obj;
 }
@@ -286,7 +287,8 @@ fn parse_rect(
         Some(stroke_width),
         Some(line_cap),
         Some(line_join),
-        Some(index)
+        Some(index),
+        None
     );
     return vec_obj;
 }
@@ -496,5 +498,6 @@ pub fn svg_to_vector(svg: &str) -> VectorFeatures {
         line_join: "miter",
         subobjects: subobjects,
         index: 0,
+        background_image: None,
     };
 }

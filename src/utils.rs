@@ -357,7 +357,8 @@ pub fn add_n_more_subobjects(
             fill_color: (0.0, 0.0, 0.0, 0.0),
             stroke_width: 0.0,
             line_cap: "butt",
-            line_join: "miter"
+            line_join: "miter",
+            background_image: None
         }; n];
     }
     let target = subobjects.len() + n;
