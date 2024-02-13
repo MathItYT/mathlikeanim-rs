@@ -1,4 +1,4 @@
-use mathlikeanim_rs::{animations::{grow_from_center::grow_from_center, shift_animation::shift_animation, shift_image_position::shift_image_position}, objects::{geometry::arc::circle, vector_object::VectorFeatures}, scene::Scene, utils::{log, smooth}};
+use mathlikeanim_rs::{animations::{grow_from_center::grow_from_center, move_camera::move_camera, shift_animation::shift_animation, shift_image_position::shift_image_position}, objects::{geometry::arc::circle, vector_object::VectorFeatures}, scene::Scene, utils::{log, smooth}};
 use once_cell::sync::Lazy;
 use wasm_bindgen::prelude::*;
 
@@ -13,6 +13,12 @@ pub fn shift_anim(vec_obj: VectorFeatures, t: f64) -> VectorFeatures {
 
 pub fn shift_img_pos(vec_obj: VectorFeatures, t: f64) -> VectorFeatures {
     return shift_image_position((300.0, 0.0))(vec_obj, t);
+}
+
+
+pub fn move_camera_anim(vec_obj: VectorFeatures, t: f64) -> VectorFeatures {
+    move_camera((960.0, 270.0), (1920.0, 810.0), unsafe { &mut SCENE }, t);
+    return vec_obj;
 }
 
 
@@ -55,10 +61,15 @@ pub async fn start() {
         60,
         |t| smooth(t, 10.0)
     ).await;
-    sn.wait(60).await;
     sn.play(
         vec![shift_anim, shift_img_pos],
         vec![0, 0],
+        60,
+        |t| smooth(t, 10.0)
+    ).await;
+    sn.play(
+        vec![move_camera_anim],
+        vec![0],
         60,
         |t| smooth(t, 10.0)
     ).await;

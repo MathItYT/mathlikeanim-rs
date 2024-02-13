@@ -49,5 +49,4 @@ indicatif = "0.17.7"
 
 [workspace]
 members = [ "examples/background_image_example",
-    "examples/integral_example"
-]
+    "examples/integral_example" ]

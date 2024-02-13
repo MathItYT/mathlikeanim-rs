@@ -15,6 +15,8 @@ pub struct Scene {
     pub background_color: (f64, f64, f64, f64),
     n_plays: u64,
     context: Option<web_sys::CanvasRenderingContext2d>,
+    top_left_corner: (f64, f64),
+    bottom_right_corner: (f64, f64)
 }
 
 
@@ -29,8 +31,20 @@ impl Scene {
             current_frame: 0,
             n_plays: 0,
             context: None,
-            background_color: (0.0, 0.0, 0.0, 1.0)
+            background_color: (0.0, 0.0, 0.0, 1.0),
+            top_left_corner: (0.0, 0.0),
+            bottom_right_corner: (width as f64, height as f64)
         };
+    }
+    pub fn set_corners(&mut self, top_left_corner: (f64, f64), bottom_right_corner: (f64, f64)) {
+        self.top_left_corner = top_left_corner;
+        self.bottom_right_corner = bottom_right_corner;
+    }
+    pub fn get_top_left_corner(&self) -> (f64, f64) {
+        return self.top_left_corner;
+    }
+    pub fn get_bottom_right_corner(&self) -> (f64, f64) {
+        return self.bottom_right_corner;
     }
     pub fn set_background_color(&mut self, color: (f64, f64, f64, f64)) {
         self.background_color = color;
@@ -68,7 +82,7 @@ impl Scene {
                     return obj;
                 }
             ).collect();
-            return render_all_vectors(&self.objects.clone(), self.width, self.height, self.context.clone(), self.background_color);
+            return render_all_vectors(&self.objects.clone(), self.width, self.height, self.context.clone(), self.background_color, self.top_left_corner, self.bottom_right_corner);
         };
         #[cfg(not(target_arch = "wasm32"))]
         if self.file_name != "" {
@@ -93,7 +107,7 @@ impl Scene {
         self.play(anim_funcs.clone(), vec![], duration_in_frames, |t| t).await;
     }
     pub fn update(&mut self) {
-        render_all_vectors(&self.objects.clone(), self.width, self.height, self.context.clone(), self.background_color);
+        render_all_vectors(&self.objects.clone(), self.width, self.height, self.context.clone(), self.background_color, self.top_left_corner, self.bottom_right_corner);
     }
     pub fn get_objects_from_indices(&self, object_indices: Vec<usize>) -> HashMap<usize, VectorFeatures> {
         let mut objects = HashMap::new();
