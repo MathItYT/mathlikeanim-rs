@@ -1,5 +1,6 @@
 use core::str;
 
+use lightningcss::properties::transform::Transform;
 use lightningcss::traits::Parse;
 use svg::node::element::path::{Command, Data};
 use svg::node::element::tag::Type;
@@ -195,6 +196,20 @@ fn parse_path(attributes: &std::collections::HashMap<String, Value>, index: usiz
         "round" => "round",
         _ => "miter",
     };
+    let transform_attr = attributes.get("transform").map(|transform| {
+        transform.to_string()
+    });
+    if transform_attr.is_some() {
+        let transform = Transform::parse_string(transform_attr.unwrap().replace(", ", " ").replace(" ", ",").as_str()).unwrap();
+        let matrix = transform.to_matrix().unwrap().to_matrix2d().unwrap();
+        let mut new_points = Vec::new();
+        for point in points {
+            let new_x = matrix.a as f64 * point.0 + matrix.c as f64 * point.1 + matrix.e as f64;
+            let new_y = matrix.b as f64 * point.0 + matrix.d as f64 * point.1 + matrix.f as f64;
+            new_points.push((new_x, new_y));
+        }
+        points = new_points;
+    }
     let vec_obj = VectorFeatures {
         points: points,
         fill_color: fill_color,

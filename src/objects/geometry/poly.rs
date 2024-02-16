@@ -69,11 +69,13 @@ pub fn regular_polygon(
     background_image: Option<web_sys::HtmlImageElement>
 ) -> VectorFeatures {
     let mut points = Vec::new();
-    let angle = 2.0 * PI / num_sides as f64;
     for i in 0..num_sides {
-        let x = center.0 + side_length * (angle * i as f64).cos();
-        let y = center.1 + side_length * (angle * i as f64).sin();
-        points.push((x, y));
+        let r = side_length / (2.0 * (PI / num_sides as f64).sin());
+        let angle = 2.0 * PI * i as f64 / num_sides as f64;
+        points.push((
+            center.0 + r * angle.cos(),
+            center.1 + r * angle.sin()
+        ));
     }
     return polygon(
         points,

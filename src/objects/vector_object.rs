@@ -765,16 +765,12 @@ impl VectorObject for VectorFeatures {
         };
     }
     fn rotate(&self, angle: f64, recursive: bool) -> Self {
-        let center = self.get_center();
         let cos = angle.cos();
         let sin = angle.sin();
         let new_points = self.get_points().iter().map(|point| {
-            let x = point.0 - center.0;
-            let y = point.1 - center.1;
-            return (
-                x * cos - y * sin + center.0,
-                x * sin + y * cos + center.1
-            );
+            let x = point.0;
+            let y = point.1;
+            return (x * cos - y * sin, x * sin + y * cos);
         }).collect();
         if !recursive {
             return VectorFeatures {

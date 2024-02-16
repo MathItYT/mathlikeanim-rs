@@ -48,6 +48,16 @@ pub fn factorial(n: u64) -> u64 {
 }
 
 
+/// A function that returns a `(f64, f64, f64, f64)` tuple representing the color from a hex string.
+pub fn hex_to_color(hex: &str, a: f64) -> (f64, f64, f64, f64) {
+    let hex = hex.trim_start_matches("#");
+    let r = u8::from_str_radix(&hex[0..2], 16).unwrap() as f64 / 255.0;
+    let g = u8::from_str_radix(&hex[2..4], 16).unwrap() as f64 / 255.0;
+    let b = u8::from_str_radix(&hex[4..6], 16).unwrap() as f64 / 255.0;
+    return (r, g, b, a);
+}
+
+
 /// A function that returns a `(f64, f64)` tuple representing the point on a Bezier curve at `t`.
 /// 
 /// ## Example

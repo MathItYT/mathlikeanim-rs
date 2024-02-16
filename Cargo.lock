@@ -933,8 +933,25 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2532096657941c2fea9c289d370a250971c689d4f143798ff67113ec042024a5"
 
 [[package]]
+name = "mathlike_functions_example"
+version = "0.1.0"
+dependencies = [
+ "async-std",
+ "js-sys",
+ "lightningcss",
+ "mathlikeanim-rs",
+ "once_cell",
+ "serde",
+ "serde-wasm-bindgen",
+ "svg",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "web-sys",
+]
+
+[[package]]
 name = "mathlikeanim-rs"
-version = "0.3.3"
+version = "0.3.4"
 dependencies = [
  "async-std",
  "cairo-rs",

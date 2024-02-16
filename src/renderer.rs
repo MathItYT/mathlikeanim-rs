@@ -336,7 +336,7 @@ pub fn render_all_vectors(
     context.scale(scale_xy.0, scale_xy.1).unwrap();
     context.translate(-top_left_corner.0, -top_left_corner.1).unwrap();
     context.clear_rect(top_left_corner.0, top_left_corner.1, bottom_right_corner.0 - top_left_corner.0, bottom_right_corner.1 - top_left_corner.1);
-    context.set_fill_style(&JsValue::from_str(&format!("rgba({}, {}, {}, {})", background_color.2, background_color.1, background_color.0, background_color.3)));
+    context.set_fill_style(&JsValue::from_str(&format!("rgba({}, {}, {}, {})", background_color.0 * 255.0, background_color.1 * 255.0, background_color.2 * 255.0, background_color.3)));
     context.fill_rect(top_left_corner.0, top_left_corner.1, bottom_right_corner.0 - top_left_corner.0, bottom_right_corner.1 - top_left_corner.1);
     for vec in vecs {
         render_vector_wasm(&vec, width, height, context.clone());

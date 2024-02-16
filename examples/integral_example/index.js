@@ -1,4 +1,4 @@
-import start, {changeNRects} from './pkg/wasm_example.js';
+import start, {changeNRects} from './pkg/integral_example.js';
 
 
 async function run() {

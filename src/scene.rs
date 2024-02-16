@@ -5,6 +5,7 @@ use crate::{objects::vector_object::VectorFeatures, renderer::render_all_vectors
 use crate::renderer::{render_video, concat_videos};
 
 
+#[derive(Clone)]
 pub struct Scene {
     pub objects: Vec<VectorFeatures>,
     pub width: u64,
@@ -16,7 +17,8 @@ pub struct Scene {
     n_plays: u64,
     context: Option<web_sys::CanvasRenderingContext2d>,
     top_left_corner: (f64, f64),
-    bottom_right_corner: (f64, f64)
+    bottom_right_corner: (f64, f64),
+    states: HashMap<usize, Scene>
 }
 
 
@@ -33,8 +35,25 @@ impl Scene {
             context: None,
             background_color: (0.0, 0.0, 0.0, 1.0),
             top_left_corner: (0.0, 0.0),
-            bottom_right_corner: (width as f64, height as f64)
+            bottom_right_corner: (width as f64, height as f64),
+            states: HashMap::new()
         };
+    }
+    pub fn clear(&mut self) {
+        self.objects = Vec::new();
+    }
+    pub fn restore(&mut self, n: usize) {
+        let scene = self.states.get(&n).unwrap();
+        let scene = scene.clone();
+        self.objects = scene.objects;
+        self.current_frame = scene.current_frame;
+        self.n_plays = scene.n_plays;
+        self.background_color = scene.background_color;
+        self.top_left_corner = scene.top_left_corner;
+        self.bottom_right_corner = scene.bottom_right_corner;
+    }
+    pub fn save_state(&mut self, n: usize) {
+        self.states.insert(n, self.clone());
     }
     pub fn set_corners(&mut self, top_left_corner: (f64, f64), bottom_right_corner: (f64, f64)) {
         self.top_left_corner = top_left_corner;

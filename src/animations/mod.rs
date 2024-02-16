@@ -9,3 +9,8 @@ pub mod grow_from_center;
 pub mod shift_image_position;
 pub mod shift_animation;
 pub mod move_camera;
+pub mod spinning_grow;
+pub mod rotate_animation;
+pub mod show_temporarily;
+pub mod set_fill_animation;
+pub mod set_stroke_animation;
