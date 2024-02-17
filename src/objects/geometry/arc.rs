@@ -107,6 +107,69 @@ pub fn circle(
 }
 
 
+pub fn elliptical_arc(
+    center: (f64, f64),
+    x_radius: f64,
+    y_radius: f64,
+    start_angle: f64,
+    end_angle: f64,
+    num_points: Option<usize>,
+    stroke_color: Option<(f64, f64, f64, f64)>,
+    fill_color: Option<(f64, f64, f64, f64)>,
+    stroke_width: Option<f64>,
+    line_cap: Option<&'static str>,
+    line_join: Option<&'static str>,
+    index: Option<usize>,
+    background_image: Option<web_sys::HtmlImageElement>
+) -> VectorFeatures {
+    return arc(
+        center,
+        x_radius,
+        start_angle,
+        end_angle,
+        num_points,
+        stroke_color,
+        fill_color,
+        stroke_width,
+        line_cap,
+        line_join,
+        index,
+        background_image
+    ).stretch((1.0, y_radius / x_radius), true).move_to(center, true);
+}
+
+
+pub fn ellipse(
+    center: (f64, f64),
+    x_radius: f64,
+    y_radius: f64,
+    num_points: Option<usize>,
+    stroke_color: Option<(f64, f64, f64, f64)>,
+    fill_color: Option<(f64, f64, f64, f64)>,
+    stroke_width: Option<f64>,
+    line_cap: Option<&'static str>,
+    line_join: Option<&'static str>,
+    index: Option<usize>,
+    background_image: Option<web_sys::HtmlImageElement>
+) -> VectorFeatures {
+    return elliptical_arc(
+        center,
+        x_radius,
+        y_radius,
+        0.0,
+        2.0 * PI,
+        num_points,
+        stroke_color,
+        fill_color,
+        stroke_width,
+        line_cap,
+        line_join,
+        index,
+        background_image
+    );
+}
+
+
 pub fn annular_sector(
     center: (f64, f64),
     inner_radius: f64,

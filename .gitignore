@@ -8,3 +8,5 @@
 node_modules
 *_priv.rs
 cache.json
+app.yaml
+.gcloudignore

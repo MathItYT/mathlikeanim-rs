@@ -81,7 +81,7 @@ pub fn axes(
         stroke_width: 0.0,
         line_cap: "butt",
         line_join: "miter",
-        index: 0,
+        index: index.unwrap_or(0),
         background_image,
         image_position: (0.0, 0.0)
     };

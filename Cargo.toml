@@ -1,6 +1,6 @@
 [package]
 name = "mathlikeanim-rs"
-version = "0.3.4"
+version = "0.3.5"
 edition = "2021"
 readme = "README.md"
 description = "A Rust library for creating mathematical animations"
@@ -19,6 +19,8 @@ exclude = [
     "package-lock.json",
     "package.json",
     "webpack.config.js",
+    "app.yaml",
+    ".gcloudignore",
 ]
 keywords = ["animation", "graphics", "easing", "transitions", "WebAssembly"]
 categories = ["mathematics", "graphics", "wasm"]
@@ -49,4 +51,4 @@ indicatif = "0.17.7"
 
 [workspace]
 members = [ "examples/background_image_example",
-    "examples/integral_example" , "examples/mathlike_functions_video"]
+    "examples/integral_example" , "examples/mathlike_functions_video", "examples/single_image_example"]

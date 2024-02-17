@@ -9,9 +9,12 @@ use svg::parser::Event;
 use svg::node::element::path::Position;
 use lightningcss::values::color::CssColor;
 
+use crate::objects::geometry::arc::circle;
 use crate::objects::geometry::poly::rectangle;
 use crate::utils::{consider_points_equals, line_as_cubic_bezier, quadratic_bezier_as_cubic_bezier};
 use crate::objects::vector_object::{VectorFeatures, VectorObject};
+
+use super::geometry::poly::polygon;
 
 
 fn parse_color(color: &str) -> CssColor {
@@ -24,12 +27,23 @@ fn parse_path(attributes: &std::collections::HashMap<String, Value>, index: usiz
     let data = attributes.get("d").unwrap();
     let data = Data::parse(data).unwrap();
     let mut points = Vec::new();
-    let mut last_move = None;
+    let mut last_move: Option<(f64, f64)> = None;
     let mut curve_start = None;
     for command in data.iter() {
         match command {
-            &Command::Move(ref _abs, ref params) => {
-                last_move = Some((params[0] as f64, params[1] as f64));
+            &Command::Move(ref abs, ref params) => {
+                let mut x = params[0] as f64;
+                let mut y = params[1] as f64;
+                match abs {
+                    &Position::Relative => {
+                        if last_move.is_some() {
+                            x += last_move.unwrap().0;
+                            y += last_move.unwrap().1;
+                        }
+                    },
+                    _ => {}
+                }
+                last_move = Some((x, y));
                 if curve_start.is_none() {
                     curve_start = last_move;
                 }
@@ -65,8 +79,10 @@ fn parse_path(attributes: &std::collections::HashMap<String, Value>, index: usiz
                     &Position::Relative => {
                         x1 += last_move.unwrap().0;
                         y1 += last_move.unwrap().1;
+                        last_move = Some((x1, y1));
                         x2 += last_move.unwrap().0;
                         y2 += last_move.unwrap().1;
+                        last_move = Some((x2, y2));
                         x += last_move.unwrap().0;
                         y += last_move.unwrap().1;
                     },
@@ -87,6 +103,7 @@ fn parse_path(attributes: &std::collections::HashMap<String, Value>, index: usiz
                     &Position::Relative => {
                         x1 += last_move.unwrap().0;
                         y1 += last_move.unwrap().1;
+                        last_move = Some((x1, y1));
                         x += last_move.unwrap().0;
                         y += last_move.unwrap().1;
                     },
@@ -126,6 +143,7 @@ fn parse_path(attributes: &std::collections::HashMap<String, Value>, index: usiz
                     &Position::Relative => {
                         x2 += last_move.unwrap().0;
                         y2 += last_move.unwrap().1;
+                        last_move = Some((x2, y2));
                         x += last_move.unwrap().0;
                         y += last_move.unwrap().1;
                     },
@@ -140,9 +158,7 @@ fn parse_path(attributes: &std::collections::HashMap<String, Value>, index: usiz
                 points.push((x, y));
                 last_move = Some((x, y));
             },
-            _ => {
-                println!("Warning: unsupported command: {:?}", command);
-            }
+            _ => {}
         }
     }
     let fill_color = attributes.get("fill").map(|fill| {
@@ -310,6 +326,169 @@ fn parse_rect(
 }
 
 
+fn parse_circle(
+    attributes: &std::collections::HashMap<String, Value>,
+    index: usize
+) -> VectorFeatures {
+    let cx = attributes.get("cx").map(|cx| {
+        cx.parse().unwrap()
+    }).unwrap_or(0.0);
+    let cy = attributes.get("cy").map(|cy| {
+        cy.parse().unwrap()
+    }).unwrap_or(0.0);
+    let r = attributes.get("r").map(|r| {
+        r.parse().unwrap()
+    }).unwrap_or(0.0);
+    let fill_color = attributes.get("fill").map(|fill| {
+        if fill.to_string().as_str() == "none" {
+            return (0.0, 0.0, 0.0, 0.0);
+        }
+        let color = parse_color(fill.to_string().as_str());
+        let opacity = attributes.get("fill-opacity").map(|opacity| {
+            opacity.parse().unwrap()
+        }).unwrap_or(-1.0);
+        match color {
+            CssColor::RGBA(ref rgba) => {
+                (rgba.red_f32() as f64, rgba.green_f32() as f64, rgba.blue_f32() as f64, if opacity == -1.0 { rgba.alpha_f32() as f64 } else { opacity })
+            }
+            _ => (0.0, 0.0, 0.0, 1.0),
+        }
+    }).unwrap_or((0.0, 0.0, 0.0, 1.0));
+    let stroke_color = attributes.get("stroke").map(|stroke| {
+        if stroke.to_string().as_str() == "none" {
+            return (0.0, 0.0, 0.0, 0.0);
+        }
+        let color = parse_color(stroke.to_string().as_str());
+        let opacity = attributes.get("stroke-opacity").map(|opacity| {
+            opacity.parse().unwrap()
+        }).unwrap_or(-1.0);
+        match color {
+            CssColor::RGBA(ref rgba) => {
+                (rgba.red_f32() as f64, rgba.green_f32() as f64, rgba.blue_f32() as f64, if opacity == -1.0 { rgba.alpha_f32() as f64 } else { opacity })
+            }
+            _ => (0.0, 0.0, 0.0, 1.0),
+        }
+    }).unwrap_or((0.0, 0.0, 0.0, 1.0));
+    let stroke_width = attributes.get("stroke-width").map(|width| {
+        width.parse().unwrap()
+    }).unwrap_or(0.0);
+    let line_cap = attributes.get("stroke-linecap").map(|cap| {
+        cap.to_string()
+    }).unwrap_or("butt".to_string());
+    let line_join = attributes.get("stroke-linejoin").map(|join| {
+        join.to_string()
+    }).unwrap_or("miter".to_string());
+    let line_cap = match line_cap.as_str() {
+        "butt" => "butt",
+        "square" => "square",
+        "round" => "round",
+        _ => "butt",
+    };
+    let line_join = match line_join.as_str() {
+        "miter" => "miter",
+        "bevel" => "bevel",
+        "round" => "round",
+        _ => "miter",
+    };
+    let vec_obj = circle(
+        (cx, cy),
+        r,
+        None,
+        Some(stroke_color),
+        Some(fill_color),
+        Some(stroke_width),
+        Some(line_cap),
+        Some(line_join),
+        Some(index),
+        None
+    );
+    return vec_obj;
+}
+
+
+fn parse_polygon(
+    attributes: &std::collections::HashMap<String, Value>,
+    index: usize
+) -> VectorFeatures {
+    let points = attributes.get("points").map(|points| {
+        let points = points.to_string();
+        let points = points.split(" ");
+        let points = points.map(|point| {
+            let point = point.split(",");
+            let mut point = point.map(|coord| {
+                coord.parse().unwrap()
+            });
+            (point.next().unwrap(), point.next().unwrap())
+        });
+        let mut points = points.collect::<Vec<(f64, f64)>>();
+        points.push(points[0]);
+        points
+    }).unwrap_or(vec![]);
+    let fill_color = attributes.get("fill").map(|fill| {
+        if fill.to_string().as_str() == "none" {
+            return (0.0, 0.0, 0.0, 0.0);
+        }
+        let color = parse_color(fill.to_string().as_str());
+        let opacity = attributes.get("fill-opacity").map(|opacity| {
+            opacity.parse().unwrap()
+        }).unwrap_or(-1.0);
+        match color {
+            CssColor::RGBA(ref rgba) => {
+                (rgba.red_f32() as f64, rgba.green_f32() as f64, rgba.blue_f32() as f64, if opacity == -1.0 { rgba.alpha_f32() as f64 } else { opacity })
+            }
+            _ => (0.0, 0.0, 0.0, 1.0),
+        }
+    }).unwrap_or((0.0, 0.0, 0.0, 1.0));
+    let stroke_color = attributes.get("stroke").map(|stroke| {
+        if stroke.to_string().as_str() == "none" {
+            return (0.0, 0.0, 0.0, 0.0);
+        }
+        let color = parse_color(stroke.to_string().as_str());
+        let opacity = attributes.get("stroke-opacity").map(|opacity| {
+            opacity.parse().unwrap()
+        }).unwrap_or(-1.0);
+        match color {
+            CssColor::RGBA(ref rgba) => {
+                (rgba.red_f32() as f64, rgba.green_f32() as f64, rgba.blue_f32() as f64, if opacity == -1.0 { rgba.alpha_f32() as f64 } else { opacity })
+            }
+            _ => (0.0, 0.0, 0.0, 1.0),
+        }
+    }).unwrap_or((0.0, 0.0, 0.0, 1.0));
+    let stroke_width = attributes.get("stroke-width").map(|width| {
+        width.parse().unwrap()
+    }).unwrap_or(0.0);
+    let line_cap = attributes.get("stroke-linecap").map(|cap| {
+        cap.to_string()
+    }).unwrap_or("butt".to_string());
+    let line_join = attributes.get("stroke-linejoin").map(|join| {
+        join.to_string()
+    }).unwrap_or("miter".to_string());
+    let line_cap = match line_cap.as_str() {
+        "butt" => "butt",
+        "square" => "square",
+        "round" => "round",
+        _ => "butt",
+    };
+    let line_join = match line_join.as_str() {
+        "miter" => "miter",
+        "bevel" => "bevel",
+        "round" => "round",
+        _ => "miter",
+    };
+    let polygon = polygon(
+        points,
+        Some(stroke_color),
+        Some(fill_color),
+        Some(stroke_width),
+        Some(line_cap),
+        Some(line_join),
+        Some(index),
+        None
+    );
+    return polygon;
+}
+
+
 pub fn svg_to_vector(svg: &str) -> VectorFeatures {
     let mut id_vec_obj_map = std::collections::HashMap::new();
     let mut subobjects = Vec::new();
@@ -434,6 +613,30 @@ pub fn svg_to_vector(svg: &str) -> VectorFeatures {
             },
             Event::Tag("rect", _, attributes) => {
                 let vec_obj = parse_rect(&attributes, index);
+                let id = attributes.get("id").map(|id| {
+                    id.to_string()
+                });
+                if id.is_some() {
+                    id_vec_obj_map.insert(id, vec_obj.clone());
+                } else {
+                    vec_objs_with_no_id.push(vec_obj.clone());
+                }
+                index += 1;
+            }
+            Event::Tag("circle", _, attributes) => {
+                let vec_obj = parse_circle(&attributes, index);
+                let id = attributes.get("id").map(|id| {
+                    id.to_string()
+                });
+                if id.is_some() {
+                    id_vec_obj_map.insert(id, vec_obj.clone());
+                } else {
+                    vec_objs_with_no_id.push(vec_obj.clone());
+                }
+                index += 1;
+            }
+            Event::Tag("polygon", _, attributes) => {
+                let vec_obj = parse_polygon(&attributes, index);
                 let id = attributes.get("id").map(|id| {
                     id.to_string()
                 });

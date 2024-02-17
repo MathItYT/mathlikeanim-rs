@@ -222,12 +222,14 @@ pub fn render_vector_with_image_wasm(
     line_cap: String,
     line_join: String,
     stroke_width: f64,
-    image_position: (f64, f64)
+    image_position: (f64, f64),
+    width: u64,
+    height: u64
 ) {
     let document = web_sys::window().unwrap().document().unwrap();
     let canvas_img = document.create_element("canvas").unwrap().dyn_into::<HtmlCanvasElement>().unwrap();
-    canvas_img.set_width(img.width());
-    canvas_img.set_height(img.height());
+    canvas_img.set_width(width as u32);
+    canvas_img.set_height(height as u32);
     let img_context = canvas_img.get_context("2d").unwrap().unwrap().dyn_into::<web_sys::CanvasRenderingContext2d>().unwrap();
     img_context.draw_image_with_html_image_element_and_dw_and_dh(&img, image_position.0, image_position.1, img.width() as f64, img.height() as f64).unwrap();
     let pattern = context.create_pattern_with_html_canvas_element(&canvas_img, "no-repeat").unwrap().unwrap();
@@ -296,7 +298,7 @@ pub fn render_vector_wasm(
     let line_cap = vec.line_cap.to_string();
     let line_join = vec.line_join.to_string();
     if vec.background_image.is_some() && vec.points.len() > 0 {
-        render_vector_with_image_wasm(vec.background_image.as_ref().unwrap(), context.clone(), &points, vec.fill_color.3, vec.stroke_color.3, line_cap, line_join, stroke_width, vec.image_position);
+        render_vector_with_image_wasm(vec.background_image.as_ref().unwrap(), context.clone(), &points, vec.fill_color.3, vec.stroke_color.3, line_cap, line_join, stroke_width, vec.image_position, width, height);
     } else {
         draw_context_path_wasm(&context, &points);
         apply_fill_wasm(&context, &fill_color, &points);

@@ -46,7 +46,7 @@ pub fn number_line(
         }
     }
     if add_tip.unwrap_or(true) {
-        result = add_final_tip(result, 27.5, (1.0, 1.0, 1.0, 1.0));
+        result = add_final_tip(result, 50.0, (1.0, 1.0, 1.0, 1.0));
     }
     if background_image.is_some() {
         result = result.set_background_image(background_image.unwrap(), true);

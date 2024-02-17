@@ -105,7 +105,7 @@ body {
 }
 
 .small {
-    font-size: 20px;
+    font-size: 16px;
 }
 
 .medium {
@@ -143,4 +143,93 @@ body {
 
 .video-container video {
     margin-top: 5px;
+    width: 640px;
+    height: 360px;
+}
+
+@media (max-width: 1453px) {
+    #toggle-theme {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        background-color: var(--text-color);
+        color: var(--bg-color);
+        border: none;
+        border-radius: 40px;
+        padding: 20px;
+        font-size: 60px;
+        cursor: pointer;
+        width: 110px;
+    }
+
+    .title {
+        text-align: center;
+        margin-top: 200px;
+    }
+    
+    .big {
+        font-size: 60px;
+    }
+
+    .small {
+        font-size: 35px;
+    }
+
+    .medium {
+        font-size: 42px;
+    }
+
+    #canvas {
+        margin-top: 10px;
+        width: 80vw;
+        height: 45vw;
+    }
+
+    #container {
+        margin-top: 100px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        margin-bottom: 50px;
+    }
+
+    .slide-btns {
+        display: flex;
+        justify-content: space-between;
+        width: 80vw;
+    }
+
+    .btn {
+        border: none;
+        color: #496195;
+        background-color: rgba(0, 0, 0, 0);
+        font-size: 80px;
+        margin: 0 50px;
+        cursor: pointer;
+    }
+
+    .slide-btns button {
+        margin: 0 20px;
+    }
+
+    .video-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        margin: 50px 0 0 0;
+    }
+
+    .video-container video {
+        margin-top: 10px;
+        width: 80vw;
+        height: 45vw;
+    }
+
+    .final-text {
+        margin-left: 10vw;
+        margin-right: 10vw;
+        margin-bottom: 20px;
+    }
 }

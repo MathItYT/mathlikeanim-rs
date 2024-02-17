@@ -41,8 +41,6 @@ async function run() {
     resultParagraph.classList.add('medium');
     videoContainer.appendChild(resultParagraph);
     videoContainer.appendChild(video);
-    video.style.width = '640px';
-    video.style.height = '360px';
     const canvas = document.getElementById('canvas');
     const stopRecordingButton = document.getElementById('stop-recording');
     const videoStream = canvas.captureStream(60);
