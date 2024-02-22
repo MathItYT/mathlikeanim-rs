@@ -1,6 +1,8 @@
+use std::f64::consts::PI;
+
 use wasm_bindgen::prelude::*;
 use once_cell::sync::Lazy;
-use mathlikeanim_rs::{objects::{geometry::{arc::circle, poly::{rectangle, square}}, plotting::axes::{axes, plot_in_axes}, svg_to_vector::svg_to_vector, vector_object::{VectorFeatures, VectorObject}}, scene::Scene, utils::hex_to_color};
+use mathlikeanim_rs::{objects::{geometry::poly::{rectangle, square}, plotting::axes::{axes, plot_in_axes}, svg_to_vector::svg_to_vector, three_d::three_d_object::ThreeDObject, vector_object::{VectorFeatures, VectorObject}}, scene::Scene, utils::hex_to_color};
 
 
 static mut SCENE: Lazy<Scene> = Lazy::new(|| Scene::new(1920, 1080, 60, ""));
@@ -131,19 +133,23 @@ pub async fn single_image_example() {
     );
     sq = sq.next_to_other(&axes, (-1.0, 0.0), 150.0, (0.0, 0.0), true);
     sn.add(sq);
-    let mut circ = circle(
-        (0.0, 0.0),
-        175.0,
-        None,
-        Some(hex_to_color("#5CD0B3", 1.0)),
-        Some(hex_to_color("#5CD0B3", 0.7)),
-        Some(4.0),
-        Some("butt"),
-        Some("miter"),
-        Some(7),
-        None
+    let radius = 175.0;
+    let sphere = ThreeDObject::from_uv_function(
+        &|u, v| (radius * u.cos() * v.cos(), radius * u.cos() * v.sin(), radius * u.sin()),
+        (0.0, 2.0 * PI),
+        (0.0, PI),
+        50,
+        50,
+        hex_to_color("#5CD0B3", 1.0),
+        (0.0, 0.0, 0.0, 1.0),
+        0.0
     );
-    circ = circ.next_to_other(&axes, (1.0, 0.0), 150.0, (0.0, 0.0), true);
-    sn.add(circ);
+    let camera_position = (0.0, 0.0, radius * 2.0);
+    let euler_angles = (PI / 4.0, PI / 4.0, 0.0);
+    let light_position = (0.0, radius * 2.0, radius * 2.0);
+    let mut sphere = sphere.project_and_shade(camera_position, euler_angles, light_position);
+    sphere = sphere.next_to_other(&axes, (1.0, 0.0), 150.0, (0.0, 0.0), true);
+    sphere.index = 7;
+    sn.add(sphere);
     sn.update();
 }

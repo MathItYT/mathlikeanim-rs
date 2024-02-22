@@ -170,6 +170,16 @@ pub fn interpolate_tuple(p1: (f64, f64), p2: (f64, f64), t: f64) -> (f64, f64) {
 }
 
 
+/// A function that returns the interpolation of two `(f64, f64, f64)` tuples at `t`.
+pub fn interpolate_tuple_3d(p1: (f64, f64, f64), p2: (f64, f64, f64), t: f64) -> (f64, f64, f64) {
+    return (
+        interpolate(p1.0, p2.0, t),
+        interpolate(p1.1, p2.1, t),
+        interpolate(p1.2, p2.2, t)
+    );
+}
+
+
 /// A function that returns the interpolation of two `(f64, f64, f64, f64)` (RGBA) tuples at `t`.
 pub fn interpolate_color(color1: (f64, f64, f64, f64), color2: (f64, f64, f64, f64), t: f64) -> (f64, f64, f64, f64) {
     let (r1, g1, b1, a1) = color1;
@@ -488,7 +498,7 @@ pub fn quadratic_bezier_as_cubic_bezier(p1: (f64, f64), p2: (f64, f64), p3: (f64
 
 /// Checks if two points `(f64, f64)` are equal given a tolerance.
 pub fn consider_points_equals(p1: (f64, f64), p2: (f64, f64)) -> bool {
-    return distance_squared(p1, p2) < 0.1;
+    return distance_squared(p1, p2) < f64::EPSILON;
 }
 
 
@@ -503,6 +513,9 @@ pub fn linear(t: f64) -> f64 {
 
 
 pub fn smooth(t: f64, inflection: f64) -> f64 {
+    if t == 1.0 {
+        return 1.0;
+    }
     let error = sigmoid(-inflection / 2.0);
     return (sigmoid(inflection * (t - 0.5)) - error) / (1.0 - 2.0 * error).max(0.0).min(1.0);
 }

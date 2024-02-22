@@ -7,7 +7,6 @@ use std::process::{Command, Stdio};
 use crate::objects::vector_object::{
     generate_cubic_bezier_tuples, generate_subpaths_wasm, VectorFeatures
 };
-#[cfg(not(target_arch = "wasm32"))]
 use crate::objects::vector_object::generate_subpaths;
 
 use crate::utils::consider_points_equals;
@@ -133,6 +132,115 @@ pub fn draw_context_path_wasm(
             context.close_path();
         }
     }
+}
+
+
+pub fn vec_to_def_and_use_string(
+    vec: &VectorFeatures,
+    document: &web_sys::Document
+) -> (String, String) {
+    let mut def_string = "".to_string();
+    let mut use_string = "".to_string();
+    if vec.background_image.is_some() {
+        let img = vec.background_image.as_ref().unwrap();
+        let src = img.src();
+        let image_svg = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "image").unwrap();
+        image_svg.set_attribute("href", src.as_str()).unwrap();
+        image_svg.set_attribute("x", &format!("{}", vec.image_position.0)).unwrap();
+        image_svg.set_attribute("y", &format!("{}", vec.image_position.1)).unwrap();
+        image_svg.set_attribute("width", &format!("{}", img.width())).unwrap();
+        image_svg.set_attribute("height", &format!("{}", img.height())).unwrap();
+        let image_id = format!("image_{}", uuid::Uuid::new_v4().to_string());
+        let clip_path_id = format!("clip_{}", uuid::Uuid::new_v4().to_string());
+        def_string.push_str(&format!("<clipPath id=\"{}\">\n", clip_path_id));
+        if vec.points.len() > 0 {
+            def_string.push_str("<path d=\"");
+            let subpaths = generate_subpaths(&vec.points);
+            for subpath in subpaths {
+                let quads = generate_cubic_bezier_tuples(&subpath);
+                let start = subpath[0];
+                def_string.push_str(&format!("M {} {} ", start.0, start.1));
+                for quad in quads {
+                    let p1 = quad.1;
+                    let p2 = quad.2;
+                    let p3 = quad.3;
+                    def_string.push_str(&format!("C {} {} {} {} {} {} ", p1.0, p1.1, p2.0, p2.1, p3.0, p3.1));
+                }
+                if consider_points_equals(subpath[0], subpath[subpath.len() - 1]) {
+                    def_string.push_str("Z ");
+                }
+            }
+        }
+        def_string.push_str("\"/>\n");
+        def_string.push_str("</clipPath>\n");
+        use_string.push_str(&format!("<use href=\"#{}\" clip-path=\"url(#{})\"/>\n", image_id, clip_path_id));
+        def_string.push_str(&format!("{}\n", image_svg.outer_html()));
+    } else if vec.points.len() > 0 {
+        def_string.push_str("<path d=\"");
+        let subpaths = generate_subpaths(&vec.points);
+        for subpath in subpaths {
+            let quads = generate_cubic_bezier_tuples(&subpath);
+            let start = subpath[0];
+            def_string.push_str(&format!("M {} {} ", start.0, start.1));
+            for quad in quads {
+                let p1 = quad.1;
+                let p2 = quad.2;
+                let p3 = quad.3;
+                def_string.push_str(&format!("C {} {} {} {} {} {} ", p1.0, p1.1, p2.0, p2.1, p3.0, p3.1));
+            }
+            if consider_points_equals(subpath[0], subpath[subpath.len() - 1]) {
+                def_string.push_str("Z ");
+            }
+        }
+        def_string.push_str("\" fill=\"rgba(");
+        def_string.push_str(&format!("{}, {}, {}, {})", (vec.fill_color.0 * 255.0) as u8, (vec.fill_color.1 * 255.0) as u8, (vec.fill_color.2 * 255.0) as u8, vec.fill_color.3));
+        def_string.push_str("\" stroke=\"rgba(");
+        def_string.push_str(&format!("{}, {}, {}, {})", (vec.stroke_color.0 * 255.0) as u8, (vec.stroke_color.1 * 255.0) as u8, (vec.stroke_color.2 * 255.0) as u8, vec.stroke_color.3));
+        def_string.push_str("\" stroke-width=\"");
+        def_string.push_str(&format!("{}", vec.stroke_width));
+        def_string.push_str("\" stroke-linecap=\"");
+        def_string.push_str(&vec.line_cap);
+        def_string.push_str("\" stroke-linejoin=\"");
+        def_string.push_str(&vec.line_join);
+        let id = format!("vector_{}", uuid::Uuid::new_v4().to_string());
+        def_string.push_str(&format!("\" id=\"{}\"/>\n", id));
+        use_string.push_str(&format!("<use href=\"#{}\"/>\n", id));
+    }
+    for subvec in &vec.subobjects {
+        let (subdef_string, subuse_string) = vec_to_def_and_use_string(subvec, document);
+        def_string.push_str(&subdef_string);
+        use_string.push_str(&subuse_string);
+    }
+    return (def_string, use_string);
+}
+
+
+pub fn render_all_vectors_svg(
+    vecs: &Vec<VectorFeatures>,
+    width: u64,
+    height: u64,
+    background_color: (f64, f64, f64, f64),
+    top_left_corner: (f64, f64),
+    bottom_right_corner: (f64, f64),
+    div_container_id: &str
+) {
+    let document = web_sys::window().unwrap().document().unwrap();
+    let div = document.get_element_by_id(div_container_id).unwrap();
+    div.set_inner_html("");
+    let mut svg = format!("<svg width=\"{}\" height=\"{}\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"{} {} {} {}\">", width, height, top_left_corner.0, top_left_corner.1, bottom_right_corner.0 - top_left_corner.0, bottom_right_corner.1 - top_left_corner.1);
+    svg.push_str(&format!("<rect x=\"0\" y=\"0\" width=\"{}\" height=\"{}\" fill=\"rgba({}, {}, {}, {})\"/>", width, height, background_color.0 * 255.0, background_color.1 * 255.0, background_color.2 * 255.0, background_color.3));
+    let mut defs = "<defs>\n".to_string();
+    let mut use_strings = "".to_string();
+    for vec in vecs {
+        let (def_string, use_string) = vec_to_def_and_use_string(vec, &document);
+        defs.push_str(&def_string);
+        use_strings.push_str(&use_string);
+    }
+    defs.push_str("</defs>\n");
+    svg.push_str(&defs);
+    svg.push_str(&use_strings);
+    svg.push_str("</svg>");
+    div.set_inner_html(&svg);
 }
 
 
