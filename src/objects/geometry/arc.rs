@@ -1,6 +1,6 @@
 use std::f64::consts::PI;
 
-use crate::{objects::vector_object::{VectorFeatures, VectorObject}, utils::{line_as_cubic_bezier, points_from_anchors_and_handles}};
+use crate::{colors::{Color, GradientImageOrColor}, objects::vector_object::{VectorFeatures, VectorObject}, utils::{line_as_cubic_bezier, points_from_anchors_and_handles}};
 
 
 pub fn arc(
@@ -15,7 +15,6 @@ pub fn arc(
     line_cap: Option<&'static str>,
     line_join: Option<&'static str>,
     index: Option<usize>,
-    background_image: Option<web_sys::HtmlImageElement>
 ) -> VectorFeatures {
     let mut anchors = Vec::new();
     let n_samples = match n_samples {
@@ -52,13 +51,33 @@ pub fn arc(
             Some(i) => i,
             None => 0
         },
-        stroke_color: match stroke_color {
-            Some(color) => color,
-            None => (1.0, 1.0, 1.0, 1.0)
+        stroke: match stroke_color {
+            Some(color) => GradientImageOrColor::Color(Color {
+                red: color.0,
+                green: color.1,
+                blue: color.2,
+                alpha: color.3
+            }),
+            None => GradientImageOrColor::Color(Color {
+                red: 0.0,
+                green: 0.0,
+                blue: 0.0,
+                alpha: 0.0
+            })
         },
-        fill_color: match fill_color {
-            Some(color) => color,
-            None => (1.0, 1.0, 1.0, 0.0)
+        fill: match fill_color {
+            Some(color) => GradientImageOrColor::Color(Color {
+                red: color.0,
+                green: color.1,
+                blue: color.2,
+                alpha: color.3
+            }),
+            None => GradientImageOrColor::Color(Color {
+                red: 1.0,
+                green: 1.0,
+                blue: 1.0,
+                alpha: 1.0
+            })
         },
         stroke_width: match stroke_width {
             Some(width) => width,
@@ -72,8 +91,6 @@ pub fn arc(
             Some(join) => join,
             None => "miter"
         },
-        background_image,
-        image_position: (0.0, 0.0)
     }.scale(radius, true).move_to(center, true);
 }
 
@@ -88,7 +105,6 @@ pub fn circle(
     line_cap: Option<&'static str>,
     line_join: Option<&'static str>,
     index: Option<usize>,
-    background_image: Option<web_sys::HtmlImageElement>
 ) -> VectorFeatures {
     return arc(
         center,
@@ -102,7 +118,6 @@ pub fn circle(
         line_cap,
         line_join,
         index,
-        background_image
     );
 }
 
@@ -120,7 +135,6 @@ pub fn elliptical_arc(
     line_cap: Option<&'static str>,
     line_join: Option<&'static str>,
     index: Option<usize>,
-    background_image: Option<web_sys::HtmlImageElement>
 ) -> VectorFeatures {
     return arc(
         center,
@@ -134,7 +148,6 @@ pub fn elliptical_arc(
         line_cap,
         line_join,
         index,
-        background_image
     ).stretch((1.0, y_radius / x_radius), true).move_to(center, true);
 }
 
@@ -150,7 +163,6 @@ pub fn ellipse(
     line_cap: Option<&'static str>,
     line_join: Option<&'static str>,
     index: Option<usize>,
-    background_image: Option<web_sys::HtmlImageElement>
 ) -> VectorFeatures {
     return elliptical_arc(
         center,
@@ -165,7 +177,6 @@ pub fn ellipse(
         line_cap,
         line_join,
         index,
-        background_image
     );
 }
 
@@ -183,7 +194,6 @@ pub fn annular_sector(
     line_cap: Option<&'static str>,
     line_join: Option<&'static str>,
     index: Option<usize>,
-    background_image: Option<web_sys::HtmlImageElement>
 ) -> VectorFeatures {
     let mut points = Vec::new();
     let inner_arc = arc(
@@ -198,7 +208,6 @@ pub fn annular_sector(
         None,
         None,
         None,
-        None
     );
     let outer_arc = arc(
         center,
@@ -212,7 +221,6 @@ pub fn annular_sector(
         None,
         None,
         None,
-        None
     );
     let inner_arc_points = inner_arc.points.clone();
     let mut outer_arc_points = outer_arc.points.clone();
@@ -234,13 +242,33 @@ pub fn annular_sector(
             Some(i) => i,
             None => 0
         },
-        stroke_color: match stroke_color {
-            Some(color) => color,
-            None => (0.0, 0.0, 0.0, 0.0)
+        stroke: match stroke_color {
+            Some(color) => GradientImageOrColor::Color(Color {
+                red: color.0,
+                green: color.1,
+                blue: color.2,
+                alpha: color.3
+            }),
+            None => GradientImageOrColor::Color(Color {
+                red: 0.0,
+                green: 0.0,
+                blue: 0.0,
+                alpha: 0.0
+            })
         },
-        fill_color: match fill_color {
-            Some(color) => color,
-            None => (1.0, 1.0, 1.0, 1.0)
+        fill: match fill_color {
+            Some(color) => GradientImageOrColor::Color(Color {
+                red: color.0,
+                green: color.1,
+                blue: color.2,
+                alpha: color.3
+            }),
+            None => GradientImageOrColor::Color(Color {
+                red: 1.0,
+                green: 1.0,
+                blue: 1.0,
+                alpha: 1.0
+            })
         },
         stroke_width: match stroke_width {
             Some(width) => width,
@@ -254,7 +282,5 @@ pub fn annular_sector(
             Some(join) => join,
             None => "miter"
         },
-        background_image,
-        image_position: (0.0, 0.0)
     };
 }

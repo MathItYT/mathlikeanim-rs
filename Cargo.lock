@@ -194,23 +194,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
 
 [[package]]
-name = "background_image_example"
-version = "0.1.0"
-dependencies = [
- "async-std",
- "js-sys",
- "lightningcss",
- "mathlikeanim-rs",
- "once_cell",
- "serde",
- "serde-wasm-bindgen",
- "svg",
- "wasm-bindgen",
- "wasm-bindgen-futures",
- "web-sys",
-]
-
-[[package]]
 name = "base64-simd"
 version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -803,6 +786,18 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bd5256b483761cd23699d0da46cc6fd2ee3be420bbe6d020ae4a091e70b7e9fd"
 
 [[package]]
+name = "html_canvas_example"
+version = "0.1.0"
+dependencies = [
+ "js-sys",
+ "mathlikeanim-rs",
+ "once_cell",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "web-sys",
+]
+
+[[package]]
 name = "indexmap"
 version = "2.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -832,23 +827,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7a5bbe824c507c5da5956355e86a746d82e0e1464f65d862cc5e71da70e94b2c"
 dependencies = [
  "cfg-if",
-]
-
-[[package]]
-name = "integral_example"
-version = "0.1.0"
-dependencies = [
- "async-std",
- "js-sys",
- "lightningcss",
- "mathlikeanim-rs",
- "once_cell",
- "serde",
- "serde-wasm-bindgen",
- "svg",
- "wasm-bindgen",
- "wasm-bindgen-futures",
- "web-sys",
 ]
 
 [[package]]
@@ -970,25 +948,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2532096657941c2fea9c289d370a250971c689d4f143798ff67113ec042024a5"
 
 [[package]]
-name = "mathlike_functions_example"
-version = "0.1.0"
-dependencies = [
- "async-std",
- "js-sys",
- "lightningcss",
- "mathlikeanim-rs",
- "once_cell",
- "serde",
- "serde-wasm-bindgen",
- "svg",
- "wasm-bindgen",
- "wasm-bindgen-futures",
- "web-sys",
-]
-
-[[package]]
 name = "mathlikeanim-rs"
-version = "0.3.6"
+version = "0.4.0"
 dependencies = [
  "async-std",
  "cairo-rs",
@@ -1226,23 +1187,6 @@ dependencies = [
  "rustix 0.38.31",
  "tracing",
  "windows-sys 0.52.0",
-]
-
-[[package]]
-name = "polygon_vert"
-version = "0.1.0"
-dependencies = [
- "async-std",
- "js-sys",
- "lightningcss",
- "mathlikeanim-rs",
- "once_cell",
- "serde",
- "serde-wasm-bindgen",
- "svg",
- "wasm-bindgen",
- "wasm-bindgen-futures",
- "web-sys",
 ]
 
 [[package]]
@@ -1548,23 +1492,6 @@ name = "simdutf8"
 version = "0.1.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f27f6278552951f1f2b8cf9da965d10969b2efdea95a6ec47987ab46edfe263a"
-
-[[package]]
-name = "single_image_example"
-version = "0.1.0"
-dependencies = [
- "async-std",
- "js-sys",
- "lightningcss",
- "mathlikeanim-rs",
- "once_cell",
- "serde",
- "serde-wasm-bindgen",
- "svg",
- "wasm-bindgen",
- "wasm-bindgen-futures",
- "web-sys",
-]
 
 [[package]]
 name = "siphasher"

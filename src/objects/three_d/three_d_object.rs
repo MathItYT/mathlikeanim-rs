@@ -1,4 +1,4 @@
-use crate::objects::{geometry::poly::polygon, vector_object::VectorFeatures};
+use crate::{colors::{Color, GradientImageOrColor}, objects::{geometry::poly::polygon, vector_object::VectorFeatures}};
 
 
 #[derive(Clone)]
@@ -241,7 +241,6 @@ impl ThreeDObject {
                 Some("butt"),
                 Some("miter"),
                 Some(0),
-                None
             ));
         }
         for subobject in self.subobjects.clone() {
@@ -251,14 +250,26 @@ impl ThreeDObject {
         return VectorFeatures {
             subobjects: faces_2d,
             points: Vec::new(),
-            fill_color: (0.0, 0.0, 0.0, 0.0),
-            stroke_color: (0.0, 0.0, 0.0, 0.0),
+            fill: GradientImageOrColor::Color(
+                Color {
+                    red: 0.0,
+                    green: 0.0,
+                    blue: 0.0,
+                    alpha: 0.0
+                }
+            ),
+            stroke: GradientImageOrColor::Color(
+                Color {
+                    red: 0.0,
+                    green: 0.0,
+                    blue: 0.0,
+                    alpha: 0.0
+                }
+            ),
             line_cap: "butt",
             line_join: "miter",
             stroke_width: 0.0,
             index: 0,
-            background_image: None,
-            image_position: (0.0, 0.0)
         }
     }
 }

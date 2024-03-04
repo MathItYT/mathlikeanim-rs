@@ -4,3 +4,4 @@ pub mod renderer;
 pub mod scene;
 pub mod animations;
 pub mod svg_scene;
+pub mod colors;

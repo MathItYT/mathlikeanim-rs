@@ -1,4 +1,4 @@
-use crate::{objects::vector_object::VectorFeatures, utils::{line_as_cubic_bezier, start_new_path}};
+use crate::{objects::vector_object::VectorFeatures, colors::{GradientImageOrColor, Color}, utils::{line_as_cubic_bezier, start_new_path}};
 
 pub fn parametric_function(
     f: impl Fn(f64) -> (f64, f64),
@@ -10,7 +10,6 @@ pub fn parametric_function(
     line_cap: Option<&'static str>,
     line_join: Option<&'static str>,
     index: Option<usize>,
-    background_image: Option<web_sys::HtmlImageElement>
 ) -> VectorFeatures {
     let mut func_points = Vec::new();
     let mut t = t_min;
@@ -26,17 +25,26 @@ pub fn parametric_function(
         points.extend(line_as_cubic_bezier(last_point, *point));
         last_point = *point;
     }
+    let (red, green, blue, alpha) = color.unwrap_or((1.0, 1.0, 1.0, 1.0));
     return VectorFeatures {
         points,
-        fill_color: (0.0, 0.0, 0.0, 0.0),
-        stroke_color: color.unwrap_or((1.0, 1.0, 1.0, 1.0)),
+        fill: GradientImageOrColor::Color(Color {
+            red: 0.0,
+            green: 0.0,
+            blue: 0.0,
+            alpha: 0.0
+        }),
+        stroke: GradientImageOrColor::Color(Color {
+            red,
+            green,
+            blue,
+            alpha
+        }),
         stroke_width: stroke_width.unwrap_or(4.0),
         line_cap: line_cap.unwrap_or("butt"),
         line_join: line_join.unwrap_or("miter"),
         index: index.unwrap_or(0),
         subobjects: vec![],
-        background_image: background_image,
-        image_position: (0.0, 0.0)
     };
 }
 
@@ -51,7 +59,6 @@ pub fn function(
     line_cap: Option<&'static str>,
     line_join: Option<&'static str>,
     index: Option<usize>,
-    background_image: Option<web_sys::HtmlImageElement>
 ) -> VectorFeatures {
     return parametric_function(
         |t| (t, f(t)),
@@ -63,6 +70,5 @@ pub fn function(
         line_cap,
         line_join,
         index,
-        background_image
     );
 }

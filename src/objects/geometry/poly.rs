@@ -1,6 +1,6 @@
 use std::f64::consts::PI;
 
-use crate::{objects::vector_object::VectorFeatures, utils::line_as_cubic_bezier};
+use crate::{colors::{Color, GradientImageOrColor}, objects::vector_object::VectorFeatures, utils::line_as_cubic_bezier};
 
 pub fn polygon(
     points: Vec<(f64, f64)>,
@@ -10,7 +10,6 @@ pub fn polygon(
     line_cap: Option<&'static str>,
     line_join: Option<&'static str>,
     index: Option<usize>,
-    background_image: Option<web_sys::HtmlImageElement>
 ) -> VectorFeatures {
     let mut new_points = Vec::new();
     for i in 0..points.len()-1 {
@@ -30,13 +29,33 @@ pub fn polygon(
             Some(i) => i,
             None => 0
         },
-        stroke_color: match stroke_color {
-            Some(color) => color,
-            None => (1.0, 1.0, 1.0, 1.0)
+        stroke: match stroke_color {
+            Some(color) => GradientImageOrColor::Color(Color {
+                red: color.0,
+                green: color.1,
+                blue: color.2,
+                alpha: color.3
+            }),
+            None => GradientImageOrColor::Color(Color {
+                red: 0.0,
+                green: 0.0,
+                blue: 0.0,
+                alpha: 0.0
+            })
         },
-        fill_color: match fill_color {
-            Some(color) => color,
-            None => (0.0, 0.0, 0.0, 0.0)
+        fill: match fill_color {
+            Some(color) => GradientImageOrColor::Color(Color {
+                red: color.0,
+                green: color.1,
+                blue: color.2,
+                alpha: color.3
+            }),
+            None => GradientImageOrColor::Color(Color {
+                red: 0.0,
+                green: 0.0,
+                blue: 0.0,
+                alpha: 0.0
+            })
         },
         stroke_width: match stroke_width {
             Some(width) => width,
@@ -50,8 +69,6 @@ pub fn polygon(
             Some(join) => join,
             None => "miter"
         },
-        background_image,
-        image_position: (0.0, 0.0)
     };
 }
 
@@ -66,7 +83,6 @@ pub fn regular_polygon(
     line_cap: Option<&'static str>,
     line_join: Option<&'static str>,
     index: Option<usize>,
-    background_image: Option<web_sys::HtmlImageElement>
 ) -> VectorFeatures {
     let mut points = Vec::new();
     for i in 0..num_sides {
@@ -85,7 +101,6 @@ pub fn regular_polygon(
         line_cap,
         line_join,
         index,
-        background_image
     );
 }
 
@@ -98,8 +113,7 @@ pub fn square(
     stroke_width: Option<f64>,
     line_cap: Option<&'static str>,
     line_join: Option<&'static str>,
-    index: Option<usize>,
-    background_image: Option<web_sys::HtmlImageElement>
+    index: Option<usize>
 ) -> VectorFeatures {
     return regular_polygon(
         center,
@@ -111,7 +125,6 @@ pub fn square(
         line_cap,
         line_join,
         index,
-        background_image
     );
 }
 
@@ -126,7 +139,6 @@ pub fn rectangle(
     line_cap: Option<&'static str>,
     line_join: Option<&'static str>,
     index: Option<usize>,
-    background_image: Option<web_sys::HtmlImageElement>
 ) -> VectorFeatures {
     let half_width = width / 2.0;
     let half_height = height / 2.0;
@@ -143,7 +155,6 @@ pub fn rectangle(
         line_cap,
         line_join,
         index,
-        background_image
     );
 }
 
@@ -157,7 +168,6 @@ pub fn equilateral_triangle(
     line_cap: Option<&'static str>,
     line_join: Option<&'static str>,
     index: Option<usize>,
-    background_image: Option<web_sys::HtmlImageElement>
 ) -> VectorFeatures {
     return regular_polygon(
         center,
@@ -169,7 +179,6 @@ pub fn equilateral_triangle(
         line_cap,
         line_join,
         index,
-        background_image
     );
 }
 
@@ -184,7 +193,6 @@ pub fn triangle(
     line_cap: Option<&'static str>,
     line_join: Option<&'static str>,
     index: Option<usize>,
-    background_image: Option<web_sys::HtmlImageElement>
 ) -> VectorFeatures {
     return polygon(
         vec![point1, point2, point3],
@@ -194,7 +202,6 @@ pub fn triangle(
         line_cap,
         line_join,
         index,
-        background_image
     );
 }
 
@@ -208,7 +215,6 @@ pub fn right_triangle(
     line_cap: Option<&'static str>,
     line_join: Option<&'static str>,
     index: Option<usize>,
-    background_image: Option<web_sys::HtmlImageElement>
 ) -> VectorFeatures {
     return polygon(
         vec![point1, point2, (point1.0, point2.1)],
@@ -218,6 +224,5 @@ pub fn right_triangle(
         line_cap,
         line_join,
         index,
-        background_image
     );
 }

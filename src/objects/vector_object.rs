@@ -1,6 +1,8 @@
 use crate::utils::{integer_interpolate, consider_points_equals};
 use crate::utils::bezier;
 
+use crate::colors::{Color, GradientImageOrColor, GradientStop, Image, LinearGradient, RadialGradient};
+
 
 pub fn partial_bezier_points(
     points: &Vec<(f64, f64)>,
@@ -35,8 +37,8 @@ fn get_partial_points(
     recursive: bool
 ) -> VectorFeatures {
     let points = vector_features.get_points();
-    let fill_color = vector_features.get_fill_color();
-    let stroke_color = vector_features.get_stroke_color();
+    let fill = vector_features.fill.clone();
+    let stroke = vector_features.stroke.clone();
     let stroke_width = vector_features.get_stroke_width();
     let line_cap = vector_features.get_line_cap();
     let line_join = vector_features.get_line_join();
@@ -44,30 +46,26 @@ fn get_partial_points(
     if start <= 0.0 && end >= 1.0 {
         return VectorFeatures {
             points: points.clone(),
-            fill_color: fill_color.clone(),
-            stroke_color: stroke_color,
+            fill: fill,
+            stroke: stroke,
             stroke_width: stroke_width,
             line_cap: line_cap,
             line_join: line_join,
             subobjects: subobjects,
-            index: vector_features.index,
-            background_image: vector_features.background_image.clone(),
-            image_position: vector_features.image_position
+            index: vector_features.index
         };
     }
     let bezier_quads = vector_features.get_cubic_bezier_tuples();
     if bezier_quads.len() == 0 {
         return VectorFeatures {
             points: points.clone(),
-            fill_color: fill_color.clone(),
-            stroke_color: stroke_color,
+            fill: fill,
+            stroke: stroke,
             stroke_width: stroke_width,
             line_cap: line_cap,
             line_join: line_join,
             subobjects: subobjects.iter().map(|subobject| get_partial_points(subobject, start, end, recursive)).collect(),
             index: vector_features.index,
-            background_image: vector_features.background_image.clone(),
-            image_position: vector_features.image_position
         };
     }
     let (lower_index, lower_residue) = integer_interpolate(0.0, bezier_quads.len() as f64, start);
@@ -84,15 +82,13 @@ fn get_partial_points(
                 lower_residue,
                 upper_residue
             ),
-            fill_color: fill_color.clone(),
-            stroke_color: stroke_color.clone(),
+            fill: fill,
+            stroke: stroke,
             stroke_width: stroke_width,
             line_cap: line_cap,
             line_join: line_join,
             subobjects: subobjects.iter().map(|subobject| get_partial_points(subobject, start, end, true)).collect(),
             index: vector_features.index,
-            background_image: vector_features.background_image.clone(),
-            image_position: vector_features.image_position
         };
     }
     let mut new_points = Vec::new();
@@ -124,15 +120,13 @@ fn get_partial_points(
     }
     return VectorFeatures {
         points: new_points,
-        fill_color: fill_color.clone(),
-        stroke_color: stroke_color.clone(),
+        fill: fill,
+        stroke: stroke,
         stroke_width: stroke_width,
         line_cap: line_cap,
         line_join: line_join,
         subobjects: subobjects,
         index: vector_features.index,
-        background_image: vector_features.background_image.clone(),
-        image_position: vector_features.image_position
     };   
 }
 
@@ -247,11 +241,12 @@ pub fn shift_points(points: &Vec<(f64, f64)>, shift: (f64, f64)) -> Vec<(f64, f6
 
 
 pub trait VectorObject {
+    fn new() -> Self;
     fn get_index(&self) -> usize;
     fn increment_index(&self, increment: usize, recursive: bool) -> Self;
     fn get_points(&self) -> &Vec<(f64, f64)>;
-    fn get_fill_color(&self) -> (f64, f64, f64, f64);
-    fn get_stroke_color(&self) -> (f64, f64, f64, f64);
+    fn get_fill(&self) -> GradientImageOrColor;
+    fn get_stroke(&self) -> GradientImageOrColor;
     fn get_stroke_width(&self) -> f64;
     fn get_line_cap(&self) -> &'static str;
     fn get_line_join(&self) -> &'static str;
@@ -314,10 +309,11 @@ pub trait VectorObject {
         let ((min_x, _), (max_x, _)) = self.get_bounding_box();
         return max_x - min_x;
     }
-    fn set_fill_color(&self, fill_color: (f64, f64, f64, f64), recursive: bool) -> Self;
+    fn set_index(&self, index: usize) -> Self;
+    fn set_fill(&self, fill: GradientImageOrColor, recursive: bool) -> Self;
     fn set_fill_opacity(&self, opacity: f64, recursive: bool) -> Self;
     fn move_to(&self, position: (f64, f64), recursive: bool) -> Self;
-    fn set_stroke_color(&self, stroke_color: (f64, f64, f64, f64), recursive: bool) -> Self;
+    fn set_stroke(&self, stroke_: GradientImageOrColor, recursive: bool) -> Self;
     fn set_stroke_opacity(&self, opacity: f64, recursive: bool) -> Self;
     fn set_stroke_width(&self, stroke_width: f64, recursive: bool) -> Self;
     fn set_line_cap(&self, line_cap: &'static str, recursive: bool) -> Self;
@@ -351,6 +347,22 @@ pub trait VectorObject {
         };
         return (x_coord, y_coord);
     }
+    fn get_fill_opacity(&self) -> f64 {
+        match &self.get_fill() {
+            GradientImageOrColor::Color(color) => return color.alpha,
+            GradientImageOrColor::LinearGradient(gradient) => return gradient.alpha,
+            GradientImageOrColor::RadialGradient(gradient) => return gradient.alpha,
+            GradientImageOrColor::Image(image) => return image.alpha,
+        }
+    }
+    fn get_stroke_opacity(&self) -> f64 {
+        match &self.get_stroke() {
+            GradientImageOrColor::Color(color) => return color.alpha,
+            GradientImageOrColor::LinearGradient(gradient) => return gradient.alpha,
+            GradientImageOrColor::RadialGradient(gradient) => return gradient.alpha,
+            GradientImageOrColor::Image(image) => return image.alpha,
+        }
+    }
     fn next_to_other(
         &self,
         other: &VectorFeatures,
@@ -376,54 +388,82 @@ pub trait VectorObject {
     ) -> Self;
     fn set_background_image(&self, image: web_sys::HtmlImageElement, recursive: bool) -> Self;
     fn get_background_image(&self) -> Option<web_sys::HtmlImageElement>;
-    fn set_image_position(&self, position: (f64, f64), recursive: bool) -> Self;
-    fn get_image_position(&self) -> (f64, f64);
+    fn set_image_corners(&self, top_left_corner: (f64, f64), bottom_right_corner: (f64, f64), recursive: bool) -> Self;
+    fn get_image_corners(&self) -> ((f64, f64), (f64, f64));
 }
 
 #[derive(Clone, Debug)]
 pub struct VectorFeatures {
     pub points: Vec<(f64, f64)>,
-    pub fill_color: (f64, f64, f64, f64),
-    pub stroke_color: (f64, f64, f64, f64),
+    pub fill: GradientImageOrColor,
+    pub stroke: GradientImageOrColor,
     pub stroke_width: f64,
     pub line_cap: &'static str,
     pub line_join: &'static str,
     pub subobjects: Vec<VectorFeatures>,
-    pub index: usize,
-    pub background_image: Option<web_sys::HtmlImageElement>,
-    pub image_position: (f64, f64)
+    pub index: usize
 }
 
 impl VectorObject for VectorFeatures {
+    fn new() -> VectorFeatures {
+        return VectorFeatures {
+            points: Vec::new(),
+            fill: GradientImageOrColor::Color(Color {
+                red: 0.0,
+                green: 0.0,
+                blue: 0.0,
+                alpha: 0.0
+            }),
+            stroke: GradientImageOrColor::Color(Color {
+                red: 0.0,
+                green: 0.0,
+                blue: 0.0,
+                alpha: 0.0
+            }),
+            stroke_width: 1.0,
+            line_cap: "butt",
+            line_join: "miter",
+            subobjects: Vec::new(),
+            index: 0,
+        };
+    }
     fn get_index(&self) -> usize {
         return self.index;
+    }
+    fn set_index(&self, index: usize) -> Self {
+        return VectorFeatures {
+            points: self.points.clone(),
+            fill: self.fill.clone(),
+            stroke: self.stroke.clone(),
+            stroke_width: self.stroke_width,
+            line_cap: self.line_cap,
+            line_join: self.line_join,
+            subobjects: self.subobjects.clone(),
+            index: index,
+        };
     }
     fn increment_index(&self, increment: usize, recursive: bool) -> Self {
         if recursive {
             return VectorFeatures {
                 points: self.points.clone(),
-                fill_color: self.fill_color,
-                stroke_color: self.stroke_color,
+                fill: self.fill.clone(),
+                stroke: self.stroke.clone(),
                 stroke_width: self.stroke_width,
                 line_cap: self.line_cap,
                 line_join: self.line_join,
                 subobjects: self.subobjects.iter().map(|subobject| subobject.increment_index(increment, true)).collect(),
                 index: self.index + increment,
-                background_image: self.background_image.clone(),
-                image_position: self.image_position
             };
         }
         return VectorFeatures {
             points: self.points.clone(),
-            fill_color: self.fill_color,
-            stroke_color: self.stroke_color,
+            fill: self.fill.clone(),
+            stroke: self.stroke.clone(),
             stroke_width: self.stroke_width,
             line_cap: self.line_cap,
             line_join: self.line_join,
             subobjects: self.subobjects.clone(),
             index: self.index + increment,
-            background_image: self.background_image.clone(),
-            image_position: self.image_position
         };
     }
     fn get_points(&self) -> &Vec<(f64, f64)> {
@@ -432,11 +472,27 @@ impl VectorObject for VectorFeatures {
     fn get_partial_copy(&self, start: f64, end: f64, recursive: bool) -> VectorFeatures {
         return get_partial_points(self, start, end, recursive);
     }
-    fn get_fill_color(&self) -> (f64, f64, f64, f64) {
-        return self.fill_color;
+    fn get_fill(&self) -> GradientImageOrColor {
+        match &self.fill {
+            GradientImageOrColor::Color(color) => return GradientImageOrColor::Color(color.clone()),
+            _ => return GradientImageOrColor::Color(Color {
+                red: 0.0,
+                green: 0.0,
+                blue: 0.0,
+                alpha: 0.0
+            })
+        }
     }
-    fn get_stroke_color(&self) -> (f64, f64, f64, f64) {
-        return self.stroke_color;
+    fn get_stroke(&self) -> GradientImageOrColor {
+        match &self.stroke {
+            GradientImageOrColor::Color(color) => return GradientImageOrColor::Color(color.clone()),
+            _ => return GradientImageOrColor::Color(Color {
+                red: 0.0,
+                green: 0.0,
+                blue: 0.0,
+                alpha: 0.0
+            })
+        }
     }
     fn get_stroke_width(&self) -> f64 {
         return self.stroke_width;
@@ -454,28 +510,24 @@ impl VectorObject for VectorFeatures {
         if !recursive {
             return VectorFeatures {
                 points: scale_points(&self.points, scale_factor),
-                fill_color: self.fill_color,
-                stroke_color: self.stroke_color,
+                fill: self.fill.clone(),
+                stroke: self.stroke.clone(),
                 stroke_width: self.stroke_width,
                 line_cap: self.line_cap,
                 line_join: self.line_join,
                 subobjects: self.subobjects.clone(),
                 index: self.index,
-                background_image: self.background_image.clone(),
-                image_position: self.image_position
             };
         }
         return VectorFeatures {
             points: scale_points(&self.points, scale_factor),
-            fill_color: self.fill_color,
-            stroke_color: self.stroke_color,
+            fill: self.fill.clone(),
+            stroke: self.stroke.clone(),
             stroke_width: self.stroke_width,
             line_cap: self.line_cap,
             line_join: self.line_join,
             subobjects: self.subobjects.iter().map(|subobject| subobject.scale(scale_factor, true)).collect(),
             index: self.index,
-            background_image: self.background_image.clone(),
-            image_position: self.image_position
         };
     }
     fn stretch(&self, stretch: (f64, f64), recursive: bool) -> Self {
@@ -483,56 +535,48 @@ impl VectorObject for VectorFeatures {
         if !recursive {
             return VectorFeatures {
                 points: shift_points(&stretch_points(&self.points, stretch), (center.0 - self.get_center().0, center.1 - self.get_center().1)),
-                fill_color: self.fill_color,
-                stroke_color: self.stroke_color,
+                fill: self.fill.clone(),
+                stroke: self.stroke.clone(),
                 stroke_width: self.stroke_width,
                 line_cap: self.line_cap,
                 line_join: self.line_join,
                 subobjects: self.subobjects.clone(),
                 index: self.index,
-                background_image: self.background_image.clone(),
-                image_position: self.image_position
             };
         }
         return VectorFeatures {
             points: shift_points(&stretch_points(&self.points, stretch), (center.0 - self.get_center().0, center.1 - self.get_center().1)),
-            fill_color: self.fill_color,
-            stroke_color: self.stroke_color,
+            fill: self.fill.clone(),
+            stroke: self.stroke.clone(),
             stroke_width: self.stroke_width,
             line_cap: self.line_cap,
             line_join: self.line_join,
             subobjects: self.subobjects.iter().map(|subobject| subobject.stretch(stretch, true)).collect(),
             index: self.index,
-            background_image: self.background_image.clone(),
-            image_position: self.image_position
         };
     }
     fn shift(&self, shift: (f64, f64), recursive: bool) -> VectorFeatures {
         if !recursive {
             return VectorFeatures {
                 points: shift_points(&self.points, shift),
-                fill_color: self.fill_color,
-                stroke_color: self.stroke_color,
+                fill: self.fill.clone(),
+                stroke: self.stroke.clone(),
                 stroke_width: self.stroke_width,
                 line_cap: self.line_cap,
                 line_join: self.line_join,
                 subobjects: self.subobjects.clone(),
                 index: self.index,
-                background_image: self.background_image.clone(),
-                image_position: self.image_position
             };
         }
         return VectorFeatures {
             points: shift_points(&self.points, shift),
-            fill_color: self.fill_color,
-            stroke_color: self.stroke_color,
+            fill: self.fill.clone(),
+            stroke: self.stroke.clone(),
             stroke_width: self.stroke_width,
             line_cap: self.line_cap,
             line_join: self.line_join,
             subobjects: self.subobjects.iter().map(|subobject| subobject.shift(shift, true)).collect(),
             index: self.index,
-            background_image: self.background_image.clone(),
-            image_position: self.image_position
         };
     }
     fn move_to(&self, position: (f64, f64), recursive: bool) -> VectorFeatures {
@@ -540,228 +584,290 @@ impl VectorObject for VectorFeatures {
         let shift = (position.0 - center.0, position.1 - center.1);
         return self.shift(shift, recursive);
     }
-    fn set_fill_color(&self, fill_color: (f64, f64, f64, f64), recursive: bool) -> VectorFeatures {
+    fn set_fill(&self, fill: GradientImageOrColor, recursive: bool) -> VectorFeatures {
         if recursive {
             return VectorFeatures {
                 points: self.points.clone(),
-                fill_color: fill_color,
-                stroke_color: self.stroke_color,
+                fill: fill.clone(),
+                stroke: self.stroke.clone(),
                 stroke_width: self.stroke_width,
                 line_cap: self.line_cap,
                 line_join: self.line_join,
-                subobjects: self.subobjects.iter().map(|subobject| subobject.set_fill_color(fill_color, true)).collect(),
+                subobjects: self.subobjects.iter().map(|subobject| subobject.set_fill(fill.clone(), true)).collect(),
                 index: self.index,
-                background_image: self.background_image.clone(),
-                image_position: self.image_position
             };
         }
         return VectorFeatures {
             points: self.points.clone(),
-            fill_color: fill_color,
-            stroke_color: self.stroke_color,
+            fill: fill,
+            stroke: self.stroke.clone(),
             stroke_width: self.stroke_width,
             line_cap: self.line_cap,
             line_join: self.line_join,
             subobjects: self.subobjects.clone(),
             index: self.index,
-            background_image: self.background_image.clone(),
-            image_position: self.image_position
         };
     }
     fn set_fill_opacity(&self, opacity: f64, recursive: bool) -> VectorFeatures {
+        let new_fill = match &self.fill {
+            GradientImageOrColor::Color(color) => GradientImageOrColor::Color(Color {
+                red: color.red,
+                green: color.green,
+                blue: color.blue,
+                alpha: opacity
+            }),
+            GradientImageOrColor::LinearGradient(gradient) => GradientImageOrColor::LinearGradient(LinearGradient {
+                x1: gradient.x1,
+                x2: gradient.x2,
+                y1: gradient.y1,
+                y2: gradient.y2,
+                stops: gradient.stops.iter().map(|stop| GradientStop {
+                    offset: stop.offset,
+                    color: Color {
+                        red: stop.color.red,
+                        green: stop.color.green,
+                        blue: stop.color.blue,
+                        alpha: opacity
+                    }
+                }).collect(),
+                alpha: opacity
+            }),
+            GradientImageOrColor::RadialGradient(gradient) => GradientImageOrColor::RadialGradient(RadialGradient {
+                cx: gradient.cx,
+                cy: gradient.cy,
+                r: gradient.r,
+                fx: gradient.fx,
+                fy: gradient.fy,
+                stops: gradient.stops.iter().map(|stop| GradientStop {
+                    offset: stop.offset,
+                    color: Color {
+                        red: stop.color.red,
+                        green: stop.color.green,
+                        blue: stop.color.blue,
+                        alpha: opacity
+                    }
+                }).collect(),
+                alpha: opacity
+            }),
+            GradientImageOrColor::Image(image) => GradientImageOrColor::Image(Image {
+                image: image.image.clone(),
+                top_left_corner: image.top_left_corner,
+                bottom_right_corner: image.bottom_right_corner,
+                alpha: opacity
+            }),
+        };
         if recursive {
             return VectorFeatures {
                 points: self.points.clone(),
-                fill_color: (self.fill_color.0, self.fill_color.1, self.fill_color.2, opacity),
-                stroke_color: self.stroke_color,
+                fill: new_fill,
+                stroke: self.stroke.clone(),
                 stroke_width: self.stroke_width,
                 line_cap: self.line_cap,
                 line_join: self.line_join,
                 subobjects: self.subobjects.iter().map(|subobject| subobject.set_fill_opacity(opacity, true)).collect(),
                 index: self.index,
-                background_image: self.background_image.clone(),
-                image_position: self.image_position
             };
         }
         return VectorFeatures {
             points: self.points.clone(),
-            fill_color: (self.fill_color.0, self.fill_color.1, self.fill_color.2, opacity),
-            stroke_color: self.stroke_color,
+            fill: new_fill,
+            stroke: self.stroke.clone(),
             stroke_width: self.stroke_width,
             line_cap: self.line_cap,
             line_join: self.line_join,
             subobjects: self.subobjects.clone(),
             index: self.index,
-            background_image: self.background_image.clone(),
-            image_position: self.image_position
         };
     }
-    fn set_stroke_color(&self, stroke_color: (f64, f64, f64, f64), recursive: bool) -> Self {
+    fn set_stroke(&self, stroke: GradientImageOrColor, recursive: bool) -> VectorFeatures {
         if recursive {
             return VectorFeatures {
                 points: self.points.clone(),
-                fill_color: self.fill_color,
-                stroke_color: stroke_color,
+                fill: self.fill.clone(),
+                stroke: stroke.clone(),
                 stroke_width: self.stroke_width,
                 line_cap: self.line_cap,
                 line_join: self.line_join,
-                subobjects: self.subobjects.iter().map(|subobject| subobject.set_stroke_color(stroke_color, true)).collect(),
+                subobjects: self.subobjects.iter().map(|subobject| subobject.set_stroke(stroke.clone(), true)).collect(),
                 index: self.index,
-                background_image: self.background_image.clone(),
-                image_position: self.image_position
             };
         }
         return VectorFeatures {
             points: self.points.clone(),
-            fill_color: self.fill_color,
-            stroke_color: stroke_color,
+            fill: self.fill.clone(),
+            stroke: stroke,
             stroke_width: self.stroke_width,
             line_cap: self.line_cap,
             line_join: self.line_join,
             subobjects: self.subobjects.clone(),
             index: self.index,
-            background_image: self.background_image.clone(),
-            image_position: self.image_position
         };
     }
     fn set_stroke_opacity(&self, opacity: f64, recursive: bool) -> VectorFeatures {
+        let new_stroke = match &self.stroke {
+            GradientImageOrColor::Color(color) => GradientImageOrColor::Color(Color {
+                red: color.red,
+                green: color.green,
+                blue: color.blue,
+                alpha: opacity
+            }),
+            GradientImageOrColor::LinearGradient(gradient) => GradientImageOrColor::LinearGradient(LinearGradient {
+                x1: gradient.x1,
+                x2: gradient.x2,
+                y1: gradient.y1,
+                y2: gradient.y2,
+                stops: gradient.stops.iter().map(|stop| GradientStop {
+                    offset: stop.offset,
+                    color: Color {
+                        red: stop.color.red,
+                        green: stop.color.green,
+                        blue: stop.color.blue,
+                        alpha: opacity
+                    }
+                }).collect(),
+                alpha: opacity
+            }),
+            GradientImageOrColor::RadialGradient(gradient) => GradientImageOrColor::RadialGradient(RadialGradient {
+                cx: gradient.cx,
+                cy: gradient.cy,
+                r: gradient.r,
+                fx: gradient.fx,
+                fy: gradient.fy,
+                stops: gradient.stops.iter().map(|stop| GradientStop {
+                    offset: stop.offset,
+                    color: Color {
+                        red: stop.color.red,
+                        green: stop.color.green,
+                        blue: stop.color.blue,
+                        alpha: opacity
+                    }
+                }).collect(),
+                alpha: opacity
+            }),
+            GradientImageOrColor::Image(image) => GradientImageOrColor::Image(Image {
+                image: image.image.clone(),
+                top_left_corner: image.top_left_corner,
+                bottom_right_corner: image.bottom_right_corner,
+                alpha: opacity
+            }),
+        };
         if recursive {
             return VectorFeatures {
                 points: self.points.clone(),
-                fill_color: self.fill_color,
-                stroke_color: (self.stroke_color.0, self.stroke_color.1, self.stroke_color.2, opacity),
+                fill: self.fill.clone(),
+                stroke: new_stroke,
                 stroke_width: self.stroke_width,
                 line_cap: self.line_cap,
                 line_join: self.line_join,
                 subobjects: self.subobjects.iter().map(|subobject| subobject.set_stroke_opacity(opacity, true)).collect(),
                 index: self.index,
-                background_image: self.background_image.clone(),
-                image_position: self.image_position
             };
         }
         return VectorFeatures {
             points: self.points.clone(),
-            fill_color: self.fill_color,
-            stroke_color: (self.stroke_color.0, self.stroke_color.1, self.stroke_color.2, opacity),
+            fill: self.fill.clone(),
+            stroke: new_stroke,
             stroke_width: self.stroke_width,
             line_cap: self.line_cap,
             line_join: self.line_join,
             subobjects: self.subobjects.clone(),
             index: self.index,
-            background_image: self.background_image.clone(),
-            image_position: self.image_position
         };
     }
     fn set_stroke_width(&self, stroke_width: f64, recursive: bool) -> VectorFeatures {
         if recursive {
             return VectorFeatures {
                 points: self.points.clone(),
-                fill_color: self.fill_color,
-                stroke_color: self.stroke_color,
+                fill: self.fill.clone(),
+                stroke: self.stroke.clone(),
                 stroke_width: stroke_width,
                 line_cap: self.line_cap,
                 line_join: self.line_join,
                 subobjects: self.subobjects.iter().map(|subobject| subobject.set_stroke_width(stroke_width, true)).collect(),
                 index: self.index,
-                background_image: self.background_image.clone(),
-                image_position: self.image_position
             };
         }
         return VectorFeatures {
             points: self.points.clone(),
-            fill_color: self.fill_color,
-            stroke_color: self.stroke_color,
+            fill: self.fill.clone(),
+            stroke: self.stroke.clone(),
             stroke_width: stroke_width,
             line_cap: self.line_cap,
             line_join: self.line_join,
             subobjects: self.subobjects.clone(),
             index: self.index,
-            background_image: self.background_image.clone(),
-            image_position: self.image_position
         };
     }
     fn set_line_cap(&self, line_cap: &'static str, recursive: bool) -> VectorFeatures {
         if recursive {
             return VectorFeatures {
                 points: self.points.clone(),
-                fill_color: self.fill_color,
-                stroke_color: self.stroke_color,
+                fill: self.fill.clone(),
+                stroke: self.stroke.clone(),
                 stroke_width: self.stroke_width,
                 line_cap: line_cap,
                 line_join: self.line_join,
                 subobjects: self.subobjects.iter().map(|subobject| subobject.set_line_cap(line_cap, true)).collect(),
                 index: self.index,
-                background_image: self.background_image.clone(),
-                image_position: self.image_position
             };
         }
         return VectorFeatures {
             points: self.points.clone(),
-            fill_color: self.fill_color,
-            stroke_color: self.stroke_color,
+            fill: self.fill.clone(),
+            stroke: self.stroke.clone(),
             stroke_width: self.stroke_width,
             line_cap: line_cap,
             line_join: self.line_join,
             subobjects: self.subobjects.clone(),
             index: self.index,
-            background_image: self.background_image.clone(),
-            image_position: self.image_position
         };
     }
     fn set_line_join(&self, line_join: &'static str, recursive: bool) -> Self {
         if recursive {
             return VectorFeatures {
                 points: self.points.clone(),
-                fill_color: self.fill_color,
-                stroke_color: self.stroke_color,
+                fill: self.fill.clone(),
+                stroke: self.stroke.clone(),
                 stroke_width: self.stroke_width,
                 line_cap: self.line_cap,
                 line_join: line_join,
                 subobjects: self.subobjects.iter().map(|subobject| subobject.set_line_join(line_join, true)).collect(),
                 index: self.index,
-                background_image: self.background_image.clone(),
-                image_position: self.image_position
             };
         }
         return VectorFeatures {
             points: self.points.clone(),
-            fill_color: self.fill_color,
-            stroke_color: self.stroke_color,
+            fill: self.fill.clone(),
+            stroke: self.stroke.clone(),
             stroke_width: self.stroke_width,
             line_cap: self.line_cap,
             line_join: line_join,
             subobjects: self.subobjects.clone(),
             index: self.index,
-            background_image: self.background_image.clone(),
-            image_position: self.image_position
         };
     }
     fn set_points(&self, points: Vec<(f64, f64)>) -> Self {
         return VectorFeatures {
             points: points,
-            fill_color: self.fill_color,
-            stroke_color: self.stroke_color,
+            fill: self.fill.clone(),
+            stroke: self.stroke.clone(),
             stroke_width: self.stroke_width,
             line_cap: self.line_cap,
             line_join: self.line_join,
             subobjects: self.subobjects.clone(),
             index: self.index,
-            background_image: self.background_image.clone(),
-            image_position: self.image_position
         };
     }
     fn set_subobjects(&self, subobjects: Vec<VectorFeatures>) -> Self {
         return VectorFeatures {
             points: self.points.clone(),
-            fill_color: self.fill_color,
-            stroke_color: self.stroke_color,
+            fill: self.fill.clone(),
+            stroke: self.stroke.clone(),
             stroke_width: self.stroke_width,
             line_cap: self.line_cap,
             line_join: self.line_join,
             subobjects: subobjects,
             index: self.index,
-            background_image: self.background_image.clone(),
-            image_position: self.image_position
         };
     }
     fn rotate(&self, angle: f64, recursive: bool) -> Self {
@@ -775,28 +881,24 @@ impl VectorObject for VectorFeatures {
         if !recursive {
             return VectorFeatures {
                 points: new_points,
-                fill_color: self.fill_color,
-                stroke_color: self.stroke_color,
+                fill: self.fill.clone(),
+                stroke: self.stroke.clone(),
                 stroke_width: self.stroke_width,
                 line_cap: self.line_cap,
                 line_join: self.line_join,
                 subobjects: self.subobjects.clone(),
                 index: self.index,
-                background_image: self.background_image.clone(),
-                image_position: self.image_position
             };
         }
         return VectorFeatures {
             points: new_points,
-            fill_color: self.fill_color,
-            stroke_color: self.stroke_color,
+            fill: self.fill.clone(),
+            stroke: self.stroke.clone(),
             stroke_width: self.stroke_width,
             line_cap: self.line_cap,
             line_join: self.line_join,
             subobjects: self.subobjects.iter().map(|subobject| subobject.rotate(angle, true)).collect(),
             index: self.index,
-            background_image: self.background_image.clone(),
-            image_position: self.image_position
         };
     }
     fn next_to_other(
@@ -855,62 +957,105 @@ impl VectorObject for VectorFeatures {
         if recursive {
             return VectorFeatures {
                 points: self.points.clone(),
-                fill_color: self.fill_color,
-                stroke_color: self.stroke_color,
+                fill: GradientImageOrColor::Image(Image {
+                    image: image.clone(),
+                    top_left_corner: (0.0, 0.0),
+                    bottom_right_corner: (image.width() as f64, image.height() as f64),
+                    alpha: 1.0
+                }),
+                stroke: GradientImageOrColor::Image(Image {
+                    image: image.clone(),
+                    top_left_corner: (0.0, 0.0),
+                    bottom_right_corner: (image.width() as f64, image.height() as f64),
+                    alpha: 1.0
+                }),
                 stroke_width: self.stroke_width,
                 line_cap: self.line_cap,
                 line_join: self.line_join,
                 subobjects: self.subobjects.iter().map(|subobject| subobject.set_background_image(image.clone(), true)).collect(),
                 index: self.index,
-                background_image: Some(image),
-                image_position: self.image_position
             };
         }
         return VectorFeatures {
             points: self.points.clone(),
-            fill_color: self.fill_color,
-            stroke_color: self.stroke_color,
+            fill: GradientImageOrColor::Image(Image {
+                image: image.clone(),
+                top_left_corner: (0.0, 0.0),
+                bottom_right_corner: (image.width() as f64, image.height() as f64),
+                alpha: 1.0
+            }),
+            stroke: GradientImageOrColor::Image(Image {
+                image: image.clone(),
+                top_left_corner: (0.0, 0.0),
+                bottom_right_corner: (image.width() as f64, image.height() as f64),
+                alpha: 1.0
+            }),
             stroke_width: self.stroke_width,
             line_cap: self.line_cap,
             line_join: self.line_join,
             subobjects: self.subobjects.clone(),
             index: self.index,
-            background_image: Some(image),
-            image_position: self.image_position
         };
     }
     fn get_background_image(&self) -> Option<web_sys::HtmlImageElement> {
-        return self.background_image.clone();
-    }
-    fn set_image_position(&self, position: (f64, f64), recursive: bool) -> Self {
-        if recursive {
-            return VectorFeatures {
-                points: self.points.clone(),
-                fill_color: self.fill_color,
-                stroke_color: self.stroke_color,
-                stroke_width: self.stroke_width,
-                line_cap: self.line_cap,
-                line_join: self.line_join,
-                subobjects: self.subobjects.iter().map(|subobject| subobject.set_image_position(position, true)).collect(),
-                index: self.index,
-                background_image: self.background_image.clone(),
-                image_position: position
-            };
+        match &self.fill {
+            GradientImageOrColor::Image(image) => return Some(image.image.clone()),
+            _ => return None
         }
-        return VectorFeatures {
-            points: self.points.clone(),
-            fill_color: self.fill_color,
-            stroke_color: self.stroke_color,
-            stroke_width: self.stroke_width,
-            line_cap: self.line_cap,
-            line_join: self.line_join,
-            subobjects: self.subobjects.clone(),
-            index: self.index,
-            background_image: self.background_image.clone(),
-            image_position: position
-        };
     }
-    fn get_image_position(&self) -> (f64, f64) {
-        return self.image_position;
+    fn set_image_corners(&self, top_left_corner: (f64, f64), bottom_right_corner: (f64, f64), recursive: bool) -> Self {
+        match &self.fill {
+            GradientImageOrColor::Image(image) => {
+                if recursive {
+                    return VectorFeatures {
+                        points: self.points.clone(),
+                        fill: GradientImageOrColor::Image(Image {
+                            image: image.image.clone(),
+                            top_left_corner: top_left_corner,
+                            bottom_right_corner: bottom_right_corner,
+                            alpha: image.alpha
+                        }),
+                        stroke: GradientImageOrColor::Image(Image {
+                            image: image.image.clone(),
+                            top_left_corner: top_left_corner,
+                            bottom_right_corner: bottom_right_corner,
+                            alpha: image.alpha
+                        }),
+                        stroke_width: self.stroke_width,
+                        line_cap: self.line_cap,
+                        line_join: self.line_join,
+                        subobjects: self.subobjects.iter().map(|subobject| subobject.set_image_corners(top_left_corner, bottom_right_corner, true)).collect(),
+                        index: self.index,
+                    };
+                }
+                return VectorFeatures {
+                    points: self.points.clone(),
+                    fill: GradientImageOrColor::Image(Image {
+                        image: image.image.clone(),
+                        top_left_corner: top_left_corner,
+                        bottom_right_corner: bottom_right_corner,
+                        alpha: image.alpha
+                    }),
+                    stroke: GradientImageOrColor::Image(Image {
+                        image: image.image.clone(),
+                        top_left_corner: top_left_corner,
+                        bottom_right_corner: bottom_right_corner,
+                        alpha: image.alpha
+                    }),
+                    stroke_width: self.stroke_width,
+                    line_cap: self.line_cap,
+                    line_join: self.line_join,
+                    subobjects: self.subobjects.clone(),
+                    index: self.index,
+                };
+            },
+            _ => return self.clone()
+        }
+    }
+    fn get_image_corners(&self) -> ((f64, f64), (f64, f64)) {
+        match &self.fill {
+            GradientImageOrColor::Image(image) => return (image.top_left_corner, image.bottom_right_corner),
+            _ => return ((0.0, 0.0), (0.0, 0.0))
+        }
     }
 }

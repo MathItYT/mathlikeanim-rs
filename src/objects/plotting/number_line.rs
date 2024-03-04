@@ -1,4 +1,4 @@
-use crate::{objects::{geometry::{add_tip::add_final_tip, line::line}, vector_object::{VectorFeatures, VectorObject}}, utils::{interpolate, interpolate_tuple}};
+use crate::{colors::{Color, GradientImageOrColor}, objects::{geometry::{add_tip::add_final_tip, line::line}, vector_object::{VectorFeatures, VectorObject}}, utils::{interpolate, interpolate_tuple}};
 
 pub fn number_line(
     x_min: f64,
@@ -15,7 +15,6 @@ pub fn number_line(
     add_ticks: Option<bool>,
     tick_size: Option<f64>,
     angle: Option<f64>,
-    background_image: Option<web_sys::HtmlImageElement>
 ) -> VectorFeatures {
     let mut result = line(
         (center.unwrap().0 - length.unwrap_or(1000.0) / 2.0, center.unwrap().1),
@@ -25,7 +24,6 @@ pub fn number_line(
         line_cap,
         line_join,
         index,
-        None
     ).rotate(angle.unwrap_or(0.0), false);
     if add_ticks.unwrap_or(true) {
         let mut x = x_min;
@@ -38,7 +36,6 @@ pub fn number_line(
                 line_cap,
                 line_join,
                 None,
-                None
             );
             tick = tick.rotate(angle.unwrap_or(0.0), false).move_to(number_to_point(&result, x, x_min, x_max), false);
             result.subobjects.push(tick);
@@ -47,9 +44,6 @@ pub fn number_line(
     }
     if add_tip.unwrap_or(true) {
         result = add_final_tip(result, 50.0, (1.0, 1.0, 1.0, 1.0));
-    }
-    if background_image.is_some() {
-        result = result.set_background_image(background_image.unwrap(), true);
     }
     return result;
 }
@@ -93,7 +87,6 @@ pub fn get_numbers_tex(
     direction: Option<(f64, f64)>,
     buff: Option<f64>,
     index: Option<usize>,
-    background_image: Option<web_sys::HtmlImageElement>
 ) -> VectorFeatures {
     assert_eq!(numbers.len(), vector_objects.len());
     let mut result_subobjects = Vec::new();
@@ -108,12 +101,24 @@ pub fn get_numbers_tex(
         index: index.unwrap_or(0),
         subobjects: result_subobjects,
         stroke_width: 0.0,
-        stroke_color: (1.0, 1.0, 1.0, 1.0),
-        fill_color: (1.0, 1.0, 1.0, 1.0),
+        fill: GradientImageOrColor::Color(
+            Color {
+                red: 1.0,
+                green: 1.0,
+                blue: 1.0,
+                alpha: 1.0
+            }
+        ),
+        stroke: GradientImageOrColor::Color(
+            Color {
+                red: 1.0,
+                green: 1.0,
+                blue: 1.0,
+                alpha: 1.0
+            }
+        ),
         line_cap: "butt",
         line_join: "miter",
         points: vec![],
-        background_image: background_image,
-        image_position: (0.0, 0.0),
     };
 }

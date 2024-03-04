@@ -14,6 +14,7 @@ use crate::objects::geometry::poly::rectangle;
 use crate::utils::{consider_points_equals, line_as_cubic_bezier, quadratic_bezier_as_cubic_bezier};
 use crate::objects::vector_object::{VectorFeatures, VectorObject};
 
+use crate::colors::{Color, GradientImageOrColor};
 use super::geometry::poly::polygon;
 
 
@@ -228,15 +229,23 @@ fn parse_path(attributes: &std::collections::HashMap<String, Value>, index: usiz
     }
     let vec_obj = VectorFeatures {
         points: points,
-        fill_color: fill_color,
-        stroke_color: stroke_color,
+        fill: GradientImageOrColor::Color(Color {
+            red: fill_color.0,
+            green: fill_color.1,
+            blue: fill_color.2,
+            alpha: fill_color.3,
+        }),
+        stroke: GradientImageOrColor::Color(Color {
+            red: stroke_color.0,
+            green: stroke_color.1,
+            blue: stroke_color.2,
+            alpha: stroke_color.3,
+        }),
         stroke_width: stroke_width,
         line_cap: line_cap,
         line_join: line_join,
         subobjects: vec![],
         index: index,
-        background_image: None,
-        image_position: (0.0, 0.0)
     };
     return vec_obj;
 }
@@ -319,8 +328,7 @@ fn parse_rect(
         Some(stroke_width),
         Some(line_cap),
         Some(line_join),
-        Some(index),
-        None
+        Some(index)
     );
     return vec_obj;
 }
@@ -399,8 +407,7 @@ fn parse_circle(
         Some(stroke_width),
         Some(line_cap),
         Some(line_join),
-        Some(index),
-        None
+        Some(index)
     );
     return vec_obj;
 }
@@ -482,8 +489,7 @@ fn parse_polygon(
         Some(stroke_width),
         Some(line_cap),
         Some(line_join),
-        Some(index),
-        None
+        Some(index)
     );
     return polygon;
 }
@@ -668,16 +674,30 @@ pub fn svg_to_vector(svg: &str) -> VectorFeatures {
                     continue;
                 }
                 let mut vec_obj = vec_obj.unwrap().clone();
-                let fill_color = fill.last().unwrap_or(&vec_obj.fill_color).clone();
-                let stroke_color = stroke.last().unwrap_or(&vec_obj.stroke_color).clone();
+                let fill_color = fill.last();
+                let stroke_color = stroke.last();
                 let stroke_width = sw.last().unwrap_or(&vec_obj.stroke_width).clone();
                 #[allow(suspicious_double_ref_op)]
                 let line_cap = lc.last().unwrap_or(&vec_obj.line_cap).clone();
                 #[allow(suspicious_double_ref_op)]
                 let line_join = lj.last().unwrap_or(&vec_obj.line_join).clone();
                 vec_obj = vec_obj.shift((x, y), false);
-                vec_obj = vec_obj.set_fill_color(fill_color, false);
-                vec_obj = vec_obj.set_stroke_color(stroke_color, false);
+                if fill_color.is_some() {
+                    vec_obj = vec_obj.set_fill(GradientImageOrColor::Color(Color {
+                        red: fill_color.unwrap().0,
+                        green: fill_color.unwrap().1,
+                        blue: fill_color.unwrap().2,
+                        alpha: fill_color.unwrap().3,
+                    }), false);
+                }
+                if stroke_color.is_some() {
+                    vec_obj = vec_obj.set_stroke(GradientImageOrColor::Color(Color {
+                        red: stroke_color.unwrap().0,
+                        green: stroke_color.unwrap().1,
+                        blue: stroke_color.unwrap().2,
+                        alpha: stroke_color.unwrap().3,
+                    }), false);
+                }
                 vec_obj = vec_obj.set_stroke_width(stroke_width, false);
                 vec_obj = vec_obj.set_line_cap(line_cap, false);
                 vec_obj = vec_obj.set_line_join(line_join, false);
@@ -710,14 +730,22 @@ pub fn svg_to_vector(svg: &str) -> VectorFeatures {
     }
     return VectorFeatures {
         points: vec![],
-        fill_color: (0.0, 0.0, 0.0, 1.0),
-        stroke_color: (0.0, 0.0, 0.0, 1.0),
+        fill: GradientImageOrColor::Color(Color {
+            red: 0.0,
+            green: 0.0,
+            blue: 0.0,
+            alpha: 0.0,
+        }),
+        stroke: GradientImageOrColor::Color(Color {
+            red: 0.0,
+            green: 0.0,
+            blue: 0.0,
+            alpha: 0.0,
+        }),
         stroke_width: 0.0,
         line_cap: "butt",
         line_join: "miter",
         subobjects: subobjects,
         index: 0,
-        background_image: None,
-        image_position: (0.0, 0.0)
     };
 }

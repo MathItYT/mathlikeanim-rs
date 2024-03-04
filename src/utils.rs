@@ -6,7 +6,7 @@
 
 use std::{f64::consts::PI, vec};
 
-use crate::objects::vector_object::{generate_cubic_bezier_tuples, generate_subpaths, partial_bezier_points, VectorFeatures, VectorObject};
+use crate::{colors::{Color, GradientImageOrColor}, objects::vector_object::{generate_cubic_bezier_tuples, generate_subpaths, partial_bezier_points, VectorFeatures, VectorObject}};
 use wasm_bindgen::prelude::*;
 
 /// Log utilities for console when using WebAssembly
@@ -49,12 +49,17 @@ pub fn factorial(n: u64) -> u64 {
 
 
 /// A function that returns a `(f64, f64, f64, f64)` tuple representing the color from a hex string.
-pub fn hex_to_color(hex: &str, a: f64) -> (f64, f64, f64, f64) {
+pub fn hex_to_color(hex: &str, a: f64) -> Color {
     let hex = hex.trim_start_matches("#");
     let r = u8::from_str_radix(&hex[0..2], 16).unwrap() as f64 / 255.0;
     let g = u8::from_str_radix(&hex[2..4], 16).unwrap() as f64 / 255.0;
     let b = u8::from_str_radix(&hex[4..6], 16).unwrap() as f64 / 255.0;
-    return (r, g, b, a);
+    return Color {
+        red: r,
+        green: g,
+        blue: b,
+        alpha: a,
+    };
 }
 
 
@@ -373,13 +378,21 @@ pub fn add_n_more_subobjects(
             points: vec![(0.0, 0.0)],
             subobjects: vec![],
             index: 0,
-            stroke_color: (0.0, 0.0, 0.0, 0.0),
-            fill_color: (0.0, 0.0, 0.0, 0.0),
+            fill: GradientImageOrColor::Color(Color {
+                red: 0.0,
+                green: 0.0,
+                blue: 0.0,
+                alpha: 0.0,
+            }),
+            stroke: GradientImageOrColor::Color(Color {
+                red: 0.0,
+                green: 0.0,
+                blue: 0.0,
+                alpha: 0.0,
+            }),
             stroke_width: 0.0,
             line_cap: "butt",
             line_join: "miter",
-            background_image: None,
-            image_position: (0.0, 0.0),
         }; n];
     }
     let target = subobjects.len() + n;

@@ -30,10 +30,10 @@ pub fn draw_stroke_then_fill(vec_obj: VectorFeatures, t: f64) -> VectorFeatures 
         };
         new_vec_obj = vec_obj
             .set_stroke_width(stroke_width, false)
-            .set_fill_opacity(interpolate(0.0, vec_obj.fill_color.3, subalpha), false)
             .set_subobjects(vec_obj.subobjects.iter().map(|subobj| {
                 draw_stroke_then_fill(subobj.clone(), t)
-            }).collect());
+            }).collect())
+            .set_fill_opacity(interpolate(0.0, vec_obj.get_fill_opacity(), subalpha), false);
         return new_vec_obj;
     }
     return new_vec_obj;
