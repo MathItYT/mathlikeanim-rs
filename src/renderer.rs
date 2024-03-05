@@ -174,183 +174,186 @@ pub fn vec_to_def_and_use_string(
 ) -> (String, String) {
     let mut def_string = "".to_string();
     let mut use_string = "".to_string();
-    if vec.points.len() == 0 {
-        return (def_string, use_string);
+    if vec.points.len() > 0 {
+        #[allow(unused_assignments)]
+        let mut fill = "".to_string();
+        #[allow(unused_assignments)]
+        let mut stroke = "".to_string();
+        match &vec.fill {
+            GradientImageOrColor::Color(color) => {
+                fill = format!("rgba({}, {}, {}, {})", (color.red * 255.0) as u8, (color.green * 255.0) as u8, (color.blue * 255.0) as u8, color.alpha);
+            },
+            GradientImageOrColor::LinearGradient(gradient) => {
+                let alpha = gradient.alpha;
+                let grd = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "linearGradient").unwrap();
+                let id = format!("gradient_{}", uuid::Uuid::new_v4());
+                grd.set_attribute("id", &id).unwrap();
+                grd.set_attribute("x1", &gradient.x1.to_string()).unwrap();
+                grd.set_attribute("y1", &gradient.y1.to_string()).unwrap();
+                grd.set_attribute("x2", &gradient.x2.to_string()).unwrap();
+                grd.set_attribute("y2", &gradient.y2.to_string()).unwrap();
+                grd.set_attribute("gradientUnits", "userSpaceOnUse").unwrap();
+                for stop in gradient.stops.clone() {
+                    let stop_element = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "stop").unwrap();
+                    stop_element.set_attribute("offset", &stop.offset.to_string()).unwrap();
+                    let r_string = format!("{}", (stop.color.red * 255.0) as u8);
+                    let g_string = format!("{}", (stop.color.green * 255.0) as u8);
+                    let b_string = format!("{}", (stop.color.blue * 255.0) as u8);
+                    let a_string = format!("{}", stop.color.alpha * alpha);
+                    let color = format!("rgba({}, {}, {}, {})", r_string, g_string, b_string, a_string);
+                    stop_element.set_attribute("stop-color", &color).unwrap();
+                    grd.append_child(&stop_element).unwrap();
+                }
+                def_string.push_str((grd.outer_html() + "\n").as_str());
+                fill = format!("url(#{})", id);
+            },
+            GradientImageOrColor::RadialGradient(gradient) => {
+                let alpha = gradient.alpha;
+                let grd = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "radialGradient").unwrap();
+                let id = format!("gradient_{}", uuid::Uuid::new_v4());
+                grd.set_attribute("id", &id).unwrap();
+                grd.set_attribute("cx", &gradient.cx.to_string()).unwrap();
+                grd.set_attribute("cy", &gradient.cy.to_string()).unwrap();
+                grd.set_attribute("r", &gradient.r.to_string()).unwrap();
+                grd.set_attribute("fx", &gradient.fx.to_string()).unwrap();
+                grd.set_attribute("fy", &gradient.fy.to_string()).unwrap();
+                grd.set_attribute("gradientUnits", "userSpaceOnUse").unwrap();
+                for stop in gradient.stops.clone() {
+                    let stop_element = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "stop").unwrap();
+                    stop_element.set_attribute("offset", &stop.offset.to_string()).unwrap();
+                    let r_string = format!("{}", (stop.color.red * 255.0) as u8);
+                    let g_string = format!("{}", (stop.color.green * 255.0) as u8);
+                    let b_string = format!("{}", (stop.color.blue * 255.0) as u8);
+                    let a_string = format!("{}", stop.color.alpha * alpha);
+                    let color = format!("rgba({}, {}, {}, {})", r_string, g_string, b_string, a_string);
+                    stop_element.set_attribute("stop-color", &color).unwrap();
+                    grd.append_child(&stop_element).unwrap();
+                }
+                def_string.push_str((grd.outer_html() + "\n").as_str());
+                fill = format!("url(#{})", id);
+            },
+            GradientImageOrColor::Image(image) => {
+                let img = image.image.clone();
+                let top_left_corner = image.top_left_corner;
+                let bottom_right_corner = image.bottom_right_corner;
+                let alpha = image.alpha;
+                let x = top_left_corner.0.to_string();
+                let y = top_left_corner.1.to_string();
+                let width = (bottom_right_corner.0 - top_left_corner.0).to_string();
+                let height = (bottom_right_corner.1 - top_left_corner.1).to_string();
+                let pattern_id = format!("pattern_{}", uuid::Uuid::new_v4());
+                let pattern = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "pattern").unwrap();
+                pattern.set_attribute("id", &pattern_id).unwrap();
+                pattern.set_attribute("x", &x).unwrap();
+                pattern.set_attribute("y", &y).unwrap();
+                pattern.set_attribute("width", &width).unwrap();
+                pattern.set_attribute("height", &height).unwrap();
+                let img_element = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "image").unwrap();
+                img_element.set_attribute("x", &x).unwrap();
+                img_element.set_attribute("y", &y).unwrap();
+                img_element.set_attribute("width", &width).unwrap();
+                img_element.set_attribute("height", &height).unwrap();
+                img_element.set_attribute("href", &img.src()).unwrap();
+                img_element.set_attribute("opacity", &alpha.to_string()).unwrap();
+                pattern.append_child(&img_element).unwrap();
+                def_string.push_str((pattern.outer_html() + "\n").as_str());
+                fill = format!("url(#{})", pattern_id);
+            },
+        }
+        match &vec.stroke {
+            GradientImageOrColor::Color(color) => {
+                stroke = format!("rgba({}, {}, {}, {})", (color.red * 255.0) as u8, (color.green * 255.0) as u8, (color.blue * 255.0) as u8, color.alpha);
+            },
+            GradientImageOrColor::LinearGradient(gradient) => {
+                let alpha = gradient.alpha;
+                let grd = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "linearGradient").unwrap();
+                let id = format!("gradient_{}", uuid::Uuid::new_v4());
+                grd.set_attribute("id", &id).unwrap();
+                grd.set_attribute("x1", &gradient.x1.to_string()).unwrap();
+                grd.set_attribute("y1", &gradient.y1.to_string()).unwrap();
+                grd.set_attribute("x2", &gradient.x2.to_string()).unwrap();
+                grd.set_attribute("y2", &gradient.y2.to_string()).unwrap();
+                grd.set_attribute("gradientUnits", "userSpaceOnUse").unwrap();
+                for stop in gradient.stops.clone() {
+                    let stop_element = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "stop").unwrap();
+                    stop_element.set_attribute("offset", &stop.offset.to_string()).unwrap();
+                    let r_string = format!("{}", (stop.color.red * 255.0) as u8);
+                    let g_string = format!("{}", (stop.color.green * 255.0) as u8);
+                    let b_string = format!("{}", (stop.color.blue * 255.0) as u8);
+                    let a_string = format!("{}", stop.color.alpha * alpha);
+                    let color = format!("rgba({}, {}, {}, {})", r_string, g_string, b_string, a_string);
+                    stop_element.set_attribute("stop-color", &color).unwrap();
+                    grd.append_child(&stop_element).unwrap();
+                }
+                def_string.push_str((grd.outer_html() + "\n").as_str());
+                stroke = format!("url(#{})", id);
+            },
+            GradientImageOrColor::RadialGradient(gradient) => {
+                let alpha = gradient.alpha;
+                let grd = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "radialGradient").unwrap();
+                let id = format!("gradient_{}", uuid::Uuid::new_v4());
+                grd.set_attribute("id", &id).unwrap();
+                grd.set_attribute("cx", &gradient.cx.to_string()).unwrap();
+                grd.set_attribute("cy", &gradient.cy.to_string()).unwrap();
+                grd.set_attribute("r", &gradient.r.to_string()).unwrap();
+                grd.set_attribute("fx", &gradient.fx.to_string()).unwrap();
+                grd.set_attribute("fy", &gradient.fy.to_string()).unwrap();
+                grd.set_attribute("gradientUnits", "userSpaceOnUse").unwrap();
+                for stop in gradient.stops.clone() {
+                    let stop_element = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "stop").unwrap();
+                    stop_element.set_attribute("offset", &stop.offset.to_string()).unwrap();
+                    let r_string = format!("{}", (stop.color.red * 255.0) as u8);
+                    let g_string = format!("{}", (stop.color.green * 255.0) as u8);
+                    let b_string = format!("{}", (stop.color.blue * 255.0) as u8);
+                    let a_string = format!("{}", stop.color.alpha * alpha);
+                    let color = format!("rgba({}, {}, {}, {})", r_string, g_string, b_string, a_string);
+                    stop_element.set_attribute("stop-color", &color).unwrap();
+                    grd.append_child(&stop_element).unwrap();
+                }
+                def_string.push_str((grd.outer_html() + "\n").as_str());
+                stroke = format!("url(#{})", id);
+            },
+            GradientImageOrColor::Image(image) => {
+                let img = image.image.clone();
+                let top_left_corner = image.top_left_corner;
+                let bottom_right_corner = image.bottom_right_corner;
+                let alpha = image.alpha;
+                let x = top_left_corner.0.to_string();
+                let y = top_left_corner.1.to_string();
+                let width = (bottom_right_corner.0 - top_left_corner.0).to_string();
+                let height = (bottom_right_corner.1 - top_left_corner.1).to_string();
+                let pattern_id = format!("pattern_{}", uuid::Uuid::new_v4());
+                let pattern = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "pattern").unwrap();
+                pattern.set_attribute("id", &pattern_id).unwrap();
+                pattern.set_attribute("x", &x).unwrap();
+                pattern.set_attribute("y", &y).unwrap();
+                pattern.set_attribute("width", &width).unwrap();
+                pattern.set_attribute("height", &height).unwrap();
+                let img_element = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "image").unwrap();
+                img_element.set_attribute("x", &x).unwrap();
+                img_element.set_attribute("y", &y).unwrap();
+                img_element.set_attribute("width", &width).unwrap();
+                img_element.set_attribute("height", &height).unwrap();
+                img_element.set_attribute("href", &img.src()).unwrap();
+                img_element.set_attribute("opacity", &alpha.to_string()).unwrap();
+                pattern.append_child(&img_element).unwrap();
+                def_string.push_str((pattern.outer_html() + "\n").as_str());
+                stroke = format!("url(#{})", pattern_id);
+            },
+        }
+        let path_id = format!("path_{}", uuid::Uuid::new_v4());
+        let d = get_d_string_from_points(&vec.points);
+        let path = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "path").unwrap();
+        path.set_attribute("id", &path_id).unwrap();
+        path.set_attribute("d", &d).unwrap();
+        path.set_attribute("fill", &fill).unwrap();
+        path.set_attribute("stroke", &stroke).unwrap();
+        path.set_attribute("stroke-width", &vec.stroke_width.to_string()).unwrap();
+        path.set_attribute("stroke-linecap", &vec.line_cap).unwrap();
+        path.set_attribute("stroke-linejoin", &vec.line_join).unwrap();
+        def_string.push_str((path.outer_html() + "\n").as_str());
+        use_string.push_str(format!("<use href=\"#{}\"/>\n", path_id).as_str());
     }
-    #[allow(unused_assignments)]
-    let mut fill = "".to_string();
-    #[allow(unused_assignments)]
-    let mut stroke = "".to_string();
-    match &vec.fill {
-        GradientImageOrColor::Color(color) => {
-            fill = format!("rgba({}, {}, {}, {})", (color.red * 255.0) as u8, (color.green * 255.0) as u8, (color.blue * 255.0) as u8, color.alpha);
-        },
-        GradientImageOrColor::LinearGradient(gradient) => {
-            let alpha = gradient.alpha;
-            let grd = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "linearGradient").unwrap();
-            let id = format!("gradient_{}", uuid::Uuid::new_v4());
-            grd.set_attribute("id", &id).unwrap();
-            grd.set_attribute("x1", &gradient.x1.to_string()).unwrap();
-            grd.set_attribute("y1", &gradient.y1.to_string()).unwrap();
-            grd.set_attribute("x2", &gradient.x2.to_string()).unwrap();
-            grd.set_attribute("y2", &gradient.y2.to_string()).unwrap();
-            for stop in gradient.stops.clone() {
-                let stop_element = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "stop").unwrap();
-                stop_element.set_attribute("offset", &stop.offset.to_string()).unwrap();
-                let r_string = format!("{}", (stop.color.red * 255.0) as u8);
-                let g_string = format!("{}", (stop.color.green * 255.0) as u8);
-                let b_string = format!("{}", (stop.color.blue * 255.0) as u8);
-                let a_string = format!("{}", stop.color.alpha * alpha);
-                let color = format!("rgba({}, {}, {}, {})", r_string, g_string, b_string, a_string);
-                stop_element.set_attribute("stop-color", &color).unwrap();
-                grd.append_child(&stop_element).unwrap();
-            }
-            def_string.push_str((grd.outer_html() + "\n").as_str());
-            fill = format!("url(#{})", id);
-        },
-        GradientImageOrColor::RadialGradient(gradient) => {
-            let alpha = gradient.alpha;
-            let grd = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "radialGradient").unwrap();
-            let id = format!("gradient_{}", uuid::Uuid::new_v4());
-            grd.set_attribute("id", &id).unwrap();
-            grd.set_attribute("cx", &gradient.cx.to_string()).unwrap();
-            grd.set_attribute("cy", &gradient.cy.to_string()).unwrap();
-            grd.set_attribute("r", &gradient.r.to_string()).unwrap();
-            grd.set_attribute("fx", &gradient.fx.to_string()).unwrap();
-            grd.set_attribute("fy", &gradient.fy.to_string()).unwrap();
-            for stop in gradient.stops.clone() {
-                let stop_element = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "stop").unwrap();
-                stop_element.set_attribute("offset", &stop.offset.to_string()).unwrap();
-                let r_string = format!("{}", (stop.color.red * 255.0) as u8);
-                let g_string = format!("{}", (stop.color.green * 255.0) as u8);
-                let b_string = format!("{}", (stop.color.blue * 255.0) as u8);
-                let a_string = format!("{}", stop.color.alpha * alpha);
-                let color = format!("rgba({}, {}, {}, {})", r_string, g_string, b_string, a_string);
-                stop_element.set_attribute("stop-color", &color).unwrap();
-                grd.append_child(&stop_element).unwrap();
-            }
-            def_string.push_str((grd.outer_html() + "\n").as_str());
-            fill = format!("url(#{})", id);
-        },
-        GradientImageOrColor::Image(image) => {
-            let img = image.image.clone();
-            let top_left_corner = image.top_left_corner;
-            let bottom_right_corner = image.bottom_right_corner;
-            let alpha = image.alpha;
-            let x = top_left_corner.0.to_string();
-            let y = top_left_corner.1.to_string();
-            let width = (bottom_right_corner.0 - top_left_corner.0).to_string();
-            let height = (bottom_right_corner.1 - top_left_corner.1).to_string();
-            let pattern_id = format!("pattern_{}", uuid::Uuid::new_v4());
-            let pattern = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "pattern").unwrap();
-            pattern.set_attribute("id", &pattern_id).unwrap();
-            pattern.set_attribute("x", &x).unwrap();
-            pattern.set_attribute("y", &y).unwrap();
-            pattern.set_attribute("width", &width).unwrap();
-            pattern.set_attribute("height", &height).unwrap();
-            let img_element = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "image").unwrap();
-            img_element.set_attribute("x", &x).unwrap();
-            img_element.set_attribute("y", &y).unwrap();
-            img_element.set_attribute("width", &width).unwrap();
-            img_element.set_attribute("height", &height).unwrap();
-            img_element.set_attribute("href", &img.src()).unwrap();
-            img_element.set_attribute("opacity", &alpha.to_string()).unwrap();
-            pattern.append_child(&img_element).unwrap();
-            def_string.push_str((pattern.outer_html() + "\n").as_str());
-            fill = format!("url(#{})", pattern_id);
-        },
-    }
-    match &vec.stroke {
-        GradientImageOrColor::Color(color) => {
-            stroke = format!("rgba({}, {}, {}, {})", (color.red * 255.0) as u8, (color.green * 255.0) as u8, (color.blue * 255.0) as u8, color.alpha);
-        },
-        GradientImageOrColor::LinearGradient(gradient) => {
-            let alpha = gradient.alpha;
-            let grd = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "linearGradient").unwrap();
-            let id = format!("gradient_{}", uuid::Uuid::new_v4());
-            grd.set_attribute("id", &id).unwrap();
-            grd.set_attribute("x1", &gradient.x1.to_string()).unwrap();
-            grd.set_attribute("y1", &gradient.y1.to_string()).unwrap();
-            grd.set_attribute("x2", &gradient.x2.to_string()).unwrap();
-            grd.set_attribute("y2", &gradient.y2.to_string()).unwrap();
-            for stop in gradient.stops.clone() {
-                let stop_element = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "stop").unwrap();
-                stop_element.set_attribute("offset", &stop.offset.to_string()).unwrap();
-                let r_string = format!("{}", (stop.color.red * 255.0) as u8);
-                let g_string = format!("{}", (stop.color.green * 255.0) as u8);
-                let b_string = format!("{}", (stop.color.blue * 255.0) as u8);
-                let a_string = format!("{}", stop.color.alpha * alpha);
-                let color = format!("rgba({}, {}, {}, {})", r_string, g_string, b_string, a_string);
-                stop_element.set_attribute("stop-color", &color).unwrap();
-                grd.append_child(&stop_element).unwrap();
-            }
-            def_string.push_str((grd.outer_html() + "\n").as_str());
-            stroke = format!("url(#{})", id);
-        },
-        GradientImageOrColor::RadialGradient(gradient) => {
-            let alpha = gradient.alpha;
-            let grd = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "radialGradient").unwrap();
-            let id = format!("gradient_{}", uuid::Uuid::new_v4());
-            grd.set_attribute("id", &id).unwrap();
-            grd.set_attribute("cx", &gradient.cx.to_string()).unwrap();
-            grd.set_attribute("cy", &gradient.cy.to_string()).unwrap();
-            grd.set_attribute("r", &gradient.r.to_string()).unwrap();
-            grd.set_attribute("fx", &gradient.fx.to_string()).unwrap();
-            grd.set_attribute("fy", &gradient.fy.to_string()).unwrap();
-            for stop in gradient.stops.clone() {
-                let stop_element = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "stop").unwrap();
-                stop_element.set_attribute("offset", &stop.offset.to_string()).unwrap();
-                let r_string = format!("{}", (stop.color.red * 255.0) as u8);
-                let g_string = format!("{}", (stop.color.green * 255.0) as u8);
-                let b_string = format!("{}", (stop.color.blue * 255.0) as u8);
-                let a_string = format!("{}", stop.color.alpha * alpha);
-                let color = format!("rgba({}, {}, {}, {})", r_string, g_string, b_string, a_string);
-                stop_element.set_attribute("stop-color", &color).unwrap();
-                grd.append_child(&stop_element).unwrap();
-            }
-            def_string.push_str((grd.outer_html() + "\n").as_str());
-            stroke = format!("url(#{})", id);
-        },
-        GradientImageOrColor::Image(image) => {
-            let img = image.image.clone();
-            let top_left_corner = image.top_left_corner;
-            let bottom_right_corner = image.bottom_right_corner;
-            let alpha = image.alpha;
-            let x = top_left_corner.0.to_string();
-            let y = top_left_corner.1.to_string();
-            let width = (bottom_right_corner.0 - top_left_corner.0).to_string();
-            let height = (bottom_right_corner.1 - top_left_corner.1).to_string();
-            let pattern_id = format!("pattern_{}", uuid::Uuid::new_v4());
-            let pattern = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "pattern").unwrap();
-            pattern.set_attribute("id", &pattern_id).unwrap();
-            pattern.set_attribute("x", &x).unwrap();
-            pattern.set_attribute("y", &y).unwrap();
-            pattern.set_attribute("width", &width).unwrap();
-            pattern.set_attribute("height", &height).unwrap();
-            let img_element = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "image").unwrap();
-            img_element.set_attribute("x", &x).unwrap();
-            img_element.set_attribute("y", &y).unwrap();
-            img_element.set_attribute("width", &width).unwrap();
-            img_element.set_attribute("height", &height).unwrap();
-            img_element.set_attribute("href", &img.src()).unwrap();
-            img_element.set_attribute("opacity", &alpha.to_string()).unwrap();
-            pattern.append_child(&img_element).unwrap();
-            def_string.push_str((pattern.outer_html() + "\n").as_str());
-            stroke = format!("url(#{})", pattern_id);
-        },
-    }
-    let path_id = format!("path_{}", uuid::Uuid::new_v4());
-    let d = get_d_string_from_points(&vec.points);
-    let path = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "path").unwrap();
-    path.set_attribute("id", &path_id).unwrap();
-    path.set_attribute("d", &d).unwrap();
-    path.set_attribute("fill", &fill).unwrap();
-    path.set_attribute("stroke", &stroke).unwrap();
-    path.set_attribute("stroke-width", &vec.stroke_width.to_string()).unwrap();
-    path.set_attribute("stroke-linecap", &vec.line_cap).unwrap();
-    path.set_attribute("stroke-linejoin", &vec.line_join).unwrap();
-    def_string.push_str((path.outer_html() + "\n").as_str());
-    use_string.push_str(format!("<use href=\"#{}\"/>\n", path_id).as_str());
     for subvec in &vec.subobjects {
         let (subdef_string, subuse_string) = vec_to_def_and_use_string(subvec, document);
         def_string.push_str(&subdef_string);
@@ -367,10 +370,9 @@ pub fn render_all_vectors_svg(
     background: GradientImageOrColor,
     top_left_corner: (f64, f64),
     bottom_right_corner: (f64, f64),
-    div_container_id: &str
+    div: &web_sys::HtmlDivElement
 ) {
     let document = web_sys::window().unwrap().document().unwrap();
-    let div = document.get_element_by_id(div_container_id).unwrap();
     div.set_inner_html("");
     let mut svg = format!("<svg width=\"{}\" height=\"{}\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"{} {} {} {}\">", width, height, top_left_corner.0, top_left_corner.1, bottom_right_corner.0 - top_left_corner.0, bottom_right_corner.1 - top_left_corner.1);
     let mut defs = "<defs>\n".to_string();
@@ -390,6 +392,7 @@ pub fn render_all_vectors_svg(
             grd.set_attribute("y1", &gradient.y1.to_string()).unwrap();
             grd.set_attribute("x2", &gradient.x2.to_string()).unwrap();
             grd.set_attribute("y2", &gradient.y2.to_string()).unwrap();
+            grd.set_attribute("gradientUnits", "userSpaceOnUse").unwrap();
             for stop in gradient.stops.clone() {
                 let stop_element = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "stop").unwrap();
                 stop_element.set_attribute("offset", &stop.offset.to_string()).unwrap();
@@ -414,6 +417,7 @@ pub fn render_all_vectors_svg(
             grd.set_attribute("r", &gradient.r.to_string()).unwrap();
             grd.set_attribute("fx", &gradient.fx.to_string()).unwrap();
             grd.set_attribute("fy", &gradient.fy.to_string()).unwrap();
+            grd.set_attribute("gradientUnits", "userSpaceOnUse").unwrap();
             for stop in gradient.stops.clone() {
                 let stop_element = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "stop").unwrap();
                 stop_element.set_attribute("offset", &stop.offset.to_string()).unwrap();

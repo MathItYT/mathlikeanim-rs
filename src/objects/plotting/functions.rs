@@ -1,4 +1,4 @@
-use crate::{objects::vector_object::VectorFeatures, colors::{GradientImageOrColor, Color}, utils::{line_as_cubic_bezier, start_new_path}};
+use crate::{objects::vector_object::VectorFeatures, colors::{GradientImageOrColor, Color}, utils::line_as_cubic_bezier};
 
 pub fn parametric_function(
     f: impl Fn(f64) -> (f64, f64),
@@ -19,11 +19,8 @@ pub fn parametric_function(
         t += t_step;
     }
     let mut points = Vec::new();
-    points = start_new_path(&mut points, func_points[0]);
-    let mut last_point = points[0];
-    for point in func_points[1..].iter() {
-        points.extend(line_as_cubic_bezier(last_point, *point));
-        last_point = *point;
+    for (point1, point2) in func_points[0..func_points.len()-1].iter().zip(func_points[1..].iter()) {
+        points.extend(line_as_cubic_bezier(*point1, *point2));
     }
     let (red, green, blue, alpha) = color.unwrap_or((1.0, 1.0, 1.0, 1.0));
     return VectorFeatures {

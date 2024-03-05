@@ -1,6 +1,6 @@
 [package]
 name = "mathlikeanim-rs"
-version = "0.4.0"
+version = "0.4.1"
 edition = "2021"
 readme = "README.md"
 description = "A Rust library for creating mathematical animations"
@@ -40,6 +40,7 @@ web-sys = { version="0.3.67", features=[
     'HtmlImageElement',
     'CanvasPattern',
     'CanvasGradient',
+    'HtmlDivElement',
 ] }
 serde = { version = "1.0", features = ["derive"] }
 serde-wasm-bindgen = "0.4"
@@ -52,6 +53,4 @@ cairo-rs = "0.18.5"
 indicatif = "0.17.7"
 
 [workspace]
-members = [
-    "examples/html_canvas_example"
-]
+members = ["examples/html_canvas_example", "examples/svg_example"]

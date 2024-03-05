@@ -473,26 +473,10 @@ impl VectorObject for VectorFeatures {
         return get_partial_points(self, start, end, recursive);
     }
     fn get_fill(&self) -> GradientImageOrColor {
-        match &self.fill {
-            GradientImageOrColor::Color(color) => return GradientImageOrColor::Color(color.clone()),
-            _ => return GradientImageOrColor::Color(Color {
-                red: 0.0,
-                green: 0.0,
-                blue: 0.0,
-                alpha: 0.0
-            })
-        }
+        return self.fill.clone();
     }
     fn get_stroke(&self) -> GradientImageOrColor {
-        match &self.stroke {
-            GradientImageOrColor::Color(color) => return GradientImageOrColor::Color(color.clone()),
-            _ => return GradientImageOrColor::Color(Color {
-                red: 0.0,
-                green: 0.0,
-                blue: 0.0,
-                alpha: 0.0
-            })
-        }
+        return self.stroke.clone();
     }
     fn get_stroke_width(&self) -> f64 {
         return self.stroke_width;
@@ -621,15 +605,7 @@ impl VectorObject for VectorFeatures {
                 x2: gradient.x2,
                 y1: gradient.y1,
                 y2: gradient.y2,
-                stops: gradient.stops.iter().map(|stop| GradientStop {
-                    offset: stop.offset,
-                    color: Color {
-                        red: stop.color.red,
-                        green: stop.color.green,
-                        blue: stop.color.blue,
-                        alpha: opacity
-                    }
-                }).collect(),
+                stops: gradient.stops.clone(),
                 alpha: opacity
             }),
             GradientImageOrColor::RadialGradient(gradient) => GradientImageOrColor::RadialGradient(RadialGradient {
@@ -638,15 +614,7 @@ impl VectorObject for VectorFeatures {
                 r: gradient.r,
                 fx: gradient.fx,
                 fy: gradient.fy,
-                stops: gradient.stops.iter().map(|stop| GradientStop {
-                    offset: stop.offset,
-                    color: Color {
-                        red: stop.color.red,
-                        green: stop.color.green,
-                        blue: stop.color.blue,
-                        alpha: opacity
-                    }
-                }).collect(),
+                stops: gradient.stops.clone(),
                 alpha: opacity
             }),
             GradientImageOrColor::Image(image) => GradientImageOrColor::Image(Image {
@@ -722,7 +690,7 @@ impl VectorObject for VectorFeatures {
                         red: stop.color.red,
                         green: stop.color.green,
                         blue: stop.color.blue,
-                        alpha: opacity
+                        alpha: stop.color.alpha
                     }
                 }).collect(),
                 alpha: opacity
@@ -733,15 +701,7 @@ impl VectorObject for VectorFeatures {
                 r: gradient.r,
                 fx: gradient.fx,
                 fy: gradient.fy,
-                stops: gradient.stops.iter().map(|stop| GradientStop {
-                    offset: stop.offset,
-                    color: Color {
-                        red: stop.color.red,
-                        green: stop.color.green,
-                        blue: stop.color.blue,
-                        alpha: opacity
-                    }
-                }).collect(),
+                stops: gradient.stops.clone(),
                 alpha: opacity
             }),
             GradientImageOrColor::Image(image) => GradientImageOrColor::Image(Image {

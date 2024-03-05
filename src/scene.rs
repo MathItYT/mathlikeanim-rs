@@ -30,10 +30,10 @@ impl Scene {
             file_name: file_name,
             context: None,
             background: GradientImageOrColor::Color(Color {
-                red: 1.0,
-                green: 1.0,
-                blue: 1.0,
-                alpha: 1.0
+                red: 0.0,
+                green: 0.0,
+                blue: 0.0,
+                alpha: 0.0
             }),
             top_left_corner: (0.0, 0.0),
             bottom_right_corner: (width as f64, height as f64),

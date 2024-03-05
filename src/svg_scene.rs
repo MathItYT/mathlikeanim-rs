@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::{colors::{GradientImageOrColor, Color}, objects::vector_object::{VectorFeatures, VectorObject}, renderer::render_all_vectors_svg, utils::sleep};
+use crate::{colors::{GradientImageOrColor, Color}, objects::vector_object::VectorFeatures, renderer::render_all_vectors_svg, utils::sleep};
 
 #[derive(Clone)]
 pub struct SVGScene {
@@ -8,7 +8,7 @@ pub struct SVGScene {
     pub width: u64,
     pub height: u64,
     pub fps: u64,
-    pub div_container_id: &'static str,
+    pub div_container: Option<web_sys::HtmlDivElement>,
     pub background: GradientImageOrColor,
     top_left_corner: (f64, f64),
     bottom_right_corner: (f64, f64),
@@ -17,23 +17,26 @@ pub struct SVGScene {
 
 
 impl SVGScene {
-    pub fn new(width: u64, height: u64, fps: u64, div_container_id: &'static str) -> SVGScene {
+    pub fn new(width: u64, height: u64, fps: u64) -> SVGScene {
         return SVGScene {
             objects: Vec::new(),
             width,
             height,
             fps,
-            div_container_id,
+            div_container: None,
             background: GradientImageOrColor::Color(Color {
-                red: 1.0,
-                green: 1.0,
-                blue: 1.0,
-                alpha: 1.0
+                red: 0.0,
+                green: 0.0,
+                blue: 0.0,
+                alpha: 0.0
             }),
             top_left_corner: (0.0, 0.0),
             bottom_right_corner: (width as f64, height as f64),
             states: HashMap::new()
         };
+    }
+    pub fn init_div_container(&mut self, div_container: web_sys::HtmlDivElement) {
+        self.div_container = Some(div_container);
     }
     pub fn clear(&mut self) {
         self.objects = Vec::new();
@@ -70,7 +73,7 @@ impl SVGScene {
     }
     pub async fn play(
         &mut self,
-        animation_funcs: Vec<impl Fn(VectorFeatures, f64) -> VectorFeatures>,
+        animation_func: impl Fn(Vec<VectorFeatures>, f64) -> Vec<VectorFeatures>,
         object_indices: Vec<usize>,
         duration_in_frames: u64,
         rate_func: impl Fn(f64) -> f64
@@ -81,11 +84,11 @@ impl SVGScene {
         let objects = self.get_objects_from_indices(object_indices.clone());
         let mut make_frame_func = move |frame, _, _, total_frames| {
             let t = rate_func(frame as f64 / total_frames as f64);
-            for (obj, anim_func) in objects.iter().zip(animation_funcs.iter()) {
-                let new_obj = anim_func(obj.1.clone(), t).set_index(*obj.0);
-                self.add(new_obj);
+            let new_objects = animation_func(objects.values().cloned().collect(), t);
+            for obj in new_objects {
+                self.add(obj);
             }
-            render_all_vectors_svg(&self.objects.clone(), self.width, self.height, self.background.clone(), self.top_left_corner, self.bottom_right_corner, self.div_container_id);
+            render_all_vectors_svg(&self.objects.clone(), self.width, self.height, self.background.clone(), self.top_left_corner, self.bottom_right_corner, &self.div_container.as_mut().unwrap());
         };
         for frame in 0..duration_in_frames {
             make_frame_func(frame, width, height, duration_in_frames);
@@ -94,11 +97,10 @@ impl SVGScene {
         make_frame_func(duration_in_frames, width, height, duration_in_frames);
     }
     pub async fn wait(&mut self, duration_in_frames: u64) {
-        let anim_funcs: Vec<fn(VectorFeatures, f64) -> VectorFeatures> = vec![];
-        self.play(anim_funcs.clone(), vec![], duration_in_frames, |t| t).await;
+        self.play(|_, _| vec![], vec![], duration_in_frames, |t| t).await;
     }
     pub fn update(&mut self) {
-        render_all_vectors_svg(&self.objects.clone(), self.width, self.height, self.background.clone(), self.top_left_corner, self.bottom_right_corner, self.div_container_id);
+        render_all_vectors_svg(&self.objects.clone(), self.width, self.height, self.background.clone(), self.top_left_corner, self.bottom_right_corner, &self.div_container.as_mut().unwrap());
     }
     pub fn get_objects_from_indices(&self, object_indices: Vec<usize>) -> HashMap<usize, VectorFeatures> {
         let mut objects = HashMap::new();
