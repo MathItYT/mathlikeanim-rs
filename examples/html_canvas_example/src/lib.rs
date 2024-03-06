@@ -1,6 +1,6 @@
 use std::f64::consts::PI;
 
-use mathlikeanim_rs::{animations::create::create, colors::{GradientImageOrColor, GradientStop, LinearGradient}, objects::{geometry::arc::circle, svg_to_vector::svg_to_vector, vector_object::{VectorFeatures, VectorObject}}, scene::Scene, utils::{hex_to_color, smooth}};
+use mathlikeanim_rs::{animations::create::create, colors::{GradientImageOrColor, GradientStop, LinearGradient}, objects::{geometry::arc::circle, svg_to_vector::svg_to_vector, vector_object::{VectorFeatures, VectorObject}}, scene::Scene, scene_api::SceneAPI, utils::{hex_to_color, smooth}};
 use wasm_bindgen::prelude::*;
 use once_cell::sync::Lazy;
 
@@ -9,8 +9,7 @@ static mut SCENE: Lazy<Scene> = Lazy::new(|| {
     Scene::new(
         1920,
         1080,
-        144,
-        ""
+        144
     )
 });
 
@@ -53,7 +52,7 @@ pub async fn start() {
         .unwrap()
         .dyn_into::<web_sys::CanvasRenderingContext2d>()
         .unwrap();
-    scene.init_context(context);
+    scene.context = Some(context);
     let grey = hex_to_color("#121212", 1.0);
     scene.set_background(GradientImageOrColor::Color(grey));
 }

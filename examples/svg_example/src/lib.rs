@@ -1,6 +1,6 @@
 use once_cell::sync::Lazy;
 
-use mathlikeanim_rs::{animations::{create::create, draw_stroke_then_fill::draw_stroke_then_fill}, colors::{GradientImageOrColor, GradientStop, LinearGradient}, objects::{plotting::axes::{axes, plot_in_axes, riemann_rectangles_for_plot}, vector_object::VectorObject}, svg_scene::SVGScene, utils::{hex_to_color, smooth}};
+use mathlikeanim_rs::{animations::{create::create, draw_stroke_then_fill::draw_stroke_then_fill}, colors::{GradientImageOrColor, GradientStop, LinearGradient}, objects::{plotting::axes::{axes, plot_in_axes, riemann_rectangles_for_plot}, vector_object::VectorObject}, scene_api::SceneAPI, svg_scene::SVGScene, utils::{hex_to_color, smooth}};
 
 use wasm_bindgen::prelude::*;
 
@@ -22,7 +22,7 @@ pub async fn start() {
         .unwrap()
         .dyn_into::<web_sys::HtmlDivElement>()
         .unwrap();
-    scene.init_div_container(div_container);
+    scene.div_container = Some(div_container);
     let grey = hex_to_color("#121212", 1.0);
     scene.set_background(GradientImageOrColor::Color(grey));
 }

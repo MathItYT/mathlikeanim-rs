@@ -1,4 +1,4 @@
-use crate::{svg_scene::SVGScene, utils::interpolate_tuple};
+use crate::{scene_api::SceneAPI, svg_scene::SVGScene, utils::interpolate_tuple};
 
 pub fn move_camera_svg(
     top_left_corner: (f64, f64),

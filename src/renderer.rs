@@ -1,118 +1,13 @@
-#[cfg(not(target_arch = "wasm32"))]
-use std::io::Write;
-
-#[cfg(not(target_arch = "wasm32"))]
-use std::process::{Command, Stdio};
-
 use crate::colors::GradientImageOrColor;
 use crate::objects::vector_object::{
     generate_cubic_bezier_tuples, VectorFeatures
 };
 use crate::objects::vector_object::generate_subpaths;
 
+use crate::svg_scene::SVGScene;
 use crate::utils::consider_points_equals;
-#[cfg(not(target_arch = "wasm32"))]
-use cairo::{Context, ImageSurface};
-#[cfg(not(target_arch = "wasm32"))]
-use indicatif::ProgressBar;
 use wasm_bindgen::JsCast;
 use web_sys::HtmlCanvasElement;
-
-#[cfg(not(target_arch = "wasm32"))]
-fn draw_context_path(context: &Context, points: &Vec<(f64, f64)>) {
-    if points.len() == 0 {
-        return;
-    }
-    context.new_path();
-    let subpaths = generate_subpaths(points);
-    for subpath in subpaths {
-        let quads = generate_cubic_bezier_tuples(&subpath);
-        context.new_sub_path();
-        let start = subpath[0];
-        context.move_to(start.0, start.1);
-        for quad in quads {
-            let p1 = quad.1;
-            let p2 = quad.2;
-            let p3 = quad.3;
-            context.curve_to(p1.0, p1.1, p2.0, p2.1, p3.0, p3.1);
-        }
-        if consider_points_equals(subpath[0], subpath[subpath.len() - 1]) {
-            context.close_path();
-        }
-    }
-}
-
-#[cfg(not(target_arch = "wasm32"))]
-fn apply_fill(context: &Context, fill_color: &(f64, f64, f64, f64), points: &Vec<(f64, f64)>) {
-    if points.len() == 0 {
-        return;
-    }
-    context.set_source_rgba(fill_color.2, fill_color.1, fill_color.0, fill_color.3);
-    context.fill_preserve().unwrap();
-}
-
-#[cfg(not(target_arch = "wasm32"))]
-fn apply_stroke(context: &Context, stroke_color: &(f64, f64, f64, f64), stroke_width: f64, line_cap: &str, line_join: &str, points: &Vec<(f64, f64)>) {
-    if points.len() == 0 {
-        return;
-    }
-    context.set_source_rgba(stroke_color.2, stroke_color.1, stroke_color.0, stroke_color.3);
-    context.set_line_width(stroke_width);
-    match line_cap {
-        "butt" => {
-            context.set_line_cap(cairo::LineCap::Butt);
-        },
-        "square" => {
-            context.set_line_cap(cairo::LineCap::Square);
-        },
-        "round" => {
-            context.set_line_cap(cairo::LineCap::Round);
-        },
-        _ => {
-            panic!("Unknown line cap");
-        }
-    }
-    match line_join {
-        "miter" => {
-            context.set_line_join(cairo::LineJoin::Miter);
-        },
-        "bevel" => {
-            context.set_line_join(cairo::LineJoin::Bevel);
-        },
-        "round" => {
-            context.set_line_join(cairo::LineJoin::Round);
-        },
-        _ => {
-            panic!("Unknown line join");
-        }
-    }
-    context.stroke_preserve().unwrap();
-    context.set_line_cap(cairo::LineCap::Butt);
-    context.set_line_join(cairo::LineJoin::Miter);
-}
-
-#[deprecated(note = "Cairo rendering is deprecated, please use WebAssembly with MediaRecorder instead")]
-#[cfg(not(target_arch = "wasm32"))]
-fn render_vector(context: &Context, vec: &VectorFeatures, width: u64, height: u64) {
-    let points = vec.points.clone();
-    let fill_color = match &vec.fill {
-        GradientImageOrColor::Color(color) => (color.red, color.green, color.blue, color.alpha),
-        _ => (0.0, 0.0, 0.0, 0.0)
-    };
-    let stroke_color = match &vec.stroke {
-        GradientImageOrColor::Color(color) => (color.red, color.green, color.blue, color.alpha),
-        _ => (0.0, 0.0, 0.0, 0.0)
-    };
-    let stroke_width = vec.stroke_width;
-    let line_cap = vec.line_cap;
-    let line_join = vec.line_join;
-    draw_context_path(&context, &points);
-    apply_fill(&context, &fill_color, &points);
-    apply_stroke(&context, &stroke_color, stroke_width, &line_cap, &line_join, &points);
-    for subvec in &vec.subobjects {
-        render_vector(&context, &subvec, width, height);
-    }
-}
 
 
 pub fn draw_context_path_wasm(
@@ -364,14 +259,15 @@ pub fn vec_to_def_and_use_string(
 
 
 pub fn render_all_vectors_svg(
-    vecs: &Vec<VectorFeatures>,
-    width: u64,
-    height: u64,
-    background: GradientImageOrColor,
-    top_left_corner: (f64, f64),
-    bottom_right_corner: (f64, f64),
-    div: &web_sys::HtmlDivElement
+    svg_scene: &SVGScene
 ) {
+    let vecs = svg_scene.objects.clone();
+    let width = svg_scene.width;
+    let height = svg_scene.height;
+    let background = svg_scene.background.clone();
+    let top_left_corner = svg_scene.top_left_corner;
+    let bottom_right_corner = svg_scene.bottom_right_corner;
+    let div = svg_scene.div_container.clone().unwrap();
     let document = web_sys::window().unwrap().document().unwrap();
     div.set_inner_html("");
     let mut svg = format!("<svg width=\"{}\" height=\"{}\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"{} {} {} {}\">", width, height, top_left_corner.0, top_left_corner.1, bottom_right_corner.0 - top_left_corner.0, bottom_right_corner.1 - top_left_corner.1);
@@ -462,7 +358,7 @@ pub fn render_all_vectors_svg(
     }
     svg.push_str(format!("<rect x=\"{}\" y=\"{}\" width=\"{}\" height=\"{}\" fill=\"{}\"/>\n", top_left_corner.0, top_left_corner.1, bottom_right_corner.0 - top_left_corner.0, bottom_right_corner.1 - top_left_corner.1, rec_fill).as_str());
     for vec in vecs {
-        let (def_string, use_string) = vec_to_def_and_use_string(vec, &document);
+        let (def_string, use_string) = vec_to_def_and_use_string(&vec, &document);
         defs.push_str(&def_string);
         use_strings.push_str(&use_string);
     }
@@ -744,23 +640,6 @@ pub fn render_all_vectors(
     top_left_corner: (f64, f64),
     bottom_right_corner: (f64, f64)
 ) -> Option<Vec<u8>> {
-    #[cfg(not(target_arch = "wasm32"))]
-    if context.is_none() {
-        let surface = ImageSurface::create(cairo::Format::ARgb32, width as i32, height as i32).unwrap();
-        let context = Context::new(&surface).unwrap();
-        let background_color = match background {
-            GradientImageOrColor::Color(color) => (color.red, color.green, color.blue, color.alpha),
-            _ => (0.0, 0.0, 0.0, 0.0)
-        };
-        context.set_source_rgba(background_color.2, background_color.1, background_color.0, background_color.3);
-        context.paint().unwrap();
-        #[allow(deprecated)]
-        for vec in vecs {
-            render_vector(&context, &vec, width, height);
-        }
-        drop(context);
-        return Some(surface.take_data().unwrap().to_vec());
-    }
     let context = context.unwrap();
     context.reset_transform().unwrap();
     let scale_xy = (width as f64 / (bottom_right_corner.0 - top_left_corner.0), height as f64 / (bottom_right_corner.1 - top_left_corner.1));
@@ -819,66 +698,4 @@ pub fn render_all_vectors(
         render_vector_wasm(&vec, width, height, context.clone());
     }
     return None;
-}
-
-#[cfg(not(target_arch = "wasm32"))]
-pub fn render_video(
-    make_frame_function: &mut dyn FnMut(u64, u64, u64, u64) -> Option<Vec<u8>>,
-    width: u64,
-    height: u64,
-    fps: u64,
-    total_frames: u64,
-    output_file: &str
-) {
-    let mut child = Command::new("ffmpeg")
-        .args([
-            "-y",
-            "-f",
-            "rawvideo",
-            "-s", &format!("{}x{}", width, height),
-            "-pix_fmt", "rgba",
-            "-r", &format!("{}", fps),
-            "-i",
-            "-",
-            "-loglevel","error",
-            "-vcodec", "libx264", "-pix_fmt", "yuv420p",
-            output_file
-        ])
-        .stdin(Stdio::piped())
-        .spawn()
-        .unwrap();
-
-    let k = child.stdin.as_mut().unwrap();
-    let progress_bar = ProgressBar::new(total_frames);
-    for i in 0..total_frames {
-        let data = make_frame_function(i, width, height, total_frames);
-        k.write(data.unwrap().as_slice()).unwrap();
-        progress_bar.inc(1);
-    }
-    child.wait().unwrap();
-}
-
-
-#[cfg(not(target_arch = "wasm32"))]
-pub fn concat_videos(files: Vec<String>, output_file: &str) {
-    let mut input_files = Vec::new();
-    for file in files.clone() {
-        input_files.push("-i".to_string());
-        input_files.push(file);
-    }
-    let mut args = vec![
-        "-y".to_string()
-    ];
-    args.extend(input_files);
-    args.extend(vec![
-        "-filter_complex".to_string(),
-        format!("concat=n={}:v=1:a=0", files.len()),
-        "-loglevel".to_string(), "error".to_string(),
-        output_file.to_string()
-    ]);
-    let mut child = Command::new("ffmpeg")
-        .args(args)
-        .spawn()
-        .unwrap();
-    child.wait().unwrap();    
 }

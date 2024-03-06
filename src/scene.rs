@@ -1,8 +1,6 @@
 use std::collections::HashMap;
 
-use crate::{colors::{Color, GradientImageOrColor}, objects::vector_object::VectorFeatures, renderer::render_all_vectors, utils::sleep};
-#[cfg(not(target_arch = "wasm32"))]
-use crate::renderer::{render_video, concat_videos};
+use crate::{colors::{Color, GradientImageOrColor}, objects::vector_object::VectorFeatures, renderer::render_all_vectors, scene_api::SceneAPI, utils::sleep};
 
 
 #[derive(Clone)]
@@ -11,23 +9,21 @@ pub struct Scene {
     pub width: u64,
     pub height: u64,
     pub fps: u64,
-    pub file_name: &'static str,
     pub background: GradientImageOrColor,
-    context: Option<web_sys::CanvasRenderingContext2d>,
-    top_left_corner: (f64, f64),
-    bottom_right_corner: (f64, f64),
+    pub top_left_corner: (f64, f64),
+    pub bottom_right_corner: (f64, f64),
+    pub context: Option<web_sys::CanvasRenderingContext2d>,
     states: HashMap<usize, (Vec<VectorFeatures>, GradientImageOrColor, (f64, f64), (f64, f64))>
 }
 
 
-impl Scene {
-    pub fn new(width: u64, height: u64, fps: u64, file_name: &'static str) -> Scene {
+impl SceneAPI for Scene {
+    fn new(width: u64, height: u64, fps: u64) -> Scene {
         return Scene {
             objects: Vec::new(),
             width,
             height,
             fps,
-            file_name: file_name,
             context: None,
             background: GradientImageOrColor::Color(Color {
                 red: 0.0,
@@ -40,92 +36,58 @@ impl Scene {
             states: HashMap::new()
         };
     }
-    pub fn get_context(&self) -> Option<web_sys::CanvasRenderingContext2d> {
-        return self.context.clone();
+    fn get_fps(&self) -> &u64 {
+        return &self.fps;
     }
-    pub fn clear(&mut self) {
+    fn get_height(&self) -> &u64 {
+        return &self.height;
+    }
+    fn get_width(&self) -> &u64 {
+        return &self.width;
+    }
+    fn render_frame(&mut self) {
+        render_all_vectors(&self.objects.clone(), self.width, self.height, self.context.clone(), self.background.clone(), self.top_left_corner, self.bottom_right_corner);
+    }
+    async fn sleep(&self, duration_in_ms: i32) {
+        sleep(duration_in_ms).await;
+    }
+    fn clear(&mut self) {
         self.objects = Vec::new();
     }
-    pub fn restore(&mut self, n: usize) {
+    fn restore(&mut self, n: usize) {
         let (objects, background, top_left_corner, bottom_right_corner) = self.states.get(&n).unwrap().clone();
         self.objects = objects;
         self.background = background;
         self.top_left_corner = top_left_corner;
         self.bottom_right_corner = bottom_right_corner;
     }
-    pub fn save_state(&mut self, n: usize) {
+    fn save_state(&mut self, n: usize) {
         self.states.insert(n, (self.objects.clone(), self.background.clone(), self.top_left_corner, self.bottom_right_corner));
     }
-    pub fn set_corners(&mut self, top_left_corner: (f64, f64), bottom_right_corner: (f64, f64)) {
+    fn set_corners(&mut self, top_left_corner: (f64, f64), bottom_right_corner: (f64, f64)) {
         self.top_left_corner = top_left_corner;
         self.bottom_right_corner = bottom_right_corner;
     }
-    pub fn get_top_left_corner(&self) -> (f64, f64) {
+    fn get_top_left_corner(&self) -> (f64, f64) {
         return self.top_left_corner;
     }
-    pub fn get_bottom_right_corner(&self) -> (f64, f64) {
+    fn get_bottom_right_corner(&self) -> (f64, f64) {
         return self.bottom_right_corner;
     }
-    pub fn set_background(&mut self, background: GradientImageOrColor) {
+    fn set_background(&mut self, background: GradientImageOrColor) {
         self.background = background;
     }
-    pub fn init_context(&mut self, context: web_sys::CanvasRenderingContext2d) {
-        self.context = Some(context);
-    }
-    pub fn add(&mut self, vec_obj: VectorFeatures) {
+    fn add(&mut self, vec_obj: VectorFeatures) {
         self.remove(vec_obj.index);
         self.objects.push(vec_obj);
     }
-    pub fn remove(&mut self, index: usize) {
+    fn remove(&mut self, index: usize) {
         self.objects = self.objects.clone().into_iter().filter(|obj| obj.index != index).collect();
     }
-    pub async fn play(
-        &mut self,
-        animation_func: impl Fn(Vec<VectorFeatures>, f64) -> Vec<VectorFeatures>,
-        object_indices: Vec<usize>,
-        duration_in_frames: u64,
-        rate_func: impl Fn(f64) -> f64
-    ) {
-        let objects = self.get_objects_from_indices(object_indices.clone());
-        let height = self.height.clone();
-        let width = self.width.clone();
-        #[cfg(not(target_arch = "wasm32"))]
-        let file_name = self.file_name;
-        let fps = self.fps.clone();
-        let mut make_frame_func = |frame, _, _, total_frames| -> Option<Vec<u8>> {
-            let t = rate_func(frame as f64 / total_frames as f64);
-            let new_objects = animation_func(objects.values().cloned().collect(), t);
-            for obj in new_objects {
-                self.add(obj);
-            }
-            return render_all_vectors(&self.objects.clone(), self.width.clone(), self.height.clone(), self.context.clone(), self.background.clone(), self.top_left_corner.clone(), self.bottom_right_corner.clone());
-        };
-        #[cfg(not(target_arch = "wasm32"))]
-        if file_name != "" {
-            let mut n_plays = 0;
-            let mut partial_movie_file_name = format!("{}_{}.mp4", file_name[..file_name.len() - 4].to_string(), n_plays);
-            while std::path::Path::new(&partial_movie_file_name).exists() {
-                n_plays += 1;
-                partial_movie_file_name = format!("{}_{}.mp4", file_name[..file_name.len() - 4].to_string(), n_plays);
-            }
-            render_video(&mut make_frame_func, width.clone(), height.clone(), fps.clone(), duration_in_frames, &partial_movie_file_name);
-            make_frame_func(duration_in_frames, width.clone(), height.clone(), duration_in_frames);
-            return;
-        }
-
-        for frame in 0..duration_in_frames {
-            make_frame_func(frame, width, height, duration_in_frames);
-            sleep(1000 / fps as i32).await;
-        }
-        make_frame_func(duration_in_frames, width.clone(), height.clone(), duration_in_frames);
-    }
-    pub async fn wait(&mut self, duration_in_frames: u64) {
-        self.play(|_, _| vec![], vec![], duration_in_frames, |t| t).await;
-    }
-    pub fn update(&mut self) {
+    fn update(&mut self) {
         render_all_vectors(&self.objects.clone(), self.width, self.height, self.context.clone(), self.background.clone(), self.top_left_corner, self.bottom_right_corner);
     }
-    pub fn get_objects_from_indices(&self, object_indices: Vec<usize>) -> HashMap<usize, VectorFeatures> {
+    fn get_objects_from_indices(&self, object_indices: Vec<usize>) -> HashMap<usize, VectorFeatures> {
         let mut objects = HashMap::new();
         for index in object_indices {
             for obj in &self.objects {
@@ -135,14 +97,5 @@ impl Scene {
             }
         }
         return objects;
-    }
-    #[cfg(not(target_arch = "wasm32"))]
-    pub fn finish(&self) {
-        let mut n_plays = 0;
-        while std::path::Path::new(&format!("{}_{}.mp4", self.file_name[..self.file_name.len() - 4].to_string(), n_plays)).exists() {
-            n_plays += 1;
-        }
-        let files = (0..n_plays).map(|n| format!("{}_{}.mp4", self.file_name[..self.file_name.len() - 4].to_string(), n)).collect();
-        concat_videos(files, &self.file_name);
     }
 }

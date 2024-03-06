@@ -387,9 +387,10 @@ pub trait VectorObject {
         recursive: bool
     ) -> Self;
     fn set_background_image(&self, image: web_sys::HtmlImageElement, recursive: bool) -> Self;
-    fn get_background_image(&self) -> Option<web_sys::HtmlImageElement>;
-    fn set_image_corners(&self, top_left_corner: (f64, f64), bottom_right_corner: (f64, f64), recursive: bool) -> Self;
-    fn get_image_corners(&self) -> ((f64, f64), (f64, f64));
+    fn set_fill_image_corners(&self, top_left_corner: (f64, f64), bottom_right_corner: (f64, f64), recursive: bool) -> Self;
+    fn set_stroke_image_corners(&self, top_left_corner: (f64, f64), bottom_right_corner: (f64, f64), recursive: bool) -> Self;
+    fn get_fill_image_corners(&self) -> ((f64, f64), (f64, f64));
+    fn get_stroke_image_corners(&self) -> ((f64, f64), (f64, f64));
 }
 
 #[derive(Clone, Debug)]
@@ -957,63 +958,80 @@ impl VectorObject for VectorFeatures {
             index: self.index,
         };
     }
-    fn get_background_image(&self) -> Option<web_sys::HtmlImageElement> {
+    fn set_fill_image_corners(&self, top_left_corner: (f64, f64), bottom_right_corner: (f64, f64), recursive: bool) -> Self {
+        let new_stroke = match &self.stroke {
+            GradientImageOrColor::Image(image) => GradientImageOrColor::Image(Image {
+                image: image.image.clone(),
+                top_left_corner: top_left_corner,
+                bottom_right_corner: bottom_right_corner,
+                alpha: image.alpha
+            }),
+            _ => self.stroke.clone()
+        };
+        if recursive {
+            return VectorFeatures {
+                points: self.points.clone(),
+                fill: self.fill.clone(),
+                stroke: new_stroke,
+                stroke_width: self.stroke_width,
+                line_cap: self.line_cap,
+                line_join: self.line_join,
+                subobjects: self.subobjects.iter().map(|subobject| subobject.set_stroke_image_corners(top_left_corner, bottom_right_corner, true)).collect(),
+                index: self.index,
+            };
+        }
+        return VectorFeatures {
+            points: self.points.clone(),
+            fill: self.fill.clone(),
+            stroke: new_stroke,
+            stroke_width: self.stroke_width,
+            line_cap: self.line_cap,
+            line_join: self.line_join,
+            subobjects: self.subobjects.clone(),
+            index: self.index,
+        };
+    }
+    fn set_stroke_image_corners(&self, top_left_corner: (f64, f64), bottom_right_corner: (f64, f64), recursive: bool) -> Self {
+        let new_fill = match &self.fill {
+            GradientImageOrColor::Image(image) => GradientImageOrColor::Image(Image {
+                image: image.image.clone(),
+                top_left_corner: top_left_corner,
+                bottom_right_corner: bottom_right_corner,
+                alpha: image.alpha
+            }),
+            _ => self.fill.clone()
+        };
+        if recursive {
+            return VectorFeatures {
+                points: self.points.clone(),
+                fill: new_fill,
+                stroke: self.stroke.clone(),
+                stroke_width: self.stroke_width,
+                line_cap: self.line_cap,
+                line_join: self.line_join,
+                subobjects: self.subobjects.iter().map(|subobject| subobject.set_fill_image_corners(top_left_corner, bottom_right_corner, true)).collect(),
+                index: self.index,
+            };
+        }
+        return VectorFeatures {
+            points: self.points.clone(),
+            fill: new_fill,
+            stroke: self.stroke.clone(),
+            stroke_width: self.stroke_width,
+            line_cap: self.line_cap,
+            line_join: self.line_join,
+            subobjects: self.subobjects.clone(),
+            index: self.index,
+        };
+    }
+    fn get_fill_image_corners(&self) -> ((f64, f64), (f64, f64)) {
         match &self.fill {
-            GradientImageOrColor::Image(image) => return Some(image.image.clone()),
-            _ => return None
+            GradientImageOrColor::Image(image) => return (image.top_left_corner, image.bottom_right_corner),
+            _ => return ((0.0, 0.0), (0.0, 0.0))
         }
     }
-    fn set_image_corners(&self, top_left_corner: (f64, f64), bottom_right_corner: (f64, f64), recursive: bool) -> Self {
-        match &self.fill {
-            GradientImageOrColor::Image(image) => {
-                if recursive {
-                    return VectorFeatures {
-                        points: self.points.clone(),
-                        fill: GradientImageOrColor::Image(Image {
-                            image: image.image.clone(),
-                            top_left_corner: top_left_corner,
-                            bottom_right_corner: bottom_right_corner,
-                            alpha: image.alpha
-                        }),
-                        stroke: GradientImageOrColor::Image(Image {
-                            image: image.image.clone(),
-                            top_left_corner: top_left_corner,
-                            bottom_right_corner: bottom_right_corner,
-                            alpha: image.alpha
-                        }),
-                        stroke_width: self.stroke_width,
-                        line_cap: self.line_cap,
-                        line_join: self.line_join,
-                        subobjects: self.subobjects.iter().map(|subobject| subobject.set_image_corners(top_left_corner, bottom_right_corner, true)).collect(),
-                        index: self.index,
-                    };
-                }
-                return VectorFeatures {
-                    points: self.points.clone(),
-                    fill: GradientImageOrColor::Image(Image {
-                        image: image.image.clone(),
-                        top_left_corner: top_left_corner,
-                        bottom_right_corner: bottom_right_corner,
-                        alpha: image.alpha
-                    }),
-                    stroke: GradientImageOrColor::Image(Image {
-                        image: image.image.clone(),
-                        top_left_corner: top_left_corner,
-                        bottom_right_corner: bottom_right_corner,
-                        alpha: image.alpha
-                    }),
-                    stroke_width: self.stroke_width,
-                    line_cap: self.line_cap,
-                    line_join: self.line_join,
-                    subobjects: self.subobjects.clone(),
-                    index: self.index,
-                };
-            },
-            _ => return self.clone()
-        }
-    }
-    fn get_image_corners(&self) -> ((f64, f64), (f64, f64)) {
-        match &self.fill {
+    fn get_stroke_image_corners(&self) -> ((f64, f64), (f64, f64)) {
+        match &self.stroke {
             GradientImageOrColor::Image(image) => return (image.top_left_corner, image.bottom_right_corner),
             _ => return ((0.0, 0.0), (0.0, 0.0))
         }

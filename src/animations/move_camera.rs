@@ -1,4 +1,4 @@
-use crate::{scene::Scene, utils::interpolate_tuple};
+use crate::{scene::Scene, scene_api::SceneAPI, utils::interpolate_tuple};
 
 
 pub fn move_camera(
