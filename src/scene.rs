@@ -84,9 +84,6 @@ impl SceneAPI for Scene {
     fn remove(&mut self, index: usize) {
         self.objects = self.objects.clone().into_iter().filter(|obj| obj.index != index).collect();
     }
-    fn update(&mut self) {
-        render_all_vectors(&self.objects.clone(), self.width, self.height, self.context.clone(), self.background.clone(), self.top_left_corner, self.bottom_right_corner);
-    }
     fn get_objects_from_indices(&self, object_indices: Vec<usize>) -> HashMap<usize, VectorFeatures> {
         let mut objects = HashMap::new();
         for index in object_indices {

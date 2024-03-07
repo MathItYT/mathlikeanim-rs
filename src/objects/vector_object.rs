@@ -1037,3 +1037,6 @@ impl VectorObject for VectorFeatures {
         }
     }
 }
+
+
+unsafe impl Send for VectorFeatures {}
