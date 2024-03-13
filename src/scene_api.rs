@@ -32,6 +32,7 @@ pub trait SceneAPI {
                 for obj in new_objects {
                     self.add(obj);
                 }
+                self.render_frame();
                 self.sleep((1000 / fps) as i32).await;
             }
             let t = rate_func(1.0);

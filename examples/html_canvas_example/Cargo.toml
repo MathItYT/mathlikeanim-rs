@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 js-sys = "0.3.68"
-mathlikeanim-rs = { version = "0.5.1", path = "../.." }
+mathlikeanim-rs = { version = "0.5.2", path = "../.." }
 once_cell = "1.19.0"
 wasm-bindgen = "0.2.91"
 wasm-bindgen-futures = "0.4.41"
