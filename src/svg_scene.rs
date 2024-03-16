@@ -77,7 +77,7 @@ impl SceneAPI for SVGScene {
     fn get_width(&self) -> &u64 {
         return &self.width;
     }
-    async fn sleep(&self, duration_in_ms: i32) {
+    async fn sleep(&mut self, duration_in_ms: i32) {
         sleep(duration_in_ms).await;
     }
     fn render_frame(&mut self) {

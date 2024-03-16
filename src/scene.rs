@@ -48,7 +48,7 @@ impl SceneAPI for Scene {
     fn render_frame(&mut self) {
         render_all_vectors(&self.objects.clone(), self.width, self.height, self.context.clone(), self.background.clone(), self.top_left_corner, self.bottom_right_corner);
     }
-    async fn sleep(&self, duration_in_ms: i32) {
+    async fn sleep(&mut self, duration_in_ms: i32) {
         sleep(duration_in_ms).await;
     }
     fn clear(&mut self) {

@@ -43,7 +43,7 @@ pub trait SceneAPI {
         }
     }
     fn render_frame(&mut self);
-    fn sleep(&self, duration_in_ms: i32) -> impl Future<Output = ()>;
+    fn sleep(&mut self, duration_in_ms: i32) -> impl Future<Output = ()>;
     fn wait(&mut self, duration_in_frames: u64) -> impl Future<Output = ()> {
         async move {
             self.play(|_, _| vec![], vec![], duration_in_frames, |t| t).await;
