@@ -1,4 +1,4 @@
-use std::f64::consts::PI;
+use std::{f64::consts::PI, vec};
 
 use mathlikeanim_rs::{animations::create::create, colors::{GradientImageOrColor, GradientStop, LinearGradient}, objects::{geometry::arc::circle, svg_to_vector::svg_to_vector, vector_object::{VectorFeatures, VectorObject}}, scene::Scene, scene_api::SceneAPI, utils::{hex_to_color, smooth}};
 use wasm_bindgen::prelude::*;
@@ -14,9 +14,21 @@ static mut SCENE: Lazy<Scene> = Lazy::new(|| {
 });
 
 
+static mut VECTOR_LIST: Vec<VectorFeatures> = Vec::new();
+
+
 #[wasm_bindgen(module = "/text2path.js")]
 extern "C" {
     async fn text2path(text: &str) -> JsValue;
+}
+
+
+fn anim_func(vec_objs: Vec<VectorFeatures>, t: f64) -> Vec<VectorFeatures> {
+    let mut vec_objs = vec_objs;
+    let vector_list = unsafe { &mut VECTOR_LIST };
+    vec_objs[0] = create(vec_objs[0].clone(), t);
+    vec_objs[1] = draw_text(vector_list.clone(), t);
+    return vec_objs;
 }
 
 
@@ -100,13 +112,10 @@ pub async fn draw() {
     for i in 0..101 {
         vector_list.push(text_to_vector(&format!("{}%", i)).await);
     }
+    let vec_lst = unsafe { &mut VECTOR_LIST };
+    *vec_lst = vector_list;
     scene.play(
-        |vec_objs, t| {
-            let mut vec_objs = vec_objs;
-            vec_objs[0] = create(vec_objs[0].clone(), t);
-            vec_objs[1] = draw_text(vector_list.clone(), t);
-            return vec_objs;
-        },
+        anim_func,
         vec![0, 1],
         144,
         |t| smooth(t, 10.0)

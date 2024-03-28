@@ -18,7 +18,7 @@ pub trait SceneAPI {
     fn get_width(&self) -> &u64;
     fn play(
         &mut self,
-        animation_func: impl Fn(Vec<VectorFeatures>, f64) -> Vec<VectorFeatures>,
+        animation_func: fn(Vec<VectorFeatures>, f64) -> Vec<VectorFeatures>,
         object_indices: Vec<usize>,
         duration_in_frames: u64,
         rate_func: impl Fn(f64) -> f64
@@ -27,19 +27,30 @@ pub trait SceneAPI {
             let fps = self.get_fps().clone();
             let objects = self.get_objects_from_indices(object_indices.clone());
             for frame in 0..duration_in_frames {
-                let t = rate_func(frame as f64 / duration_in_frames as f64);
-                let new_objects = animation_func(objects.values().cloned().collect(), t);
-                for obj in new_objects {
-                    self.add(obj);
-                }
+                self.make_frame(
+                    animation_func,
+                    objects.values().cloned().collect(),
+                    rate_func(frame as f64 / duration_in_frames as f64)
+                );
                 self.render_frame();
                 self.sleep((1000 / fps) as i32).await;
             }
-            let t = rate_func(1.0);
-            let new_objects = animation_func(objects.values().cloned().collect(), t);
-            for obj in new_objects {
-                self.add(obj);
-            }
+            self.make_frame(
+                animation_func,
+                objects.values().cloned().collect(),
+                rate_func(1.0)
+            );
+        }
+    }
+    fn make_frame(
+        &mut self,
+        animation_func: impl Fn(Vec<VectorFeatures>, f64) -> Vec<VectorFeatures>,
+        objects: Vec<VectorFeatures>,
+        t: f64
+    ) {
+        let new_objects = animation_func(objects, t);
+        for obj in new_objects {
+            self.add(obj);
         }
     }
     fn render_frame(&mut self);
