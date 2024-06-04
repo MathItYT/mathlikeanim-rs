@@ -1,29 +1,43 @@
-import start, { draw } from './pkg/html_canvas_example.js';
+import init, {Scene, WasmColor, WasmGradientImageOrColor, WasmVectorObject, animationGroup, circle, drawStrokeThenFill, svgToVector, write} from './js/mathlikeanim_rs.js';
 
 
 async function run() {
-    await start();
     const canvas = document.getElementById('canvas');
-    const stopButton = document.getElementById('stop');
-    const stream = canvas.captureStream(144);
-    const recorder = new MediaRecorder(stream, { bitsPerSecond: 25000000000});
-    const chunks = [];
-    recorder.ondataavailable = (event) => {
-        chunks.push(event.data);
-    };
-    recorder.onstop = () => {
-        const blob = new Blob(chunks, { type: 'video/mp4' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'canvas.mp4';
-        a.click();
-    };
-    stopButton.onclick = () => {
-        recorder.stop();
-    };
-    recorder.start();
-    await draw();
+    const ctx = canvas.getContext('2d');
+    let scene = new Scene(BigInt(3840), BigInt(2160), BigInt(60));
+    scene.setCanvasContext(ctx);
+    let circ = circle(
+        [960.0, 540.0],
+        500.0,
+        undefined,
+        new WasmColor(1.0, 0.0, 0.0, 1.0),
+        new WasmColor(1.0, 0.0, 0.0, 0.5),
+        8.0,
+        undefined,
+        undefined,
+        0
+    );
+    const latex = "$$x^2$$";
+    const xSquaredSvg = await fetch(`/latex?input=${encodeURIComponent(latex)}`);
+    const xSquaredSvgText = await xSquaredSvg.text();
+    let xSquaredObject = svgToVector(xSquaredSvgText).setIndex(1);
+    xSquaredObject = xSquaredObject.scale(500 / xSquaredObject.getHeight(), true);
+    xSquaredObject = xSquaredObject.moveTo(960.0, 540.0, true);
+    xSquaredObject = xSquaredObject.setFill(WasmGradientImageOrColor.fromColor(new WasmColor(0.0, 0.0, 0.0, 1.0)), true);
+    scene.add(circ);
+    scene.add(xSquaredObject);
+    await scene.play(
+        function (vecs, t) {
+            let newCirc = drawStrokeThenFill(vecs[0], t);
+            let newXSquared = write(vecs[1].getSubobjects().length, 0.4)(vecs[1], t);
+            return [newCirc, newXSquared];
+        },
+        [0, 1],
+        BigInt(60),
+        function (t) { return t;}
+    );
+    scene.renderFrame();
 }
 
-run();
+
+init().then(run);

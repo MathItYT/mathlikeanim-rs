@@ -15,3 +15,4 @@ pub mod show_temporarily;
 pub mod set_fill_animation;
 pub mod set_stroke_animation;
 pub mod move_camera_svg;
+pub mod wasm_interface;

@@ -1,8 +1,22 @@
 # MathLikeAnim-rs
 
-This is a simple Rust library to create mathematical animations.
-The objective is to have the same capabilities as [Manim](https://www.manim.community/), but in Rust.
+This is an animation library written in Rust, widely inspired by [Manim](https://manim.community/) and, unlike Manim, it allows interactivity thanks to WebAssembly, JavaScript and the web.
 
-**Note**: This is a work in progress, it's very preliminary and not ready for use. ⚠️
 
-Examples are available in the `examples` directory.
+## Features
+- [x] Interactivity.
+- [x] Basic shapes.
+- [x] Function plotting.
+- [x] Animations in HTML Canvas and SVG.
+- [ ] Text rendering (not planned).
+- [ ] 3D rendering (coming soon).
+
+
+## How to install it?
+If you want to start creating mathematical and interactive animations, you can install it by running:
+```bash
+npm i mathlikeanim-rs
+```
+
+## How to use it?
+You can embed the library in your HTML file by adding a script tag, and don't forget to include your HTML Canvas for raster animations or DIV container for SVG animations!

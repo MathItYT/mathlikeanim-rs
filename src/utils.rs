@@ -15,14 +15,6 @@ extern "C" {
     /// Log an `&str` to the console
     #[wasm_bindgen(js_namespace = console)]
     pub fn log(s: &str);
-
-    /// Log a `u32` to the console
-    #[wasm_bindgen(js_namespace = console, js_name = log)]
-    pub fn log_u32(a: u32);
-
-    /// Log two `&str` to the console
-    #[wasm_bindgen(js_namespace = console, js_name = log)]
-    pub fn log_many(a: &str, b: &str);
 }
 
 
@@ -114,7 +106,7 @@ pub fn bezier(points: &Vec<(f64, f64)>, t: f64) -> (f64, f64) {
 
 
 /// A function that returns a `f64` representing a one-dimensional Bezier polynomial at `t`.
-fn bezier_f64(numbers: Vec<f64>, t: f64) -> f64 {
+pub fn bezier_f64(numbers: Vec<f64>, t: f64) -> f64 {
     let n = numbers.len() - 1;
     if n == 0 {
         return numbers[0];
@@ -618,7 +610,7 @@ pub fn running_start(t: f64, pull_factor: f64) -> f64 {
 
 
 pub fn not_quite_there(
-    function: fn(f64) -> f64,
+    function: impl Fn(f64) -> f64,
     t: f64,
     proportion: f64
 ) -> f64 {
@@ -632,7 +624,7 @@ pub fn wiggle(t: f64, wiggles: f64) -> f64 {
 
 
 pub fn squish_rate_func(
-    function: fn(f64) -> f64,
+    function: impl Fn(f64) -> f64,
     t: f64,
     a: f64,
     b: f64

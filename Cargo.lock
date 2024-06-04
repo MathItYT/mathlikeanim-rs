@@ -281,18 +281,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "290f1a1d9242c78d09ce40a5e87e7554ee637af1351968159f4952f028f75604"
 
 [[package]]
-name = "html_canvas_example"
-version = "0.1.0"
-dependencies = [
- "js-sys",
- "mathlikeanim-rs",
- "once_cell",
- "wasm-bindgen",
- "wasm-bindgen-futures",
- "web-sys",
-]
-
-[[package]]
 name = "itertools"
 version = "0.10.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -377,7 +365,7 @@ checksum = "2532096657941c2fea9c289d370a250971c689d4f143798ff67113ec042024a5"
 
 [[package]]
 name = "mathlikeanim-rs"
-version = "0.5.4"
+version = "0.5.5"
 dependencies = [
  "js-sys",
  "lightningcss",
@@ -769,17 +757,6 @@ name = "svg"
 version = "0.15.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "683eed9bd9a2b078f92f87d166db38292e8114ab16d4cf23787ad4eecd1bb6e5"
-
-[[package]]
-name = "svg_example"
-version = "0.1.0"
-dependencies = [
- "mathlikeanim-rs",
- "once_cell",
- "wasm-bindgen",
- "wasm-bindgen-futures",
- "web-sys",
-]
 
 [[package]]
 name = "syn"

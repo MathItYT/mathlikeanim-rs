@@ -18,7 +18,7 @@ pub trait SceneAPI {
     fn get_width(&self) -> &u64;
     fn play(
         &mut self,
-        animation_func: fn(Vec<VectorFeatures>, f64) -> Vec<VectorFeatures>,
+        animation_func: impl Fn(Vec<VectorFeatures>, f64) -> Vec<VectorFeatures>,
         object_indices: Vec<usize>,
         duration_in_frames: u64,
         rate_func: impl Fn(f64) -> f64
@@ -28,7 +28,7 @@ pub trait SceneAPI {
             let objects = self.get_objects_from_indices(object_indices.clone());
             for frame in 0..duration_in_frames {
                 self.make_frame(
-                    animation_func,
+                    &animation_func,
                     objects.values().cloned().collect(),
                     rate_func(frame as f64 / duration_in_frames as f64)
                 );
@@ -36,7 +36,7 @@ pub trait SceneAPI {
                 self.sleep((1000 / fps) as i32).await;
             }
             self.make_frame(
-                animation_func,
+                &animation_func,
                 objects.values().cloned().collect(),
                 rate_func(1.0)
             );
@@ -44,7 +44,7 @@ pub trait SceneAPI {
     }
     fn make_frame(
         &mut self,
-        animation_func: impl Fn(Vec<VectorFeatures>, f64) -> Vec<VectorFeatures>,
+        animation_func: &impl Fn(Vec<VectorFeatures>, f64) -> Vec<VectorFeatures>,
         objects: Vec<VectorFeatures>,
         t: f64
     ) {
@@ -53,13 +53,13 @@ pub trait SceneAPI {
             self.add(obj);
         }
     }
-    fn render_frame(&mut self);
-    fn sleep(&mut self, duration_in_ms: i32) -> impl Future<Output = ()>;
     fn wait(&mut self, duration_in_frames: u64) -> impl Future<Output = ()> {
         async move {
             self.play(|_, _| vec![], vec![], duration_in_frames, |t| t).await;
         }
     }
+    fn sleep(&mut self, duration_in_ms: i32) -> impl Future<Output = ()>;
+    fn render_frame(&mut self);
     fn update(&mut self) {
         self.render_frame();
     }

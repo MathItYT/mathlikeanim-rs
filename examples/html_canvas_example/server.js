@@ -1,42 +1,53 @@
 const express = require('express');
-const { load } = require('opentype.js');
-const { readFileSync, writeFileSync, existsSync } = require('fs');
-const { v4 } = require('uuid');
 const app = express();
-const PORT = process.env.PORT || 3000;
+const { promisify } = require('util');
+const fs = require('fs');
+const { v4 } = require('uuid');
+const { exec } = require('child_process');
+const execAsync = promisify(exec);
 
-
-if (!existsSync('cache.json')) {
-    writeFileSync('cache.json', '{}');
+if (!fs.existsSync(__dirname + '/temp')) {
+    fs.mkdirSync(__dirname + '/temp');
 }
 
-app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/index.html');
-});
+if (!fs.existsSync(__dirname + '/cache.json')) {
+    fs.writeFileSync(__dirname + '/cache.json', '{}');
+}
 
-app.get('/main.js', (req, res) => {
-    res.sendFile(__dirname + '/main.js');
-});
+app.get('/*', async (req, res) => {
+    if (req.url === '/') {
+        res.sendFile(__dirname + '/index.html');
+    } else if (req.url.startsWith('/latex')) {
+        let cache = JSON.parse(fs.readFileSync(__dirname + '/cache.json'));
+        if (cache[req.query.input]) {
+            return res.sendFile(__dirname + cache[req.query.input]);
+        }
+        const latex = decodeURIComponent(req.query.input);
+        const filename = `/temp/${v4()}.tex`;
+        const content = `
+\\documentclass[preview]{standalone}
+\\usepackage[spanish]{babel}
+\\usepackage{amsmath}
+\\usepackage{amssymb}
 
-app.get('/pkg/*', (req, res) => {
-    res.sendFile(__dirname + req.url);
-});
-
-app.get('/text2path', async (req, res) => {
-    const cache = JSON.parse(readFileSync('cache.json'));
-    const text = req.query.text;
-    if (cache[text]) {
-        res.send(cache[text]);
-        return;
+\\begin{document}
+${latex}
+\\end{document}
+        `;
+        fs.writeFileSync(__dirname + filename, content);
+        await execAsync(`latex -interaction=nonstopmode ${__dirname + filename} --output-directory=${__dirname + '/temp'}`);
+        await execAsync(`dvisvgm ${__dirname + filename.replace('.tex', '.dvi')} -n --output=${__dirname + filename.replace('.tex', '.svg')}`);
+        if (!fs.existsSync(__dirname + filename.replace('.tex', '.svg'))) {
+            return res.status(500).send('Error');
+        }
+        cache[req.query.input] = filename.replace('.tex', '.svg');
+        fs.writeFileSync(__dirname + '/cache.json', JSON.stringify(cache));
+        res.sendFile(__dirname + filename.replace('.tex', '.svg'));
+    } else {
+        res.sendFile(__dirname + req.url);
     }
-    const font = await load('fonts/Roboto-Bold.ttf');
-    const path = font.getPath(text, 0, 150, 72);
-    const svg = path.toSVG();
-    cache[text] = svg;
-    writeFileSync('cache.json', JSON.stringify(cache));
-    res.send(svg);
 });
 
-app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+app.listen(3000, () => {
+    console.log('Server is running at http://localhost:3000');
 });
