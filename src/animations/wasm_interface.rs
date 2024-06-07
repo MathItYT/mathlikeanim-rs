@@ -1,9 +1,10 @@
 use js_sys::{Array, Function};
 use wasm_bindgen::prelude::*;
 
-use crate::{objects::{vector_object::VectorFeatures, wasm_interface::{WasmColor, WasmVectorObject}}, scene::Scene, svg_scene::SVGScene};
+use crate::objects::{vector_object::VectorFeatures, wasm_interface::{WasmColor, WasmVectorObject}};
+use crate::{scene::Scene, svg_scene::SVGScene, animations::{move_camera_svg::move_camera_svg, move_camera::move_camera}};
 
-use super::{animation_group::{animation_group, make_timings}, create::create, draw_stroke_then_fill::{draw_stroke_then_fill, write}, fade::{fade_in, fade_out}, grow_arrow::{grow_arrow_with_final_tip, grow_arrow_with_initial_tip, grow_arrow_with_tips_at_both_ends}, grow_from_center::grow_from_center, morph_shape::morph_shape, move_camera::move_camera, move_camera_svg::move_camera_svg, rotate_animation::rotate_animation, scale_in_place::scale_in_place, set_fill_animation::set_fill_animation, set_stroke_animation::set_stroke_animation, shift_animation::shift_animation, shift_image_position::shift_image_position, show_temporarily::show_temporarily, spinning_grow::spinning_grow};
+use super::{animation_group::{animation_group, make_timings}, create::create, draw_stroke_then_fill::{draw_stroke_then_fill, write}, fade::{fade_in, fade_out}, grow_arrow::{grow_arrow_with_final_tip, grow_arrow_with_initial_tip, grow_arrow_with_tips_at_both_ends}, grow_from_center::grow_from_center, morph_shape::morph_shape, rotate_animation::rotate_animation, scale_in_place::scale_in_place, set_fill_animation::set_fill_animation, set_stroke_animation::set_stroke_animation, shift_animation::shift_animation, shift_image_position::shift_image_position, show_temporarily::show_temporarily, spinning_grow::spinning_grow};
 
 #[wasm_bindgen(js_name = makeTimings)]
 pub fn make_timings_js(
@@ -176,7 +177,6 @@ pub fn morph_shape_js(
     return func;
 }
 
-
 #[wasm_bindgen(js_name = moveCameraSVG)]
 pub fn move_camera_svg_js(
     top_left_corner: Array,
@@ -188,7 +188,6 @@ pub fn move_camera_svg_js(
     let bottom_right_corner = (bottom_right_corner.get(0).as_f64().unwrap(), bottom_right_corner.get(1).as_f64().unwrap());
     move_camera_svg(top_left_corner, bottom_right_corner, scene, t);
 }
-
 
 #[wasm_bindgen(js_name = moveCamera)]
 pub fn move_camera_js(

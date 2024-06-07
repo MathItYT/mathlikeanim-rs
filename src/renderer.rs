@@ -7,7 +7,7 @@ use crate::objects::vector_object::generate_subpaths;
 use crate::svg_scene::SVGScene;
 use crate::utils::consider_points_equals;
 use wasm_bindgen::JsCast;
-use web_sys::HtmlCanvasElement;
+use web_sys::{HtmlCanvasElement, HtmlImageElement};
 
 
 pub fn draw_context_path_wasm(
@@ -128,7 +128,8 @@ pub fn vec_to_def_and_use_string(
                 fill = format!("url(#{})", id);
             },
             GradientImageOrColor::Image(image) => {
-                let img = image.image.clone();
+                let img = HtmlImageElement::new().unwrap();
+                img.set_src(format!("data:{};base64,{}", image.mime_type, image.image_base64).as_str());
                 let top_left_corner = image.top_left_corner;
                 let bottom_right_corner = image.bottom_right_corner;
                 let alpha = image.alpha;
@@ -209,7 +210,8 @@ pub fn vec_to_def_and_use_string(
                 stroke = format!("url(#{})", id);
             },
             GradientImageOrColor::Image(image) => {
-                let img = image.image.clone();
+                let img = HtmlImageElement::new().unwrap();
+                img.set_src(format!("data:{};base64,{}", image.mime_type, image.image_base64).as_str());
                 let top_left_corner = image.top_left_corner;
                 let bottom_right_corner = image.bottom_right_corner;
                 let alpha = image.alpha;
@@ -329,7 +331,8 @@ pub fn render_all_vectors_svg(
             rec_fill = format!("url(#{})", id);
         },
         GradientImageOrColor::Image(image) => {
-            let img = image.image.clone();
+            let img = HtmlImageElement::new().unwrap();
+            img.set_src(format!("data:{};base64,{}", image.mime_type, image.image_base64).as_str());
             let top_left_corner = image.top_left_corner;
             let bottom_right_corner = image.bottom_right_corner;
             let alpha = image.alpha;
@@ -419,7 +422,8 @@ pub fn apply_fill_wasm(
             context.fill();
         },
         GradientImageOrColor::Image(image) => {
-            let img = image.image;
+            let img = HtmlImageElement::new().unwrap();
+            img.set_src(format!("data:{};base64,{}", image.mime_type, image.image_base64).as_str());
             let tl_corner = image.top_left_corner;
             let br_corner = image.bottom_right_corner;
             let w = br_corner.0 - tl_corner.0;
@@ -588,7 +592,8 @@ pub fn apply_stroke_wasm(
             context.set_line_join("miter");
         },
         GradientImageOrColor::Image(image) => {
-            let img = image.image;
+            let img = HtmlImageElement::new().unwrap();
+            img.set_src(format!("data:{};base64,{}", image.mime_type, image.image_base64).as_str());
             let tl_corner = image.top_left_corner;
             let br_corner = image.bottom_right_corner;
             let w = br_corner.0 - tl_corner.0;
@@ -639,7 +644,7 @@ pub fn render_all_vectors(
     background: GradientImageOrColor,
     top_left_corner: (f64, f64),
     bottom_right_corner: (f64, f64)
-) -> Option<Vec<u8>> {
+) {
     let context = context.unwrap();
     context.reset_transform().unwrap();
     let scale_xy = (width as f64 / (bottom_right_corner.0 - top_left_corner.0), height as f64 / (bottom_right_corner.1 - top_left_corner.1));
@@ -676,7 +681,8 @@ pub fn render_all_vectors(
             context.set_fill_style(&grd);
         },
         GradientImageOrColor::Image(image) => {
-            let img = image.image;
+            let img = HtmlImageElement::new().unwrap();
+            img.set_src(format!("data:{};base64,{}", image.mime_type, image.image_base64).as_str());
             let tl_corner = image.top_left_corner;
             let br_corner = image.bottom_right_corner;
             let w = br_corner.0 - tl_corner.0;
@@ -697,5 +703,4 @@ pub fn render_all_vectors(
     for vec in vecs {
         render_vector_wasm(&vec, width, height, context.clone());
     }
-    return None;
 }

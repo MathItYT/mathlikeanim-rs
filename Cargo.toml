@@ -1,6 +1,6 @@
 [package]
 name = "mathlikeanim-rs"
-version = "0.5.5"
+version = "0.5.6"
 edition = "2021"
 readme = "README.md"
 description = "A Rust library for creating mathematical animations"
@@ -41,9 +41,15 @@ web-sys = { version="0.3.67", features=[
     'CanvasPattern',
     'CanvasGradient',
     'HtmlDivElement',
+    'Url',
+    'MediaRecorder',
+    'MediaStream',
+    'Blob',
+    'BlobPropertyBag'
 ] }
 wasm-bindgen-futures = "0.4.40"
 uuid = { version="0.8.2", features=["wasm-bindgen", "v4"] }
 
 [lib]
+name = "mathlikeanim_rs"
 crate-type = ["cdylib", "rlib"]

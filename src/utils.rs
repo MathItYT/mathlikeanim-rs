@@ -17,7 +17,6 @@ extern "C" {
     pub fn log(s: &str);
 }
 
-
 /// An asynchronous sleep function for WebAssembly
 pub async fn sleep(delay: i32) {
     let mut cb = |resolve: js_sys::Function, _reject: js_sys::Function| -> () {

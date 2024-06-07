@@ -33,6 +33,7 @@ pub trait SceneAPI {
                     rate_func(frame as f64 / duration_in_frames as f64)
                 );
                 self.render_frame();
+                self.on_rendered();
                 self.sleep((1000 / fps) as i32).await;
             }
             self.make_frame(
@@ -59,9 +60,7 @@ pub trait SceneAPI {
         }
     }
     fn sleep(&mut self, duration_in_ms: i32) -> impl Future<Output = ()>;
-    fn render_frame(&mut self);
-    fn update(&mut self) {
-        self.render_frame();
-    }
+    fn render_frame(&self);
+    fn on_rendered(&self);
     fn get_objects_from_indices(&self, object_indices: Vec<usize>) -> HashMap<usize, VectorFeatures>;
 }

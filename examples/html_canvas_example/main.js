@@ -1,4 +1,4 @@
-import init, {Scene, WasmColor, WasmGradientImageOrColor, WasmVectorObject, animationGroup, circle, drawStrokeThenFill, svgToVector, write} from './js/mathlikeanim_rs.js';
+import init, {Scene, WasmColor, WasmGradientImageOrColor, circle, drawStrokeThenFill, svgToVector, write} from './js/mathlikeanim_rs.js';
 
 
 async function run() {

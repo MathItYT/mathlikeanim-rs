@@ -365,7 +365,7 @@ checksum = "2532096657941c2fea9c289d370a250971c689d4f143798ff67113ec042024a5"
 
 [[package]]
 name = "mathlikeanim-rs"
-version = "0.5.5"
+version = "0.5.6"
 dependencies = [
  "js-sys",
  "lightningcss",

@@ -23,7 +23,9 @@ pub struct SVGScene {
     #[wasm_bindgen(skip)]
     pub bottom_right_corner: (f64, f64),
     #[wasm_bindgen(skip)]
-    pub states: HashMap<usize, (Vec<VectorFeatures>, GradientImageOrColor, (f64, f64), (f64, f64))>
+    pub states: HashMap<usize, (Vec<VectorFeatures>, GradientImageOrColor, (f64, f64), (f64, f64))>,
+    #[wasm_bindgen(skip)]
+    pub callback: &'static dyn Fn()
 }
 
 
@@ -43,11 +45,15 @@ impl SceneAPI for SVGScene {
             }),
             top_left_corner: (0.0, 0.0),
             bottom_right_corner: (width as f64, height as f64),
-            states: HashMap::new()
+            states: HashMap::new(),
+            callback: Box::leak(Box::new(&|| {}))
         };
     }
     fn clear(&mut self) {
         self.objects = Vec::new();
+    }
+    fn on_rendered(&self) {
+        (self.callback)();
     }
     fn restore(&mut self, n: usize) {
         let (objects, background, top_left_corner, bottom_right_corner) = self.states.get(&n).unwrap().clone();
@@ -88,7 +94,7 @@ impl SceneAPI for SVGScene {
     fn get_width(&self) -> &u64 {
         return &self.width;
     }
-    fn render_frame(&mut self) {
+    fn render_frame(&self) {
         render_all_vectors_svg(&self);
     }
     fn get_objects_from_indices(&self, object_indices: Vec<usize>) -> HashMap<usize, VectorFeatures> {
@@ -248,5 +254,11 @@ impl SVGScene {
     #[wasm_bindgen(js_name = wait)]
     pub async fn wait_js(&mut self, duration_in_frames: u64) {
         self.wait(duration_in_frames).await;
+    }
+    #[wasm_bindgen(js_name = setCallback)]
+    pub fn set_callback_js(&mut self, callback: js_sys::Function) {
+        self.callback = Box::leak(Box::new(move || {
+            callback.call0(&JsValue::NULL).unwrap();
+        }));
     }
 }

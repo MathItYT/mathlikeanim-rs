@@ -5,6 +5,7 @@ target
 *.log
 *.aux
 *.dvi
+.venv
 node_modules
 *_priv.rs
 cache.json

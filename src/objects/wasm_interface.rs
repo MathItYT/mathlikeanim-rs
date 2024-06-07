@@ -1,6 +1,5 @@
 use js_sys::{Array, Function, Reflect};
 use wasm_bindgen::prelude::*;
-use web_sys::HtmlImageElement;
 
 use crate::colors::{Color, GradientImageOrColor, GradientStop, Image, LinearGradient, RadialGradient};
 
@@ -96,20 +95,22 @@ impl JsCast for WasmGradientImageOrColor {
         }
         let get_image_func = Reflect::get(&val, &JsValue::from_str("getImage")).unwrap();
         let image = Function::from(get_image_func).call0(&val).unwrap();
-        let get_image_func = Reflect::get(&image, &JsValue::from_str("getImage")).unwrap();
+        let get_image_base64_func = Reflect::get(&image, &JsValue::from_str("getImageBase64")).unwrap();
+        let image_base64 = Function::from(get_image_base64_func).call0(&image).unwrap().as_string().unwrap();
+        let get_mime_type_func = Reflect::get(&image, &JsValue::from_str("getMimeType")).unwrap();
+        let mime_type = Function::from(get_mime_type_func).call0(&image).unwrap().as_string().unwrap();
         let get_top_func = Reflect::get(&image, &JsValue::from_str("getTop")).unwrap();
         let get_left_func = Reflect::get(&image, &JsValue::from_str("getLeft")).unwrap();
         let get_bottom_func = Reflect::get(&image, &JsValue::from_str("getBottom")).unwrap();
         let get_right_func = Reflect::get(&image, &JsValue::from_str("getRight")).unwrap();
         let get_alpha_func = Reflect::get(&image, &JsValue::from_str("getAlpha")).unwrap();
-        let image = Function::from(get_image_func).call0(&image).unwrap();
         let top = Function::from(get_top_func).call0(&image).unwrap().as_f64().unwrap();
         let left = Function::from(get_left_func).call0(&image).unwrap().as_f64().unwrap();
         let bottom = Function::from(get_bottom_func).call0(&image).unwrap().as_f64().unwrap();
         let right = Function::from(get_right_func).call0(&image).unwrap().as_f64().unwrap();
         let alpha = Function::from(get_alpha_func).call0(&image).unwrap().as_f64().unwrap();
         WasmGradientImageOrColor {
-            gradient_image_or_color: GradientImageOrColor::Image(Image { image: image.dyn_into::<HtmlImageElement>().unwrap(), top_left_corner: (left, top), bottom_right_corner: (right, bottom), alpha })
+            gradient_image_or_color: GradientImageOrColor::Image(Image { image_base64, mime_type, top_left_corner: (left, top), bottom_right_corner: (right, bottom), alpha })
         }
     }
     fn unchecked_from_js_ref(val: &JsValue) -> &Self {
@@ -206,6 +207,10 @@ impl WasmGradientImageOrColor {
             GradientImageOrColor::Image(image) => Some(WasmImage { image: image.clone() }),
             _ => None
         }
+    }
+    #[wasm_bindgen(js_name = clone)]
+    pub fn clone_js(&self) -> WasmGradientImageOrColor {
+        self.clone()
     }
 }
 
@@ -472,7 +477,8 @@ pub struct WasmImage {
 impl WasmImage {
     #[wasm_bindgen(constructor)]
     pub fn new(
-        image: HtmlImageElement,
+        image_base64: String,
+        mime_type: String,
         top: f64,
         left: f64,
         bottom: f64,
@@ -483,16 +489,21 @@ impl WasmImage {
         let bottom_right_corner = (right, bottom);
         WasmImage {
             image: Image {
-                image,
+                image_base64,
+                mime_type,
                 top_left_corner,
                 bottom_right_corner,
                 alpha
             }
         }
     }
-    #[wasm_bindgen(js_name = getImage)]
-    pub fn get_image(&self) -> HtmlImageElement {
-        self.image.image.clone()
+    #[wasm_bindgen(js_name = getImageBase64)]
+    pub fn get_image_base64(&self) -> String {
+        self.image.image_base64.clone()
+    }
+    #[wasm_bindgen(js_name = getMimeType)]
+    pub fn get_mime_type(&self) -> String {
+        self.image.mime_type.clone()
     }
     #[wasm_bindgen(js_name = getTop)]
     pub fn get_top(&self) -> f64 {

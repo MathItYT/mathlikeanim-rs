@@ -14,7 +14,8 @@ pub struct GradientStop {
 
 #[derive(Clone, Debug)]
 pub struct Image {
-    pub image: web_sys::HtmlImageElement,
+    pub image_base64: String,
+    pub mime_type: String,
     pub top_left_corner: (f64, f64),
     pub bottom_right_corner: (f64, f64),
     pub alpha: f64,

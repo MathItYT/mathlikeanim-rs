@@ -23,7 +23,9 @@ pub struct Scene {
     #[wasm_bindgen(skip)]
     pub context: Option<web_sys::CanvasRenderingContext2d>,
     #[wasm_bindgen(skip)]
-    pub states: HashMap<usize, (Vec<VectorFeatures>, GradientImageOrColor, (f64, f64), (f64, f64))>
+    pub states: HashMap<usize, (Vec<VectorFeatures>, GradientImageOrColor, (f64, f64), (f64, f64))>,
+    #[wasm_bindgen(skip)]
+    pub callback: &'static dyn Fn()
 }
 
 
@@ -43,8 +45,12 @@ impl SceneAPI for Scene {
             }),
             top_left_corner: (0.0, 0.0),
             bottom_right_corner: (width as f64, height as f64),
-            states: HashMap::new()
+            states: HashMap::new(),
+            callback: Box::leak(Box::new(&|| {})),
         };
+    }
+    fn on_rendered(&self) {
+        (self.callback)();
     }
     fn get_fps(&self) -> &u64 {
         return &self.fps;
@@ -55,7 +61,7 @@ impl SceneAPI for Scene {
     fn get_width(&self) -> &u64 {
         return &self.width;
     }
-    fn render_frame(&mut self) {
+    fn render_frame(&self) {
         render_all_vectors(&self.objects.clone(), self.width, self.height, self.context.clone(), self.background.clone(), self.top_left_corner, self.bottom_right_corner);
     }
     fn clear(&mut self) {
@@ -248,5 +254,15 @@ impl Scene {
     #[wasm_bindgen(js_name = wait)]
     pub async fn wait_js(&mut self, duration_in_frames: u64) {
         self.wait(duration_in_frames).await;
+    }
+    #[wasm_bindgen(js_name = setCallback)]
+    pub fn set_callback_js(&mut self, callback: js_sys::Function) {
+        self.callback = Box::leak(Box::new(move || {
+            callback.call0(&JsValue::NULL).unwrap();
+        }));
+    }
+    #[wasm_bindgen(js_name = callCallback)]
+    pub fn call_callback_js(&self) {
+        (self.callback)();
     }
 }

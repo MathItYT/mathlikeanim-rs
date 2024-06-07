@@ -386,7 +386,7 @@ pub trait VectorObject {
         aligned_edge: (f64, f64),
         recursive: bool
     ) -> Self;
-    fn set_background_image(&self, image: web_sys::HtmlImageElement, recursive: bool) -> Self;
+    fn set_background_image(&self, image_base64: String, mime_type: String, width: usize, height: usize, recursive: bool) -> Self;
     fn set_fill_image_corners(&self, top_left_corner: (f64, f64), bottom_right_corner: (f64, f64), recursive: bool) -> Self;
     fn set_stroke_image_corners(&self, top_left_corner: (f64, f64), bottom_right_corner: (f64, f64), recursive: bool) -> Self;
     fn get_fill_image_corners(&self) -> ((f64, f64), (f64, f64));
@@ -619,7 +619,8 @@ impl VectorObject for VectorFeatures {
                 alpha: opacity
             }),
             GradientImageOrColor::Image(image) => GradientImageOrColor::Image(Image {
-                image: image.image.clone(),
+                image_base64: image.image_base64.clone(),
+                mime_type: image.mime_type.clone(),
                 top_left_corner: image.top_left_corner,
                 bottom_right_corner: image.bottom_right_corner,
                 alpha: opacity
@@ -706,7 +707,8 @@ impl VectorObject for VectorFeatures {
                 alpha: opacity
             }),
             GradientImageOrColor::Image(image) => GradientImageOrColor::Image(Image {
-                image: image.image.clone(),
+                image_base64: image.image_base64.clone(),
+                mime_type: image.mime_type.clone(),
                 top_left_corner: image.top_left_corner,
                 bottom_right_corner: image.bottom_right_corner,
                 alpha: opacity
@@ -914,41 +916,52 @@ impl VectorObject for VectorFeatures {
         result.subobjects = new_subobjects;
         return result;
     }
-    fn set_background_image(&self, image: web_sys::HtmlImageElement, recursive: bool) -> Self {
+    fn set_background_image(
+        &self,
+        image_base64: String,
+        mime_type: String,
+        width: usize,
+        height: usize,
+        recursive: bool
+    ) -> Self {
         if recursive {
             return VectorFeatures {
                 points: self.points.clone(),
                 fill: GradientImageOrColor::Image(Image {
-                    image: image.clone(),
+                    image_base64: image_base64.clone(),
+                    mime_type: mime_type.clone(),
                     top_left_corner: (0.0, 0.0),
-                    bottom_right_corner: (image.width() as f64, image.height() as f64),
+                    bottom_right_corner: (width as f64, height as f64),
                     alpha: 1.0
                 }),
                 stroke: GradientImageOrColor::Image(Image {
-                    image: image.clone(),
+                    image_base64: image_base64.clone(),
+                    mime_type: mime_type.clone(),
                     top_left_corner: (0.0, 0.0),
-                    bottom_right_corner: (image.width() as f64, image.height() as f64),
+                    bottom_right_corner: (width as f64, height as f64),
                     alpha: 1.0
                 }),
                 stroke_width: self.stroke_width,
                 line_cap: self.line_cap,
                 line_join: self.line_join,
-                subobjects: self.subobjects.iter().map(|subobject| subobject.set_background_image(image.clone(), true)).collect(),
+                subobjects: self.subobjects.iter().map(|subobject| subobject.set_background_image(image_base64.clone(), mime_type.clone(), width, height, true)).collect(),
                 index: self.index,
             };
         }
         return VectorFeatures {
             points: self.points.clone(),
             fill: GradientImageOrColor::Image(Image {
-                image: image.clone(),
+                image_base64: image_base64.clone(),
+                mime_type: mime_type.clone(),
                 top_left_corner: (0.0, 0.0),
-                bottom_right_corner: (image.width() as f64, image.height() as f64),
+                bottom_right_corner: (width as f64, height as f64),
                 alpha: 1.0
             }),
             stroke: GradientImageOrColor::Image(Image {
-                image: image.clone(),
+                image_base64: image_base64.clone(),
+                mime_type: mime_type.clone(),
                 top_left_corner: (0.0, 0.0),
-                bottom_right_corner: (image.width() as f64, image.height() as f64),
+                bottom_right_corner: (width as f64, height as f64),
                 alpha: 1.0
             }),
             stroke_width: self.stroke_width,
@@ -961,7 +974,8 @@ impl VectorObject for VectorFeatures {
     fn set_fill_image_corners(&self, top_left_corner: (f64, f64), bottom_right_corner: (f64, f64), recursive: bool) -> Self {
         let new_stroke = match &self.stroke {
             GradientImageOrColor::Image(image) => GradientImageOrColor::Image(Image {
-                image: image.image.clone(),
+                image_base64: image.image_base64.clone(),
+                mime_type: image.mime_type.clone(),
                 top_left_corner: top_left_corner,
                 bottom_right_corner: bottom_right_corner,
                 alpha: image.alpha
@@ -994,7 +1008,8 @@ impl VectorObject for VectorFeatures {
     fn set_stroke_image_corners(&self, top_left_corner: (f64, f64), bottom_right_corner: (f64, f64), recursive: bool) -> Self {
         let new_fill = match &self.fill {
             GradientImageOrColor::Image(image) => GradientImageOrColor::Image(Image {
-                image: image.image.clone(),
+                image_base64: image.image_base64.clone(),
+                mime_type: image.mime_type.clone(),
                 top_left_corner: top_left_corner,
                 bottom_right_corner: bottom_right_corner,
                 alpha: image.alpha
@@ -1037,6 +1052,3 @@ impl VectorObject for VectorFeatures {
         }
     }
 }
-
-
-unsafe impl Send for VectorFeatures {}
