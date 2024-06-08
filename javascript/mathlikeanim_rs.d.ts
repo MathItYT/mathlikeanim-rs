@@ -646,6 +646,11 @@ export function showTemporaily(vec_obj: WasmVectorObject, t: number): WasmVector
 */
 export function spinningGrow(angle: number): Function;
 /**
+* @param {string} expression
+* @returns {Promise<WasmVectorObject>}
+*/
+export function mathjax(expression: string): Promise<WasmVectorObject>;
+/**
 * @param {bigint} n
 * @returns {bigint}
 */
@@ -2146,29 +2151,7 @@ export interface InitOutput {
   readonly shiftImagePosition: (a: number) => number;
   readonly showTemporaily: (a: number, b: number) => number;
   readonly spinningGrow: (a: number) => number;
-  readonly __wbg_svgscene_free: (a: number) => void;
-  readonly svgscene_new_js: (a: number, b: number, c: number) => number;
-  readonly svgscene_getFps: (a: number) => number;
-  readonly svgscene_getHeight: (a: number) => number;
-  readonly svgscene_getWidth: (a: number) => number;
-  readonly svgscene_renderFrame: (a: number) => void;
-  readonly svgscene_clear: (a: number) => void;
-  readonly svgscene_restore: (a: number, b: number) => void;
-  readonly svgscene_saveState: (a: number, b: number) => void;
-  readonly svgscene_setTopLeftCorner: (a: number, b: number, c: number) => void;
-  readonly svgscene_setBottomRightCorner: (a: number, b: number, c: number) => void;
-  readonly svgscene_getTopLeftCorner: (a: number) => number;
-  readonly svgscene_getBottomRightCorner: (a: number) => number;
-  readonly svgscene_setBackground: (a: number, b: number) => void;
-  readonly svgscene_add: (a: number, b: number) => void;
-  readonly svgscene_remove: (a: number, b: number) => void;
-  readonly svgscene_getObjectsFromIndices: (a: number, b: number) => number;
-  readonly svgscene_setDivContainer: (a: number, b: number) => void;
-  readonly svgscene_sleep: (a: number, b: number) => number;
-  readonly svgscene_play: (a: number, b: number, c: number, d: number, e: number, f: number) => number;
-  readonly svgscene_makeFrame: (a: number, b: number, c: number, d: number, e: number) => void;
-  readonly svgscene_wait: (a: number, b: number) => number;
-  readonly svgscene_setCallback: (a: number, b: number) => void;
+  readonly mathjax: (a: number, b: number) => number;
   readonly factorial: (a: number) => number;
   readonly hexToColor: (a: number, b: number, c: number) => number;
   readonly bezier: (a: number, b: number) => number;
@@ -2242,6 +2225,29 @@ export interface InitOutput {
   readonly easeOutBack: (a: number) => number;
   readonly slowInto: (a: number) => number;
   readonly easeOutBounce: (a: number) => number;
+  readonly __wbg_svgscene_free: (a: number) => void;
+  readonly svgscene_new_js: (a: number, b: number, c: number) => number;
+  readonly svgscene_getFps: (a: number) => number;
+  readonly svgscene_getHeight: (a: number) => number;
+  readonly svgscene_getWidth: (a: number) => number;
+  readonly svgscene_renderFrame: (a: number) => void;
+  readonly svgscene_clear: (a: number) => void;
+  readonly svgscene_restore: (a: number, b: number) => void;
+  readonly svgscene_saveState: (a: number, b: number) => void;
+  readonly svgscene_setTopLeftCorner: (a: number, b: number, c: number) => void;
+  readonly svgscene_setBottomRightCorner: (a: number, b: number, c: number) => void;
+  readonly svgscene_getTopLeftCorner: (a: number) => number;
+  readonly svgscene_getBottomRightCorner: (a: number) => number;
+  readonly svgscene_setBackground: (a: number, b: number) => void;
+  readonly svgscene_add: (a: number, b: number) => void;
+  readonly svgscene_remove: (a: number, b: number) => void;
+  readonly svgscene_getObjectsFromIndices: (a: number, b: number) => number;
+  readonly svgscene_setDivContainer: (a: number, b: number) => void;
+  readonly svgscene_sleep: (a: number, b: number) => number;
+  readonly svgscene_play: (a: number, b: number, c: number, d: number, e: number, f: number) => number;
+  readonly svgscene_makeFrame: (a: number, b: number, c: number, d: number, e: number) => void;
+  readonly svgscene_wait: (a: number, b: number) => number;
+  readonly svgscene_setCallback: (a: number, b: number) => void;
   readonly __wbindgen_malloc: (a: number, b: number) => number;
   readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
   readonly __wbindgen_export_2: WebAssembly.Table;
