@@ -9,8 +9,13 @@ use crate::objects::wasm_interface::{svg_to_vector_js, WasmVectorObject};
 #[wasm_bindgen]
 pub async fn mathjax(expression: String) -> WasmVectorObject {
     let function = eval(
-        &r#"function(expression) {
+        &r#"(expression) => {
     return new Promise((resolve, reject) => {
+        if (document.getElementById('mathjax-script')) {
+            const svg = window.MathJax.tex2svg(expression).children[0].outerHTML;
+            resolve(svg);
+            return;
+        }
         window.MathJax = {
             startup: {
                 ready: () => {
@@ -18,18 +23,23 @@ pub async fn mathjax(expression: String) -> WasmVectorObject {
                     const svg = window.MathJax.tex2svg(expression).children[0].outerHTML;
                     resolve(svg);
                 }
-            },
+            }
         };
         const script = document.createElement('script');
-        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg-full.js';
-        script.type = 'text/javascript';
-        script.crossOrigin = 'anonymous';
-        script.onerror = reject;   
+        script.setAttribute('src', 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg-full.js');
+        script.setAttribute('crossorigin', 'anonymous');
+        script.setAttribute('type', 'text/javascript');
+        script.setAttribute('async', true);
+        script.setAttribute('id', 'mathjax-script');
+        script.addEventListener('error', reject);
         document.head.appendChild(script);
     });
-}"#
+}"#,
     ).unwrap().dyn_into::<js_sys::Function>().unwrap();
-    let promise = function.call1(&JsValue::NULL, &JsValue::from(expression)).unwrap().dyn_into::<Promise>().unwrap();
+    let promise = function.call1(
+        &JsValue::NULL,
+        &JsValue::from(expression)
+    ).unwrap().dyn_into::<Promise>().unwrap();
     let result = JsFuture::from(promise).await.unwrap();
     let svg = result.as_string().unwrap();
     svg_to_vector_js(svg)

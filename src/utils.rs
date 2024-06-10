@@ -6,7 +6,7 @@
 
 use std::{f64::consts::PI, vec};
 
-use crate::{colors::{Color, GradientImageOrColor}, objects::vector_object::{generate_cubic_bezier_tuples, generate_subpaths, partial_bezier_points, VectorFeatures, VectorObject}};
+use crate::{colors::{Color, GradientImageOrColor}, objects::{geometry::arc::elliptical_arc, vector_object::{generate_cubic_bezier_tuples, generate_subpaths, partial_bezier_points, VectorFeatures, VectorObject}}};
 use wasm_bindgen::prelude::*;
 
 /// Log utilities for console when using WebAssembly
@@ -27,6 +27,103 @@ pub async fn sleep(delay: i32) {
     let p = js_sys::Promise::new(&mut cb);
 
     wasm_bindgen_futures::JsFuture::from(p).await.unwrap();
+}
+
+
+pub fn radian(ux: f64, uy: f64, vx: f64, vy: f64) -> f64 {
+    let dot = ux * vx + uy * vy;
+    let mod_ = (ux * ux + uy * uy).sqrt();
+    let rad = (dot / mod_).acos();
+    if (ux * vy - uy * vx) < 0.0 {
+        return -rad;
+    }
+    return rad;
+}
+
+
+pub fn elliptical_arc_path(
+    last_move: (f64, f64),
+    rx: f64,
+    ry: f64,
+    rotation: f64,
+    large_arc: bool,
+    sweep: bool,
+    x: f64,
+    y: f64
+) -> Vec<(f64, f64)> {
+    let phi = rotation.to_radians();
+    let mut rx = rx.abs();
+    let mut ry = ry.abs();
+    let s_phi = phi.sin();
+    let c_phi = phi.cos();
+    let hd_x = (last_move.0 - x) / 2.0;
+    let hd_y = (last_move.1 - y) / 2.0;
+    let hs_x = (last_move.0 + x) / 2.0;
+    let hs_y = (last_move.1 + y) / 2.0;
+    let x1_ = c_phi * hd_x + s_phi * hd_y;
+    let y1_ = -s_phi * hd_x + c_phi * hd_y;
+    let lambda = (x1_ * x1_) / (rx * rx) + (y1_ * y1_) / (ry * ry);
+    if lambda > 1.0 {
+        rx = rx * lambda.sqrt();
+        ry = ry * lambda.sqrt();
+    }
+    let rxry = rx * ry;
+    let rxy1_ = rx * y1_;
+    let ryx1_ = ry * x1_;
+    let sum_of_sq = rxy1_ * rxy1_ + ryx1_ * ryx1_;
+    let mut coe = ((rxry * rxry - sum_of_sq) / sum_of_sq).abs().sqrt();
+    if large_arc == sweep {
+        coe = -coe;
+    }
+    let cx_ = coe * rxy1_ / ry;
+    let cy_ = -coe * ryx1_ / rx;
+    let cx = c_phi * cx_ - s_phi * cy_ + hs_x;
+    let cy = s_phi * cx_ + c_phi * cy_ + hs_y;
+    let xcr1 = (x1_ - cx_) / rx;
+    let xcr2 = (x1_ + cx_) / rx;
+    let ycr1 = (y1_ - cy_) / ry;
+    let ycr2 = (y1_ + cy_) / ry;
+    let start_angle = radian(1.0, 0.0, xcr1, ycr1);
+    let mut delta_angle = radian(xcr1, ycr1, -xcr2, -ycr2);
+    while delta_angle > 2.0 * PI {
+        delta_angle = delta_angle - 2.0 * PI;
+    }
+    while delta_angle < 0.0 {
+        delta_angle = delta_angle + 2.0 * PI;
+    }
+    if sweep {
+        delta_angle = delta_angle - 2.0 * PI;
+    }
+    let mut end_angle = start_angle + delta_angle;
+    while end_angle > 2.0 * PI {
+        end_angle = end_angle - 2.0 * PI;
+    }
+    while end_angle < 0.0 {
+        end_angle = end_angle + 2.0 * PI;
+    }
+    let arc = elliptical_arc(
+        (cx, cy),
+        rx,
+        ry,
+        start_angle,
+        end_angle,
+        None,
+        None,
+        None,
+        None,
+        None,
+        None,
+        None
+    );
+    let rotated = arc.rotate(
+        rotation,
+        true
+    );
+    let translated = rotated.shift(
+        (last_move.0 - x, last_move.1 - y),
+        true
+    );
+    return translated.points;
 }
 
 

@@ -227,7 +227,7 @@ function _assertClass(instance, klass) {
 function __wbg_adapter_32(arg0, arg1, arg2, arg3) {
     _assertClass(arg2, WasmVectorObject);
     var ptr0 = arg2.__destroy_into_raw();
-    const ret = wasm.wasm_bindgen__convert__closures__invoke2__h012970711312cd18(arg0, arg1, ptr0, arg3);
+    const ret = wasm.wasm_bindgen__convert__closures__invoke2__hd279372c54fbb211(arg0, arg1, ptr0, arg3);
     return WasmVectorObject.__wrap(ret);
 }
 
@@ -256,7 +256,7 @@ function makeMutClosure(arg0, arg1, dtor, f) {
     return real;
 }
 function __wbg_adapter_35(arg0, arg1, arg2) {
-    wasm._dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h2ec1268ddadcfa17(arg0, arg1, addHeapObject(arg2));
+    wasm._dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h658c7ef59a74f654(arg0, arg1, addHeapObject(arg2));
 }
 
 let cachedUint32Memory0 = null;
@@ -1348,264 +1348,31 @@ function passArray32ToWasm0(arg, malloc) {
     WASM_VECTOR_LEN = arg.length;
     return ptr;
 }
-
-function getArrayF64FromWasm0(ptr, len) {
-    ptr = ptr >>> 0;
-    return getFloat64Memory0().subarray(ptr / 8, ptr / 8 + len);
-}
 /**
-* @param {number} num_anim_funcs
-* @param {number} lag_ratio
-* @returns {Float64Array}
+* @param {number} ux
+* @param {number} uy
+* @param {number} vx
+* @param {number} vy
+* @returns {number}
 */
-export function makeTimings(num_anim_funcs, lag_ratio) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        wasm.makeTimings(retptr, num_anim_funcs, lag_ratio);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var v1 = getArrayF64FromWasm0(r0, r1).slice();
-        wasm.__wbindgen_free(r0, r1 * 8, 8);
-        return v1;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
+export function radian(ux, uy, vx, vy) {
+    const ret = wasm.radian(ux, uy, vx, vy);
+    return ret;
 }
 
 /**
-* @param {(Function)[]} anim_funcs
-* @param {number} lag_ratio
-* @returns {Function}
+* @param {Array<any>} last_move
+* @param {number} rx
+* @param {number} ry
+* @param {number} rotation
+* @param {boolean} large_arc
+* @param {boolean} sweep
+* @param {number} x
+* @param {number} y
+* @returns {Array<any>}
 */
-export function animationGroup(anim_funcs, lag_ratio) {
-    const ptr0 = passArrayJsValueToWasm0(anim_funcs, wasm.__wbindgen_malloc);
-    const len0 = WASM_VECTOR_LEN;
-    const ret = wasm.animationGroup(ptr0, len0, lag_ratio);
-    return takeObject(ret);
-}
-
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function create(vec_obj, t) {
-    _assertClass(vec_obj, WasmVectorObject);
-    var ptr0 = vec_obj.__destroy_into_raw();
-    const ret = wasm.create(ptr0, t);
-    return WasmVectorObject.__wrap(ret);
-}
-
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function drawStrokeThenFill(vec_obj, t) {
-    _assertClass(vec_obj, WasmVectorObject);
-    var ptr0 = vec_obj.__destroy_into_raw();
-    const ret = wasm.drawStrokeThenFill(ptr0, t);
-    return WasmVectorObject.__wrap(ret);
-}
-
-/**
-* @param {number} number_of_objects
-* @param {number} lag_ratio
-* @returns {Function}
-*/
-export function write(number_of_objects, lag_ratio) {
-    const ret = wasm.write(number_of_objects, lag_ratio);
-    return takeObject(ret);
-}
-
-/**
-* @param {number} scale_factor
-* @param {Array<any>} shift
-* @returns {Function}
-*/
-export function fadeIn(scale_factor, shift) {
-    const ret = wasm.fadeIn(scale_factor, addHeapObject(shift));
-    return takeObject(ret);
-}
-
-/**
-* @param {number} scale_factor
-* @param {Array<any>} shift
-* @returns {Function}
-*/
-export function fadeOut(scale_factor, shift) {
-    const ret = wasm.fadeOut(scale_factor, addHeapObject(shift));
-    return takeObject(ret);
-}
-
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function growArrowWithFinalTip(vec_obj, t) {
-    _assertClass(vec_obj, WasmVectorObject);
-    var ptr0 = vec_obj.__destroy_into_raw();
-    const ret = wasm.growArrowWithFinalTip(ptr0, t);
-    return WasmVectorObject.__wrap(ret);
-}
-
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function growArrowWithInitialTip(vec_obj, t) {
-    _assertClass(vec_obj, WasmVectorObject);
-    var ptr0 = vec_obj.__destroy_into_raw();
-    const ret = wasm.growArrowWithInitialTip(ptr0, t);
-    return WasmVectorObject.__wrap(ret);
-}
-
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function growArrowWithTipsAtBothEnds(vec_obj, t) {
-    _assertClass(vec_obj, WasmVectorObject);
-    var ptr0 = vec_obj.__destroy_into_raw();
-    const ret = wasm.growArrowWithTipsAtBothEnds(ptr0, t);
-    return WasmVectorObject.__wrap(ret);
-}
-
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function growFromCenter(vec_obj, t) {
-    _assertClass(vec_obj, WasmVectorObject);
-    var ptr0 = vec_obj.__destroy_into_raw();
-    const ret = wasm.growFromCenter(ptr0, t);
-    return WasmVectorObject.__wrap(ret);
-}
-
-/**
-* @param {WasmVectorObject} target
-* @returns {Function}
-*/
-export function morphShape(target) {
-    _assertClass(target, WasmVectorObject);
-    var ptr0 = target.__destroy_into_raw();
-    const ret = wasm.morphShape(ptr0);
-    return takeObject(ret);
-}
-
-/**
-* @param {Array<any>} top_left_corner
-* @param {Array<any>} bottom_right_corner
-* @param {SVGScene} scene
-* @param {number} t
-*/
-export function moveCameraSVG(top_left_corner, bottom_right_corner, scene, t) {
-    _assertClass(scene, SVGScene);
-    wasm.moveCameraSVG(addHeapObject(top_left_corner), addHeapObject(bottom_right_corner), scene.__wbg_ptr, t);
-}
-
-/**
-* @param {Array<any>} top_left_corner
-* @param {Array<any>} bottom_right_corner
-* @param {Scene} scene
-* @param {number} t
-*/
-export function moveCamera(top_left_corner, bottom_right_corner, scene, t) {
-    _assertClass(scene, Scene);
-    wasm.moveCamera(addHeapObject(top_left_corner), addHeapObject(bottom_right_corner), scene.__wbg_ptr, t);
-}
-
-/**
-* @param {number} angle
-* @returns {Function}
-*/
-export function rotateAnimation(angle) {
-    const ret = wasm.rotateAnimation(angle);
-    return takeObject(ret);
-}
-
-/**
-* @param {number} scale_factor
-* @returns {Function}
-*/
-export function scaleInPlace(scale_factor) {
-    const ret = wasm.scaleInPlace(scale_factor);
-    return takeObject(ret);
-}
-
-/**
-* @param {WasmColor} target_fill
-* @returns {Function}
-*/
-export function setFillAnimation(target_fill) {
-    _assertClass(target_fill, WasmColor);
-    var ptr0 = target_fill.__destroy_into_raw();
-    const ret = wasm.setFillAnimation(ptr0);
-    return takeObject(ret);
-}
-
-/**
-* @param {WasmColor} target_stroke
-* @returns {Function}
-*/
-export function setStrokeAnimation(target_stroke) {
-    _assertClass(target_stroke, WasmColor);
-    var ptr0 = target_stroke.__destroy_into_raw();
-    const ret = wasm.setStrokeAnimation(ptr0);
-    return takeObject(ret);
-}
-
-/**
-* @param {Array<any>} shift
-* @returns {Function}
-*/
-export function shiftAnimation(shift) {
-    const ret = wasm.shiftAnimation(addHeapObject(shift));
-    return takeObject(ret);
-}
-
-/**
-* @param {Array<any>} new_position
-* @returns {Function}
-*/
-export function shiftImagePosition(new_position) {
-    const ret = wasm.shiftImagePosition(addHeapObject(new_position));
-    return takeObject(ret);
-}
-
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function showTemporaily(vec_obj, t) {
-    _assertClass(vec_obj, WasmVectorObject);
-    var ptr0 = vec_obj.__destroy_into_raw();
-    const ret = wasm.showTemporaily(ptr0, t);
-    return WasmVectorObject.__wrap(ret);
-}
-
-/**
-* @param {number} angle
-* @returns {Function}
-*/
-export function spinningGrow(angle) {
-    const ret = wasm.spinningGrow(angle);
-    return takeObject(ret);
-}
-
-/**
-* @param {string} expression
-* @returns {Promise<WasmVectorObject>}
-*/
-export function mathjax(expression) {
-    const ptr0 = passStringToWasm0(expression, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-    const len0 = WASM_VECTOR_LEN;
-    const ret = wasm.mathjax(ptr0, len0);
+export function ellipticalArcPath(last_move, rx, ry, rotation, large_arc, sweep, x, y) {
+    const ret = wasm.ellipticalArcPath(addHeapObject(last_move), rx, ry, rotation, large_arc, sweep, x, y);
     return takeObject(ret);
 }
 
@@ -2349,6 +2116,266 @@ export function easeInOutBounce(t) {
     return ret;
 }
 
+function getArrayF64FromWasm0(ptr, len) {
+    ptr = ptr >>> 0;
+    return getFloat64Memory0().subarray(ptr / 8, ptr / 8 + len);
+}
+/**
+* @param {number} num_anim_funcs
+* @param {number} lag_ratio
+* @returns {Float64Array}
+*/
+export function makeTimings(num_anim_funcs, lag_ratio) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        wasm.makeTimings(retptr, num_anim_funcs, lag_ratio);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var v1 = getArrayF64FromWasm0(r0, r1).slice();
+        wasm.__wbindgen_free(r0, r1 * 8, 8);
+        return v1;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+}
+
+/**
+* @param {(Function)[]} anim_funcs
+* @param {number} lag_ratio
+* @returns {Function}
+*/
+export function animationGroup(anim_funcs, lag_ratio) {
+    const ptr0 = passArrayJsValueToWasm0(anim_funcs, wasm.__wbindgen_malloc);
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.animationGroup(ptr0, len0, lag_ratio);
+    return takeObject(ret);
+}
+
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+export function create(vec_obj, t) {
+    _assertClass(vec_obj, WasmVectorObject);
+    var ptr0 = vec_obj.__destroy_into_raw();
+    const ret = wasm.create(ptr0, t);
+    return WasmVectorObject.__wrap(ret);
+}
+
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+export function drawStrokeThenFill(vec_obj, t) {
+    _assertClass(vec_obj, WasmVectorObject);
+    var ptr0 = vec_obj.__destroy_into_raw();
+    const ret = wasm.drawStrokeThenFill(ptr0, t);
+    return WasmVectorObject.__wrap(ret);
+}
+
+/**
+* @param {number} number_of_objects
+* @param {number} lag_ratio
+* @returns {Function}
+*/
+export function write(number_of_objects, lag_ratio) {
+    const ret = wasm.write(number_of_objects, lag_ratio);
+    return takeObject(ret);
+}
+
+/**
+* @param {number} scale_factor
+* @param {Array<any>} shift
+* @returns {Function}
+*/
+export function fadeIn(scale_factor, shift) {
+    const ret = wasm.fadeIn(scale_factor, addHeapObject(shift));
+    return takeObject(ret);
+}
+
+/**
+* @param {number} scale_factor
+* @param {Array<any>} shift
+* @returns {Function}
+*/
+export function fadeOut(scale_factor, shift) {
+    const ret = wasm.fadeOut(scale_factor, addHeapObject(shift));
+    return takeObject(ret);
+}
+
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+export function growArrowWithFinalTip(vec_obj, t) {
+    _assertClass(vec_obj, WasmVectorObject);
+    var ptr0 = vec_obj.__destroy_into_raw();
+    const ret = wasm.growArrowWithFinalTip(ptr0, t);
+    return WasmVectorObject.__wrap(ret);
+}
+
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+export function growArrowWithInitialTip(vec_obj, t) {
+    _assertClass(vec_obj, WasmVectorObject);
+    var ptr0 = vec_obj.__destroy_into_raw();
+    const ret = wasm.growArrowWithInitialTip(ptr0, t);
+    return WasmVectorObject.__wrap(ret);
+}
+
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+export function growArrowWithTipsAtBothEnds(vec_obj, t) {
+    _assertClass(vec_obj, WasmVectorObject);
+    var ptr0 = vec_obj.__destroy_into_raw();
+    const ret = wasm.growArrowWithTipsAtBothEnds(ptr0, t);
+    return WasmVectorObject.__wrap(ret);
+}
+
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+export function growFromCenter(vec_obj, t) {
+    _assertClass(vec_obj, WasmVectorObject);
+    var ptr0 = vec_obj.__destroy_into_raw();
+    const ret = wasm.growFromCenter(ptr0, t);
+    return WasmVectorObject.__wrap(ret);
+}
+
+/**
+* @param {WasmVectorObject} target
+* @returns {Function}
+*/
+export function morphShape(target) {
+    _assertClass(target, WasmVectorObject);
+    var ptr0 = target.__destroy_into_raw();
+    const ret = wasm.morphShape(ptr0);
+    return takeObject(ret);
+}
+
+/**
+* @param {Array<any>} top_left_corner
+* @param {Array<any>} bottom_right_corner
+* @param {SVGScene} scene
+* @param {number} t
+*/
+export function moveCameraSVG(top_left_corner, bottom_right_corner, scene, t) {
+    _assertClass(scene, SVGScene);
+    wasm.moveCameraSVG(addHeapObject(top_left_corner), addHeapObject(bottom_right_corner), scene.__wbg_ptr, t);
+}
+
+/**
+* @param {Array<any>} top_left_corner
+* @param {Array<any>} bottom_right_corner
+* @param {Scene} scene
+* @param {number} t
+*/
+export function moveCamera(top_left_corner, bottom_right_corner, scene, t) {
+    _assertClass(scene, Scene);
+    wasm.moveCamera(addHeapObject(top_left_corner), addHeapObject(bottom_right_corner), scene.__wbg_ptr, t);
+}
+
+/**
+* @param {number} angle
+* @returns {Function}
+*/
+export function rotateAnimation(angle) {
+    const ret = wasm.rotateAnimation(angle);
+    return takeObject(ret);
+}
+
+/**
+* @param {number} scale_factor
+* @returns {Function}
+*/
+export function scaleInPlace(scale_factor) {
+    const ret = wasm.scaleInPlace(scale_factor);
+    return takeObject(ret);
+}
+
+/**
+* @param {WasmColor} target_fill
+* @returns {Function}
+*/
+export function setFillAnimation(target_fill) {
+    _assertClass(target_fill, WasmColor);
+    var ptr0 = target_fill.__destroy_into_raw();
+    const ret = wasm.setFillAnimation(ptr0);
+    return takeObject(ret);
+}
+
+/**
+* @param {WasmColor} target_stroke
+* @returns {Function}
+*/
+export function setStrokeAnimation(target_stroke) {
+    _assertClass(target_stroke, WasmColor);
+    var ptr0 = target_stroke.__destroy_into_raw();
+    const ret = wasm.setStrokeAnimation(ptr0);
+    return takeObject(ret);
+}
+
+/**
+* @param {Array<any>} shift
+* @returns {Function}
+*/
+export function shiftAnimation(shift) {
+    const ret = wasm.shiftAnimation(addHeapObject(shift));
+    return takeObject(ret);
+}
+
+/**
+* @param {Array<any>} new_position
+* @returns {Function}
+*/
+export function shiftImagePosition(new_position) {
+    const ret = wasm.shiftImagePosition(addHeapObject(new_position));
+    return takeObject(ret);
+}
+
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+export function showTemporaily(vec_obj, t) {
+    _assertClass(vec_obj, WasmVectorObject);
+    var ptr0 = vec_obj.__destroy_into_raw();
+    const ret = wasm.showTemporaily(ptr0, t);
+    return WasmVectorObject.__wrap(ret);
+}
+
+/**
+* @param {number} angle
+* @returns {Function}
+*/
+export function spinningGrow(angle) {
+    const ret = wasm.spinningGrow(angle);
+    return takeObject(ret);
+}
+
+/**
+* @param {string} expression
+* @returns {Promise<WasmVectorObject>}
+*/
+export function mathjax(expression) {
+    const ptr0 = passStringToWasm0(expression, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.mathjax(ptr0, len0);
+    return takeObject(ret);
+}
+
 function handleError(f, args) {
     try {
         return f.apply(this, args);
@@ -2356,8 +2383,8 @@ function handleError(f, args) {
         wasm.__wbindgen_exn_store(addHeapObject(e));
     }
 }
-function __wbg_adapter_496(arg0, arg1, arg2, arg3) {
-    wasm.wasm_bindgen__convert__closures__invoke2_mut__h4e790cd85c9f99fb(arg0, arg1, addHeapObject(arg2), addHeapObject(arg3));
+function __wbg_adapter_500(arg0, arg1, arg2, arg3) {
+    wasm.wasm_bindgen__convert__closures__invoke2_mut__h60fd2dc8490fe53c(arg0, arg1, addHeapObject(arg2), addHeapObject(arg3));
 }
 
 const SVGSceneFinalization = (typeof FinalizationRegistry === 'undefined')
@@ -4220,6 +4247,9 @@ function __wbg_get_imports() {
         const ret = WasmVectorObject.__unwrap(takeObject(arg0));
         return ret;
     };
+    imports.wbg.__wbg_log_a5f2e2b71d1859a9 = function(arg0, arg1) {
+        console.log(getStringFromWasm0(arg0, arg1));
+    };
     imports.wbg.__wbg_wasmthreedobject_unwrap = function(arg0) {
         const ret = WasmThreeDObject.__unwrap(takeObject(arg0));
         return ret;
@@ -4396,7 +4426,7 @@ function __wbg_get_imports() {
         const ret = getObject(arg0).appendChild(getObject(arg1));
         return addHeapObject(ret);
     }, arguments) };
-    imports.wbg.__wbg_crypto_d05b68a3572bb8ca = function(arg0) {
+    imports.wbg.__wbg_crypto_1d1f22824a6a080c = function(arg0) {
         const ret = getObject(arg0).crypto;
         return addHeapObject(ret);
     };
@@ -4405,15 +4435,15 @@ function __wbg_get_imports() {
         const ret = typeof(val) === 'object' && val !== null;
         return ret;
     };
-    imports.wbg.__wbg_process_b02b3570280d0366 = function(arg0) {
+    imports.wbg.__wbg_process_4a72847cc503995b = function(arg0) {
         const ret = getObject(arg0).process;
         return addHeapObject(ret);
     };
-    imports.wbg.__wbg_versions_c1cb42213cedf0f5 = function(arg0) {
+    imports.wbg.__wbg_versions_f686565e586dd935 = function(arg0) {
         const ret = getObject(arg0).versions;
         return addHeapObject(ret);
     };
-    imports.wbg.__wbg_node_43b1089f407e4ec2 = function(arg0) {
+    imports.wbg.__wbg_node_104a2ff8d6ea03a2 = function(arg0) {
         const ret = getObject(arg0).node;
         return addHeapObject(ret);
     };
@@ -4421,18 +4451,18 @@ function __wbg_get_imports() {
         const ret = typeof(getObject(arg0)) === 'string';
         return ret;
     };
-    imports.wbg.__wbg_msCrypto_10fc94afee92bd76 = function(arg0) {
+    imports.wbg.__wbg_msCrypto_eb05e62b530a1508 = function(arg0) {
         const ret = getObject(arg0).msCrypto;
         return addHeapObject(ret);
     };
-    imports.wbg.__wbg_require_9a7e0f667ead4995 = function() { return handleError(function () {
+    imports.wbg.__wbg_require_cca90b1a94a0255b = function() { return handleError(function () {
         const ret = module.require;
         return addHeapObject(ret);
     }, arguments) };
-    imports.wbg.__wbg_randomFillSync_b70ccbdf4926a99d = function() { return handleError(function (arg0, arg1) {
+    imports.wbg.__wbg_randomFillSync_5c9c955aa56b6049 = function() { return handleError(function (arg0, arg1) {
         getObject(arg0).randomFillSync(takeObject(arg1));
     }, arguments) };
-    imports.wbg.__wbg_getRandomValues_7e42b4fb8779dc6d = function() { return handleError(function (arg0, arg1) {
+    imports.wbg.__wbg_getRandomValues_3aa56aa6edec874c = function() { return handleError(function (arg0, arg1) {
         getObject(arg0).getRandomValues(getObject(arg1));
     }, arguments) };
     imports.wbg.__wbg_get_bd8e338fbd5f5cc8 = function(arg0, arg1) {
@@ -4544,7 +4574,7 @@ function __wbg_get_imports() {
                 const a = state0.a;
                 state0.a = 0;
                 try {
-                    return __wbg_adapter_496(a, state0.b, arg0, arg1);
+                    return __wbg_adapter_500(a, state0.b, arg0, arg1);
                 } finally {
                     state0.a = a;
                 }
@@ -4604,12 +4634,12 @@ function __wbg_get_imports() {
         const ret = wasm.memory;
         return addHeapObject(ret);
     };
-    imports.wbg.__wbindgen_closure_wrapper1065 = function(arg0, arg1, arg2) {
-        const ret = makeClosure(arg0, arg1, 157, __wbg_adapter_32);
+    imports.wbg.__wbindgen_closure_wrapper624 = function(arg0, arg1, arg2) {
+        const ret = makeClosure(arg0, arg1, 56, __wbg_adapter_32);
         return addHeapObject(ret);
     };
-    imports.wbg.__wbindgen_closure_wrapper1189 = function(arg0, arg1, arg2) {
-        const ret = makeMutClosure(arg0, arg1, 181, __wbg_adapter_35);
+    imports.wbg.__wbindgen_closure_wrapper1197 = function(arg0, arg1, arg2) {
+        const ret = makeMutClosure(arg0, arg1, 178, __wbg_adapter_35);
         return addHeapObject(ret);
     };
 

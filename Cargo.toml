@@ -1,6 +1,6 @@
 [package]
 name = "mathlikeanim-rs"
-version = "0.5.6"
+version = "0.5.7"
 edition = "2021"
 readme = "README.md"
 description = "A Rust library for creating mathematical animations"
@@ -26,11 +26,11 @@ keywords = ["animation", "graphics", "easing", "transitions", "WebAssembly"]
 categories = ["mathematics", "graphics", "wasm"]
 
 [dependencies]
-js-sys = "0.3.67"
-lightningcss = "1.0.0-alpha.52"
-svg = "0.15.0"
-wasm-bindgen = "0.2.90"
-web-sys = { version="0.3.67", features=[
+js-sys = "0.3.69"
+lightningcss = "1.0.0-alpha.57"
+svg = "0.17.0"
+wasm-bindgen = "0.2.92"
+web-sys = { version="0.3.69", features=[
     'CanvasRenderingContext2d',
     'Document',
     'Element',
@@ -47,8 +47,8 @@ web-sys = { version="0.3.67", features=[
     'Blob',
     'BlobPropertyBag'
 ] }
-wasm-bindgen-futures = "0.4.40"
-uuid = { version="0.8.2", features=["wasm-bindgen", "v4"] }
+wasm-bindgen-futures = "0.4.42"
+uuid = { version="1.8.0", features=["v4", "js"] }
 
 [lib]
 name = "mathlikeanim_rs"

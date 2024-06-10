@@ -8,7 +8,7 @@ This is an animation library written in Rust, widely inspired by [Manim](https:/
 - [x] Basic shapes.
 - [x] Function plotting.
 - [x] Animations in HTML Canvas and SVG.
-- [ ] Text rendering (not planned).
+- [x] Text rendering.
 - [ ] 3D rendering (coming soon).
 
 
