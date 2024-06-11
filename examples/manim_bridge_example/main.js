@@ -10,7 +10,7 @@ const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
 
-function callback() {
+async function callback() {
     urls.push(canvas.toDataURL('image/png', 1.0));
     passedFrames++;
 }
@@ -61,14 +61,6 @@ async function run() {
     scene = new Scene(BigInt(3840), BigInt(2160), BigInt(60));
     scene.setCanvasContext(ctx);
     scene.setBackground(WasmGradientImageOrColor.fromColor(hexToColor("#161616", 1.0)));
-    const creationParts = [];
-    for (let i = 0; i <= 60; i++) {
-        creationParts.push(await getManimBannerCreation(i / 60.0));
-    }
-    const expandParts = [];
-    for (let i = 0; i <= 60; i++) {
-        expandParts.push(await getManimBannerExpand(i / 60.0));
-    }
     const latexString1 = "\\textbf{MathLikeAnim-rs}";
     const latexString2 = "\\textbf{Interactive math and animations}";
     const titleSvg = await fetch(`/latex?input=${encodeURIComponent(latexString1)}`);
@@ -98,13 +90,13 @@ async function run() {
     let firstSubobject = subobjects[0].setStrokeWidth(8.0, true);
     subobjects[0] = firstSubobject;
     mathLikeLogo = mathLikeLogo.setSubobjects(subobjects);
-    scene.add(creationParts[0].clone());
+    scene.add(new WasmVectorObject());
     scene.add(title);
     scene.add(subtitle);
     scene.setCallback(callback);
     await scene.play(
-        (vecs, t) => {
-            let newObject = creationParts[Math.round(t * 60)];
+        async (vecs, t) => {
+            let newObject = await getManimBannerCreation(t);
             return [newObject];
         },
         [],
@@ -112,8 +104,8 @@ async function run() {
         linear
     );
     await scene.play(
-        (vecs, t) => {
-            let newObject = expandParts[Math.round(t * 60)];
+        async (vecs, t) => {
+            let newObject = await getManimBannerExpand(t);
             return [newObject];
         },
         [],
@@ -122,8 +114,8 @@ async function run() {
     );
     scene.add(mathLikeLogo);
     await scene.play(
-        (vecs, t) => {
-            let newLogo = spinningGrow(Math.PI / 2)(vecs[0], t);
+        async (vecs, t) => {
+            let newLogo = spinningGrow(Math.PI / 2)(vecs[0].clone(), t);
             return [newLogo];
         },
         [3],

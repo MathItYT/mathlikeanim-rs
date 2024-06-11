@@ -9,7 +9,7 @@ const message = document.getElementById('message');
 const ctx = canvas.getContext('2d');
 
 
-function callback() {
+async function callback() {
     urls.push(canvas.toDataURL('image/png', 1.0));
     passedFrames++;
 }
@@ -63,8 +63,8 @@ async function run() {
     mathLikeLogo = mathLikeLogo.setSubobjects(subobjects);
     scene.add(title);
     await scene.play(
-        (vecs, t) => {
-            let newTitle = write(vecs[0].getSubobjects().length, 0.4)(vecs[0], t);
+        async (vecs, t) => {
+            let newTitle = write(vecs[0].getSubobjects().length, 0.4)(vecs[0].clone(), t);
             return [newTitle];
         },
         [0],
@@ -77,8 +77,8 @@ async function run() {
     }
     scene.add(subtitle);
     await scene.play(
-        (vecs, t) => {
-            let newSubtitle = animationGroup(animations, 0.4)(vecs[0], t);
+        async (vecs, t) => {
+            let newSubtitle = animationGroup(animations, 0.4)(vecs[0].clone(), t);
             return [newSubtitle];
         },
         [1],
@@ -87,8 +87,8 @@ async function run() {
     );
     scene.add(mathLikeLogo);
     await scene.play(
-        (vecs, t) => {
-            let newLogo = spinningGrow(Math.PI / 2)(vecs[0], t);
+        async (vecs, t) => {
+            let newLogo = spinningGrow(Math.PI / 2)(vecs[0].clone(), t);
             return [newLogo];
         },
         [2],
@@ -119,8 +119,8 @@ async function run() {
     );
     scene.add(ax.clone());
     await scene.play(
-        (vecs, t) => {
-            let newAx = drawStrokeThenFill(vecs[0], t);
+        async (vecs, t) => {
+            let newAx = drawStrokeThenFill(vecs[0].clone(), t);
             return [newAx];
         },
         [3],
@@ -162,8 +162,8 @@ async function run() {
     plot = plot.setIndex(4);
     scene.add(plot);
     await scene.play(
-        (vecs, t) => {
-            let newPlot = create(vecs[0], t);
+        async (vecs, t) => {
+            let newPlot = create(vecs[0].clone(), t);
             return [newPlot];
         },
         [4],

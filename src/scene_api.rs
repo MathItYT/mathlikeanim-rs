@@ -1,6 +1,10 @@
 use std::{collections::HashMap, future::Future};
 
-use crate::{colors::GradientImageOrColor, objects::vector_object::VectorFeatures};
+use js_sys::{Array, Function, Promise};
+use wasm_bindgen::{closure::Closure, JsCast, JsValue};
+use wasm_bindgen_futures::JsFuture;
+
+use crate::{colors::GradientImageOrColor, objects::{vector_object::VectorFeatures, wasm_interface::WasmVectorObject}};
 
 pub trait SceneAPI {
     fn new(width: u64, height: u64, fps: u64) -> Self;
@@ -18,7 +22,7 @@ pub trait SceneAPI {
     fn get_width(&self) -> &u64;
     fn play(
         &mut self,
-        animation_func: impl Fn(Vec<VectorFeatures>, f64) -> Vec<VectorFeatures>,
+        animation_func: Function,
         object_indices: Vec<usize>,
         duration_in_frames: u64,
         rate_func: impl Fn(f64) -> f64
@@ -26,41 +30,65 @@ pub trait SceneAPI {
         async move {
             let fps = self.get_fps().clone();
             let objects = self.get_objects_from_indices(object_indices.clone());
+            let objects = objects.values().cloned().collect::<Vec<VectorFeatures>>();
+            let objects = objects.iter().map(|obj| {
+                WasmVectorObject {
+                    native_vec_features: obj.clone()
+                }
+            }).collect::<Array>();
             for frame in 0..duration_in_frames {
                 self.make_frame(
                     &animation_func,
-                    objects.values().cloned().collect(),
+                    &objects,
                     rate_func(frame as f64 / duration_in_frames as f64)
-                );
+                ).await;
                 self.render_frame();
-                self.on_rendered();
+                self.on_rendered().await;
                 self.sleep((1000 / fps) as i32).await;
             }
             self.make_frame(
                 &animation_func,
-                objects.values().cloned().collect(),
+                &objects,
                 rate_func(1.0)
-            );
+            ).await;
         }
     }
     fn make_frame(
         &mut self,
-        animation_func: &impl Fn(Vec<VectorFeatures>, f64) -> Vec<VectorFeatures>,
-        objects: Vec<VectorFeatures>,
+        animation_func: &Function,
+        objects: &Array,
         t: f64
-    ) {
-        let new_objects = animation_func(objects, t);
-        for obj in new_objects {
-            self.add(obj);
+    ) -> impl Future<Output = ()> {
+        async move {
+            let promise = animation_func.call2(
+                &JsValue::NULL,
+                &JsValue::from(objects),
+                &JsValue::from_f64(t)
+            ).unwrap().dyn_into::<Promise>().unwrap();
+            let result = JsFuture::from(promise).await.unwrap();
+            let new_objects = Array::from(&result).iter().map(|obj| {
+                let obj = obj.dyn_into::<WasmVectorObject>().unwrap();
+                obj.native_vec_features
+            }).collect::<Vec<VectorFeatures>>();
+            for obj in new_objects {
+                self.add(obj);
+            }
         }
     }
     fn wait(&mut self, duration_in_frames: u64) -> impl Future<Output = ()> {
         async move {
-            self.play(|_, _| vec![], vec![], duration_in_frames, |t| t).await;
+            self.play(
+                Closure::wrap(Box::new(|objects: Array, _: f64| {
+                    objects
+                }) as Box<dyn Fn(Array, f64) -> Array>).into_js_value().dyn_into::<Function>().unwrap(),
+                vec![],
+                duration_in_frames,
+                |t| t
+            ).await;
         }
     }
     fn sleep(&mut self, duration_in_ms: i32) -> impl Future<Output = ()>;
     fn render_frame(&self);
-    fn on_rendered(&self);
+    fn on_rendered(&self) -> impl Future<Output = ()>;
     fn get_objects_from_indices(&self, object_indices: Vec<usize>) -> HashMap<usize, VectorFeatures>;
 }

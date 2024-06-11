@@ -27,10 +27,14 @@ async function run() {
     scene.add(circ);
     scene.add(xSquaredObject);
     await scene.play(
-        function (vecs, t) {
-            let newCirc = drawStrokeThenFill(vecs[0], t);
-            let newXSquared = write(vecs[1].getSubobjects().length, 0.4)(vecs[1], t);
-            return [newCirc, newXSquared];
+        async (vecs, t) => {
+            try {
+                let newCirc = drawStrokeThenFill(vecs[0].clone(), t);
+                let newXSquared = write(vecs[1].getSubobjects().length, 0.4)(vecs[1].clone(), t);
+                return [newCirc, newXSquared];
+            } catch (e) {
+                console.error(e);
+            }
         },
         [0, 1],
         BigInt(60),

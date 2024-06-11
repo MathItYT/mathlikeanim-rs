@@ -1,4 +1,4 @@
-import mathlikeanimRs, { Scene, hexToColor, svgToVector, WasmGradientImageOrColor, coordsToPoint, plotInAxes, WasmGradientStop, mathjax, WasmVectorObject, WasmLinearGradient, axes, circle } from 'https://cdn.jsdelivr.net/npm/mathlikeanim-rs@0.5.7/+esm';
+import mathlikeanimRs, { Scene, hexToColor, svgToVector, WasmGradientImageOrColor, coordsToPoint, plotInAxes, WasmGradientStop, mathjax, WasmVectorObject, WasmLinearGradient, axes, circle } from 'https://cdn.jsdelivr.net/npm/mathlikeanim-rs@0.5.8/+esm';
 
 
 const canvas = document.getElementById("canvas");

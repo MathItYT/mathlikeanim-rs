@@ -1,5 +1,7 @@
 use std::collections::HashMap;
+use js_sys::{Array, Function, Promise};
 use wasm_bindgen::prelude::*;
+use wasm_bindgen_futures::JsFuture;
 
 use crate::{colors::{Color, GradientImageOrColor}, objects::{vector_object::VectorFeatures, wasm_interface::{WasmGradientImageOrColor, WasmVectorObject}}, renderer::render_all_vectors_svg, scene_api::SceneAPI, utils::sleep};
 
@@ -25,7 +27,7 @@ pub struct SVGScene {
     #[wasm_bindgen(skip)]
     pub states: HashMap<usize, (Vec<VectorFeatures>, GradientImageOrColor, (f64, f64), (f64, f64))>,
     #[wasm_bindgen(skip)]
-    pub callback: &'static dyn Fn()
+    pub callback: Function
 }
 
 
@@ -46,14 +48,15 @@ impl SceneAPI for SVGScene {
             top_left_corner: (0.0, 0.0),
             bottom_right_corner: (width as f64, height as f64),
             states: HashMap::new(),
-            callback: Box::leak(Box::new(&|| {}))
+            callback: Closure::wrap(Box::new(|| Promise::resolve(&JsValue::NULL)) as Box<dyn Fn() -> Promise>).into_js_value().dyn_into().unwrap()
         };
     }
     fn clear(&mut self) {
         self.objects = Vec::new();
     }
-    fn on_rendered(&self) {
-        (self.callback)();
+    async fn on_rendered(&self) {
+        let promise = self.callback.call0(&JsValue::NULL).unwrap().dyn_into::<Promise>().unwrap();
+        JsFuture::from(promise).await.unwrap();
     }
     fn restore(&mut self, n: usize) {
         let (objects, background, top_left_corner, bottom_right_corner) = self.states.get(&n).unwrap().clone();
@@ -210,46 +213,19 @@ impl SVGScene {
         duration_in_frames: u64,
         rate_func: js_sys::Function
     ) {
-        let animation_func_rs = |objects: Vec<VectorFeatures>, t: f64| {
-            let objects_js = objects.iter().map(|obj| {
-                JsValue::from(WasmVectorObject {
-                    native_vec_features: obj.clone()
-                })
-            }).collect::<js_sys::Array>();
-            let result = animation_func.call2(&JsValue::NULL, &objects_js, &JsValue::from_f64(t)).unwrap();
-            let result = js_sys::Array::from(&result).iter().map(|obj| {
-                let obj = obj.dyn_into::<WasmVectorObject>().unwrap();
-                obj.native_vec_features
-            }).collect();
-            return result;
-        };
         let rate_func_rs = |t: f64| -> f64 {
             rate_func.call1(&JsValue::NULL, &JsValue::from_f64(t)).unwrap().as_f64().unwrap()
         };
-        self.play(animation_func_rs, object_indices, duration_in_frames, rate_func_rs).await;
+        self.play(animation_func, object_indices, duration_in_frames, rate_func_rs).await;
     }
     #[wasm_bindgen(js_name = makeFrame)]
-    pub fn make_frame_js(
+    pub async fn make_frame_js(
         &mut self,
-        animation_func: js_sys::Function,
-        objects: Vec<WasmVectorObject>,
+        animation_func: &js_sys::Function,
+        objects: &Array,
         t: f64
     ) {
-        let objects_rs = objects.iter().map(|obj| obj.native_vec_features.clone()).collect();
-        let animation_func_rs = |objects: Vec<VectorFeatures>, t: f64| -> Vec<VectorFeatures> {
-            let objects_js = objects.iter().map(|obj| {
-                JsValue::from(WasmVectorObject {
-                    native_vec_features: obj.clone()
-                })
-            }).collect::<js_sys::Array>();
-            let result = animation_func.call2(&JsValue::NULL, &objects_js, &JsValue::from_f64(t)).unwrap();
-            let result = js_sys::Array::from(&result).iter().map(|obj| {
-                let obj = obj.dyn_into::<WasmVectorObject>().unwrap();
-                obj.native_vec_features
-            }).collect();
-            return result;
-        };
-        self.make_frame(&animation_func_rs, objects_rs, t);
+        self.make_frame(animation_func, objects, t).await;
     }
     #[wasm_bindgen(js_name = wait)]
     pub async fn wait_js(&mut self, duration_in_frames: u64) {
@@ -257,8 +233,10 @@ impl SVGScene {
     }
     #[wasm_bindgen(js_name = setCallback)]
     pub fn set_callback_js(&mut self, callback: js_sys::Function) {
-        self.callback = Box::leak(Box::new(move || {
-            callback.call0(&JsValue::NULL).unwrap();
-        }));
+        self.callback = callback;
+    }
+    #[wasm_bindgen(js_name = callCallback)]
+    pub async fn call_callback_js(&self) {
+        self.on_rendered().await;
     }
 }

@@ -1,4 +1,8 @@
-use crate::{colors::{Color, GradientImageOrColor}, objects::{geometry::{add_tip::add_final_tip, line::line}, vector_object::{VectorFeatures, VectorObject}}, utils::{interpolate, interpolate_tuple}};
+use js_sys::{Function, Promise};
+use wasm_bindgen::{JsCast, JsValue};
+use wasm_bindgen_futures::JsFuture;
+
+use crate::{colors::{Color, GradientImageOrColor}, objects::{geometry::{add_tip::add_final_tip, line::line}, vector_object::{VectorFeatures, VectorObject}, wasm_interface::WasmVectorObject}, utils::{interpolate, interpolate_tuple}};
 
 pub fn number_line(
     x_min: f64,
@@ -77,10 +81,10 @@ pub fn point_to_number(
 }
 
 
-pub fn get_numbers_tex(
+pub async fn get_numbers_tex(
     number_line: VectorFeatures,
     numbers: Vec<f64>,
-    vector_objects: Vec<VectorFeatures>,
+    number_to_vector: Function,
     x_min: f64,
     x_max: f64,
     height: f64,
@@ -88,7 +92,12 @@ pub fn get_numbers_tex(
     buff: Option<f64>,
     index: Option<usize>,
 ) -> VectorFeatures {
-    assert_eq!(numbers.len(), vector_objects.len());
+    let mut vector_objects = Vec::new();
+    for number in numbers.clone() {
+        let promise = number_to_vector.call1(&JsValue::NULL, &JsValue::from_f64(number)).unwrap().dyn_into::<Promise>().unwrap();
+        let result = JsFuture::from(promise).await.unwrap().dyn_into::<WasmVectorObject>().unwrap();
+        vector_objects.push(result.native_vec_features);
+    }
     let mut result_subobjects = Vec::new();
     for (vec_obj, number) in vector_objects.iter().zip(numbers) {
         let point = number_to_point(&number_line, number, x_min, x_max);

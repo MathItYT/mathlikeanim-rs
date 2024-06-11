@@ -877,14 +877,14 @@ impl JsCast for WasmVectorObject {
             .set_index(index);
     }
     fn unchecked_from_js_ref(val: &JsValue) -> &Self {
-        &val.unchecked_ref::<WasmVectorObject>()
+        val.unchecked_ref::<WasmVectorObject>()
     }
 }
 
 
 impl AsRef<JsValue> for WasmVectorObject {
     fn as_ref(&self) -> &JsValue {
-        self.unchecked_ref()
+        Box::leak(Box::new(JsValue::from(self.clone())))
     }
 }
 
@@ -2508,10 +2508,10 @@ pub fn point_to_number_js(
 
 
 #[wasm_bindgen(js_name = getNumbersTex)]
-pub fn get_numbers_tex_js(
+pub async fn get_numbers_tex_js(
     number_line: WasmVectorObject,
     numbers: Array,
-    vector_objects: Vec<WasmVectorObject>,
+    number_to_vector: Function,
     x_min: f64,
     x_max: f64,
     height: f64,
@@ -2532,14 +2532,14 @@ pub fn get_numbers_tex_js(
         native_vec_features: get_numbers_tex(
             number_line.native_vec_features,
             numbers,
-            vector_objects.iter().map(|object| object.native_vec_features.clone()).collect::<Vec<VectorFeatures>>(),
+            number_to_vector,
             x_min,
             x_max,
             height,
             direction,
             buff,
             index
-        )
+        ).await
     }
 }
 

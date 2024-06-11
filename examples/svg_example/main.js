@@ -1,4 +1,4 @@
-import init, {SVGScene, WasmGradientImageOrColor, WasmGradientStop, WasmLinearGradient, animationGroup, axes, create, drawStrokeThenFill, fadeIn, hexToColor, plotInAxes, smooth, spinningGrow, svgToVector, write} from './js/mathlikeanim_rs.js';
+import init, {SVGScene, WasmGradientImageOrColor, WasmGradientStop, WasmLinearGradient, animationGroup, axes, create, drawStrokeThenFill, fadeIn, getNumbersTex, hexToColor, plotInAxes, smooth, spinningGrow, svgToVector, write} from './js/mathlikeanim_rs.js';
 
 
 let scene;
@@ -48,8 +48,8 @@ async function run() {
     mathLikeLogo = mathLikeLogo.setSubobjects(subobjects);
     scene.add(title);
     await scene.play(
-        (vecs, t) => {
-            let newTitle = write(vecs[0].getSubobjects().length, 0.4)(vecs[0], t);
+        async (vecs, t) => {
+            let newTitle = write(vecs[0].getSubobjects().length, 0.4)(vecs[0].clone(), t);
             return [newTitle];
         },
         [0],
@@ -62,8 +62,8 @@ async function run() {
     }
     scene.add(subtitle);
     await scene.play(
-        (vecs, t) => {
-            let newSubtitle = animationGroup(animations, 0.4)(vecs[0], t);
+        async (vecs, t) => {
+            let newSubtitle = animationGroup(animations, 0.4)(vecs[0].clone(), t);
             return [newSubtitle];
         },
         [1],
@@ -72,8 +72,8 @@ async function run() {
     );
     scene.add(mathLikeLogo);
     await scene.play(
-        (vecs, t) => {
-            let newLogo = spinningGrow(Math.PI / 2)(vecs[0], t);
+        async (vecs, t) => {
+            let newLogo = spinningGrow(Math.PI / 2)(vecs[0].clone(), t);
             return [newLogo];
         },
         [2],
@@ -102,13 +102,50 @@ async function run() {
         true,
         true
     );
+    let subobjectsAx = ax.getSubobjects();
+    let numbersX = await getNumbersTex(
+        subobjectsAx[subobjectsAx.length - 2],
+        [2, 4, 6, 8],
+        async (x) => {
+            const input = `$$${x}$$`;
+            let response = await fetch(`/latex?input=${input}`);
+            return svgToVector(await response.text());
+        },
+        0,
+        10,
+        50.0,
+        [0.0, 1.0],
+        30.0,
+        4
+    );
+    numbersX = numbersX.setFill(WasmGradientImageOrColor.fromColor(hexToColor("#efefef", 1.0)), true);
+    let numbersY = await getNumbersTex(
+        subobjectsAx[subobjectsAx.length - 1],
+        [2, 4, 6, 8],
+        async (y) => {
+            const input = `$$${y}$$`;
+            let response = await fetch(`/latex?input=${input}`);
+            return svgToVector(await response.text());
+        },
+        0,
+        10,
+        50.0,
+        [-1.0, 0.0],
+        30.0,
+        5
+    )
+    numbersY = numbersY.setFill(WasmGradientImageOrColor.fromColor(hexToColor("#efefef", 1.0)), true);
+    scene.add(numbersX);
+    scene.add(numbersY);
     scene.add(ax.clone());
     await scene.play(
-        (vecs, t) => {
-            let newAx = drawStrokeThenFill(vecs[0], t);
-            return [newAx];
+        async (vecs, t) => {
+            let newAx = drawStrokeThenFill(vecs[0].clone(), t);
+            let newNumbersX = drawStrokeThenFill(vecs[1].clone(), t);
+            let newNumbersY = drawStrokeThenFill(vecs[2].clone(), t);
+            return [newAx, newNumbersX, newNumbersY];
         },
-        [3],
+        [3, 4, 5],
         BigInt(60),
         (t) => smooth(t, 10.0)
     );
@@ -144,14 +181,14 @@ async function run() {
         )
     ), true);
     plot = plot.setStrokeWidth(8.0, true);
-    plot = plot.setIndex(4);
+    plot = plot.setIndex(6);
     scene.add(plot);
     await scene.play(
-        (vecs, t) => {
-            let newPlot = create(vecs[0], t);
+        async (vecs, t) => {
+            let newPlot = create(vecs[0].clone(), t);
             return [newPlot];
         },
-        [4],
+        [6],
         BigInt(60),
         (t) => smooth(t, 10.0)
     );
