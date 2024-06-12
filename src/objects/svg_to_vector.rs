@@ -314,9 +314,20 @@ fn parse_path(attributes: &std::collections::HashMap<String, Value>, index: usiz
     let transform_attr = attributes.get("transform").map(|transform| {
         transform.to_string()
     });
-    let mut new_points = Vec::new();
+    let mut new_points: Vec<(f64, f64)> = Vec::new();
     if transform_attr.is_some() {
-        for transf in transform_attr.unwrap().split(" ") {
+        let transfs = transform_attr.unwrap();
+        let transfs = transfs.split(" ");
+        let mut new_transfs = Vec::new();
+        for transform in transfs {
+            if !transform.starts_with("matrix") && !transform.starts_with("translate") && !transform.starts_with("scale") && !transform.starts_with("rotate") && !transform.starts_with("skewX") && !transform.starts_with("skewY") {
+                let i = new_transfs.len() - 1;
+                new_transfs[i] = format!("{},{}", new_transfs[i], transform.to_string());
+            } else {
+                new_transfs.push(transform.to_string());
+            }
+        }
+        for transf in new_transfs {
             let transf = transf.trim();
             let transf = Transform::parse_string(transf.replace(", ", " ").replace(" ", ",").as_str()).unwrap();
             let matrix = transf.to_matrix().unwrap().to_matrix2d().unwrap();
@@ -884,17 +895,28 @@ pub fn svg_to_vector(svg: &str) -> VectorFeatures {
                 let mut points = vec_obj.points.clone();
                 let mut new_points = Vec::new();
                 if transform.is_some() {
-                    for transf in transform.unwrap().split(" ") {
+                    let transfs = transform.unwrap();
+                    let transfs = transfs.split(" ");
+                    let mut new_transfs = Vec::new();
+                    for transform in transfs {
+                        if !transform.starts_with("matrix") && !transform.starts_with("translate") && !transform.starts_with("scale") && !transform.starts_with("rotate") && !transform.starts_with("skewX") && !transform.starts_with("skewY") {
+                            let i = new_transfs.len() - 1;
+                            new_transfs[i] = format!("{},{}", new_transfs[i], transform.to_string());
+                        } else {
+                            new_transfs.push(transform.to_string());
+                        }
+                    }
+                    for transf in new_transfs {
                         let transf = transf.trim();
                         let transf = Transform::parse_string(transf.replace(", ", " ").replace(" ", ",").as_str()).unwrap();
                         let matrix = transf.to_matrix().unwrap().to_matrix2d().unwrap();
-                        for point in points.clone() {
+                        for point in points.iter() {
                             let new_x = matrix.a as f64 * point.0 + matrix.c as f64 * point.1 + matrix.e as f64;
                             let new_y = matrix.b as f64 * point.0 + matrix.d as f64 * point.1 + matrix.f as f64;
                             new_points.push((new_x, new_y));
                         }
                         points = new_points.clone();
-                        new_points = Vec::new();
+                        new_points.clear();
                     }
                 }
                 for transform in transforms.iter().rev() {
