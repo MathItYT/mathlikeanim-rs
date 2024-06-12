@@ -730,18 +730,18 @@ pub fn svg_to_vector(svg: &str) -> VectorFeatures {
                 applied_transforms.push(transform_attr.is_some());
                 if transform_attr.is_some() {
                     let transf = transform_attr.unwrap();
-                    #[cfg(target_arch = "wasm32")]
-                    log(&format!("Transform: {:?}", transf));
                     let transfs = transf.split(" ");
                     let mut new_transfs = Vec::new();
                     for transform in transfs {
-                        if !transform.starts_with("matrix") || !transform.starts_with("translate") || !transform.starts_with("scale") || !transform.starts_with("rotate") || !transform.starts_with("skewX") || !transform.starts_with("skewY") {
+                        if !transform.starts_with("matrix") && !transform.starts_with("translate") && !transform.starts_with("scale") && !transform.starts_with("rotate") && !transform.starts_with("skewX") && !transform.starts_with("skewY") {
                             let i = new_transfs.len() - 1;
                             new_transfs[i] = format!("{},{}", new_transfs[i], transform.to_string());
                         } else {
                             new_transfs.push(transform.to_string());
                         }
                     }
+                    #[cfg(target_arch = "wasm32")]
+                    log(&format!("new_transfs: {:?}", new_transfs));
                     let mut new_transforms = Vec::new();
                     for transform in new_transfs {
                         let transform = Transform::parse_string(transform.replace(", ", " ").replace(" ", ",").as_str()).unwrap();
