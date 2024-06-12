@@ -318,7 +318,7 @@ fn parse_path(attributes: &std::collections::HashMap<String, Value>, index: usiz
     if transform_attr.is_some() {
         for transf in transform_attr.unwrap().split(" ") {
             let transf = transf.trim();
-            let transf = Transform::parse_string(transf).unwrap();
+            let transf = Transform::parse_string(transf.replace(", ", " ").replace(" ", ",").as_str()).unwrap();
             let matrix = transf.to_matrix().unwrap().to_matrix2d().unwrap();
             for point in points.iter() {
                 let new_x = matrix.a as f64 * point.0 + matrix.c as f64 * point.1 + matrix.e as f64;
@@ -735,8 +735,8 @@ pub fn svg_to_vector(svg: &str) -> VectorFeatures {
                     let transfs = transf.split(" ");
                     let mut new_transforms = Vec::new();
                     for transform in transfs {
-                        let transform = Transform::parse_string(transform);
-                        let matrix = transform.unwrap().to_matrix().unwrap().to_matrix2d().unwrap();
+                        let transform = Transform::parse_string(transform.replace(", ", " ").replace(" ", ",").as_str()).unwrap();
+                        let matrix = transform.to_matrix().unwrap().to_matrix2d().unwrap();
                         new_transforms.push(matrix);
                     }
                     transforms.push(new_transforms);

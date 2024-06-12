@@ -1,4 +1,4 @@
-use crate::{objects::vector_object::VectorFeatures, colors::{GradientImageOrColor, Color}, utils::line_as_cubic_bezier};
+use crate::{colors::{Color, GradientImageOrColor}, objects::vector_object::VectorFeatures, utils::line_as_cubic_bezier};
 
 pub fn parametric_function(
     f: impl Fn(f64) -> (f64, f64),

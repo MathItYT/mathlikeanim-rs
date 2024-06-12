@@ -174,7 +174,7 @@ async function run() {
             p2[0],
             p2[1],
             [
-                new WasmGradientStop(0.0, hexToColor("##fc6255", 1.0)),
+                new WasmGradientStop(0.0, hexToColor("#fc6255", 1.0)),
                 new WasmGradientStop(1.0, hexToColor("#ffff00", 1.0))
             ],
             1.0

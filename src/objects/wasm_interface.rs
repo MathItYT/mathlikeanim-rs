@@ -219,7 +219,7 @@ impl WasmGradientImageOrColor {
 #[derive(Clone, Debug)]
 pub struct WasmColor {
     #[wasm_bindgen(skip)]
-    pub color: Color
+    pub color: Color,
 }
 
 
