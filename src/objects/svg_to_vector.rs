@@ -877,7 +877,7 @@ pub fn svg_to_vector(svg: &str) -> VectorFeatures {
                 if transform.is_some() {
                     for transf in transform.unwrap().split(" ") {
                         let transf = transf.trim();
-                        let transf = Transform::parse_string(transf).unwrap();
+                        let transf = Transform::parse_string(transf.replace(", ", " ").replace(" ", ",").as_str()).unwrap();
                         let matrix = transf.to_matrix().unwrap().to_matrix2d().unwrap();
                         for point in points.clone() {
                             let new_x = matrix.a as f64 * point.0 + matrix.c as f64 * point.1 + matrix.e as f64;
