@@ -182,6 +182,10 @@ impl Scene {
     pub fn add_js(&mut self, vec_obj: WasmVectorObject) {
         self.add(vec_obj.native_vec_features);
     }
+    #[wasm_bindgen(js_name = insert)]
+    pub fn insert_js(&mut self, index: usize, vec_obj: WasmVectorObject) {
+        self.objects.insert(index, vec_obj.native_vec_features);
+    }
     #[wasm_bindgen(js_name = remove)]
     pub fn remove_js(&mut self, index: usize) {
         self.remove(index);
