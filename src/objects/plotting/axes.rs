@@ -204,27 +204,42 @@ pub fn plot_in_axes(
 pub fn area_under_curve(
     axes: &VectorFeatures,
     plot: &VectorFeatures,
+    x_min: f64,
+    x_max: f64,
+    y_min: f64,
+    y_max: f64,
+    x1: f64,
+    x2: f64,
     color: Option<(f64, f64, f64, f64)>,
     index: Option<usize>,
 ) -> VectorFeatures {
-    let mut points = plot.points.clone();
-    points.extend(line_as_cubic_bezier(
-        plot.points[plot.points.len() - 1],
-        (plot.points[plot.points.len() - 1].0, number_to_point(&axes.subobjects[1], 0.0, 0.0, 1.0).1)
-    ));
-    points.extend(line_as_cubic_bezier(
-        plot.points[plot.points.len() - 1],
-        (plot.points[0].0, number_to_point(&axes.subobjects[1], 0.0, 0.0, 1.0).1)
-    ));
-    points.extend(
-        line_as_cubic_bezier(
-            plot.points[plot.points.len() - 1],
-            plot.points[0]
-        )
-    );
+    let mut x1_index = 0;
+    let mut x2_index = 0;
+    for i in 0..plot.points.len() {
+        let x_coord = point_to_coords(axes, plot.points[i], x_min, x_max, y_min, y_max).0;
+        if x_coord >= x1 {
+            x1_index = i;
+            break;
+        }
+    }
+    for i in 0..plot.points.len() {
+        let x_coord = point_to_coords(axes, plot.points[i], x_min, x_max, y_min, y_max).0;
+        if x_coord >= x2 {
+            x2_index = i;
+            break;
+        }
+    }
+    let mut area_points = Vec::new();
+    for (point1, point2) in plot.points[x1_index..x2_index].iter().zip(plot.points[x1_index + 1..x2_index + 1].iter()) {
+        area_points.push(*point1);
+        area_points.push(*point2);
+    }
+    area_points.extend(line_as_cubic_bezier(area_points[area_points.len() - 1], (area_points[area_points.len() - 1].0, number_to_point(&axes.subobjects[axes.subobjects.len() - 1], 0.0, y_min, y_max).1)));
+    area_points.extend(line_as_cubic_bezier(area_points[area_points.len() - 1], (area_points[0].0, number_to_point(&axes.subobjects[axes.subobjects.len() - 1], 0.0, y_min, y_max).1)));
+    area_points.extend(line_as_cubic_bezier(area_points[area_points.len() - 1], area_points[0]));
     let (red, green, blue, alpha) = color.unwrap_or((1.0, 1.0, 1.0, 1.0));
     let area = VectorFeatures {
-        points,
+        points: area_points,
         fill: GradientImageOrColor::Color(
             Color {
                 red,

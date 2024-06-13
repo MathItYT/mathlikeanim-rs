@@ -2139,6 +2139,12 @@ pub fn plot_in_axes_js(
 pub fn area_under_curve_js(
     axes: &WasmVectorObject,
     plot: &WasmVectorObject,
+    x_min: f64,
+    x_max: f64,
+    y_min: f64,
+    y_max: f64,
+    x1: f64,
+    x2: f64,
     color: Option<WasmColor>,
     index: Option<usize>
 ) -> WasmVectorObject {
@@ -2152,7 +2158,18 @@ pub fn area_under_curve_js(
         None => None
     };
     return WasmVectorObject {
-        native_vec_features: area_under_curve(&axes.native_vec_features, &plot.native_vec_features, color, index)
+        native_vec_features: area_under_curve(
+            &axes.native_vec_features,
+            &plot.native_vec_features,
+            x_min,
+            x_max,
+            y_min,
+            y_max,
+            x1,
+            x2,
+            color,
+            index
+        )
     }
 }
 

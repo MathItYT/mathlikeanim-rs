@@ -276,11 +276,17 @@ export function plotInAxes(f: Function, x_min: number, x_max: number, y_min: num
 /**
 * @param {WasmVectorObject} axes
 * @param {WasmVectorObject} plot
+* @param {number} x_min
+* @param {number} x_max
+* @param {number} y_min
+* @param {number} y_max
+* @param {number} x1
+* @param {number} x2
 * @param {WasmColor | undefined} [color]
 * @param {number | undefined} [index]
 * @returns {WasmVectorObject}
 */
-export function areaUnderCurve(axes: WasmVectorObject, plot: WasmVectorObject, color?: WasmColor, index?: number): WasmVectorObject;
+export function areaUnderCurve(axes: WasmVectorObject, plot: WasmVectorObject, x_min: number, x_max: number, y_min: number, y_max: number, x1: number, x2: number, color?: WasmColor, index?: number): WasmVectorObject;
 /**
 * @param {Function} f
 * @param {number} x_min
@@ -2059,7 +2065,7 @@ export interface InitOutput {
   readonly pointToCoords: (a: number, b: number, c: number, d: number, e: number, f: number) => number;
   readonly parametricPlotInAxes: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, j: number, k: number, l: number, m: number, n: number, o: number, p: number, q: number, r: number) => number;
   readonly plotInAxes: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, j: number, k: number, l: number, m: number, n: number, o: number, p: number, q: number, r: number) => number;
-  readonly areaUnderCurve: (a: number, b: number, c: number, d: number, e: number) => number;
+  readonly areaUnderCurve: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, j: number, k: number) => number;
   readonly riemannRectanglesForPlot: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, j: number, k: number, l: number, m: number, n: number, o: number, p: number, q: number, r: number, s: number, t: number) => number;
   readonly secantLineForPlot: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, j: number, k: number, l: number, m: number, n: number, o: number, p: number, q: number, r: number) => number;
   readonly parametricFunction: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, j: number, k: number, l: number, m: number) => number;
@@ -2142,6 +2148,31 @@ export interface InitOutput {
   readonly wasmthreedobject_getCenter: (a: number) => number;
   readonly wasmthreedobject_moveTo: (a: number, b: number, c: number) => number;
   readonly wasmthreedobject_clone: (a: number) => number;
+  readonly __wbg_svgscene_free: (a: number) => void;
+  readonly svgscene_new_js: (a: number, b: number, c: number) => number;
+  readonly svgscene_getFps: (a: number) => number;
+  readonly svgscene_getHeight: (a: number) => number;
+  readonly svgscene_getWidth: (a: number) => number;
+  readonly svgscene_renderFrame: (a: number) => void;
+  readonly svgscene_clear: (a: number) => void;
+  readonly svgscene_restore: (a: number, b: number) => void;
+  readonly svgscene_saveState: (a: number, b: number) => void;
+  readonly svgscene_setTopLeftCorner: (a: number, b: number, c: number) => void;
+  readonly svgscene_setBottomRightCorner: (a: number, b: number, c: number) => void;
+  readonly svgscene_getTopLeftCorner: (a: number) => number;
+  readonly svgscene_getBottomRightCorner: (a: number) => number;
+  readonly svgscene_setBackground: (a: number, b: number) => void;
+  readonly svgscene_add: (a: number, b: number) => void;
+  readonly svgscene_insert: (a: number, b: number, c: number) => void;
+  readonly svgscene_remove: (a: number, b: number) => void;
+  readonly svgscene_getObjectsFromIndices: (a: number, b: number) => number;
+  readonly svgscene_setDivContainer: (a: number, b: number) => void;
+  readonly svgscene_sleep: (a: number, b: number) => number;
+  readonly svgscene_play: (a: number, b: number, c: number, d: number, e: number, f: number) => number;
+  readonly svgscene_makeFrame: (a: number, b: number, c: number, d: number) => number;
+  readonly svgscene_wait: (a: number, b: number) => number;
+  readonly svgscene_setCallback: (a: number, b: number) => void;
+  readonly svgscene_callCallback: (a: number) => number;
   readonly radian: (a: number, b: number, c: number, d: number) => number;
   readonly ellipticalArcPath: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number) => number;
   readonly factorial: (a: number) => number;
@@ -2264,38 +2295,13 @@ export interface InitOutput {
   readonly shiftImagePosition: (a: number) => number;
   readonly showTemporaily: (a: number, b: number) => number;
   readonly spinningGrow: (a: number) => number;
-  readonly __wbg_svgscene_free: (a: number) => void;
-  readonly svgscene_new_js: (a: number, b: number, c: number) => number;
-  readonly svgscene_getFps: (a: number) => number;
-  readonly svgscene_getHeight: (a: number) => number;
-  readonly svgscene_getWidth: (a: number) => number;
-  readonly svgscene_renderFrame: (a: number) => void;
-  readonly svgscene_clear: (a: number) => void;
-  readonly svgscene_restore: (a: number, b: number) => void;
-  readonly svgscene_saveState: (a: number, b: number) => void;
-  readonly svgscene_setTopLeftCorner: (a: number, b: number, c: number) => void;
-  readonly svgscene_setBottomRightCorner: (a: number, b: number, c: number) => void;
-  readonly svgscene_getTopLeftCorner: (a: number) => number;
-  readonly svgscene_getBottomRightCorner: (a: number) => number;
-  readonly svgscene_setBackground: (a: number, b: number) => void;
-  readonly svgscene_add: (a: number, b: number) => void;
-  readonly svgscene_insert: (a: number, b: number, c: number) => void;
-  readonly svgscene_remove: (a: number, b: number) => void;
-  readonly svgscene_getObjectsFromIndices: (a: number, b: number) => number;
-  readonly svgscene_setDivContainer: (a: number, b: number) => void;
-  readonly svgscene_sleep: (a: number, b: number) => number;
-  readonly svgscene_play: (a: number, b: number, c: number, d: number, e: number, f: number) => number;
-  readonly svgscene_makeFrame: (a: number, b: number, c: number, d: number) => number;
-  readonly svgscene_wait: (a: number, b: number) => number;
-  readonly svgscene_setCallback: (a: number, b: number) => void;
-  readonly svgscene_callCallback: (a: number) => number;
   readonly mathjax: (a: number, b: number) => number;
   readonly __wbindgen_malloc: (a: number, b: number) => number;
   readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
   readonly __wbindgen_export_2: WebAssembly.Table;
-  readonly _dyn_core__ops__function__Fn_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__he0fb4d5f1513b209: (a: number, b: number) => number;
-  readonly _dyn_core__ops__function__Fn__A_B___Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h5e6ca7e5a8542c49: (a: number, b: number, c: number, d: number) => number;
-  readonly _dyn_core__ops__function__Fn__A_B___Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h29f29c615cb8650d: (a: number, b: number, c: number, d: number) => number;
+  readonly _dyn_core__ops__function__Fn__A_B___Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h2756a5e8dc6a5e50: (a: number, b: number, c: number, d: number) => number;
+  readonly _dyn_core__ops__function__Fn_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h9a0ec16ac8c42e11: (a: number, b: number) => number;
+  readonly _dyn_core__ops__function__Fn__A_B___Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h1fd7a997cf0558e3: (a: number, b: number, c: number, d: number) => number;
   readonly _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h658c7ef59a74f654: (a: number, b: number, c: number) => void;
   readonly __wbindgen_add_to_stack_pointer: (a: number) => number;
   readonly __wbindgen_free: (a: number, b: number, c: number) => void;

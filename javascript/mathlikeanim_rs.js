@@ -217,13 +217,13 @@ function makeClosure(arg0, arg1, dtor, f) {
     CLOSURE_DTORS.register(real, state, state);
     return real;
 }
-function __wbg_adapter_32(arg0, arg1) {
-    const ret = wasm._dyn_core__ops__function__Fn_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__he0fb4d5f1513b209(arg0, arg1);
+function __wbg_adapter_32(arg0, arg1, arg2, arg3) {
+    const ret = wasm._dyn_core__ops__function__Fn__A_B___Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h2756a5e8dc6a5e50(arg0, arg1, addHeapObject(arg2), arg3);
     return takeObject(ret);
 }
 
-function __wbg_adapter_35(arg0, arg1, arg2, arg3) {
-    const ret = wasm._dyn_core__ops__function__Fn__A_B___Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h5e6ca7e5a8542c49(arg0, arg1, addHeapObject(arg2), arg3);
+function __wbg_adapter_35(arg0, arg1) {
+    const ret = wasm._dyn_core__ops__function__Fn_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h9a0ec16ac8c42e11(arg0, arg1);
     return takeObject(ret);
 }
 
@@ -236,7 +236,7 @@ function _assertClass(instance, klass) {
 function __wbg_adapter_38(arg0, arg1, arg2, arg3) {
     _assertClass(arg2, WasmVectorObject);
     var ptr0 = arg2.__destroy_into_raw();
-    const ret = wasm._dyn_core__ops__function__Fn__A_B___Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h29f29c615cb8650d(arg0, arg1, ptr0, arg3);
+    const ret = wasm._dyn_core__ops__function__Fn__A_B___Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h1fd7a997cf0558e3(arg0, arg1, ptr0, arg3);
     return WasmVectorObject.__wrap(ret);
 }
 
@@ -892,11 +892,17 @@ export function plotInAxes(f, x_min, x_max, y_min, y_max, x1, x2, x_step, axes, 
 /**
 * @param {WasmVectorObject} axes
 * @param {WasmVectorObject} plot
+* @param {number} x_min
+* @param {number} x_max
+* @param {number} y_min
+* @param {number} y_max
+* @param {number} x1
+* @param {number} x2
 * @param {WasmColor | undefined} [color]
 * @param {number | undefined} [index]
 * @returns {WasmVectorObject}
 */
-export function areaUnderCurve(axes, plot, color, index) {
+export function areaUnderCurve(axes, plot, x_min, x_max, y_min, y_max, x1, x2, color, index) {
     _assertClass(axes, WasmVectorObject);
     _assertClass(plot, WasmVectorObject);
     let ptr0 = 0;
@@ -904,7 +910,7 @@ export function areaUnderCurve(axes, plot, color, index) {
         _assertClass(color, WasmColor);
         ptr0 = color.__destroy_into_raw();
     }
-    const ret = wasm.areaUnderCurve(axes.__wbg_ptr, plot.__wbg_ptr, ptr0, !isLikeNone(index), isLikeNone(index) ? 0 : index);
+    const ret = wasm.areaUnderCurve(axes.__wbg_ptr, plot.__wbg_ptr, x_min, x_max, y_min, y_max, x1, x2, ptr0, !isLikeNone(index), isLikeNone(index) ? 0 : index);
     return WasmVectorObject.__wrap(ret);
 }
 
@@ -1349,6 +1355,12 @@ export function lineAsCubicBezier3D(point1, point2) {
     return takeObject(ret);
 }
 
+function passArray32ToWasm0(arg, malloc) {
+    const ptr = malloc(arg.length * 4, 4) >>> 0;
+    getUint32Memory0().set(arg, ptr / 4);
+    WASM_VECTOR_LEN = arg.length;
+    return ptr;
+}
 /**
 * @param {number} ux
 * @param {number} uy
@@ -2115,13 +2127,6 @@ export function easeInBounce(t) {
 export function easeInOutBounce(t) {
     const ret = wasm.easeInOutBounce(t);
     return ret;
-}
-
-function passArray32ToWasm0(arg, malloc) {
-    const ptr = malloc(arg.length * 4, 4) >>> 0;
-    getUint32Memory0().set(arg, ptr / 4);
-    WASM_VECTOR_LEN = arg.length;
-    return ptr;
 }
 
 function getArrayF64FromWasm0(ptr, len) {
@@ -4220,16 +4225,16 @@ async function __wbg_load(module, imports) {
 function __wbg_get_imports() {
     const imports = {};
     imports.wbg = {};
+    imports.wbg.__wbg_wasmgradientstop_new = function(arg0) {
+        const ret = WasmGradientStop.__wrap(arg0);
+        return addHeapObject(ret);
+    };
     imports.wbg.__wbg_wasmthreedobject_new = function(arg0) {
         const ret = WasmThreeDObject.__wrap(arg0);
         return addHeapObject(ret);
     };
     imports.wbg.__wbg_wasmvectorobject_new = function(arg0) {
         const ret = WasmVectorObject.__wrap(arg0);
-        return addHeapObject(ret);
-    };
-    imports.wbg.__wbg_wasmgradientstop_new = function(arg0) {
-        const ret = WasmGradientStop.__wrap(arg0);
         return addHeapObject(ret);
     };
     imports.wbg.__wbindgen_object_drop_ref = function(arg0) {
@@ -4282,7 +4287,7 @@ function __wbg_get_imports() {
         const ret = WasmVectorObject.__unwrap(takeObject(arg0));
         return ret;
     };
-    imports.wbg.__wbg_log_0461ee4e9a502e98 = function(arg0, arg1) {
+    imports.wbg.__wbg_log_e001da5fd6d73379 = function(arg0, arg1) {
         console.log(getStringFromWasm0(arg0, arg1));
     };
     imports.wbg.__wbg_wasmthreedobject_unwrap = function(arg0) {
@@ -4669,20 +4674,20 @@ function __wbg_get_imports() {
         const ret = wasm.memory;
         return addHeapObject(ret);
     };
-    imports.wbg.__wbindgen_closure_wrapper1052 = function(arg0, arg1, arg2) {
-        const ret = makeClosure(arg0, arg1, 169, __wbg_adapter_32);
+    imports.wbg.__wbindgen_closure_wrapper765 = function(arg0, arg1, arg2) {
+        const ret = makeClosure(arg0, arg1, 89, __wbg_adapter_32);
         return addHeapObject(ret);
     };
-    imports.wbg.__wbindgen_closure_wrapper1054 = function(arg0, arg1, arg2) {
-        const ret = makeClosure(arg0, arg1, 169, __wbg_adapter_35);
+    imports.wbg.__wbindgen_closure_wrapper767 = function(arg0, arg1, arg2) {
+        const ret = makeClosure(arg0, arg1, 89, __wbg_adapter_35);
         return addHeapObject(ret);
     };
-    imports.wbg.__wbindgen_closure_wrapper1056 = function(arg0, arg1, arg2) {
-        const ret = makeClosure(arg0, arg1, 169, __wbg_adapter_38);
+    imports.wbg.__wbindgen_closure_wrapper769 = function(arg0, arg1, arg2) {
+        const ret = makeClosure(arg0, arg1, 89, __wbg_adapter_38);
         return addHeapObject(ret);
     };
-    imports.wbg.__wbindgen_closure_wrapper1510 = function(arg0, arg1, arg2) {
-        const ret = makeMutClosure(arg0, arg1, 196, __wbg_adapter_41);
+    imports.wbg.__wbindgen_closure_wrapper1514 = function(arg0, arg1, arg2) {
+        const ret = makeMutClosure(arg0, arg1, 201, __wbg_adapter_41);
         return addHeapObject(ret);
     };
 
