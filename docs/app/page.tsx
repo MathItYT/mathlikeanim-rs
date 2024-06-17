@@ -1224,34 +1224,36 @@ export default function Home() {
                     Select the correct answer
                   </DrawerDescription>
                 </DrawerHeader>
-                <MathJaxContext>
-                  <b>What&apos;s the result of the following expression?</b>
-                  <div className="flex justify-center">
-                    <MathJax>
-                      {'$$\\int_{0}^{8}x\\,dx$$'}
-                    </MathJax>
-                  </div>
-                  <p><b>Hint</b>: Consider the base length and height of the triangle</p>
-                  <Separator />
-                  <div className="flex justify-center">
-                    <InputOTP
-                      maxLength={2}
-                      minLength={2}
-                      onChange={handleChange}
-                      pattern={REGEXP_ONLY_DIGITS}
-                    >
-                      <InputOTPGroup>
-                        <InputOTPSlot index={0}/>
-                        <InputOTPSlot index={1}/>
-                      </InputOTPGroup>
-                    </InputOTP>
-                  </div>
-                  <div></div>
-                  <MathJax dynamic>{answer}</MathJax>
-                  <DrawerFooter>
-                    <Button disabled={disabledSubmit} onClick={handleAnswered}>Submit</Button>
-                  </DrawerFooter>
-                </MathJaxContext>
+                <div className="p-10">
+                  <MathJaxContext>
+                    <b>What&apos;s the result of the following expression?</b>
+                    <div className="flex justify-center">
+                      <MathJax>
+                        {'$$\\int_{0}^{8}x\\,dx$$'}
+                      </MathJax>
+                    </div>
+                    <p><b>Hint</b>: Consider the base length and height of the triangle</p>
+                    <Separator />
+                    <div className="flex justify-center">
+                      <InputOTP
+                        maxLength={2}
+                        minLength={2}
+                        onChange={handleChange}
+                        pattern={REGEXP_ONLY_DIGITS}
+                      >
+                        <InputOTPGroup>
+                          <InputOTPSlot index={0}/>
+                          <InputOTPSlot index={1}/>
+                        </InputOTPGroup>
+                      </InputOTP>
+                    </div>
+                    <div></div>
+                    <MathJax dynamic>{answer}</MathJax>
+                    <DrawerFooter>
+                      <Button disabled={disabledSubmit} onClick={handleAnswered}>Submit</Button>
+                    </DrawerFooter>
+                  </MathJaxContext>
+                </div>
               </DrawerContent>
             </Drawer>}
           </div>
