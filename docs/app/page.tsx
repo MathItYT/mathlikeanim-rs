@@ -1232,9 +1232,9 @@ export default function Home() {
                         {'$$\\int_{0}^{8}x\\,dx$$'}
                       </MathJax>
                     </div>
-                    <p><b>Hint</b>: Consider the base length and height of the triangle</p>
+                    <p className="pb-5"><b>Hint</b>: Consider the base length and height of the triangle</p>
                     <Separator />
-                    <div className="flex justify-center">
+                    <div className="flex justify-center pt-5">
                       <InputOTP
                         maxLength={2}
                         minLength={2}
