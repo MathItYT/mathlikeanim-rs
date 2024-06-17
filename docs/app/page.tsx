@@ -5,12 +5,14 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/components/ui/use-toast";
+import mobile from "is-mobile";
 import useLandscape from "@/lib/use-landscape";
 import { MathJax, MathJaxContext } from "better-react-mathjax";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { RotateCcw } from "lucide-react";
 import init, { InitOutput, Scene, WasmGradientImageOrColor, WasmGradientStop, WasmLinearGradient, WasmVectorObject, animationGroup, areaUnderCurve, axes, coordsToPoint, create, drawStrokeThenFill, equilateralTriangle, fadeIn, fadeOut, getNumbersTex, hexToColor, interpolate, interpolateTuple, mathjax, morphShape, plotInAxes, rectangle, scaleInPlace, shiftAnimation, smooth, write, addFinalTip, line, showTemporaily, alignData } from "mathlikeanim-rs";
 import React from "react";
+import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 
 
 function getSubobjectsRecursiveWithPoints(object: WasmVectorObject): WasmVectorObject[] {
@@ -1167,11 +1169,11 @@ export default function Home() {
         <div className="flex flex-col justify-center items-center h-[50vw]">
           <canvas ref={ref} width={1920} height={1080} className="flex justify-center pt-[3vh] pb-3 w-[70vw] h-auto"/>
           <div className="flex flex-col justify-center">
-            <Dialog>
+            {!mobile() ? <Dialog>
               <div className="flex justify-center">
-                <Button variant="outline" disabled={disabledAnswer} className="w-40" asChild>
+                {!disabledAnswer ? <Button variant="outline" disabled={disabledAnswer} className="w-40" asChild>
                   <DialogTrigger>Answer Question</DialogTrigger>
-                </Button>
+                </Button> : null}
               </div>
               <DialogContent>
                 <DialogHeader>
@@ -1209,7 +1211,49 @@ export default function Home() {
                   </DialogFooter>
                 </MathJaxContext>
               </DialogContent>
-            </Dialog>
+            </Dialog> : <Drawer>
+              <div className="flex justify-center">
+                {!disabledAnswer ? <Button variant="outline" disabled={disabledAnswer} className="w-40" asChild>
+                  <DrawerTrigger>Answer Question</DrawerTrigger>
+                </Button> : null}
+              </div>
+              <DrawerContent>
+                <DrawerHeader>
+                  <DrawerTitle>Question</DrawerTitle>
+                  <DrawerDescription>
+                    Select the correct answer
+                  </DrawerDescription>
+                </DrawerHeader>
+                <MathJaxContext>
+                  <b>What&apos;s the result of the following expression?</b>
+                  <div className="flex justify-center">
+                    <MathJax>
+                      {'$$\\int_{0}^{8}x\\,dx$$'}
+                    </MathJax>
+                  </div>
+                  <p><b>Hint</b>: Consider the base length and height of the triangle</p>
+                  <Separator />
+                  <div className="flex justify-center">
+                    <InputOTP
+                      maxLength={2}
+                      minLength={2}
+                      onChange={handleChange}
+                      pattern={REGEXP_ONLY_DIGITS}
+                    >
+                      <InputOTPGroup>
+                        <InputOTPSlot index={0}/>
+                        <InputOTPSlot index={1}/>
+                      </InputOTPGroup>
+                    </InputOTP>
+                  </div>
+                  <div></div>
+                  <MathJax dynamic>{answer}</MathJax>
+                  <DrawerFooter>
+                    <Button disabled={disabledSubmit} onClick={handleAnswered}>Submit</Button>
+                  </DrawerFooter>
+                </MathJaxContext>
+              </DrawerContent>
+            </Drawer>}
           </div>
         </div>
       </> : null }
