@@ -1,6 +1,6 @@
 use js_sys::{Array, Function};
 use wasm_bindgen::prelude::*;
-use crate::{colors::Color, objects::wasm_interface::{WasmColor, WasmVectorObject}, utils::{add_n_more_subobjects, align_data, align_points, align_subobjects, bezier, bezier_f64, choose, consider_points_equals, distance_squared, double_smooth, ease_in_back, ease_in_circ, ease_in_cubic, ease_in_elastic, ease_in_expo, ease_in_out_back, ease_in_out_bounce, ease_in_out_circ, ease_in_out_cubic, ease_in_out_elastic, ease_in_out_expo, ease_in_out_quad, ease_in_out_quart, ease_in_out_quint, ease_in_out_sine, ease_in_quad, ease_in_quart, ease_in_quint, ease_in_sine, ease_out_bounce, ease_out_circ, ease_out_cubic, ease_out_elastic, ease_out_expo, ease_out_quad, ease_out_quart, ease_out_quint, ease_out_sine, elliptical_arc_path, exponential_decay, factorial, get_nth_subpath, has_new_path_begun, hex_to_color, insert_n_curves_to_point_list, integer_interpolate, interpolate, interpolate_color, interpolate_tuple, interpolate_tuple_3d, line_as_cubic_bezier, linear, lingering, not_quite_there, null_point_align, permutation, points_from_anchors_and_handles, quadratic_bezier_as_cubic_bezier, radian, running_start, rush_from, rush_into, sigmoid, slow_into, smooth, smoothererstep, smootherstep, smoothstep, squish_rate_func, start_new_path, there_and_back, there_and_back_with_pause, wiggle}};
+use crate::{colors::Color, objects::wasm_interface::{WasmColor, WasmVectorObject}, utils::{add_n_more_subobjects, align_data, align_points, align_subobjects, bezier, bezier_f64, center, choose, consider_points_equals, distance_squared, double_smooth, ease_in_back, ease_in_circ, ease_in_cubic, ease_in_elastic, ease_in_expo, ease_in_out_back, ease_in_out_bounce, ease_in_out_circ, ease_in_out_cubic, ease_in_out_elastic, ease_in_out_expo, ease_in_out_quad, ease_in_out_quart, ease_in_out_quint, ease_in_out_sine, ease_in_quad, ease_in_quart, ease_in_quint, ease_in_sine, ease_out_bounce, ease_out_circ, ease_out_cubic, ease_out_elastic, ease_out_expo, ease_out_quad, ease_out_quart, ease_out_quint, ease_out_sine, elliptical_arc_path, exponential_decay, factorial, get_bbox, get_nth_subpath, has_new_path_begun, hex_to_color, insert_n_curves_to_point_list, integer_interpolate, interpolate, interpolate_color, interpolate_tuple, interpolate_tuple_3d, line_as_cubic_bezier, linear, lingering, not_quite_there, null_point_align, permutation, points_from_anchors_and_handles, quadratic_bezier_as_cubic_bezier, radian, running_start, rush_from, rush_into, sigmoid, slow_into, smooth, smoothererstep, smootherstep, smoothstep, squish_rate_func, start_new_path, there_and_back, there_and_back_with_pause, wiggle}};
 
 #[wasm_bindgen(js_name = radian)]
 pub fn radian_js(ux: f64, uy: f64, vx: f64, vy: f64) -> f64 {
@@ -34,6 +34,33 @@ pub fn elliptical_arc_path_js(
             return Array::of2(&JsValue::from_f64(point.0), &JsValue::from_f64(point.1));
         }).collect::<Array>()),
     );
+}
+
+
+#[wasm_bindgen(js_name = getBbox)]
+pub fn get_bbox_js(points: Array) -> Array {
+    let points = points.iter().map(|point| {
+        let point = point.dyn_into::<Array>().unwrap();
+        return (point.get(0).as_f64().unwrap(), point.get(1).as_f64().unwrap());
+    }).collect();
+    let result = get_bbox(&points);
+    return Array::from(
+        &JsValue::from(Array::of2(
+            &Array::of2(&JsValue::from_f64(result.0.0), &JsValue::from_f64(result.0.1)),
+            &Array::of2(&JsValue::from_f64(result.1.0), &JsValue::from_f64(result.1.1)),
+        )),
+    );
+}
+
+
+#[wasm_bindgen(js_name = center)]
+pub fn center_js(points: Array, center_if_no_points: Array) -> Array {
+    let points = points.iter().map(|point| {
+        let point = point.dyn_into::<Array>().unwrap();
+        return (point.get(0).as_f64().unwrap(), point.get(1).as_f64().unwrap());
+    }).collect();
+    let result = center(&points, (center_if_no_points.get(0).as_f64().unwrap(), center_if_no_points.get(1).as_f64().unwrap()));
+    return Array::of2(&JsValue::from_f64(result.0), &JsValue::from_f64(result.1));
 }
 
 
@@ -155,12 +182,12 @@ pub fn points_from_anchors_and_handles_js(
 
 #[wasm_bindgen(js_name = startNewPath)]
 pub fn start_new_path_js(points: Array, point: Array) -> Array {
-    let mut points = points.iter().map(|point| {
+    let points = points.iter().map(|point| {
         let point = point.dyn_into::<Array>().unwrap();
         return (point.get(0).as_f64().unwrap(), point.get(1).as_f64().unwrap());
     }).collect::<Vec<(f64, f64)>>();
     let point = (point.get(0).as_f64().unwrap(), point.get(1).as_f64().unwrap());
-    let result = start_new_path(&mut points, point);
+    let result = start_new_path(&points, point);
     return result.iter().map(|point| {
         return Array::of2(&JsValue::from_f64(point.0), &JsValue::from_f64(point.1));
     }).collect();
@@ -197,11 +224,11 @@ pub fn get_nth_subpath_js(points: Array, n: usize) -> Array {
 
 #[wasm_bindgen(js_name = insertNCurvesToPointList)]
 pub fn insert_n_curves_to_point_list_js(n: usize, points: Array) -> Array {
-    let mut points = points.iter().map(|point| {
+    let points = points.iter().map(|point| {
         let point = point.dyn_into::<Array>().unwrap();
         return (point.get(0).as_f64().unwrap(), point.get(1).as_f64().unwrap());
     }).collect();
-    let result = insert_n_curves_to_point_list(n, &mut points);
+    let result = insert_n_curves_to_point_list(n, &points);
     return result.iter().map(|point| {
         return Array::of2(&JsValue::from_f64(point.0), &JsValue::from_f64(point.1));
     }).collect();
@@ -224,7 +251,7 @@ pub fn null_point_align_js(
 
 
 #[wasm_bindgen(js_name = alignPoints)]
-pub fn align_points_js(points1: Array, points2: Array) -> Array {
+pub fn align_points_js(points1: Array, points2: Array, center_if_no_points: Array) -> Array {
     let points1 = points1.iter().map(|point| {
         let point = point.dyn_into::<Array>().unwrap();
         return (point.get(0).as_f64().unwrap(), point.get(1).as_f64().unwrap());
@@ -233,7 +260,8 @@ pub fn align_points_js(points1: Array, points2: Array) -> Array {
         let point = point.dyn_into::<Array>().unwrap();
         return (point.get(0).as_f64().unwrap(), point.get(1).as_f64().unwrap());
     }).collect();
-    let result = align_points(points1, points2);
+    let center_if_no_points = (center_if_no_points.get(0).as_f64().unwrap(), center_if_no_points.get(1).as_f64().unwrap());
+    let result = align_points(&points1, &points2, center_if_no_points);
     return Array::of2(
         &JsValue::from(result.0.iter().map(|point| {
             return Array::of2(&JsValue::from_f64(point.0), &JsValue::from_f64(point.1));
@@ -247,39 +275,26 @@ pub fn align_points_js(points1: Array, points2: Array) -> Array {
 
 #[wasm_bindgen(js_name = addNMoreSubobjects)]
 pub fn add_n_more_subobjects_js(
-    vec_objs: Vec<WasmVectorObject>,
-    n: usize
-) -> Vec<WasmVectorObject> {
-    let vec_objs = vec_objs.iter().map(|vec_obj| {
-        return vec_obj.native_vec_features.clone();
-    }).collect();
-    let result = add_n_more_subobjects(&vec_objs, n);
-    return result.iter().map(|vec_obj| {
-        return WasmVectorObject { native_vec_features: vec_obj.clone() };
-    }).collect();
+    vec_obj: WasmVectorObject,
+    n: usize,
+    center_if_no_points: Array
+) -> WasmVectorObject {
+    let result = add_n_more_subobjects(vec_obj.native_vec_features, n, (center_if_no_points.get(0).as_f64().unwrap(), center_if_no_points.get(1).as_f64().unwrap()));
+    return WasmVectorObject { native_vec_features: result };
 }
 
 
 #[wasm_bindgen(js_name = alignSubobjects)]
 pub fn align_subobjects_js(
-    vec_obj1: Vec<WasmVectorObject>,
-    vec_obj2: Vec<WasmVectorObject>
-) -> Array {
-    let vec_objs1 = vec_obj1.iter().map(|vec_obj| {
-        return vec_obj.native_vec_features.clone();
-    }).collect();
-    let vec_objs2 = vec_obj2.iter().map(|vec_obj| {
-        return vec_obj.native_vec_features.clone();
-    }).collect();
-    let result = align_subobjects(vec_objs1, vec_objs2);
-    return Array::of2(
-        &JsValue::from(result.0.iter().map(|vec_obj| {
-            return WasmVectorObject { native_vec_features: vec_obj.clone() };
-        }).collect::<Array>()),
-        &JsValue::from(result.1.iter().map(|vec_obj| {
-            return WasmVectorObject { native_vec_features: vec_obj.clone() };
-        }).collect::<Array>())
-    );
+    vec_obj1: WasmVectorObject,
+    vec_obj2: WasmVectorObject,
+    center_if_no_points: Array
+) -> Vec<WasmVectorObject> {
+    let result = align_subobjects(vec_obj1.native_vec_features, vec_obj2.native_vec_features, (center_if_no_points.get(0).as_f64().unwrap(), center_if_no_points.get(1).as_f64().unwrap()));
+    return vec![
+        WasmVectorObject { native_vec_features: result.0 },
+        WasmVectorObject { native_vec_features: result.1 }
+    ];
 }
 
 
@@ -287,11 +302,12 @@ pub fn align_subobjects_js(
 pub fn align_data_js(
     vec_obj1: WasmVectorObject,
     vec_obj2: WasmVectorObject,
-    skip_point_align: bool
+    skip_point_align: bool,
+    center_if_no_points: Array
 ) -> Array {
     let vec_obj1 = vec_obj1.native_vec_features;
     let vec_obj2 = vec_obj2.native_vec_features;
-    let result = align_data(vec_obj1, vec_obj2, skip_point_align);
+    let result = align_data(vec_obj1, vec_obj2, skip_point_align, (center_if_no_points.get(0).as_f64().unwrap(), center_if_no_points.get(1).as_f64().unwrap()));
     return Array::of2(
         &JsValue::from(WasmVectorObject { native_vec_features: result.0 }),
         &JsValue::from(WasmVectorObject { native_vec_features: result.1 })

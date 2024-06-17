@@ -15,6 +15,8 @@ extern "C" {
     /// Log an `&str` to the console
     #[wasm_bindgen(js_namespace = console)]
     pub fn log(s: &str);
+    #[wasm_bindgen(js_namespace = console)]
+    pub fn error(err: JsError);
 }
 
 /// An asynchronous sleep function for WebAssembly
@@ -316,9 +318,10 @@ pub fn get_start_anchors(points: &Vec<(f64, f64)>) -> Vec<(f64, f64)> {
 }
 
 
-pub fn start_new_path(points: &mut Vec<(f64, f64)>, point: (f64, f64)) -> Vec<(f64, f64)> {
+pub fn start_new_path(points: &Vec<(f64, f64)>, point: (f64, f64)) -> Vec<(f64, f64)> {
+    let mut points = points.clone();
     if points.len() % 4 != 0 {
-        let anchors = get_start_anchors(points);
+        let anchors = get_start_anchors(&points);
         let last_anchor = anchors[anchors.len() - 1];
         for _ in 0..(4 - points.len() % 4) {
             points.push(last_anchor);
@@ -360,15 +363,12 @@ pub fn get_nth_subpath(subpaths: &Vec<Vec<(f64, f64)>>, n: usize) -> Vec<(f64, f
 
 pub fn insert_n_curves_to_point_list(
     n: usize,
-    points: &mut Vec<(f64, f64)>
+    points: &Vec<(f64, f64)>
 ) -> Vec<(f64, f64)> {
     if points.len() == 1 {
-        for _ in 0..4*n {
-            points.extend(points.clone());
-        }
-        return points.clone();
+        return vec![points[0]; 4 * (n + 1)];
     }
-    let bezier_quads = generate_cubic_bezier_tuples(&points.clone());
+    let bezier_quads = generate_cubic_bezier_tuples(&points);
     let target_num = bezier_quads.len() + n;
     let mut repeat_indices = Vec::new();
     for i in 0..target_num {
@@ -384,14 +384,14 @@ pub fn insert_n_curves_to_point_list(
         split_factors[val] += 1;
     }
     let mut new_points = Vec::new();
-    for (quad, split_factor) in bezier_quads.iter().zip(split_factors) {
+    for (bezier_quad, split_factor) in bezier_quads.iter().zip(split_factors) {
         let mut alphas = Vec::new();
-        for i in 0..split_factor+1 {
-            alphas.push(i as f64 / (split_factor as f64));
+        for i in 0..split_factor + 1 {
+            let alpha = i as f64 / (split_factor as f64);
+            alphas.push(alpha);
         }
-        for (a1, a2) in alphas.iter().zip(alphas[1..].iter()) {
-            let bezier_points = partial_bezier_points(&vec![quad.0, quad.1, quad.2, quad.3], *a1, *a2);
-            new_points.extend(bezier_points);
+        for (a1, a2) in alphas.iter().zip(alphas.iter().skip(1)) {
+            new_points.extend(partial_bezier_points(&vec![bezier_quad.0, bezier_quad.1, bezier_quad.2, bezier_quad.3], *a1, *a2));
         }
     }
     return new_points;
@@ -402,34 +402,57 @@ pub fn null_point_align(
     vec_obj1: VectorFeatures,
     vec_obj2: VectorFeatures
 ) -> (VectorFeatures, VectorFeatures) {
-    let mut new_vec_obj1 = vec_obj1.clone();
-    let mut new_vec_obj2 = vec_obj2.clone();
+    let mut vec_obj1 = vec_obj1;
+    let mut vec_obj2 = vec_obj2;
     if vec_obj1.points.len() == 0 && vec_obj2.points.len() > 0 {
-        new_vec_obj2.subobjects.push(vec_obj2.clone().set_subobjects(vec![]));
-        new_vec_obj2.points = vec![];
+        vec_obj2.subobjects.push(vec_obj2.set_subobjects(vec![]));
+        vec_obj2.points.clear();
     }
     if vec_obj2.points.len() == 0 && vec_obj1.points.len() > 0 {
-        new_vec_obj1.subobjects.push(vec_obj1.clone().set_subobjects(vec![]));
-        new_vec_obj1.points = vec![];
+        vec_obj1.subobjects.push(vec_obj1.set_subobjects(vec![]));
+        vec_obj1.points.clear();
     }
-    return (new_vec_obj1, new_vec_obj2);
+    return (vec_obj1, vec_obj2);
 }
 
 
-pub fn align_points(points1: Vec<(f64, f64)>, points2: Vec<(f64, f64)>) -> (Vec<(f64, f64)>, Vec<(f64, f64)>) {
-    if points1.len() == points2.len() {
-        return (points1.clone(), points2.clone());
+pub fn get_bbox(points: &Vec<(f64, f64)>) -> ((f64, f64), (f64, f64)) {
+    let mut min_x = f64::INFINITY;
+    let mut min_y = f64::INFINITY;
+    let mut max_x = f64::NEG_INFINITY;
+    let mut max_y = f64::NEG_INFINITY;
+    for point in points {
+        min_x = min_x.min(point.0);
+        min_y = min_y.min(point.1);
+        max_x = max_x.max(point.0);
+        max_y = max_y.max(point.1);
     }
-    let mut points1 = points1;
-    let mut points2 = points2;
+    return ((min_x, min_y), (max_x, max_y));
+}
+
+
+pub fn center(points: &Vec<(f64, f64)>, center_if_no_points: (f64, f64)) -> (f64, f64) {
+    if points.len() == 0 {
+        return center_if_no_points;
+    }
+    let ((min_x, min_y), (max_x, max_y)) = get_bbox(points);
+    return ((min_x + max_x) / 2.0, (min_y + max_y) / 2.0);
+}
+
+
+pub fn align_points(points1: &Vec<(f64, f64)>, points2: &Vec<(f64, f64)>, center_if_no_points: (f64, f64)) -> (Vec<(f64, f64)>, Vec<(f64, f64)>) {
+    let mut points1 = points1.clone();
+    let mut points2 = points2.clone();
     if points1.len() == 0 {
-        points1 = start_new_path(&mut points1, (0.0, 0.0));
+        let c = center(&points1, center_if_no_points);
+        points1 = start_new_path(&points1, c);
     }
     if has_new_path_begun(&points1) {
         points1.extend(line_as_cubic_bezier(points1[points1.len() - 1], points1[points1.len() - 1]));
     }
     if points2.len() == 0 {
-        points2 = start_new_path(&mut points2, (0.0, 0.0));
+        let c = center(&points2, center_if_no_points);
+        points2 = start_new_path(&points2, c);
     }
     if has_new_path_begun(&points2) {
         points2.extend(line_as_cubic_bezier(points2[points2.len() - 1], points2[points2.len() - 1]));
@@ -445,8 +468,8 @@ pub fn align_points(points1: Vec<(f64, f64)>, points2: Vec<(f64, f64)>) -> (Vec<
         let path2 = get_nth_subpath(&subpaths2, i);
         let diff1 = ((path2.len() as i32 - path1.len() as i32) / 4).max(0) as usize;
         let diff2 = ((path1.len() as i32 - path2.len() as i32) / 4).max(0) as usize;
-        let path1 = insert_n_curves_to_point_list(diff1, &mut path1.clone());
-        let path2 = insert_n_curves_to_point_list(diff2, &mut path2.clone());
+        let path1 = insert_n_curves_to_point_list(diff1, &path1);
+        let path2 = insert_n_curves_to_point_list(diff2, &path2);
         new_points1.extend(path1);
         new_points2.extend(path2);
     }
@@ -455,15 +478,17 @@ pub fn align_points(points1: Vec<(f64, f64)>, points2: Vec<(f64, f64)>) -> (Vec<
 
 
 pub fn add_n_more_subobjects(
-    subobjects: &Vec<VectorFeatures>,
-    n: usize
-) -> Vec<VectorFeatures> {
+    vec_obj: VectorFeatures,
+    n: usize,
+    center_if_no_points: (f64, f64)
+) -> VectorFeatures {
+    let subobjects = vec_obj.subobjects.clone();
     if n == 0 {
-        return subobjects.clone();
+        return vec_obj;
     }
     if subobjects.len() == 0 {
-        return vec![VectorFeatures {
-            points: vec![(0.0, 0.0)],
+        let subobjects = vec![VectorFeatures {
+            points: vec![center(&vec_obj.points, center_if_no_points)],
             subobjects: vec![],
             index: 0,
             fill: GradientImageOrColor::Color(Color {
@@ -482,6 +507,7 @@ pub fn add_n_more_subobjects(
             line_cap: "butt",
             line_join: "miter",
         }; n];
+        return vec_obj.set_subobjects(subobjects);
     }
     let target = subobjects.len() + n;
     let mut repeat_indices = Vec::new();
@@ -501,57 +527,48 @@ pub fn add_n_more_subobjects(
     for (subobject, split_factor) in subobjects.iter().zip(split_factors) {
         new_subobjects.push(subobject.clone());
         for _ in 1..split_factor {
-            new_subobjects.push(subobject.clone()
+            new_subobjects.push(subobject
                 .set_fill_opacity(0.0, true)
                 .set_stroke_opacity(0.0, true));
         }
     }
-    return new_subobjects;
+    return vec_obj.set_subobjects(new_subobjects);
 }
 
 
 pub fn align_subobjects(
-    subobjects1: Vec<VectorFeatures>,
-    subobjects2: Vec<VectorFeatures>
-) -> (Vec<VectorFeatures>, Vec<VectorFeatures>) {
-    let mut new_subobjects1 = subobjects1.clone();
-    let mut new_subobjects2 = subobjects2.clone();
-    new_subobjects1 = add_n_more_subobjects(&new_subobjects1, (new_subobjects2.len() as i32 - new_subobjects1.len() as i32).max(0) as usize);
-    new_subobjects2 = add_n_more_subobjects(&new_subobjects2, (new_subobjects1.len() as i32 - new_subobjects2.len() as i32).max(0) as usize);
-    return (new_subobjects1, new_subobjects2);
+    vec_obj1: VectorFeatures,
+    vec_obj2: VectorFeatures,
+    center_if_no_points: (f64, f64)
+) -> (VectorFeatures, VectorFeatures) {
+    return (
+        add_n_more_subobjects(vec_obj1.clone(), (vec_obj2.subobjects.len() as i32 - vec_obj1.subobjects.len() as i32).max(0) as usize, center_if_no_points),
+        add_n_more_subobjects(vec_obj2.clone(), (vec_obj1.subobjects.len() as i32 - vec_obj2.subobjects.len() as i32).max(0) as usize, center_if_no_points)
+    );
 }
 
 
 pub fn align_data(
     vec_obj1: VectorFeatures,
     vec_obj2: VectorFeatures,
-    skip_point_align: bool
+    skip_point_align: bool,
+    center_if_no_points: (f64, f64)
 ) -> (VectorFeatures, VectorFeatures) {
     let (
         mut vec_obj1,
         mut vec_obj2
     ) = null_point_align(vec_obj1, vec_obj2);
-    let (
-        mut new_subobjects1,
-        mut new_subobjects2
-    ) = align_subobjects(vec_obj1.subobjects.clone(), vec_obj2.subobjects.clone());
-    let mut new_points1 = vec_obj1.points.clone();
-    let mut new_points2 = vec_obj2.points.clone();
+    (vec_obj1, vec_obj2) = align_subobjects(vec_obj1, vec_obj2, center_if_no_points);
     if !skip_point_align {
-        (new_points1, new_points2) = align_points(new_points1, new_points2);
+        let (new_points1, new_points2) = align_points(&vec_obj1.points, &vec_obj2.points, center_if_no_points);
+        vec_obj1.points = new_points1;
+        vec_obj2.points = new_points2;
     }
-    for i in 0..new_subobjects1.len() {
-        let (
-            sub_vec_obj1,
-            sub_vec_obj2
-        ) = align_data(new_subobjects1[i].clone(), new_subobjects2[i].clone(), false);
-        new_subobjects1[i] = sub_vec_obj1;
-        new_subobjects2[i] = sub_vec_obj2;
+    for i in 0..vec_obj1.subobjects.len() {
+        let (subobject1, subobject2) = align_data(vec_obj1.subobjects[i].clone(), vec_obj2.subobjects[i].clone(), false, center_if_no_points);
+        vec_obj1.subobjects[i] = subobject1;
+        vec_obj2.subobjects[i] = subobject2;
     }
-    vec_obj1.points = new_points1;
-    vec_obj2.points = new_points2;
-    vec_obj1.subobjects = new_subobjects1;
-    vec_obj2.subobjects = new_subobjects2;
     return (vec_obj1, vec_obj2);
 }
 

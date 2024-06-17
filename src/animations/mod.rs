@@ -6,7 +6,6 @@ pub mod morph_shape;
 pub mod grow_arrow;
 pub mod create;
 pub mod grow_from_center;
-pub mod shift_image_position;
 pub mod shift_animation;
 pub mod move_camera;
 pub mod spinning_grow;

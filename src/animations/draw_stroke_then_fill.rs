@@ -40,13 +40,12 @@ pub fn draw_stroke_then_fill(vec_obj: VectorFeatures, t: f64) -> VectorFeatures 
 }
 
 
-pub fn write(number_of_objects: usize, lag_ratio: f64) -> Box<dyn Fn(VectorFeatures, f64) -> VectorFeatures> {
+pub fn write(vec_obj: VectorFeatures, lag_ratio: f64, t: f64) -> VectorFeatures {
     let mut anim_funcs = Vec::new();
-    for _ in 0..number_of_objects {
+    for _ in 0..vec_obj.subobjects.len() {
         anim_funcs.push(Box::new(|vec_obj, t| {
             draw_stroke_then_fill(vec_obj, t)
         }) as Box<dyn Fn(VectorFeatures, f64) -> VectorFeatures>);
     }
-    let result = animation_group(anim_funcs, lag_ratio);
-    return result;
+    return animation_group(vec_obj, anim_funcs, lag_ratio, t);
 }

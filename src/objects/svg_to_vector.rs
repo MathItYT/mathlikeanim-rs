@@ -1,6 +1,6 @@
 use core::str;
 
-use lightningcss::properties::transform::Transform;
+use lightningcss::properties::transform::{Matrix, Transform};
 use lightningcss::traits::Parse;
 use svg::node::element::path::{Command, Data};
 use svg::node::element::tag::Type;
@@ -26,28 +26,19 @@ fn parse_color(color: &str) -> CssColor {
 }
 
 
-fn parse_path(attributes: &std::collections::HashMap<String, Value>, index: usize) -> VectorFeatures {
+fn parse_path(attributes: &std::collections::HashMap<String, Value>, index: usize, fill: &(f64, f64, f64, f64), stroke: &(f64, f64, f64, f64), sw: &f64, lc: &&str, lj: &&str, transforms: &Vec<Vec<Matrix<f32>>>) -> VectorFeatures {
+    let mut transforms = transforms.clone();
     let data = attributes.get("d").map(|d| {
         d.to_string()
     }).unwrap_or("".to_string());
-    #[cfg(target_arch = "wasm32")]
-    log("Here 1");
-    #[cfg(target_arch = "wasm32")]
-    log("Here 2");
     let data = Data::parse(data.as_str()).unwrap();
-    #[cfg(target_arch = "wasm32")]
-    log("Here 3");
     let mut points = Vec::new();
     let mut last_move: Option<(f64, f64)> = None;
     let mut curve_start = None;
     let mut last_quadratic_curve = None;
     for command in data.iter() {
-        #[cfg(target_arch = "wasm32")]
-        log("Here 4");
         match command {
             &Command::Move(ref abs, ref params) => {
-                #[cfg(target_arch = "wasm32")]
-                log("Here 5");
                 let mut x = params[0] as f64;
                 let mut y = params[1] as f64;
                 match abs {
@@ -65,8 +56,6 @@ fn parse_path(attributes: &std::collections::HashMap<String, Value>, index: usiz
                 }
             },
             &Command::Line(ref abs, ref params) => {
-                #[cfg(target_arch = "wasm32")]
-                log("Here 6");
                 let mut x = params[0] as f64;
                 let mut y = params[1] as f64;
                 match abs {
@@ -81,8 +70,6 @@ fn parse_path(attributes: &std::collections::HashMap<String, Value>, index: usiz
                 last_quadratic_curve = None;
             },
             &Command::Close => {
-                #[cfg(target_arch = "wasm32")]
-                log("Here 7");
                 if !consider_points_equals(last_move.unwrap(), curve_start.unwrap()) {
                     points.extend(line_as_cubic_bezier(last_move.unwrap(), curve_start.unwrap()));
                     last_move = curve_start;
@@ -91,8 +78,6 @@ fn parse_path(attributes: &std::collections::HashMap<String, Value>, index: usiz
                 last_quadratic_curve = None;
             },
             &Command::CubicCurve(ref abs, ref params) => {
-                #[cfg(target_arch = "wasm32")]
-                log("Here 8");
                 let mut x1 = params[0] as f64;
                 let mut y1 = params[1] as f64;
                 let mut x2 = params[2] as f64;
@@ -119,8 +104,6 @@ fn parse_path(attributes: &std::collections::HashMap<String, Value>, index: usiz
                 last_quadratic_curve = None;
             },
             &Command::QuadraticCurve(ref abs, ref params) => {
-                #[cfg(target_arch = "wasm32")]
-                log("Here 9");
                 let mut x1 = params[0] as f64;
                 let mut y1 = params[1] as f64;
                 let mut x = params[2] as f64;
@@ -140,8 +123,6 @@ fn parse_path(attributes: &std::collections::HashMap<String, Value>, index: usiz
                 last_quadratic_curve = Some((x1, y1));
             },
             &Command::HorizontalLine(ref abs, ref params) => {
-                #[cfg(target_arch = "wasm32")]
-                log("Here 10");
                 let mut x = params[0] as f64;
                 match abs {
                     &Position::Relative => {
@@ -154,8 +135,6 @@ fn parse_path(attributes: &std::collections::HashMap<String, Value>, index: usiz
                 last_quadratic_curve = None;
             },
             &Command::VerticalLine(ref abs, ref params) => {
-                #[cfg(target_arch = "wasm32")]
-                log("Here 11");
                 let mut y = params[0] as f64;
                 match abs {
                     &Position::Relative => {
@@ -168,8 +147,6 @@ fn parse_path(attributes: &std::collections::HashMap<String, Value>, index: usiz
                 last_quadratic_curve = None;
             },
             &Command::SmoothCubicCurve(ref abs, ref params) => {
-                #[cfg(target_arch = "wasm32")]
-                log("Here 12");
                 let mut x2 = params[0] as f64;
                 let mut y2 = params[1] as f64;
                 let mut x = params[2] as f64;
@@ -194,11 +171,7 @@ fn parse_path(attributes: &std::collections::HashMap<String, Value>, index: usiz
                 last_quadratic_curve = None;
             },
             &Command::SmoothQuadraticCurve(ref abs, ref params) => {
-                #[cfg(target_arch = "wasm32")]
-                log("Here 13");
                 let last = last_move.unwrap();
-                #[cfg(target_arch = "wasm32")]
-                log("Here 13.1");
                 let x1 = if last_quadratic_curve.is_some() {
                     2.0 * last.0 - last_quadratic_curve.unwrap().0
                 } else {
@@ -218,20 +191,12 @@ fn parse_path(attributes: &std::collections::HashMap<String, Value>, index: usiz
                     },
                     _ => {}
                 }
-                #[cfg(target_arch = "wasm32")]
-                log("Here 13.2");
-                #[cfg(target_arch = "wasm32")]
-                log("Here 13.3");
                 let cubic = quadratic_bezier_as_cubic_bezier(last, (x1, y1), (x, y));
-                #[cfg(target_arch = "wasm32")]
-                log("Here 13.4");
                 points.extend(cubic);
                 last_move = Some((x, y));
                 last_quadratic_curve = Some((x1, y1));
             },
             &Command::EllipticalArc(ref abs, ref params) => {
-                #[cfg(target_arch = "wasm32")]
-                log("Here 14");
                 let rx = params[0] as f64;
                 let ry = params[1] as f64;
                 let rotation = params[2] as f64;
@@ -271,7 +236,7 @@ fn parse_path(attributes: &std::collections::HashMap<String, Value>, index: usiz
             }
             _ => (0.0, 0.0, 0.0, 1.0),
         }
-    }).unwrap_or((0.0, 0.0, 0.0, 1.0));
+    }).unwrap_or(fill.clone());
     let stroke_color = attributes.get("stroke").map(|stroke| {
         if stroke.to_string().as_str() == "none" {
             return (0.0, 0.0, 0.0, 0.0);
@@ -289,16 +254,16 @@ fn parse_path(attributes: &std::collections::HashMap<String, Value>, index: usiz
             }
             _ => (0.0, 0.0, 0.0, 1.0),
         }
-    }).unwrap_or((0.0, 0.0, 0.0, 1.0));
+    }).unwrap_or(stroke.clone());
     let stroke_width = attributes.get("stroke-width").map(|width| {
         width.parse().unwrap()
-    }).unwrap_or(0.0);
+    }).unwrap_or(*sw);
     let line_cap = attributes.get("stroke-linecap").map(|cap| {
         cap.to_string()
-    }).unwrap_or("butt".to_string());
+    }).unwrap_or(lc.to_string());
     let line_join = attributes.get("stroke-linejoin").map(|join| {
         join.to_string()
-    }).unwrap_or("miter".to_string());
+    }).unwrap_or(lj.to_string());
     let line_cap = match line_cap.as_str() {
         "butt" => "butt",
         "square" => "square",
@@ -314,7 +279,6 @@ fn parse_path(attributes: &std::collections::HashMap<String, Value>, index: usiz
     let transform_attr = attributes.get("transform").map(|transform| {
         transform.to_string()
     });
-    let mut new_points: Vec<(f64, f64)> = Vec::new();
     if transform_attr.is_some() {
         let transfs = transform_attr.unwrap();
         let transfs = transfs.split(" ");
@@ -331,13 +295,17 @@ fn parse_path(attributes: &std::collections::HashMap<String, Value>, index: usiz
             let transf = transf.trim();
             let transf = Transform::parse_string(transf.replace(", ", " ").replace(" ", ",").as_str()).unwrap();
             let matrix = transf.to_matrix().unwrap().to_matrix2d().unwrap();
-            for point in points.iter() {
+            transforms.push(vec![matrix]);
+        }
+    }
+    for transform in transforms.iter().rev() {
+        for matrix in transform.iter().rev() {
+            let new_points = points.iter().map(|point| {
                 let new_x = matrix.a as f64 * point.0 + matrix.c as f64 * point.1 + matrix.e as f64;
                 let new_y = matrix.b as f64 * point.0 + matrix.d as f64 * point.1 + matrix.f as f64;
-                new_points.push((new_x, new_y));
-            }
-            points = new_points.clone();
-            new_points.clear();
+                (new_x, new_y)
+            }).collect::<Vec<(f64, f64)>>();
+            points = new_points;
         }
     }
     let vec_obj = VectorFeatures {
@@ -366,8 +334,15 @@ fn parse_path(attributes: &std::collections::HashMap<String, Value>, index: usiz
 
 fn parse_rect(
     attributes: &std::collections::HashMap<String, Value>,
-    index: usize
+    index: usize,
+    fill: &(f64, f64, f64, f64),
+    stroke: &(f64, f64, f64, f64),
+    sw: &f64,
+    lc: &&str,
+    lj: &&str,
+    transforms: &Vec<Vec<Matrix<f32>>>
 ) -> VectorFeatures {
+    let mut transforms = transforms.clone();
     let x = attributes.get("x").map(|x| {
         x.parse().unwrap()
     }).unwrap_or(0.0);
@@ -397,7 +372,7 @@ fn parse_rect(
             }
             _ => (0.0, 0.0, 0.0, 1.0),
         }
-    }).unwrap_or((0.0, 0.0, 0.0, 1.0));
+    }).unwrap_or(fill.clone());
     let stroke_color = attributes.get("stroke").map(|stroke| {
         if stroke.to_string().as_str() == "none" {
             return (0.0, 0.0, 0.0, 0.0);
@@ -415,16 +390,16 @@ fn parse_rect(
             }
             _ => (0.0, 0.0, 0.0, 1.0),
         }
-    }).unwrap_or((0.0, 0.0, 0.0, 1.0));
+    }).unwrap_or(stroke.clone());
     let stroke_width = attributes.get("stroke-width").map(|width| {
         width.parse().unwrap()
-    }).unwrap_or(0.0);
+    }).unwrap_or(*sw);
     let line_cap = attributes.get("stroke-linecap").map(|cap| {
         cap.to_string()
-    }).unwrap_or("butt".to_string());
+    }).unwrap_or(lc.to_string());
     let line_join = attributes.get("stroke-linejoin").map(|join| {
         join.to_string()
-    }).unwrap_or("miter".to_string());
+    }).unwrap_or(lj.to_string());
     let line_cap = match line_cap.as_str() {
         "butt" => "butt",
         "square" => "square",
@@ -438,7 +413,7 @@ fn parse_rect(
         _ => "miter",
     };
     let center = (x + width / 2.0, y + height / 2.0);
-    let vec_obj = rectangle(
+    let mut vec_obj = rectangle(
         center,
         width,
         height,
@@ -449,14 +424,52 @@ fn parse_rect(
         Some(line_join),
         Some(index)
     );
+    let mut points = vec_obj.points.clone();
+    if attributes.get("transform").is_some() {
+        let transform = attributes.get("transform").unwrap().to_string();
+        let transfs = transform.split(" ");
+        let mut new_transfs = Vec::new();
+        for transf in transfs {
+            if !transf.starts_with("matrix") && !transf.starts_with("translate") && !transf.starts_with("scale") && !transf.starts_with("rotate") && !transf.starts_with("skewX") && !transf.starts_with("skewY") {
+                let i = new_transfs.len() - 1;
+                new_transfs[i] = format!("{},{}", new_transfs[i], transf.to_string());
+            } else {
+                new_transfs.push(transf.to_string());
+            }
+        }
+        for transf in new_transfs {
+            let transf = transf.trim();
+            let transf = Transform::parse_string(transf.replace(", ", " ").replace(" ", ",").as_str()).unwrap();
+            let matrix = transf.to_matrix().unwrap().to_matrix2d().unwrap();
+            transforms.push(vec![matrix]);
+        }
+    }
+    for transform in transforms.iter().rev() {
+        for matrix in transform.iter().rev() {
+            let new_points = points.iter().map(|point| {
+                let new_x = matrix.a as f64 * point.0 + matrix.c as f64 * point.1 + matrix.e as f64;
+                let new_y = matrix.b as f64 * point.0 + matrix.d as f64 * point.1 + matrix.f as f64;
+                (new_x, new_y)
+            }).collect::<Vec<(f64, f64)>>();
+            points = new_points;
+        }
+    }
+    vec_obj.points = points;
     return vec_obj;
 }
 
 
 fn parse_circle(
     attributes: &std::collections::HashMap<String, Value>,
-    index: usize
+    index: usize,
+    fill: &(f64, f64, f64, f64),
+    stroke: &(f64, f64, f64, f64),
+    sw: &f64,
+    lc: &&str,
+    lj: &&str,
+    transforms: &Vec<Vec<Matrix<f32>>>
 ) -> VectorFeatures {
+    let mut transforms = transforms.clone();
     let cx = attributes.get("cx").map(|cx| {
         cx.parse().unwrap()
     }).unwrap_or(0.0);
@@ -483,7 +496,7 @@ fn parse_circle(
             }
             _ => (0.0, 0.0, 0.0, 1.0),
         }
-    }).unwrap_or((0.0, 0.0, 0.0, 1.0));
+    }).unwrap_or(fill.clone());
     let stroke_color = attributes.get("stroke").map(|stroke| {
         if stroke.to_string().as_str() == "none" {
             return (0.0, 0.0, 0.0, 0.0);
@@ -501,16 +514,16 @@ fn parse_circle(
             }
             _ => (0.0, 0.0, 0.0, 1.0),
         }
-    }).unwrap_or((0.0, 0.0, 0.0, 1.0));
+    }).unwrap_or(stroke.clone());
     let stroke_width = attributes.get("stroke-width").map(|width| {
         width.parse().unwrap()
-    }).unwrap_or(0.0);
+    }).unwrap_or(*sw);
     let line_cap = attributes.get("stroke-linecap").map(|cap| {
         cap.to_string()
-    }).unwrap_or("butt".to_string());
+    }).unwrap_or(lc.to_string());
     let line_join = attributes.get("stroke-linejoin").map(|join| {
         join.to_string()
-    }).unwrap_or("miter".to_string());
+    }).unwrap_or(lj.to_string());
     let line_cap = match line_cap.as_str() {
         "butt" => "butt",
         "square" => "square",
@@ -523,7 +536,7 @@ fn parse_circle(
         "round" => "round",
         _ => "miter",
     };
-    let vec_obj = circle(
+    let mut vec_obj = circle(
         (cx, cy),
         r,
         None,
@@ -534,14 +547,52 @@ fn parse_circle(
         Some(line_join),
         Some(index)
     );
+    let mut points = vec_obj.points.clone();
+    if attributes.get("transform").is_some() {
+        let transform = attributes.get("transform").unwrap().to_string();
+        let transfs = transform.split(" ");
+        let mut new_transfs = Vec::new();
+        for transf in transfs {
+            if !transf.starts_with("matrix") && !transf.starts_with("translate") && !transf.starts_with("scale") && !transf.starts_with("rotate") && !transf.starts_with("skewX") && !transf.starts_with("skewY") {
+                let i = new_transfs.len() - 1;
+                new_transfs[i] = format!("{},{}", new_transfs[i], transf.to_string());
+            } else {
+                new_transfs.push(transf.to_string());
+            }
+        }
+        for transf in new_transfs {
+            let transf = transf.trim();
+            let transf = Transform::parse_string(transf.replace(", ", " ").replace(" ", ",").as_str()).unwrap();
+            let matrix = transf.to_matrix().unwrap().to_matrix2d().unwrap();
+            transforms.push(vec![matrix]);
+        }
+    }
+    for transform in transforms.iter().rev() {
+        for matrix in transform.iter().rev() {
+            let new_points = points.iter().map(|point| {
+                let new_x = matrix.a as f64 * point.0 + matrix.c as f64 * point.1 + matrix.e as f64;
+                let new_y = matrix.b as f64 * point.0 + matrix.d as f64 * point.1 + matrix.f as f64;
+                (new_x, new_y)
+            }).collect::<Vec<(f64, f64)>>();
+            points = new_points;
+        }
+    }
+    vec_obj.points = points;
     return vec_obj;
 }
 
 
 fn parse_polygon(
     attributes: &std::collections::HashMap<String, Value>,
-    index: usize
+    index: usize,
+    fill: &(f64, f64, f64, f64),
+    stroke: &(f64, f64, f64, f64),
+    sw: &f64,
+    lc: &&str,
+    lj: &&str,
+    transforms: &Vec<Vec<Matrix<f32>>>
 ) -> VectorFeatures {
+    let mut transforms = transforms.clone();
     let points = attributes.get("points").map(|points| {
         let points = points.to_string();
         let points = points.split(" ");
@@ -573,7 +624,7 @@ fn parse_polygon(
             }
             _ => (0.0, 0.0, 0.0, 1.0),
         }
-    }).unwrap_or((0.0, 0.0, 0.0, 1.0));
+    }).unwrap_or(fill.clone());
     let stroke_color = attributes.get("stroke").map(|stroke| {
         if stroke.to_string().as_str() == "none" {
             return (0.0, 0.0, 0.0, 0.0);
@@ -591,16 +642,16 @@ fn parse_polygon(
             }
             _ => (0.0, 0.0, 0.0, 1.0),
         }
-    }).unwrap_or((0.0, 0.0, 0.0, 1.0));
+    }).unwrap_or(stroke.clone());
     let stroke_width = attributes.get("stroke-width").map(|width| {
         width.parse().unwrap()
-    }).unwrap_or(0.0);
+    }).unwrap_or(*sw);
     let line_cap = attributes.get("stroke-linecap").map(|cap| {
         cap.to_string()
-    }).unwrap_or("butt".to_string());
+    }).unwrap_or(lc.to_string());
     let line_join = attributes.get("stroke-linejoin").map(|join| {
         join.to_string()
-    }).unwrap_or("miter".to_string());
+    }).unwrap_or(lj.to_string());
     let line_cap = match line_cap.as_str() {
         "butt" => "butt",
         "square" => "square",
@@ -613,7 +664,7 @@ fn parse_polygon(
         "round" => "round",
         _ => "miter",
     };
-    let polygon = polygon(
+    let mut polygon = polygon(
         points,
         Some(stroke_color),
         Some(fill_color),
@@ -622,6 +673,37 @@ fn parse_polygon(
         Some(line_join),
         Some(index)
     );
+    if attributes.get("transform").is_some() {
+        let transform = attributes.get("transform").unwrap().to_string();
+        let transfs = transform.split(" ");
+        let mut new_transfs = Vec::new();
+        for transf in transfs {
+            if !transf.starts_with("matrix") && !transf.starts_with("translate") && !transf.starts_with("scale") && !transf.starts_with("rotate") && !transf.starts_with("skewX") && !transf.starts_with("skewY") {
+                let i = new_transfs.len() - 1;
+                new_transfs[i] = format!("{},{}", new_transfs[i], transf.to_string());
+            } else {
+                new_transfs.push(transf.to_string());
+            }
+        }
+        for transf in new_transfs {
+            let transf = transf.trim();
+            let transf = Transform::parse_string(transf.replace(", ", " ").replace(" ", ",").as_str()).unwrap();
+            let matrix = transf.to_matrix().unwrap().to_matrix2d().unwrap();
+            transforms.push(vec![matrix]);
+        }
+    }
+    let mut points = polygon.points.clone();
+    for transform in transforms.iter().rev() {
+        for matrix in transform.iter().rev() {
+            let new_points = points.iter().map(|point| {
+                let new_x = matrix.a as f64 * point.0 + matrix.c as f64 * point.1 + matrix.e as f64;
+                let new_y = matrix.b as f64 * point.0 + matrix.d as f64 * point.1 + matrix.f as f64;
+                (new_x, new_y)
+            }).collect::<Vec<(f64, f64)>>();
+            points = new_points;
+        }
+    }
+    polygon.points = points;
     return polygon;
 }
 
@@ -751,8 +833,6 @@ pub fn svg_to_vector(svg: &str) -> VectorFeatures {
                             new_transfs.push(transform.to_string());
                         }
                     }
-                    #[cfg(target_arch = "wasm32")]
-                    log(&format!("new_transfs: {:?}", new_transfs));
                     let mut new_transforms = Vec::new();
                     for transform in new_transfs {
                         let transform = Transform::parse_string(transform.replace(", ", " ").replace(" ", ",").as_str()).unwrap();
@@ -784,7 +864,13 @@ pub fn svg_to_vector(svg: &str) -> VectorFeatures {
             }
             Event::Tag("svg", _, _) => {},
             Event::Tag("path", _, attributes) => {
-                let vec_obj = parse_path(&attributes, index);
+                // Apply transforms and fill/stroke/line_cap/line_join/stroke_width
+                let fill_color = fill.last().unwrap_or(&(0.0, 0.0, 0.0, 1.0));
+                let stroke_color = stroke.last().unwrap_or(&(0.0, 0.0, 0.0, 0.0));
+                let stroke_width = sw.last().unwrap_or(&0.0).clone();
+                let line_cap = lc.last().unwrap_or(&&"butt");
+                let line_join = lj.last().unwrap_or(&&"miter");
+                let vec_obj = parse_path(&attributes, index, fill_color, stroke_color, &stroke_width, &line_cap, &line_join, &transforms);
                 let id = attributes.get("id").map(|id| {
                     id.to_string()
                 });
@@ -796,7 +882,12 @@ pub fn svg_to_vector(svg: &str) -> VectorFeatures {
                 index += 1;
             },
             Event::Tag("rect", _, attributes) => {
-                let vec_obj = parse_rect(&attributes, index);
+                let fill_color = fill.last().unwrap_or(&(0.0, 0.0, 0.0, 1.0));
+                let stroke_color = stroke.last().unwrap_or(&(0.0, 0.0, 0.0, 0.0));
+                let stroke_width = sw.last().unwrap_or(&0.0).clone();
+                let line_cap = lc.last().unwrap_or(&&"butt");
+                let line_join = lj.last().unwrap_or(&&"miter");
+                let vec_obj = parse_rect(&attributes, index, fill_color, stroke_color, &stroke_width, &line_cap, &line_join, &transforms);
                 let id = attributes.get("id").map(|id| {
                     id.to_string()
                 });
@@ -808,7 +899,12 @@ pub fn svg_to_vector(svg: &str) -> VectorFeatures {
                 index += 1;
             }
             Event::Tag("circle", _, attributes) => {
-                let vec_obj = parse_circle(&attributes, index);
+                let fill_color = fill.last().unwrap_or(&(0.0, 0.0, 0.0, 1.0));
+                let stroke_color = stroke.last().unwrap_or(&(0.0, 0.0, 0.0, 0.0));
+                let stroke_width = sw.last().unwrap_or(&0.0).clone();
+                let line_cap = lc.last().unwrap_or(&&"butt");
+                let line_join = lj.last().unwrap_or(&&"miter");
+                let vec_obj = parse_circle(&attributes, index, fill_color, stroke_color, &stroke_width, &line_cap, &line_join, &transforms);
                 let id = attributes.get("id").map(|id| {
                     id.to_string()
                 });
@@ -820,7 +916,12 @@ pub fn svg_to_vector(svg: &str) -> VectorFeatures {
                 index += 1;
             }
             Event::Tag("polygon", _, attributes) => {
-                let vec_obj = parse_polygon(&attributes, index);
+                let fill_color = fill.last().unwrap_or(&(0.0, 0.0, 0.0, 1.0));
+                let stroke_color = stroke.last().unwrap_or(&(0.0, 0.0, 0.0, 0.0));
+                let stroke_width = sw.last().unwrap_or(&0.0).clone();
+                let line_cap = lc.last().unwrap_or(&&"butt");
+                let line_join = lj.last().unwrap_or(&&"miter");
+                let vec_obj = parse_polygon(&attributes, index, fill_color, stroke_color, &stroke_width, &line_cap, &line_join, &transforms);
                 let id = attributes.get("id").map(|id| {
                     id.to_string()
                 });

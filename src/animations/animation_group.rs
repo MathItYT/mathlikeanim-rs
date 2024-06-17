@@ -16,19 +16,18 @@ pub fn make_timings(
 
 // value: ((lag_ratio + 1.0) * t - timing).clamp(0.0, 1.0)
 pub fn animation_group(
-    anim_funcs: Vec<Box<dyn Fn(VectorFeatures, f64) -> VectorFeatures>>,
-    lag_ratio: f64
-) -> Box<dyn Fn(VectorFeatures, f64) -> VectorFeatures> {
+    vec_obj: VectorFeatures,
+    anim_funcs: Vec<impl Fn(VectorFeatures, f64) -> VectorFeatures>,
+    lag_ratio: f64,
+    t: f64
+) -> VectorFeatures {
     let timings = make_timings(anim_funcs.len(), lag_ratio);
-    let result = Box::new(move |vec_obj: VectorFeatures, t: f64| -> VectorFeatures {
-        let new_vec_obj = vec_obj.clone();
-        let mut new_subobjects = Vec::new();
-        for i in 0..anim_funcs.len() {
-            let timing = timings[i];
-            let value = ((lag_ratio + 1.0) * t - timing).clamp(0.0, 1.0);
-            new_subobjects.push(anim_funcs[i](vec_obj.subobjects[i].clone(), value));
-        }
-        return new_vec_obj.set_subobjects(new_subobjects);
-    });
-    return result;
+    let new_vec_obj = vec_obj.clone();
+    let mut new_subobjects = Vec::new();
+    for i in 0..anim_funcs.len() {
+        let timing = timings[i];
+        let value = ((lag_ratio + 1.0) * t - timing).clamp(0.0, 1.0);
+        new_subobjects.push(anim_funcs[i](vec_obj.subobjects[i].clone(), value));
+    }
+    return new_vec_obj.set_subobjects(new_subobjects);
 }
