@@ -9,8 +9,8 @@ import useLandscape from "@/lib/use-landscape";
 import { MathJax, MathJaxContext } from "better-react-mathjax";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { RotateCcw } from "lucide-react";
-import init, { InitOutput, SVGScene, WasmGradientImageOrColor, WasmGradientStop, WasmLinearGradient, WasmVectorObject, animationGroup, areaUnderCurve, axes, coordsToPoint, create, drawStrokeThenFill, equilateralTriangle, fadeIn, fadeOut, getNumbersTex, hexToColor, interpolate, interpolateTuple, mathjax, morphShape, plotInAxes, rectangle, scaleInPlace, shiftAnimation, smooth, write, addFinalTip, line, showTemporaily, alignData } from "mathlikeanim-rs";
-import React, { use } from "react";
+import init, { InitOutput, Scene, WasmGradientImageOrColor, WasmGradientStop, WasmLinearGradient, WasmVectorObject, animationGroup, areaUnderCurve, axes, coordsToPoint, create, drawStrokeThenFill, equilateralTriangle, fadeIn, fadeOut, getNumbersTex, hexToColor, interpolate, interpolateTuple, mathjax, morphShape, plotInAxes, rectangle, scaleInPlace, shiftAnimation, smooth, write, addFinalTip, line, showTemporaily, alignData } from "mathlikeanim-rs";
+import React from "react";
 
 
 function getSubobjectsRecursiveWithPoints(object: WasmVectorObject): WasmVectorObject[] {
@@ -24,6 +24,7 @@ function getSubobjectsRecursiveWithPoints(object: WasmVectorObject): WasmVectorO
 
 
 export default function Home() {
+  const [started, setStarted] = React.useState<boolean>(false);
   const isLandscape = useLandscape();
   const [disabledAnswer, setDisabledAnswer] = React.useState<boolean>(true);
   const [answer, setAnswer] = React.useState<string>("$$\\text{Your answer:}$$");
@@ -56,7 +57,8 @@ export default function Home() {
       setDisabledSubmit(false);
     }
   };
-  const [current, setCurrent] = React.useState<HTMLDivElement | null>(null);
+  const [current, setCurrent] = React.useState<HTMLCanvasElement | null>(null);
+  const [ctx, setCtx] = React.useState<CanvasRenderingContext2D | null>(null);
   const handleAnswered = React.useCallback(() => {
     if (!numAnswer || !current) {
       return;
@@ -83,7 +85,7 @@ export default function Home() {
       };
     }
   }, [numAnswer, current]);
-  const ref = React.useCallback((node: HTMLDivElement | null) => {
+  const ref = React.useCallback((node: HTMLCanvasElement | null) => {
     if (node) {
       setCurrent(node);
     }
@@ -94,12 +96,17 @@ export default function Home() {
       init().then(setOutput);
     }
   }, [current]);
-  const [scene, setScene] = React.useState<SVGScene | null>(null);
+  const [scene, setScene] = React.useState<Scene | null>(null);
   React.useEffect(() => {
     if (output) {
-      setScene(new SVGScene(BigInt(1920), BigInt(1080), BigInt(60)));
+      setScene(new Scene(BigInt(1920), BigInt(1080), BigInt(60)));
     }
   }, [output]);
+  React.useEffect(() => {
+    if (scene && current) {
+      setCtx(current.getContext("2d"));
+    }
+  }, [scene, current]);
   const continue4 = React.useCallback(async (right: boolean) => {
     if (!scene || !current) {
       return;
@@ -1044,6 +1051,7 @@ export default function Home() {
       return;
     }
     current.onmousedown = null;
+    setStarted(true);
     await scene.play(
       async (objects: WasmVectorObject[], t: number) => {
         return [fadeOut(objects[0].clone(), 1.0, [0.0, 0.0], t)];
@@ -1126,9 +1134,9 @@ export default function Home() {
     scene.renderFrame();
   }, [scene, current]);
   React.useEffect(() => {
-    if (scene && current) {
+    if (scene && current && ctx) {
       const run = async () => {
-        scene.setDivContainer(current);
+        scene.setCanvasContext(ctx);
         scene.setBackground(WasmGradientImageOrColor.fromColor(hexToColor("#161616", 1.0)));
         let text = await mathjax("\\require{color}\\textcolor{#EBEBEB}{\\text{Tap here to start}}");
         text = text.scale(1000.0 / text.getWidth(), true);
@@ -1139,10 +1147,10 @@ export default function Home() {
       };
       run();
     }
-  }, [scene, current]);
+  }, [scene, current, ctx]);
   return (
     <>
-      { !isLandscape ?
+      { !isLandscape && !started ?
       <div className="flex flex-col justify-center items-center h-[80vh]">
         <RotateCcw className="w-56 h-56"/>
         <p className="text-center font-bold text-[5vw]">
@@ -1151,13 +1159,13 @@ export default function Home() {
           to landscape (horizontal) mode
         </p>
       </div> : null }
-      { isLandscape ?
+      { isLandscape || started ?
       <>
         <h1 className="text-[3vw] font-bold text-center">
           Imagine having an interactive math lesson like this
         </h1>
         <div className="flex flex-col justify-center items-center h-[50vw]">
-          <div ref={ref} className="container flex justify-center pt-[3vh] pb-3"/>
+          <canvas ref={ref} width={1920} height={1080} className="flex justify-center pt-[3vh] pb-3 w-[70vw] h-auto"/>
           <div className="flex flex-col justify-center">
             <Dialog>
               <div className="flex justify-center">
