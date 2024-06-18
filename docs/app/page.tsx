@@ -50,8 +50,8 @@ export default function Home() {
       setNumAnswer(parseInt(value));
       setDisabledSubmit(false);
     } else if (value[0] === "0") {
-      setAnswer(`$$\\text{Your answer: }${value.slice(1)}$$`);
-      setNumAnswer(parseInt(value));
+      setAnswer(`$$\\text{Your answer: }${value[1]}$$`);
+      setNumAnswer(parseInt(value[1]));
       setDisabledSubmit(false);
     } else {
       setAnswer(`$$\\text{Your answer: }${value}$$`);
@@ -62,7 +62,7 @@ export default function Home() {
   const [current, setCurrent] = React.useState<HTMLCanvasElement | null>(null);
   const [ctx, setCtx] = React.useState<CanvasRenderingContext2D | null>(null);
   const handleAnswered = React.useCallback(() => {
-    if (!numAnswer || !current) {
+    if (numAnswer === null || !current) {
       return;
     }
     if (numAnswer === 32) {

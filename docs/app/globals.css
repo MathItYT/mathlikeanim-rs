@@ -76,4 +76,16 @@
     .container svg {
       @apply w-[70vw] h-auto;
     }
+
+    .container-half svg {
+      @apply w-[35vw] h-auto;
+    }
+    
+    .code {
+      @apply whitespace-pre font-mono bg-slate-900 p-[1vw] rounded-[2vh] text-[1.5vh];
+    }
+
+    .container-rounded svg {
+      @apply rounded-[2vh];
+    }
   }

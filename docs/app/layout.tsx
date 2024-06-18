@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import "highlight.js/styles/github-dark.css";
 import Link from "next/link";
 import Image from "next/image";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -10,6 +11,7 @@ import { Menu } from "lucide-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { Toaster } from "@/components/ui/toaster";
+
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -38,9 +40,13 @@ export default function RootLayout({
               <SheetTrigger>
                 <Menu className="mt-3 ml-5"/>
               </SheetTrigger>
-              <SheetContent>
+              <SheetContent side="left">
                 <SheetHeader>
-                  <SheetTitle>MathLikeAnim-rs</SheetTitle>
+                  <SheetTitle asChild>
+                    <Link href="/">
+                      MathLikeAnim-rs
+                    </Link>
+                  </SheetTitle>
                   <SheetDescription>
                     A Rust library for interactive math animations
                   </SheetDescription>
@@ -49,9 +55,10 @@ export default function RootLayout({
                       <FontAwesomeIcon icon={faGithub} className="h-[4vh]" />
                     </Link>
                   </div>
-                  <div className="flex flex-col justify-center items-center pt-[1vh]">
-                    <h2 className="font-bold">Documentation in construction 🚧</h2>
-                    <p>We're working on it, stay tuned!</p>
+                  <div className="flex flex-col pl-[1vh] pt-[1vh]">
+                    <Link href={`/examples`}>
+                      Examples
+                    </Link>
                   </div>
                 </SheetHeader>
               </SheetContent>
