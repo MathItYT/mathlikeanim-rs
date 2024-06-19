@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter }from "next/font/google";
 import "./globals.css";
 import "highlight.js/styles/github-dark.css";
 import Link from "next/link";
@@ -34,6 +34,13 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <link
+            rel="preload"
+            href="/fonts/Inter-Bold.ttf"
+            as="font"
+            type="font/ttf"
+            crossOrigin="anonymous"
+          />
           <div className="fixed top-0 left-0 w-16 h-full">
             <ModeToggle />
             <Sheet>

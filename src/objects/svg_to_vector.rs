@@ -751,8 +751,6 @@ pub fn svg_to_vector(svg: &str) -> VectorFeatures {
                 applied_fill.push(fill_cur.is_some());
                 if fill_cur.is_some() {
                     fill.push(fill_cur.unwrap());
-                } else if fill.len() > 0 {
-                    fill.push(fill.last().unwrap().clone());
                 }
                 let stroke_cur = attributes.get("stroke").map(|stroke| {
                     if stroke.to_string().as_str() == "none" {
@@ -775,8 +773,6 @@ pub fn svg_to_vector(svg: &str) -> VectorFeatures {
                 applied_stroke.push(stroke_cur.is_some());
                 if stroke_cur.is_some() {
                     stroke.push(stroke_cur.unwrap());
-                } else if stroke.len() > 0 {
-                    stroke.push(stroke.last().unwrap().clone());
                 }
                 let sw_cur = attributes.get("stroke-width").map(|width| {
                     width.parse::<f64>().unwrap()
@@ -784,8 +780,6 @@ pub fn svg_to_vector(svg: &str) -> VectorFeatures {
                 applied_sw.push(sw_cur.is_some());
                 if sw_cur.is_some() {
                     sw.push(sw_cur.unwrap());
-                } else if sw.len() > 0 {
-                    sw.push(sw.last().unwrap().clone());
                 }
                 let lc_cur = attributes.get("stroke-linecap").map(|cap| {
                     let cap = cap.to_string();
@@ -799,8 +793,6 @@ pub fn svg_to_vector(svg: &str) -> VectorFeatures {
                 applied_lc.push(lc_cur.is_some());
                 if lc_cur.is_some() {
                     lc.push(lc_cur.unwrap());
-                } else if lc.len() > 0 {
-                    lc.push(lc.last().unwrap());
                 }
                 let lj_cur = attributes.get("stroke-linejoin").map(|join| {
                     let join = join.to_string();
@@ -814,8 +806,6 @@ pub fn svg_to_vector(svg: &str) -> VectorFeatures {
                 applied_lj.push(lj_cur.is_some());
                 if lj_cur.is_some() {
                     lj.push(lj_cur.unwrap());
-                } else if lj.len() > 0 {
-                    lj.push(lj.last().unwrap());
                 }
                 let transform_attr = attributes.get("transform").map(|transform| {
                     transform.to_string()

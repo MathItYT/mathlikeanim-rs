@@ -7,4 +7,5 @@ pub mod animations;
 pub mod svg_scene;
 pub mod colors;
 pub mod mathjax;
+pub mod text_to_vector;
 pub mod wasm_interface;
