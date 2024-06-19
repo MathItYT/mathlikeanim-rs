@@ -7,7 +7,7 @@ import React from "react";
 import hljs from "highlight.js";
 import { Check, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Bodies, Body, Engine, World } from "matter-js";
+import { Bodies, Engine, World } from "matter-js";
 
 function getSubobjectsWithPointsRecursive(obj: WasmVectorObject): WasmVectorObject[] {
   let subobjects: WasmVectorObject[] = [];
