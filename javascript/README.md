@@ -19,7 +19,7 @@ You can embed the library in your HTML file by adding a script tag, and don't fo
 
 ```html
 <script type="module">
-import mathlikeanimRs from 'https://cdn.jsdelivr.net/npm/mathlikeanim-rs@0.6.0/+esm'
+import mathlikeanimRs from 'https://cdn.jsdelivr.net/npm/mathlikeanim-rs@0.7.0/+esm'
 </script>
 ```
 

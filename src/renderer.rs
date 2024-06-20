@@ -65,6 +65,7 @@ pub fn get_d_string_from_points(
 
 pub fn vec_to_def_and_use_string(
     vec: &VectorFeatures,
+    class: Option<&String>,
     document: &web_sys::Document
 ) -> (String, String) {
     let mut def_string = "".to_string();
@@ -252,7 +253,7 @@ pub fn vec_to_def_and_use_string(
         use_string.push_str(format!("<use href=\"#{}\"/>\n", path_id).as_str());
     }
     for subvec in &vec.subobjects {
-        let (subdef_string, subuse_string) = vec_to_def_and_use_string(subvec, document);
+        let (subdef_string, subuse_string) = vec_to_def_and_use_string(subvec, class, document);
         def_string.push_str(&subdef_string);
         use_string.push_str(&subuse_string);
     }
@@ -263,6 +264,7 @@ pub fn vec_to_def_and_use_string(
 pub fn render_all_vectors_svg(
     svg_scene: &SVGScene
 ) {
+    let classes = svg_scene.classes.clone();
     let vecs = svg_scene.objects.clone();
     let width = svg_scene.width;
     let height = svg_scene.height;
@@ -361,7 +363,7 @@ pub fn render_all_vectors_svg(
     }
     svg.push_str(format!("<rect x=\"{}\" y=\"{}\" width=\"{}\" height=\"{}\" fill=\"{}\"/>\n", top_left_corner.0, top_left_corner.1, bottom_right_corner.0 - top_left_corner.0, bottom_right_corner.1 - top_left_corner.1, rec_fill).as_str());
     for vec in vecs {
-        let (def_string, use_string) = vec_to_def_and_use_string(&vec, &document);
+        let (def_string, use_string) = vec_to_def_and_use_string(&vec, classes.get(&vec.index), &document);
         defs.push_str(&def_string);
         use_strings.push_str(&use_string);
     }

@@ -27,7 +27,9 @@ pub struct SVGScene {
     #[wasm_bindgen(skip)]
     pub states: HashMap<usize, (Vec<VectorFeatures>, GradientImageOrColor, (f64, f64), (f64, f64))>,
     #[wasm_bindgen(skip)]
-    pub callback: Function
+    pub callback: Function,
+    #[wasm_bindgen(skip)]
+    pub classes: HashMap<usize, String>
 }
 
 
@@ -48,7 +50,8 @@ impl SceneAPI for SVGScene {
             top_left_corner: (0.0, 0.0),
             bottom_right_corner: (width as f64, height as f64),
             states: HashMap::new(),
-            callback: Closure::wrap(Box::new(|| Promise::resolve(&JsValue::NULL)) as Box<dyn Fn() -> Promise>).into_js_value().dyn_into().unwrap()
+            callback: Closure::wrap(Box::new(|| Promise::resolve(&JsValue::NULL)) as Box<dyn Fn() -> Promise>).into_js_value().dyn_into().unwrap(),
+            classes: HashMap::new()
         };
     }
     fn clear(&mut self) {
@@ -232,6 +235,20 @@ impl SVGScene {
     ) {
         self.make_frame(animation_func, objects, t).await;
     }
+    #[wasm_bindgen(js_name = setObjects)]
+    pub fn set_objects_js(&mut self, objects: js_sys::Array) {
+        self.objects = objects.iter().map(|x| x.dyn_into::<WasmVectorObject>().unwrap().native_vec_features).collect();
+    }
+    #[wasm_bindgen(js_name = getObjects)]
+    pub fn get_objects_js(&self) -> js_sys::Array {
+        let js_array = js_sys::Array::new();
+        for obj in &self.objects {
+            js_array.push(&JsValue::from(WasmVectorObject {
+                native_vec_features: obj.clone()
+            }));
+        }
+        return js_array;
+    }
     #[wasm_bindgen(js_name = wait)]
     pub async fn wait_js(&mut self, duration_in_frames: u64) {
         self.wait(duration_in_frames).await;
@@ -243,5 +260,13 @@ impl SVGScene {
     #[wasm_bindgen(js_name = callCallback)]
     pub async fn call_callback_js(&self) {
         self.on_rendered().await;
+    }
+    #[wasm_bindgen(js_name = setClass)]
+    pub fn set_class_js(&mut self, index: usize, id: String) {
+        self.classes.insert(index, id);
+    }
+    #[wasm_bindgen(js_name = removeClass)]
+    pub fn remove_class_js(&mut self, index: usize) {
+        self.classes.remove(&index);
     }
 }

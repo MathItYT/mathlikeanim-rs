@@ -191,6 +191,16 @@ impl Scene {
     pub fn remove_js(&mut self, index: usize) {
         self.remove(index);
     }
+    #[wasm_bindgen(js_name = getObjects)]
+    pub fn get_objects_js(&self) -> js_sys::Array {
+        let js_array = js_sys::Array::new();
+        for obj in &self.objects {
+            js_array.push(&JsValue::from(WasmVectorObject {
+                native_vec_features: obj.clone()
+            }));
+        }
+        return js_array;
+    }
     #[wasm_bindgen(js_name = getObjectsFromIndices)]
     pub fn get_objects_from_indices_js(&self, object_indices: js_sys::Array) -> js_sys::Map {
         let original = self.get_objects_from_indices(object_indices.iter().map(|x| x.as_f64().unwrap() as usize).collect());
@@ -209,6 +219,10 @@ impl Scene {
     #[wasm_bindgen(js_name = sleep)]
     pub async fn sleep_js(&mut self, duration_in_ms: i32) {
         self.sleep(duration_in_ms).await;
+    }
+    #[wasm_bindgen(js_name = setObjects)]
+    pub fn set_objects_js(&mut self, objects: js_sys::Array) {
+        self.objects = objects.iter().map(|x| x.dyn_into::<WasmVectorObject>().unwrap().native_vec_features).collect();
     }
     #[wasm_bindgen(js_name = play)]
     pub async fn play_js(

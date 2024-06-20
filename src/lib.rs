@@ -9,3 +9,4 @@ pub mod colors;
 pub mod mathjax;
 pub mod text_to_vector;
 pub mod wasm_interface;
+pub mod generic_scene;
