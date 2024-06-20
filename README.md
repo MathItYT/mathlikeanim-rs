@@ -33,8 +33,7 @@ npm i mathlikeanim-rs
 
 
 ## Development
-If you want to contribute to this project, you can clone the repository and work with
-the Rust codebase, and then build the WebAssembly module by running in the main directory:
+If you want to contribute to this project, you can clone a fork of this repository and work with the Rust codebase, and then build the WebAssembly module by running in the main directory:
 
 ```bash
 wasm-pack build --target web --out-dir javascript
