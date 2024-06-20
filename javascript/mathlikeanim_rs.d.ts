@@ -668,6 +668,12 @@ export function projectPoints(points: Array<any>, camera: WasmCamera): Array<any
 */
 export function lineAsCubicBezier3D(point1: Array<any>, point2: Array<any>): Array<any>;
 /**
+* @param {string} text
+* @param {string} font_family
+* @returns {Promise<WasmVectorObject>}
+*/
+export function textToVector(text: string, font_family: string): Promise<WasmVectorObject>;
+/**
 * @param {string} expression
 * @returns {Promise<WasmVectorObject>}
 */
@@ -1126,12 +1132,6 @@ export function easeInBounce(t: number): number;
 * @returns {number}
 */
 export function easeInOutBounce(t: number): number;
-/**
-* @param {string} text
-* @param {string} font_family
-* @returns {Promise<WasmVectorObject>}
-*/
-export function textToVector(text: string, font_family: string): Promise<WasmVectorObject>;
 /**
 */
 export class GenericScene {
@@ -2378,6 +2378,7 @@ export interface InitOutput {
   readonly wasmthreedobject_getCenter: (a: number) => number;
   readonly wasmthreedobject_moveTo: (a: number, b: number, c: number) => number;
   readonly wasmthreedobject_clone: (a: number) => number;
+  readonly textToVector: (a: number, b: number, c: number, d: number) => number;
   readonly mathjax: (a: number, b: number) => number;
   readonly radian: (a: number, b: number, c: number, d: number) => number;
   readonly ellipticalArcPath: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number) => number;
@@ -2456,7 +2457,6 @@ export interface InitOutput {
   readonly easeOutBack: (a: number) => number;
   readonly slowInto: (a: number) => number;
   readonly easeOutBounce: (a: number) => number;
-  readonly textToVector: (a: number, b: number, c: number, d: number) => number;
   readonly __wbg_scene_free: (a: number) => void;
   readonly scene_new_js: (a: number, b: number, c: number) => number;
   readonly scene_getFps: (a: number) => number;
@@ -2549,8 +2549,8 @@ export interface InitOutput {
   readonly __wbindgen_malloc: (a: number, b: number) => number;
   readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
   readonly __wbindgen_export_2: WebAssembly.Table;
-  readonly _dyn_core__ops__function__Fn_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__he7785b5e576c47d2: (a: number, b: number) => number;
-  readonly _dyn_core__ops__function__Fn__A_B___Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h61b5acf66ec6564e: (a: number, b: number, c: number, d: number) => number;
+  readonly _dyn_core__ops__function__Fn__A_B___Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h0fefa3486d3997c2: (a: number, b: number, c: number, d: number) => number;
+  readonly _dyn_core__ops__function__Fn_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h7f7d90d5522e17f7: (a: number, b: number) => number;
   readonly _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h658c7ef59a74f654: (a: number, b: number, c: number) => void;
   readonly __wbindgen_add_to_stack_pointer: (a: number) => number;
   readonly __wbindgen_free: (a: number, b: number, c: number) => void;
