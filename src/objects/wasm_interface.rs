@@ -3,7 +3,7 @@ use wasm_bindgen::prelude::*;
 
 use crate::colors::{Color, GradientImageOrColor, GradientStop, Image, LinearGradient, RadialGradient};
 
-use super::{geometry::{add_tip::{add_both_sides_tips, add_final_tip, add_initial_tip}, arc::{annular_sector, arc, circle, ellipse, elliptical_arc}, line::line, poly::{equilateral_triangle, polygon, rectangle, regular_polygon, right_triangle, square, triangle}}, plotting::{axes::{area_under_curve, axes, coords_to_point, parametric_plot_in_axes, plot_in_axes, point_to_coords, riemann_rectangles_for_plot, secant_line_for_plot}, functions::{function, parametric_function}, number_line::{get_numbers_tex, number_line, number_to_point, point_to_number}}, svg_to_vector::svg_to_vector, vector_object::{VectorFeatures, VectorObject}};
+use super::{geometry::{add_tip::{add_both_sides_tips, add_final_tip, add_initial_tip}, arc::{annular_sector, arc, circle, ellipse, elliptical_arc}, line::line, poly::{equilateral_triangle, polygon, rectangle, regular_polygon, right_triangle, square, triangle}}, plotting::{axes::{area_under_curve, axes, coords_to_point, contour_plot_in_axes, parametric_plot_in_axes, plot_in_axes, point_to_coords, riemann_rectangles_for_plot, secant_line_for_plot}, functions::{function, contour_plot, parametric_function}, number_line::{get_numbers_tex, number_line, number_to_point, point_to_number}}, svg_to_vector::svg_to_vector, vector_object::{VectorFeatures, VectorObject}};
 
 
 #[wasm_bindgen]
@@ -2135,6 +2135,79 @@ pub fn plot_in_axes_js(
 }
 
 
+#[wasm_bindgen(js_name = contourPlotInAxes)]
+pub fn contour_plot_in_axes_js(
+    f: &js_sys::Function,
+    x_min: f64,
+    x_max: f64,
+    y_min: f64,
+    y_max: f64,
+    x_1: f64,
+    x_2: f64,
+    x_step: f64,
+    y_1: f64,
+    y_2: f64,
+    y_step: f64,
+    axes: &WasmVectorObject,
+    color: Option<WasmColor>,
+    stroke_width: Option<f64>,
+    line_cap: Option<String>,
+    line_join: Option<String>,
+    index: Option<usize>,
+    intervals: &[f64]
+) -> WasmVectorObject {
+    let color = match color {
+        Some(color) => Some((
+            color.color.red,
+            color.color.green,
+            color.color.blue,
+            color.color.alpha
+        )),
+        None => None
+    };
+    let line_cap = match line_cap {
+        Some(cap) => match cap.as_str() {
+            "butt" => Some("butt"),
+            "round" => Some("round"),
+            "square" => Some("square"),
+            _ => Some("butt")
+        },
+        None => None
+    };
+    let line_join = match line_join {
+        Some(join) => match join.as_str() {
+            "miter" => Some("miter"),
+            "round" => Some("round"),
+            "bevel" => Some("bevel"),
+            _ => Some("miter")
+        },
+        None => None
+    };
+    return WasmVectorObject {
+        native_vec_features: contour_plot_in_axes(
+            |x, y| f.call2(&JsValue::NULL, &JsValue::from_f64(x), &JsValue::from_f64(y)).unwrap().as_f64().unwrap(),
+            x_min,
+            x_max,
+            y_min,
+            y_max,
+            x_1,
+            x_2,
+            x_step,
+            y_1,
+            y_2,
+            y_step,
+            &axes.native_vec_features,
+            color,
+            stroke_width,
+            line_cap,
+            line_join,
+            index,
+            intervals
+        )
+    }
+}
+
+
 #[wasm_bindgen(js_name = areaUnderCurve)]
 pub fn area_under_curve_js(
     axes: &WasmVectorObject,
@@ -2371,6 +2444,69 @@ pub fn parametric_function_js(
             line_cap,
             line_join,
             index
+        )
+    }
+}
+
+
+#[wasm_bindgen(js_name = contourPlot)]
+pub fn contour_plot_js(
+    f: &js_sys::Function,
+    x_min: f64,
+    x_max: f64,
+    y_min: f64,
+    y_max: f64,
+    x_step: f64,
+    y_step: f64,
+    color: Option<WasmColor>,
+    stroke_width: Option<f64>,
+    line_cap: Option<String>,
+    line_join: Option<String>,
+    index: Option<usize>,
+    intervals: &[f64]
+) -> WasmVectorObject {
+    let color = match color {
+        Some(color) => Some((
+            color.color.red,
+            color.color.green,
+            color.color.blue,
+            color.color.alpha
+        )),
+        None => None
+    };
+    let line_cap = match line_cap {
+        Some(cap) => match cap.as_str() {
+            "butt" => Some("butt"),
+            "round" => Some("round"),
+            "square" => Some("square"),
+            _ => Some("butt")
+        },
+        None => None
+    };
+    let line_join = match line_join {
+        Some(join) => match join.as_str() {
+            "miter" => Some("miter"),
+            "round" => Some("round"),
+            "bevel" => Some("bevel"),
+            _ => Some("miter")
+        },
+        None => None
+    };
+    return WasmVectorObject {
+        native_vec_features: contour_plot(
+            |x, y| f.call2(&JsValue::NULL, &JsValue::from_f64(x), &JsValue::from_f64(y)).unwrap().as_f64().unwrap(),
+            x_min,
+            x_max,
+            y_min,
+            y_max,
+            x_step,
+            y_step,
+            color,
+            stroke_width,
+            line_cap,
+            line_join,
+            index,
+            intervals
         )
     }
 }

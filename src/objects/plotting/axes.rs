@@ -8,7 +8,7 @@ use crate::objects::vector_object::{VectorFeatures, VectorObject};
 use crate::objects::plotting::number_line::{number_line, number_to_point};
 use crate::utils::{distance_squared, line_as_cubic_bezier};
 
-use super::functions::parametric_function;
+use super::functions::{contour_plot, parametric_function};
 use super::number_line::point_to_number;
 
 pub fn axes(
@@ -198,6 +198,49 @@ pub fn plot_in_axes(
         line_join,
         index,
     );
+}
+
+
+pub fn contour_plot_in_axes(
+    f: impl Fn(f64, f64) -> f64,
+    x_min: f64,
+    x_max: f64,
+    y_min: f64,
+    y_max: f64,
+    x_1: f64,
+    x_2: f64,
+    x_step: f64,
+    y_1: f64,
+    y_2: f64,
+    y_step: f64,
+    axes: &VectorFeatures,
+    color: Option<(f64, f64, f64, f64)>,
+    stroke_width: Option<f64>,
+    line_cap: Option<&'static str>,
+    line_join: Option<&'static str>,
+    index: Option<usize>,
+    intervals: &[f64],
+) -> VectorFeatures {
+    let mut func = contour_plot(
+        f,
+        x_1,
+        x_2,
+        x_step,
+        y_1,
+        y_2,
+        y_step,
+        color,
+        stroke_width,
+        line_cap,
+        line_join,
+        index,
+        intervals
+    );
+    let x_unit_size = coords_to_point(axes, 1.0, 0.0, x_min, x_max, y_min, y_max).0 - coords_to_point(axes, 0.0, 0.0, x_min, x_max, y_min, y_max).0;
+    let y_unit_size = coords_to_point(axes, 0.0, 1.0, x_min, x_max, y_min, y_max).1 - coords_to_point(axes, 0.0, 0.0, x_min, x_max, y_min, y_max).1;
+    func = func.stretch((x_unit_size, y_unit_size), true);
+    func = func.shift(coords_to_point(axes, 0.0, 0.0, x_min, x_max, y_min, y_max), true);
+    return func;
 }
 
 
