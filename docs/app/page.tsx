@@ -785,7 +785,7 @@ export default function Home() {
     scene.setBottomRightCorner(1920.0, 2160.0);
     let intuitiveDefPart1 = await mathjax("\\textcolor{#EBEBEB}{\\text{The \\textbf{definite integral} of a function }f(}\\textcolor{#FFFF00}{x}\\textcolor{#EBEBEB}{)}");
     let intuitiveDefPart2 = await mathjax("\\textcolor{#EBEBEB}{\\text{from }a\\text{ to }b\\text{ is the area under the curve}}");
-    let intuitiveDefPart = await mathjax("\\textcolor{#EBEBEB}{\\text{of }f(}\\textcolor{#FFFF00}{x}\\textcolor{#EBEBEB}{)\\text{ between }}\\textcolor{#FFFF00}{x}\\textcolor{#EBEBEB}{=a}\\text{ and }\\textcolor{#FFFF00}{x}\\textcolor{#EBEBEB}{=b}");
+    let intuitiveDefPart = await mathjax("\\textcolor{#EBEBEB}{\\text{of }f(}\\textcolor{#FFFF00}{x}\\textcolor{#EBEBEB}{)\\text{ between }}\\textcolor{#FFFF00}{x}\\textcolor{#EBEBEB}{=a}\\text{ \\textcolor{#EBEBEB}{and} }\\textcolor{#FFFF00}{x}\\textcolor{#EBEBEB}{=b}");
     let intuitiveDef = new WasmVectorObject();
     intuitiveDef = intuitiveDef.setSubobjects([
       intuitiveDefPart1,
