@@ -27,16 +27,35 @@ export default function ExamplesPage() {
   const [slide, setSlide] = React.useState(0);
   const [gotRequired, setGotRequired] = React.useState(false);
   const [isCopied, setIsCopied] = React.useState(false);
-  const codeText = `import init, { Scene, WasmGradientImageOrColor, hexToColor, mathjax } from "mathlikeanim-rs";
+  const codeText = `import init, {
+  Scene,
+  WasmGradientImageOrColor,
+  hexToColor,
+  mathjax
+} from "mathlikeanim-rs";
 
 async function run() {
-  let scene = new Scene(BigInt(1920), BigInt(1080), BigInt(60));
+  let scene = new Scene(
+    BigInt(1920),
+    BigInt(1080),
+    BigInt(60)
+  );
   let canvas = document.getElementById("canvas");
   let ctx = canvas.getContext("2d");
   scene.setCanvasContext(ctx);
-  scene.setBackground(WasmGradientImageOrColor.fromColor(hexToColor("#161616", 1.0)));
-  let hello = await textToVector("Hello, MathLikeAnim-rs!", "/fonts/Inter-Bold.ttf");
-  hello = hello.setFill(WasmGradientImageOrColor.fromColor(hexToColor("#EBEBEB", 1.0)), true);
+  scene.setBackground(WasmGradientImageOrColor.fromColor(
+    hexToColor("#161616", 1.0)
+  ));
+  let hello = await textToVector(
+    "Hello, MathLikeAnim-rs!",
+    "/fonts/Inter-Bold.ttf"
+  );
+  hello = hello.setFill(
+    WasmGradientImageOrColor.fromColor(
+      hexToColor("#EBEBEB", 1.0)
+    ),
+    true
+  );
   hello = hello.scale(1000.0 / hello.getWidth(), true);
   hello = hello.moveTo(960.0, 540.0, true);
   scene.add(hello.clone());
@@ -44,15 +63,34 @@ async function run() {
 }
 
 init().then(run);`;
-  const codeText2 = `import init, { SVGScene, WasmGradientImageOrColor, hexToColor, mathjax } from "mathlikeanim-rs";
+  const codeText2 = `import init, {
+  SVGScene,
+  WasmGradientImageOrColor,
+  hexToColor,
+  mathjax
+} from "mathlikeanim-rs";
 
 async function run() {
-  let scene = new SVGScene(BigInt(1920), BigInt(1080), BigInt(60));
+  let scene = new SVGScene(
+    BigInt(1920),
+    BigInt(1080),
+    BigInt(60)
+  );
   let container = document.getElementById("container");
   scene.setDivContainer(container);
-  scene.setBackground(WasmGradientImageOrColor.fromColor(hexToColor("#161616", 1.0)));
-  let hello = await textToVector("Hello, MathLikeAnim-rs!", "/fonts/Inter-Bold.ttf");
-  hello = hello.setFill(WasmGradientImageOrColor.fromColor(hexToColor("#EBEBEB", 1.0)), true);
+  scene.setBackground(WasmGradientImageOrColor.fromColor(
+    hexToColor("#161616", 1.0)
+  ));
+  let hello = await textToVector(
+    "Hello, MathLikeAnim-rs!",
+    "/fonts/Inter-Bold.ttf"
+  );
+  hello = hello.setFill(
+    WasmGradientImageOrColor.fromColor(
+      hexToColor("#EBEBEB", 1.0)
+    ),
+    true
+  );
   hello = hello.scale(1000.0 / hello.getWidth(), true);
   hello = hello.moveTo(960.0, 540.0, true);
   scene.add(hello.clone());
@@ -70,19 +108,36 @@ init().then(run);`;
 } from "mathlikeanim-rs";
 
 async function run() {
-  let scene = new Scene(BigInt(1920), BigInt(1080), BigInt(60));
+  let scene = new Scene(
+    BigInt(1920),
+    BigInt(1080),
+    BigInt(60)
+  );
   let canvas = document.getElementById("canvas");
   let ctx = canvas.getContext("2d");
   scene.setCanvasContext(ctx);
-  scene.setBackground(WasmGradientImageOrColor.fromColor(hexToColor("#161616", 1.0)));
-  const text = "\\\\textcolor{#EBEBEB}{\\\\text{Let's prove that }\\\\sqrt{2}\\\\text{ is irrational!}}";
+  scene.setBackground(WasmGradientImageOrColor.fromColor(
+    hexToColor("#161616", 1.0)
+  ));
+  let text = "\\\\textcolor{#EBEBEB}";
+  text += "{\\\\text{Let's prove that }";
+  text += "\\\\sqrt{2}\\\\text{ is irrational!}}";
   let letsProve = await mathjax(text);
-  letsProve = letsProve.scale(1000.0 / letsProve.getWidth(), true);
-  letsProve = letsProve.moveTo(960.0, 540.0, true);
+  letsProve = letsProve.scale(
+    1000.0 / letsProve.getWidth(),
+    true
+  );
+  letsProve = letsProve.moveTo(
+    960.0,
+    540.0,
+    true
+  );
   scene.add(letsProve.clone());
   await scene.play(
     async (objects, t) => {
-      return [drawStrokeThenFill(objects[0].clone(), t)];
+      return [drawStrokeThenFill(
+        objects[0].clone(), t
+      )];
     },
     Uint32Array.from([0]),
     BigInt(30),
@@ -91,24 +146,59 @@ async function run() {
   await scene.sleep(500);
   await scene.play(
     async (objects, t) => {
-      return [fadeOut(objects[0].clone(), 5.0, [0.0, 0.0], t)];
+      return [fadeOut(
+        objects[0].clone(),
+        5.0,
+        [0.0, 0.0],
+        t
+      )];
     },
     Uint32Array.from([0]),
     BigInt(30),
     t => smooth(t, 10.0)
   );
-  let assumeThat = await mathjax("\\\\textcolor{#EBEBEB}{\\\\text{Assume that}}");
-  let sqrt2 = await mathjax("\\\\textcolor{#EBEBEB}{\\\\sqrt{2}}");
-  let isRational = await mathjax("\\\\textcolor{#EBEBEB}{\\\\text{is rational.}}");
-  let text2 = new WasmVectorObject().setSubobjects([assumeThat.clone(), sqrt2.clone(), isRational.clone()]);
-  text2 = text2.scale(1000 / text2.getWidth(), true);
-  text2 = text2.arrangeSubobjects([0.0, 1.0], 20.0, [0.0, 0.0], true);
-  text2 = text2.moveTo(960.0, 540.0, true);
-  text2 = new WasmVectorObject().setSubobjects(getSubobjectsWithPointsRecursive(text2.clone()));
+  let txt = "\\\\textcolor{#EBEBEB}";
+  txt += "{\\\\text{Assume that}}";
+  let assumeThat = await mathjax(txt);
+  txt = "\\\\textcolor{#EBEBEB}{\\\\sqrt{2}}";
+  let sqrt2 = await mathjax(txt);
+  txt = "\\\\textcolor{#EBEBEB}";
+  txt += "{\\\\text{is rational.}}";
+  let isRational = await mathjax(txt);
+  let text2 = new WasmVectorObject().setSubobjects([
+    assumeThat.clone(),
+    sqrt2.clone(),
+    isRational.clone()
+  ]);
+  text2 = text2.scale(
+    1000 / text2.getWidth(),
+    true
+  );
+  text2 = text2.arrangeSubobjects(
+    [0.0, 1.0],
+    20.0,
+    [0.0, 0.0],
+    true
+  );
+  text2 = text2.moveTo(
+    960.0,
+    540.0,
+    true
+  );
+  text2 = new WasmVectorObject().setSubobjects(
+    getSubobjectsWithPointsRecursive(
+      text2.clone()
+    )
+  );
   scene.add(text2.clone());
   await scene.play(
     async (objects, t) => {
-      return [animationGroup(objects[0].clone(), animations, 0.4, t)];
+      return [animationGroup(
+        objects[0].clone(),
+        animations,
+        0.4,
+        t
+      )];
     },
     Uint32Array.from([0]),
     BigInt(30),
@@ -117,34 +207,72 @@ async function run() {
   await scene.sleep(500);
   await scene.play(
     async (objects, t) => {
-      return [fadeOut(objects[0].clone(), 1.0, [0.0, 0.0], t)];
+      return [fadeOut(
+        objects[0].clone(),
+        1.0,
+        [0.0, 0.0],
+        t
+      )];
     },
     Uint32Array.from([0]),
     BigInt(30),
     t => smooth(t, 10.0)
   );
-  let ifSoText = "\\\\textcolor{#EBEBEB}{\\\\text{If so, then there exist }}";
-  ifSoText += "\\\\textcolor{#FFFF00}{a}\\\\textcolor{#EBEBEB}{, }";
-  ifSoText += "\\\\textcolor{#FFFF00}{b}\\\\textcolor{#EBEBEB}{\\\\in \\\\mathbb{Z}^+}";
+  let ifSoText = "\\\\textcolor{#EBEBEB}";
+  ifSoText += "{\\\\text{If so, then there exist }}";
+  ifSoText += "\\\\textcolor{#FFFF00}{a}";
+  ifSoText += "\\\\textcolor{#EBEBEB}{, }";
+  ifSoText += "\\\\textcolor{#FFFF00}{b}";
+  ifSoText += "\\\\textcolor{#EBEBEB}{\\\\in ";
+  ifSoText += "\\\\mathbb{Z}^+}";
   let ifSo = await mathjax(ifSoText);
-  let suchThat = await mathjax("\\\\textcolor{#EBEBEB}{\\\\text{such that:}}");
-  let sqrt2EqualsText = "\\\\textcolor{#EBEBEB}{\\\\sqrt{2} =}";
-  sqrt2EqualsText += "\\\\textcolor{#EBEBEB}{\\\\textcolor{#FFFF00}{a}";
+  let suchThatTxt = "\\\\textcolor{#EBEBEB}";
+  suchThatTxt += "{\\\\text{such that:}}";
+  let suchThat = await mathjax(suchThatTxt);
+  let sqrt2EqualsText = "\\\\textcolor{#EBEBEB}";
+  sqrt2EqualsText += "{\\\\sqrt{2} =}";
+  sqrt2EqualsText += "\\\\textcolor{#EBEBEB}";
+  sqrt2EqualsText += "{\\\\textcolor{#FFFF00}{a}";
   sqrt2EqualsText += "\\\\over \\\\textcolor{#FFFF00}{b}}";
   let sqrt2Equals = await mathjax(sqrt2EqualsText);
-  let text3 = new WasmVectorObject().setSubobjects([ifSo.clone(), suchThat.clone(), sqrt2Equals.clone()]);
-  text3 = text3.scale(1000 / text3.getWidth(), true);
-  text3 = text3.arrangeSubobjects([0.0, 1.0], 20.0, [-1.0, 0.0], true);
+  let text3 = new WasmVectorObject().setSubobjects([
+    ifSo.clone(),
+    suchThat.clone(),
+    sqrt2Equals.clone()
+  ]);
+  text3 = text3.scale(
+    1000 / text3.getWidth(),
+    true
+  );
+  text3 = text3.arrangeSubobjects(
+    [0.0, 1.0],
+    20.0,
+    [-1.0, 0.0],
+    true
+  );
   let subobjs = text3.getSubobjects();
   let lastSubobj = subobjs[subobjs.length - 1].clone();
-  lastSubobj = lastSubobj.moveTo(960.0, lastSubobj.getCenter()[1], true);
+  lastSubobj = lastSubobj.moveTo(
+    960.0,
+    lastSubobj.getCenter()[1],
+    true
+  );
   subobjs[subobjs.length - 1] = lastSubobj;
   text3 = text3.setSubobjects(subobjs);
-  text3 = new WasmVectorObject().setSubobjects(getSubobjectsWithPointsRecursive(text3.clone()));
+  text3 = new WasmVectorObject().setSubobjects(
+    getSubobjectsWithPointsRecursive(
+      text3.clone()
+    )
+  );
   scene.add(text3.clone());
   await scene.play(
     async (objects, t) => {
-      return [animationGroup(objects[0].clone(), animations2, 0.4, t)];
+      return [animationGroup(
+        objects[0].clone(),
+        animations2,
+        0.4,
+        t
+      )];
     },
     Uint32Array.from([0]),
     BigInt(30),
@@ -167,13 +295,27 @@ async function run() {
   let engine = Engine.create();
   let body1 = Bodies.circle(500, 200, 50);
   let body2 = Bodies.circle(1200, 200, 50);
-  let ground = Bodies.rectangle(960, 1070, 1920, 20, { isStatic: true });
+  let ground = Bodies.rectangle(
+    960,
+    1070,
+    1920,
+    20,
+    { isStatic: true }
+  );
   World.add(engine.world, [body1, body2, ground]);
-  let scene = new Scene(BigInt(1920), BigInt(1080), BigInt(60));
+  let scene = new Scene(
+    BigInt(1920),
+    BigInt(1080),
+    BigInt(60)
+  );
   let canvas = document.getElementById("canvas");
   let ctx = canvas.getContext("2d");
   scene.setCanvasContext(ctx);
-  scene.setBackground(WasmGradientImageOrColor.fromColor(hexToColor("#161616", 1.0)));
+  scene.setBackground(
+    WasmGradientImageOrColor.fromColor(
+      hexToColor("#161616", 1.0)
+    )
+  );
   while (true) {
     let circ1 = circle(
       [body1.position.x, body1.position.y],
@@ -618,7 +760,7 @@ init().then(run);`;
                         {isCopied ? <Check className="absolute top-[8px] right-[8px]"/> : <Copy className="absolute top-[8px] right-[8px]"/>}
                       </Button>
                     </div>
-                    <div ref={codeRef4} className="code w-[45vw]"/>
+                    <div ref={codeRef4} className="code w-[40vw]"/>
                   </CardHeader>
                 </CardContent>
               </Card>
