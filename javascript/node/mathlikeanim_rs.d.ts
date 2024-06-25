@@ -1019,17 +1019,6 @@ export function easeInBounce(t: number): number;
 */
 export function easeInOutBounce(t: number): number;
 /**
-* @param {string} expression
-* @returns {Promise<WasmVectorObject>}
-*/
-export function mathjax(expression: string): Promise<WasmVectorObject>;
-/**
-* @param {string} text
-* @param {string} font_family
-* @returns {Promise<WasmVectorObject>}
-*/
-export function textToVector(text: string, font_family: string): Promise<WasmVectorObject>;
-/**
 * @param {number} num_anim_funcs
 * @param {number} lag_ratio
 * @returns {Float64Array}
@@ -1164,6 +1153,17 @@ export function showTemporaily(vec_obj: WasmVectorObject, t: number): WasmVector
 * @returns {WasmVectorObject}
 */
 export function spinningGrow(vec_obj: WasmVectorObject, angle: number, t: number): WasmVectorObject;
+/**
+* @param {string} expression
+* @returns {Promise<WasmVectorObject>}
+*/
+export function mathjax(expression: string): Promise<WasmVectorObject>;
+/**
+* @param {string} text
+* @param {string} font_family
+* @returns {Promise<WasmVectorObject>}
+*/
+export function textToVector(text: string, font_family: string): Promise<WasmVectorObject>;
 /**
 */
 export class GenericScene {

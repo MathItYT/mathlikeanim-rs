@@ -44,6 +44,10 @@ extern "C" {
     fn set_fill_style_pattern(this: &CanvasRenderingContext2D, pattern: CanvasPattern);
     #[wasm_bindgen(method, setter, js_name = "strokeStyle")]
     fn set_stroke_style(this: &CanvasRenderingContext2D, style: String);
+    #[wasm_bindgen(method, setter, js_name = "strokeStyle")]
+    fn set_stroke_style_gradient(this: &CanvasRenderingContext2D, gradient: CanvasGradient);
+    #[wasm_bindgen(method, setter, js_name = "strokeStyle")]
+    fn set_stroke_style_pattern(this: &CanvasRenderingContext2D, pattern: CanvasPattern);
     #[wasm_bindgen(method, js_name = "fill")]
     fn fill(this: &CanvasRenderingContext2D);
     #[wasm_bindgen(method, js_name = "stroke")]
@@ -247,7 +251,7 @@ pub fn apply_stroke_wasm(
                 let color = format!("rgba({}, {}, {}, {})", r_string, g_string, b_string, a_string);
                 grd.add_color_stop(stop.offset as f32, color);
             }
-            context.set_stroke_style(grd.as_string().unwrap());
+            context.set_stroke_style_gradient(grd);
             context.set_line_width(stroke_width);
             context.set_line_cap(line_cap);
             context.set_line_join(line_join);
@@ -264,7 +268,7 @@ pub fn apply_stroke_wasm(
                 let color = format!("rgba({}, {}, {}, {})", r_string, g_string, b_string, a_string);
                 grd.add_color_stop(stop.offset as f32, color);
             }
-            context.set_stroke_style(grd.as_string().unwrap());
+            context.set_stroke_style_gradient(grd);
             context.set_line_width(stroke_width);
             context.set_line_cap(line_cap);
             context.set_line_join(line_join);
@@ -283,7 +287,7 @@ pub fn apply_stroke_wasm(
             context2.set_global_alpha(alpha);
             context2.draw_image_with_html_image_element_and_dw_and_dh(&img, tl_corner.0, tl_corner.1, w, h);
             let pattern = context.create_pattern_with_html_canvas_element(&canvas2, "repeat");
-            context.set_stroke_style(pattern.as_string().unwrap());
+            context.set_stroke_style_pattern(pattern);
             context.set_line_width(stroke_width);
             context.set_line_cap(line_cap);
             context.set_line_join(line_join);
