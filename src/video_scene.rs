@@ -96,7 +96,9 @@ impl SceneAPI for VideoScene {
     }
     fn render_frame(&self) {
         render_all_vectors(&self.objects, self.width, self.height, self.context.as_ref().unwrap(), self.background.clone(), self.top_left_corner, self.bottom_right_corner);
-        write_frame_to_ffmpeg(self.context.as_ref().unwrap(), &self.process.as_ref().unwrap().stdin());
+        if self.process.is_some() {
+            write_frame_to_ffmpeg(self.context.as_ref().unwrap(), &self.process.as_ref().unwrap().stdin());
+        }
     }
     fn restore(&mut self, n: usize) {
         let (objects, background, top_left_corner, bottom_right_corner) = self.states.get(&n).unwrap().clone();
@@ -263,8 +265,8 @@ impl VideoScene {
         self.on_rendered().await;
     }
     #[wasm_bindgen(js_name = initFFmpeg)]
-    pub fn init_ffmpeg_js(&mut self, path: String, codec: Option<String>, pix_fmt: Option<String>) {
-        self.process = Some(init_ffmpeg(self.width, self.height, self.fps as i32, codec.unwrap_or("libx264".to_string()).as_str(), pix_fmt.unwrap_or("yuv420p".to_string()).as_str(), path.as_str()));
+    pub fn init_ffmpeg_js(&mut self, path: String, codec: Option<String>, pix_fmt: Option<String>, qp: Option<String>) {
+        self.process = Some(init_ffmpeg(self.width, self.height, self.fps as i32, codec.unwrap_or("libx264".to_string()).as_str(), pix_fmt.unwrap_or("yuv420p".to_string()).as_str(), path.as_str(), qp.unwrap_or("0".to_string()).as_str()));
     }
     #[wasm_bindgen(js_name = closeFFmpeg)]
     pub fn close_ffmpeg_js(&mut self) {

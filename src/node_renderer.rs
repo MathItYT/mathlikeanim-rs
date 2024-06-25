@@ -1,4 +1,3 @@
-use js_sys::Map;
 use wasm_bindgen::prelude::*;
 
 use crate::{colors::GradientImageOrColor, objects::vector_object::{generate_cubic_bezier_tuples, generate_subpaths, VectorFeatures}, utils::consider_points_equals};
@@ -386,7 +385,7 @@ pub fn render_all_vectors(
 }
 
 
-pub fn init_ffmpeg(width: u64, height: u64, fps: i32, codec: &str, pix_fmt: &str, file_name: &str) -> ChildProcess {
+pub fn init_ffmpeg(width: u64, height: u64, fps: i32, codec: &str, pix_fmt: &str, file_name: &str, qp: &str) -> ChildProcess {
     let command = "ffmpeg";
     let args = vec![
         "-y".to_string(),
@@ -405,8 +404,8 @@ pub fn init_ffmpeg(width: u64, height: u64, fps: i32, codec: &str, pix_fmt: &str
         codec.to_string(),
         "-pix_fmt".to_string(),
         pix_fmt.to_string(),
-        "-crf".to_string(),
-        "0".to_string(),
+        "-qp".to_string(),
+        qp.to_string(),
         file_name.to_string()
     ];
     spawn(command, args)
@@ -417,8 +416,6 @@ pub fn write_frame_to_ffmpeg(
     context: &CanvasRenderingContext2D,
     ffmpeg_stream: &Writable
 ) {
-    let config = Map::new();
-    config.set(&"compressionLevel".into(), &JsValue::from_f64(0.0));
     let buffer = context.canvas().to_buffer("raw");
     ffmpeg_stream.write(buffer);
 }

@@ -2,7 +2,7 @@ use crate::objects::wasm_interface::{WasmGradientImageOrColor, WasmVectorObject}
 #[cfg(feature = "browser")]
 use crate::{scene::Scene, svg_scene::SVGScene, utils::error};
 #[cfg(feature = "node")]
-use crate::{video_scene::VideoScene, node_renderer::CanvasRenderingContext2D};
+use crate::video_scene::VideoScene;
 use js_sys::{Array, Function, Map};
 use wasm_bindgen::prelude::*;
 
@@ -360,19 +360,19 @@ impl GenericScene {
     }
     #[cfg(feature = "browser")]
     #[wasm_bindgen(js_name = setCanvasContext)]
-    pub fn set_canvas_context(&mut self, context: web_sys::CanvasRenderingContext2d) {
+    pub fn set_canvas_context(&mut self, context: JsValue) {
         match &mut self.scene {
             #[cfg(feature = "browser")]
             SceneEnum::Scene(scene) => {
-                scene.set_canvas_context_js(context);
+                scene.set_canvas_context_js(context.dyn_into().unwrap());
             }
             #[cfg(feature = "browser")]
             SceneEnum::SVGScene(_) => {
                 error(JsError::new("SVGScene does not have a canvas context"));
             }
             #[cfg(feature = "node")]
-            SceneEnum::VideoScene(_) => {
-                error(JsError::new("VideoScene does not have a canvas context"));
+            SceneEnum::VideoScene(scene) => {
+                scene.set_canvas_context_js(context.dyn_into().unwrap());
             }
         }
     }
@@ -391,24 +391,6 @@ impl GenericScene {
             #[cfg(feature = "node")]
             SceneEnum::VideoScene(_) => {
                 error(JsError::new("VideoScene does not have a div container"));
-            }
-        }
-    }
-    #[cfg(feature = "node")]
-    #[wasm_bindgen(js_name = setContext)]
-    pub fn set_context(&mut self, context: CanvasRenderingContext2D) {
-        match &mut self.scene {
-            #[cfg(feature = "browser")]
-            SceneEnum::Scene(_) => {
-                error(JsError::new("Scene does not have a canvas context"));
-            }
-            #[cfg(feature = "browser")]
-            SceneEnum::SVGScene(_) => {
-                error(JsError::new("SVGScene does not have a canvas context"));
-            }
-            #[cfg(feature = "node")]
-            SceneEnum::VideoScene(scene) => {
-                scene.set_canvas_context_js(context);
             }
         }
     }
