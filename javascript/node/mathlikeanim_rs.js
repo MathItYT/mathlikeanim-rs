@@ -2539,7 +2539,7 @@ function handleError(f, args) {
         wasm.__wbindgen_exn_store(addHeapObject(e));
     }
 }
-function __wbg_adapter_490(arg0, arg1, arg2, arg3) {
+function __wbg_adapter_494(arg0, arg1, arg2, arg3) {
     wasm.wasm_bindgen__convert__closures__invoke2_mut__h271b87efd55193df(arg0, arg1, addHeapObject(arg2), addHeapObject(arg3));
 }
 
@@ -4514,6 +4514,16 @@ module.exports.__wbg_end_b5a89846f8807987 = function(arg0) {
     getObject(arg0).end();
 };
 
+module.exports.__wbindgen_cb_drop = function(arg0) {
+    const obj = takeObject(arg0).original;
+    if (obj.cnt-- == 1) {
+        obj.a = 0;
+        return true;
+    }
+    const ret = false;
+    return ret;
+};
+
 module.exports.__wbg_beginPath_a371761113f65703 = function(arg0) {
     getObject(arg0).beginPath();
 };
@@ -4586,6 +4596,10 @@ module.exports.__wbg_createPattern_347c6a5ecd6b5eda = function(arg0, arg1, arg2,
     return addHeapObject(ret);
 };
 
+module.exports.__wbg_setfillStyle_21f50f908b6f0b6c = function(arg0, arg1) {
+    getObject(arg0).fillStyle = takeObject(arg1);
+};
+
 module.exports.__wbg_createRadialGradient_5b352458b0be8629 = function(arg0, arg1, arg2, arg3, arg4, arg5, arg6) {
     const ret = getObject(arg0).createRadialGradient(arg1, arg2, arg3, arg4, arg5, arg6);
     return addHeapObject(ret);
@@ -4601,6 +4615,10 @@ module.exports.__wbg_addColorStop_09e1724842237faf = function(arg0, arg1, arg2, 
     } finally {
         wasm.__wbindgen_free(deferred0_0, deferred0_1, 1);
     }
+};
+
+module.exports.__wbg_setfillStyle_015b8b057306b109 = function(arg0, arg1) {
+    getObject(arg0).fillStyle = takeObject(arg1);
 };
 
 module.exports.__wbg_createLinearGradient_a2c6dd0644f4b71e = function(arg0, arg1, arg2, arg3, arg4) {
@@ -4699,16 +4717,6 @@ module.exports.__wbg_toBuffer_d61a1970db32012d = function(arg0, arg1, arg2) {
 
 module.exports.__wbg_write_84328a65ee6fea74 = function(arg0, arg1) {
     getObject(arg0).write(takeObject(arg1));
-};
-
-module.exports.__wbindgen_cb_drop = function(arg0) {
-    const obj = takeObject(arg0).original;
-    if (obj.cnt-- == 1) {
-        obj.a = 0;
-        return true;
-    }
-    const ret = false;
-    return ret;
 };
 
 module.exports.__wbindgen_error_new = function(arg0, arg1) {
@@ -4862,7 +4870,7 @@ module.exports.__wbg_new_81740750da40724f = function(arg0, arg1) {
             const a = state0.a;
             state0.a = 0;
             try {
-                return __wbg_adapter_490(a, state0.b, arg0, arg1);
+                return __wbg_adapter_494(a, state0.b, arg0, arg1);
             } finally {
                 state0.a = a;
             }
@@ -4901,17 +4909,17 @@ module.exports.__wbindgen_throw = function(arg0, arg1) {
     throw new Error(getStringFromWasm0(arg0, arg1));
 };
 
-module.exports.__wbindgen_closure_wrapper934 = function(arg0, arg1, arg2) {
-    const ret = makeClosure(arg0, arg1, 49, __wbg_adapter_28);
+module.exports.__wbindgen_closure_wrapper902 = function(arg0, arg1, arg2) {
+    const ret = makeClosure(arg0, arg1, 44, __wbg_adapter_28);
     return addHeapObject(ret);
 };
 
-module.exports.__wbindgen_closure_wrapper936 = function(arg0, arg1, arg2) {
-    const ret = makeClosure(arg0, arg1, 49, __wbg_adapter_31);
+module.exports.__wbindgen_closure_wrapper904 = function(arg0, arg1, arg2) {
+    const ret = makeClosure(arg0, arg1, 44, __wbg_adapter_31);
     return addHeapObject(ret);
 };
 
-module.exports.__wbindgen_closure_wrapper1205 = function(arg0, arg1, arg2) {
+module.exports.__wbindgen_closure_wrapper1207 = function(arg0, arg1, arg2) {
     const ret = makeMutClosure(arg0, arg1, 155, __wbg_adapter_34);
     return addHeapObject(ret);
 };

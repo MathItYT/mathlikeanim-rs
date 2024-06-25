@@ -38,6 +38,10 @@ extern "C" {
     fn close_path(this: &CanvasRenderingContext2D);
     #[wasm_bindgen(method, setter, js_name = "fillStyle")]
     fn set_fill_style(this: &CanvasRenderingContext2D, style: String);
+    #[wasm_bindgen(method, setter, js_name = "fillStyle")]
+    fn set_fill_style_gradient(this: &CanvasRenderingContext2D, gradient: CanvasGradient);
+    #[wasm_bindgen(method, setter, js_name = "fillStyle")]
+    fn set_fill_style_pattern(this: &CanvasRenderingContext2D, pattern: CanvasPattern);
     #[wasm_bindgen(method, setter, js_name = "strokeStyle")]
     fn set_stroke_style(this: &CanvasRenderingContext2D, style: String);
     #[wasm_bindgen(method, js_name = "fill")]
@@ -169,7 +173,7 @@ pub fn apply_fill_wasm(
                 let color = format!("rgba({}, {}, {}, {})", r_string, g_string, b_string, a_string);
                 grd.add_color_stop(stop.offset as f32, color);
             }
-            context.set_fill_style(grd.as_string().unwrap());
+            context.set_fill_style_gradient(grd);
             context.fill();
         },
         GradientImageOrColor::RadialGradient(gradient) => {
@@ -183,7 +187,7 @@ pub fn apply_fill_wasm(
                 let color = format!("rgba({}, {}, {}, {})", r_string, g_string, b_string, a_string);
                 grd.add_color_stop(stop.offset as f32, color);
             }
-            context.set_fill_style(grd.as_string().unwrap());
+            context.set_fill_style_gradient(grd);
             context.fill();
         },
         GradientImageOrColor::Image(image) => {
@@ -199,7 +203,7 @@ pub fn apply_fill_wasm(
             context2.set_global_alpha(alpha);
             context2.draw_image_with_html_image_element_and_dw_and_dh(&img, tl_corner.0, tl_corner.1, w, h);
             let pattern = context.create_pattern_with_html_canvas_element(&canvas2, "repeat");
-            context.set_fill_style(pattern.as_string().unwrap());
+            context.set_fill_style_pattern(pattern);
             context.fill();
         }
     }
@@ -339,7 +343,7 @@ pub fn render_all_vectors(
                 let color = format!("rgba({}, {}, {}, {})", r_string, g_string, b_string, a_string);
                 grd.add_color_stop(stop.offset as f32, color);
             }
-            context.set_fill_style(grd.as_string().unwrap());
+            context.set_fill_style_gradient(grd);
         },
         GradientImageOrColor::RadialGradient(gradient) => {
             let grd = context.create_radial_gradient(gradient.fx, gradient.fy, 0.0, gradient.cx, gradient.cy, gradient.r);
@@ -351,7 +355,7 @@ pub fn render_all_vectors(
                 let color = format!("rgba({}, {}, {}, {})", r_string, g_string, b_string, a_string);
                 grd.add_color_stop(stop.offset as f32, color);
             }
-            context.set_fill_style(grd.as_string().unwrap());
+            context.set_fill_style_gradient(grd);
         },
         GradientImageOrColor::Image(image) => {
             let img = Image::new();
@@ -368,7 +372,7 @@ pub fn render_all_vectors(
             context2.set_global_alpha(alpha);
             context2.draw_image_with_html_image_element_and_dw_and_dh(&img, tl_corner.0, tl_corner.1, w, h);
             let pattern = context.create_pattern_with_html_canvas_element(&canvas2, "repeat");
-            context.set_fill_style(pattern.as_string().unwrap());
+            context.set_fill_style_pattern(pattern);
         }
     };
     context.fill_rect(top_left_corner.0, top_left_corner.1, bottom_right_corner.0 - top_left_corner.0, bottom_right_corner.1 - top_left_corner.1);
