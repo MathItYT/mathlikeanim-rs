@@ -1,0 +1,24 @@
+{
+  "name": "mathlikeanim-rs",
+  "description": "A Rust library for creating mathematical animations",
+  "version": "0.7.3",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MathItYT/mathlikeanim-rs"
+  },
+  "files": [
+    "mathlikeanim_rs_bg.wasm",
+    "mathlikeanim_rs.js",
+    "mathlikeanim_rs.d.ts"
+  ],
+  "main": "mathlikeanim_rs.js",
+  "types": "mathlikeanim_rs.d.ts",
+  "keywords": [
+    "animation",
+    "graphics",
+    "easing",
+    "transitions",
+    "WebAssembly"
+  ]
+}

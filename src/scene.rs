@@ -3,7 +3,7 @@ use js_sys::{Array, Function, Promise};
 use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::JsFuture;
 
-use crate::{colors::{Color, GradientImageOrColor}, objects::{vector_object::VectorFeatures, wasm_interface::{WasmGradientImageOrColor, WasmVectorObject}}, renderer::render_all_vectors, scene_api::SceneAPI, utils::sleep};
+use crate::{colors::{Color, GradientImageOrColor}, objects::{vector_object::VectorFeatures, wasm_interface::{WasmGradientImageOrColor, WasmVectorObject}}, web_renderer::render_all_vectors, scene_api::SceneAPI, utils::sleep};
 
 #[wasm_bindgen]
 #[derive(Clone)]

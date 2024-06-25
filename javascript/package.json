@@ -1,27 +1,46 @@
 {
-  "name": "mathlikeanim-rs",
-  "description": "A Rust library for creating mathematical animations",
-  "version": "0.7.2",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/MathItYT/mathlikeanim-rs"
-  },
-  "files": [
-    "mathlikeanim_rs_bg.wasm",
-    "mathlikeanim_rs.js",
-    "mathlikeanim_rs.d.ts"
-  ],
-  "module": "mathlikeanim_rs.js",
-  "types": "mathlikeanim_rs.d.ts",
-  "sideEffects": [
-    "./snippets/*"
-  ],
-  "keywords": [
-    "animation",
-    "graphics",
-    "easing",
-    "transitions",
-    "WebAssembly"
-  ]
+    "name": "mathlikeanim-rs",
+    "description": "A Rust library for creating mathematical animations",
+    "version": "0.7.3",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/MathItYT/mathlikeanim-rs"
+    },
+    "files": [
+        "web/mathlikeanim_rs_bg.wasm",
+        "web/mathlikeanim_rs.js",
+        "web/mathlikeanim_rs.d.ts",
+        "node/mathlikeanim_rs_bg.wasm",
+        "node/mathlikeanim_rs.js",
+        "node/mathlikeanim_rs.d.ts"
+    ],
+    "exports": {
+        "node": {
+            "require": "./node/mathlikeanim_rs.js",
+            "types": "./node/mathlikeanim_rs.d.ts"
+        },
+        "default": {
+            "import": "./web/mathlikeanim_rs.js",
+            "types": "./web/mathlikeanim_rs.d.ts"
+        }
+    },
+    "types": "mathlikeanim_rs.d.ts",
+    "sideEffects": [
+        "./snippets/*"
+    ],
+    "keywords": [
+        "animation",
+        "graphics",
+        "easing",
+        "transitions",
+        "WebAssembly"
+    ],
+    "dependencies": {
+        "@types/fluent-ffmpeg": "^2.1.24",
+        "canvas": "^2.11.2",
+        "fluent-ffmpeg": "^2.1.3",
+        "mathjax-full": "^3.2.2",
+        "opentype.js": "^1.3.4"
+    }
 }

@@ -1,4 +1,9 @@
+let imports = {};
+imports['__wbindgen_placeholder__'] = module.exports;
 let wasm;
+const { Image, createCanvas } = require(`canvas`);
+const { spawn } = require(`child_process`);
+const { TextDecoder, TextEncoder } = require(`util`);
 
 const heap = new Array(128).fill(undefined);
 
@@ -51,9 +56,9 @@ function addHeapObject(obj) {
     return idx;
 }
 
-const cachedTextDecoder = (typeof TextDecoder !== 'undefined' ? new TextDecoder('utf-8', { ignoreBOM: true, fatal: true }) : { decode: () => { throw Error('TextDecoder not available') } } );
+let cachedTextDecoder = new TextDecoder('utf-8', { ignoreBOM: true, fatal: true });
 
-if (typeof TextDecoder !== 'undefined') { cachedTextDecoder.decode(); };
+cachedTextDecoder.decode();
 
 let cachedUint8Memory0 = null;
 
@@ -71,7 +76,7 @@ function getStringFromWasm0(ptr, len) {
 
 let WASM_VECTOR_LEN = 0;
 
-const cachedTextEncoder = (typeof TextEncoder !== 'undefined' ? new TextEncoder('utf-8') : { encode: () => { throw Error('TextEncoder not available') } } );
+let cachedTextEncoder = new TextEncoder('utf-8');
 
 const encodeString = (typeof cachedTextEncoder.encodeInto === 'function'
     ? function (arg, view) {
@@ -217,13 +222,13 @@ function makeClosure(arg0, arg1, dtor, f) {
     CLOSURE_DTORS.register(real, state, state);
     return real;
 }
-function __wbg_adapter_34(arg0, arg1) {
-    const ret = wasm._dyn_core__ops__function__Fn_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h12ca61d4395ba71c(arg0, arg1);
+function __wbg_adapter_28(arg0, arg1, arg2, arg3) {
+    const ret = wasm._dyn_core__ops__function__Fn__A_B___Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h0db02b1180485957(arg0, arg1, addHeapObject(arg2), arg3);
     return takeObject(ret);
 }
 
-function __wbg_adapter_37(arg0, arg1, arg2, arg3) {
-    const ret = wasm.wasm_bindgen__convert__closures__invoke2__h3666646dbf75527c(arg0, arg1, addHeapObject(arg2), arg3);
+function __wbg_adapter_31(arg0, arg1) {
+    const ret = wasm._dyn_core__ops__function__Fn_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h4bf2652dffc078d5(arg0, arg1);
     return takeObject(ret);
 }
 
@@ -251,8 +256,8 @@ function makeMutClosure(arg0, arg1, dtor, f) {
     CLOSURE_DTORS.register(real, state, state);
     return real;
 }
-function __wbg_adapter_40(arg0, arg1, arg2) {
-    wasm._dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h658c7ef59a74f654(arg0, arg1, addHeapObject(arg2));
+function __wbg_adapter_34(arg0, arg1, arg2) {
+    wasm._dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h36f54c9e7475dd01(arg0, arg1, addHeapObject(arg2));
 }
 
 function _assertClass(instance, klass) {
@@ -297,14 +302,14 @@ function getArrayJsValueFromWasm0(ptr, len) {
 * @param {WasmColor} tip_color
 * @returns {WasmVectorObject}
 */
-export function addFinalTip(shape, tip_side_length, tip_color) {
+module.exports.addFinalTip = function(shape, tip_side_length, tip_color) {
     _assertClass(shape, WasmVectorObject);
     var ptr0 = shape.__destroy_into_raw();
     _assertClass(tip_color, WasmColor);
     var ptr1 = tip_color.__destroy_into_raw();
     const ret = wasm.addFinalTip(ptr0, tip_side_length, ptr1);
     return WasmVectorObject.__wrap(ret);
-}
+};
 
 /**
 * @param {WasmVectorObject} shape
@@ -312,14 +317,14 @@ export function addFinalTip(shape, tip_side_length, tip_color) {
 * @param {WasmColor} tip_color
 * @returns {WasmVectorObject}
 */
-export function addInitialTip(shape, tip_side_length, tip_color) {
+module.exports.addInitialTip = function(shape, tip_side_length, tip_color) {
     _assertClass(shape, WasmVectorObject);
     var ptr0 = shape.__destroy_into_raw();
     _assertClass(tip_color, WasmColor);
     var ptr1 = tip_color.__destroy_into_raw();
     const ret = wasm.addInitialTip(ptr0, tip_side_length, ptr1);
     return WasmVectorObject.__wrap(ret);
-}
+};
 
 /**
 * @param {WasmVectorObject} shape
@@ -327,14 +332,14 @@ export function addInitialTip(shape, tip_side_length, tip_color) {
 * @param {WasmColor} tip_color
 * @returns {WasmVectorObject}
 */
-export function addBothSidesTips(shape, tip_side_length, tip_color) {
+module.exports.addBothSidesTips = function(shape, tip_side_length, tip_color) {
     _assertClass(shape, WasmVectorObject);
     var ptr0 = shape.__destroy_into_raw();
     _assertClass(tip_color, WasmColor);
     var ptr1 = tip_color.__destroy_into_raw();
     const ret = wasm.addBothSidesTips(ptr0, tip_side_length, ptr1);
     return WasmVectorObject.__wrap(ret);
-}
+};
 
 /**
 * @param {Array<any>} center
@@ -350,7 +355,7 @@ export function addBothSidesTips(shape, tip_side_length, tip_color) {
 * @param {number | undefined} [index]
 * @returns {WasmVectorObject}
 */
-export function arc(center, radius, start_angle, end_angle, num_points, stroke_color, fill_color, stroke_width, line_cap, line_join, index) {
+module.exports.arc = function(center, radius, start_angle, end_angle, num_points, stroke_color, fill_color, stroke_width, line_cap, line_join, index) {
     let ptr0 = 0;
     if (!isLikeNone(stroke_color)) {
         _assertClass(stroke_color, WasmColor);
@@ -367,7 +372,7 @@ export function arc(center, radius, start_angle, end_angle, num_points, stroke_c
     var len3 = WASM_VECTOR_LEN;
     const ret = wasm.arc(addHeapObject(center), radius, start_angle, end_angle, !isLikeNone(num_points), isLikeNone(num_points) ? 0 : num_points, ptr0, ptr1, !isLikeNone(stroke_width), isLikeNone(stroke_width) ? 0 : stroke_width, ptr2, len2, ptr3, len3, !isLikeNone(index), isLikeNone(index) ? 0 : index);
     return WasmVectorObject.__wrap(ret);
-}
+};
 
 /**
 * @param {Array<any>} center
@@ -381,7 +386,7 @@ export function arc(center, radius, start_angle, end_angle, num_points, stroke_c
 * @param {number | undefined} [index]
 * @returns {WasmVectorObject}
 */
-export function circle(center, radius, num_points, stroke_color, fill_color, stroke_width, line_cap, line_join, index) {
+module.exports.circle = function(center, radius, num_points, stroke_color, fill_color, stroke_width, line_cap, line_join, index) {
     let ptr0 = 0;
     if (!isLikeNone(stroke_color)) {
         _assertClass(stroke_color, WasmColor);
@@ -398,7 +403,7 @@ export function circle(center, radius, num_points, stroke_color, fill_color, str
     var len3 = WASM_VECTOR_LEN;
     const ret = wasm.circle(addHeapObject(center), radius, !isLikeNone(num_points), isLikeNone(num_points) ? 0 : num_points, ptr0, ptr1, !isLikeNone(stroke_width), isLikeNone(stroke_width) ? 0 : stroke_width, ptr2, len2, ptr3, len3, !isLikeNone(index), isLikeNone(index) ? 0 : index);
     return WasmVectorObject.__wrap(ret);
-}
+};
 
 /**
 * @param {Array<any>} center
@@ -415,7 +420,7 @@ export function circle(center, radius, num_points, stroke_color, fill_color, str
 * @param {number | undefined} [index]
 * @returns {WasmVectorObject}
 */
-export function ellipticalArc(center, x_radius, y_radius, start_angle, end_angle, num_points, stroke_color, fill_color, stroke_width, line_cap, line_join, index) {
+module.exports.ellipticalArc = function(center, x_radius, y_radius, start_angle, end_angle, num_points, stroke_color, fill_color, stroke_width, line_cap, line_join, index) {
     let ptr0 = 0;
     if (!isLikeNone(stroke_color)) {
         _assertClass(stroke_color, WasmColor);
@@ -432,7 +437,7 @@ export function ellipticalArc(center, x_radius, y_radius, start_angle, end_angle
     var len3 = WASM_VECTOR_LEN;
     const ret = wasm.ellipticalArc(addHeapObject(center), x_radius, y_radius, start_angle, end_angle, !isLikeNone(num_points), isLikeNone(num_points) ? 0 : num_points, ptr0, ptr1, !isLikeNone(stroke_width), isLikeNone(stroke_width) ? 0 : stroke_width, ptr2, len2, ptr3, len3, !isLikeNone(index), isLikeNone(index) ? 0 : index);
     return WasmVectorObject.__wrap(ret);
-}
+};
 
 /**
 * @param {Array<any>} center
@@ -447,7 +452,7 @@ export function ellipticalArc(center, x_radius, y_radius, start_angle, end_angle
 * @param {number | undefined} [index]
 * @returns {WasmVectorObject}
 */
-export function ellipse(center, x_radius, y_radius, num_points, stroke_color, fill_color, stroke_width, line_cap, line_join, index) {
+module.exports.ellipse = function(center, x_radius, y_radius, num_points, stroke_color, fill_color, stroke_width, line_cap, line_join, index) {
     let ptr0 = 0;
     if (!isLikeNone(stroke_color)) {
         _assertClass(stroke_color, WasmColor);
@@ -464,7 +469,7 @@ export function ellipse(center, x_radius, y_radius, num_points, stroke_color, fi
     var len3 = WASM_VECTOR_LEN;
     const ret = wasm.ellipse(addHeapObject(center), x_radius, y_radius, !isLikeNone(num_points), isLikeNone(num_points) ? 0 : num_points, ptr0, ptr1, !isLikeNone(stroke_width), isLikeNone(stroke_width) ? 0 : stroke_width, ptr2, len2, ptr3, len3, !isLikeNone(index), isLikeNone(index) ? 0 : index);
     return WasmVectorObject.__wrap(ret);
-}
+};
 
 /**
 * @param {Array<any>} center
@@ -481,7 +486,7 @@ export function ellipse(center, x_radius, y_radius, num_points, stroke_color, fi
 * @param {number | undefined} [index]
 * @returns {WasmVectorObject}
 */
-export function annularSector(center, inner_radius, outer_radius, start_angle, end_angle, num_points, stroke_color, fill_color, stroke_width, line_cap, line_join, index) {
+module.exports.annularSector = function(center, inner_radius, outer_radius, start_angle, end_angle, num_points, stroke_color, fill_color, stroke_width, line_cap, line_join, index) {
     let ptr0 = 0;
     if (!isLikeNone(stroke_color)) {
         _assertClass(stroke_color, WasmColor);
@@ -498,7 +503,7 @@ export function annularSector(center, inner_radius, outer_radius, start_angle, e
     var len3 = WASM_VECTOR_LEN;
     const ret = wasm.annularSector(addHeapObject(center), inner_radius, outer_radius, start_angle, end_angle, !isLikeNone(num_points), isLikeNone(num_points) ? 0 : num_points, ptr0, ptr1, !isLikeNone(stroke_width), isLikeNone(stroke_width) ? 0 : stroke_width, ptr2, len2, ptr3, len3, !isLikeNone(index), isLikeNone(index) ? 0 : index);
     return WasmVectorObject.__wrap(ret);
-}
+};
 
 /**
 * @param {Array<any>} start_point
@@ -510,7 +515,7 @@ export function annularSector(center, inner_radius, outer_radius, start_angle, e
 * @param {number | undefined} [index]
 * @returns {WasmVectorObject}
 */
-export function line(start_point, end_point, stroke_color, stroke_width, line_cap, line_join, index) {
+module.exports.line = function(start_point, end_point, stroke_color, stroke_width, line_cap, line_join, index) {
     let ptr0 = 0;
     if (!isLikeNone(stroke_color)) {
         _assertClass(stroke_color, WasmColor);
@@ -522,7 +527,7 @@ export function line(start_point, end_point, stroke_color, stroke_width, line_ca
     var len2 = WASM_VECTOR_LEN;
     const ret = wasm.line(addHeapObject(start_point), addHeapObject(end_point), ptr0, !isLikeNone(stroke_width), isLikeNone(stroke_width) ? 0 : stroke_width, ptr1, len1, ptr2, len2, !isLikeNone(index), isLikeNone(index) ? 0 : index);
     return WasmVectorObject.__wrap(ret);
-}
+};
 
 /**
 * @param {Array<any>} points
@@ -534,7 +539,7 @@ export function line(start_point, end_point, stroke_color, stroke_width, line_ca
 * @param {number | undefined} [index]
 * @returns {WasmVectorObject}
 */
-export function polygon(points, stroke_color, fill_color, stroke_width, line_cap, line_join, index) {
+module.exports.polygon = function(points, stroke_color, fill_color, stroke_width, line_cap, line_join, index) {
     let ptr0 = 0;
     if (!isLikeNone(stroke_color)) {
         _assertClass(stroke_color, WasmColor);
@@ -551,7 +556,7 @@ export function polygon(points, stroke_color, fill_color, stroke_width, line_cap
     var len3 = WASM_VECTOR_LEN;
     const ret = wasm.polygon(addHeapObject(points), ptr0, ptr1, !isLikeNone(stroke_width), isLikeNone(stroke_width) ? 0 : stroke_width, ptr2, len2, ptr3, len3, !isLikeNone(index), isLikeNone(index) ? 0 : index);
     return WasmVectorObject.__wrap(ret);
-}
+};
 
 /**
 * @param {Array<any>} center
@@ -565,7 +570,7 @@ export function polygon(points, stroke_color, fill_color, stroke_width, line_cap
 * @param {number | undefined} [index]
 * @returns {WasmVectorObject}
 */
-export function regularPolygon(center, side_length, num_sides, stroke_color, fill_color, stroke_width, line_cap, line_join, index) {
+module.exports.regularPolygon = function(center, side_length, num_sides, stroke_color, fill_color, stroke_width, line_cap, line_join, index) {
     let ptr0 = 0;
     if (!isLikeNone(stroke_color)) {
         _assertClass(stroke_color, WasmColor);
@@ -582,7 +587,7 @@ export function regularPolygon(center, side_length, num_sides, stroke_color, fil
     var len3 = WASM_VECTOR_LEN;
     const ret = wasm.regularPolygon(addHeapObject(center), side_length, num_sides, ptr0, ptr1, !isLikeNone(stroke_width), isLikeNone(stroke_width) ? 0 : stroke_width, ptr2, len2, ptr3, len3, !isLikeNone(index), isLikeNone(index) ? 0 : index);
     return WasmVectorObject.__wrap(ret);
-}
+};
 
 /**
 * @param {Array<any>} center
@@ -595,7 +600,7 @@ export function regularPolygon(center, side_length, num_sides, stroke_color, fil
 * @param {number | undefined} [index]
 * @returns {WasmVectorObject}
 */
-export function square(center, side_length, stroke_color, fill_color, stroke_width, line_cap, line_join, index) {
+module.exports.square = function(center, side_length, stroke_color, fill_color, stroke_width, line_cap, line_join, index) {
     let ptr0 = 0;
     if (!isLikeNone(stroke_color)) {
         _assertClass(stroke_color, WasmColor);
@@ -612,7 +617,7 @@ export function square(center, side_length, stroke_color, fill_color, stroke_wid
     var len3 = WASM_VECTOR_LEN;
     const ret = wasm.square(addHeapObject(center), side_length, ptr0, ptr1, !isLikeNone(stroke_width), isLikeNone(stroke_width) ? 0 : stroke_width, ptr2, len2, ptr3, len3, !isLikeNone(index), isLikeNone(index) ? 0 : index);
     return WasmVectorObject.__wrap(ret);
-}
+};
 
 /**
 * @param {Array<any>} center
@@ -626,7 +631,7 @@ export function square(center, side_length, stroke_color, fill_color, stroke_wid
 * @param {number | undefined} [index]
 * @returns {WasmVectorObject}
 */
-export function rectangle(center, width, height, stroke_color, fill_color, stroke_width, line_cap, line_join, index) {
+module.exports.rectangle = function(center, width, height, stroke_color, fill_color, stroke_width, line_cap, line_join, index) {
     let ptr0 = 0;
     if (!isLikeNone(stroke_color)) {
         _assertClass(stroke_color, WasmColor);
@@ -643,7 +648,7 @@ export function rectangle(center, width, height, stroke_color, fill_color, strok
     var len3 = WASM_VECTOR_LEN;
     const ret = wasm.rectangle(addHeapObject(center), width, height, ptr0, ptr1, !isLikeNone(stroke_width), isLikeNone(stroke_width) ? 0 : stroke_width, ptr2, len2, ptr3, len3, !isLikeNone(index), isLikeNone(index) ? 0 : index);
     return WasmVectorObject.__wrap(ret);
-}
+};
 
 /**
 * @param {Array<any>} center
@@ -656,7 +661,7 @@ export function rectangle(center, width, height, stroke_color, fill_color, strok
 * @param {number | undefined} [index]
 * @returns {WasmVectorObject}
 */
-export function equilateralTriangle(center, side_length, stroke_color, fill_color, stroke_width, line_cap, line_join, index) {
+module.exports.equilateralTriangle = function(center, side_length, stroke_color, fill_color, stroke_width, line_cap, line_join, index) {
     let ptr0 = 0;
     if (!isLikeNone(stroke_color)) {
         _assertClass(stroke_color, WasmColor);
@@ -673,7 +678,7 @@ export function equilateralTriangle(center, side_length, stroke_color, fill_colo
     var len3 = WASM_VECTOR_LEN;
     const ret = wasm.equilateralTriangle(addHeapObject(center), side_length, ptr0, ptr1, !isLikeNone(stroke_width), isLikeNone(stroke_width) ? 0 : stroke_width, ptr2, len2, ptr3, len3, !isLikeNone(index), isLikeNone(index) ? 0 : index);
     return WasmVectorObject.__wrap(ret);
-}
+};
 
 /**
 * @param {Array<any>} point1
@@ -687,7 +692,7 @@ export function equilateralTriangle(center, side_length, stroke_color, fill_colo
 * @param {number | undefined} [index]
 * @returns {WasmVectorObject}
 */
-export function triangle(point1, point2, point3, stroke_color, fill_color, stroke_width, line_cap, line_join, index) {
+module.exports.triangle = function(point1, point2, point3, stroke_color, fill_color, stroke_width, line_cap, line_join, index) {
     let ptr0 = 0;
     if (!isLikeNone(stroke_color)) {
         _assertClass(stroke_color, WasmColor);
@@ -704,7 +709,7 @@ export function triangle(point1, point2, point3, stroke_color, fill_color, strok
     var len3 = WASM_VECTOR_LEN;
     const ret = wasm.triangle(addHeapObject(point1), addHeapObject(point2), addHeapObject(point3), ptr0, ptr1, !isLikeNone(stroke_width), isLikeNone(stroke_width) ? 0 : stroke_width, ptr2, len2, ptr3, len3, !isLikeNone(index), isLikeNone(index) ? 0 : index);
     return WasmVectorObject.__wrap(ret);
-}
+};
 
 /**
 * @param {Array<any>} point1
@@ -717,7 +722,7 @@ export function triangle(point1, point2, point3, stroke_color, fill_color, strok
 * @param {number | undefined} [index]
 * @returns {WasmVectorObject}
 */
-export function rightTriangle(point1, point2, stroke_color, fill_color, stroke_width, line_cap, line_join, index) {
+module.exports.rightTriangle = function(point1, point2, stroke_color, fill_color, stroke_width, line_cap, line_join, index) {
     let ptr0 = 0;
     if (!isLikeNone(stroke_color)) {
         _assertClass(stroke_color, WasmColor);
@@ -734,7 +739,7 @@ export function rightTriangle(point1, point2, stroke_color, fill_color, stroke_w
     var len3 = WASM_VECTOR_LEN;
     const ret = wasm.rightTriangle(addHeapObject(point1), addHeapObject(point2), ptr0, ptr1, !isLikeNone(stroke_width), isLikeNone(stroke_width) ? 0 : stroke_width, ptr2, len2, ptr3, len3, !isLikeNone(index), isLikeNone(index) ? 0 : index);
     return WasmVectorObject.__wrap(ret);
-}
+};
 
 /**
 * @param {number} x_min
@@ -759,7 +764,7 @@ export function rightTriangle(point1, point2, stroke_color, fill_color, stroke_w
 * @param {boolean | undefined} [add_y_tip]
 * @returns {WasmVectorObject}
 */
-export function axes(x_min, x_max, x_step, y_min, y_max, y_step, center, x_length, y_length, color, stroke_width, line_cap, line_join, index, add_x_ticks, add_y_ticks, x_tick_size, y_tick_size, add_x_tip, add_y_tip) {
+module.exports.axes = function(x_min, x_max, x_step, y_min, y_max, y_step, center, x_length, y_length, color, stroke_width, line_cap, line_join, index, add_x_ticks, add_y_ticks, x_tick_size, y_tick_size, add_x_tip, add_y_tip) {
     let ptr0 = 0;
     if (!isLikeNone(color)) {
         _assertClass(color, WasmColor);
@@ -771,7 +776,7 @@ export function axes(x_min, x_max, x_step, y_min, y_max, y_step, center, x_lengt
     var len2 = WASM_VECTOR_LEN;
     const ret = wasm.axes(x_min, x_max, x_step, y_min, y_max, y_step, addHeapObject(center), !isLikeNone(x_length), isLikeNone(x_length) ? 0 : x_length, !isLikeNone(y_length), isLikeNone(y_length) ? 0 : y_length, ptr0, !isLikeNone(stroke_width), isLikeNone(stroke_width) ? 0 : stroke_width, ptr1, len1, ptr2, len2, !isLikeNone(index), isLikeNone(index) ? 0 : index, isLikeNone(add_x_ticks) ? 0xFFFFFF : add_x_ticks ? 1 : 0, isLikeNone(add_y_ticks) ? 0xFFFFFF : add_y_ticks ? 1 : 0, !isLikeNone(x_tick_size), isLikeNone(x_tick_size) ? 0 : x_tick_size, !isLikeNone(y_tick_size), isLikeNone(y_tick_size) ? 0 : y_tick_size, isLikeNone(add_x_tip) ? 0xFFFFFF : add_x_tip ? 1 : 0, isLikeNone(add_y_tip) ? 0xFFFFFF : add_y_tip ? 1 : 0);
     return WasmVectorObject.__wrap(ret);
-}
+};
 
 /**
 * @param {WasmVectorObject} axes
@@ -783,11 +788,11 @@ export function axes(x_min, x_max, x_step, y_min, y_max, y_step, center, x_lengt
 * @param {number} y_max
 * @returns {Array<any>}
 */
-export function coordsToPoint(axes, x, y, x_min, x_max, y_min, y_max) {
+module.exports.coordsToPoint = function(axes, x, y, x_min, x_max, y_min, y_max) {
     _assertClass(axes, WasmVectorObject);
     const ret = wasm.coordsToPoint(axes.__wbg_ptr, x, y, x_min, x_max, y_min, y_max);
     return takeObject(ret);
-}
+};
 
 /**
 * @param {WasmVectorObject} axes
@@ -798,11 +803,11 @@ export function coordsToPoint(axes, x, y, x_min, x_max, y_min, y_max) {
 * @param {number} y_max
 * @returns {Array<any>}
 */
-export function pointToCoords(axes, point, x_min, x_max, y_min, y_max) {
+module.exports.pointToCoords = function(axes, point, x_min, x_max, y_min, y_max) {
     _assertClass(axes, WasmVectorObject);
     const ret = wasm.pointToCoords(axes.__wbg_ptr, addHeapObject(point), x_min, x_max, y_min, y_max);
     return takeObject(ret);
-}
+};
 
 let stack_pointer = 128;
 
@@ -828,7 +833,7 @@ function addBorrowedObject(obj) {
 * @param {number | undefined} [index]
 * @returns {WasmVectorObject}
 */
-export function parametricPlotInAxes(f, t_min, t_max, t_step, axes, x_min, x_max, y_min, y_max, color, stroke_width, line_cap, line_join, index) {
+module.exports.parametricPlotInAxes = function(f, t_min, t_max, t_step, axes, x_min, x_max, y_min, y_max, color, stroke_width, line_cap, line_join, index) {
     try {
         _assertClass(axes, WasmVectorObject);
         let ptr0 = 0;
@@ -845,7 +850,7 @@ export function parametricPlotInAxes(f, t_min, t_max, t_step, axes, x_min, x_max
     } finally {
         heap[stack_pointer++] = undefined;
     }
-}
+};
 
 /**
 * @param {Function} f
@@ -864,7 +869,7 @@ export function parametricPlotInAxes(f, t_min, t_max, t_step, axes, x_min, x_max
 * @param {number | undefined} [index]
 * @returns {WasmVectorObject}
 */
-export function plotInAxes(f, x_min, x_max, y_min, y_max, x1, x2, x_step, axes, color, stroke_width, line_cap, line_join, index) {
+module.exports.plotInAxes = function(f, x_min, x_max, y_min, y_max, x1, x2, x_step, axes, color, stroke_width, line_cap, line_join, index) {
     try {
         _assertClass(axes, WasmVectorObject);
         let ptr0 = 0;
@@ -881,7 +886,7 @@ export function plotInAxes(f, x_min, x_max, y_min, y_max, x1, x2, x_step, axes, 
     } finally {
         heap[stack_pointer++] = undefined;
     }
-}
+};
 
 function passArrayF64ToWasm0(arg, malloc) {
     const ptr = malloc(arg.length * 8, 8) >>> 0;
@@ -910,7 +915,7 @@ function passArrayF64ToWasm0(arg, malloc) {
 * @param {Float64Array} intervals
 * @returns {WasmVectorObject}
 */
-export function contourPlotInAxes(f, x_min, x_max, y_min, y_max, x_1, x_2, x_step, y_1, y_2, y_step, axes, color, stroke_width, line_cap, line_join, index, intervals) {
+module.exports.contourPlotInAxes = function(f, x_min, x_max, y_min, y_max, x_1, x_2, x_step, y_1, y_2, y_step, axes, color, stroke_width, line_cap, line_join, index, intervals) {
     try {
         _assertClass(axes, WasmVectorObject);
         let ptr0 = 0;
@@ -929,7 +934,7 @@ export function contourPlotInAxes(f, x_min, x_max, y_min, y_max, x_1, x_2, x_ste
     } finally {
         heap[stack_pointer++] = undefined;
     }
-}
+};
 
 /**
 * @param {WasmVectorObject} axes
@@ -944,7 +949,7 @@ export function contourPlotInAxes(f, x_min, x_max, y_min, y_max, x_1, x_2, x_ste
 * @param {number | undefined} [index]
 * @returns {WasmVectorObject}
 */
-export function areaUnderCurve(axes, plot, x_min, x_max, y_min, y_max, x1, x2, color, index) {
+module.exports.areaUnderCurve = function(axes, plot, x_min, x_max, y_min, y_max, x1, x2, color, index) {
     _assertClass(axes, WasmVectorObject);
     _assertClass(plot, WasmVectorObject);
     let ptr0 = 0;
@@ -954,7 +959,7 @@ export function areaUnderCurve(axes, plot, x_min, x_max, y_min, y_max, x1, x2, c
     }
     const ret = wasm.areaUnderCurve(axes.__wbg_ptr, plot.__wbg_ptr, x_min, x_max, y_min, y_max, x1, x2, ptr0, !isLikeNone(index), isLikeNone(index) ? 0 : index);
     return WasmVectorObject.__wrap(ret);
-}
+};
 
 /**
 * @param {Function} f
@@ -975,7 +980,7 @@ export function areaUnderCurve(axes, plot, x_min, x_max, y_min, y_max, x1, x2, c
 * @param {number | undefined} [index]
 * @returns {WasmVectorObject}
 */
-export function riemannRectanglesForPlot(f, x_min, x_max, y_min, y_max, direction, x_1, x_2, n_rects, axes, stroke_color, fill_color, stroke_width, line_cap, line_join, index) {
+module.exports.riemannRectanglesForPlot = function(f, x_min, x_max, y_min, y_max, direction, x_1, x_2, n_rects, axes, stroke_color, fill_color, stroke_width, line_cap, line_join, index) {
     try {
         _assertClass(axes, WasmVectorObject);
         let ptr0 = 0;
@@ -997,7 +1002,7 @@ export function riemannRectanglesForPlot(f, x_min, x_max, y_min, y_max, directio
     } finally {
         heap[stack_pointer++] = undefined;
     }
-}
+};
 
 /**
 * @param {Function} f
@@ -1016,7 +1021,7 @@ export function riemannRectanglesForPlot(f, x_min, x_max, y_min, y_max, directio
 * @param {number | undefined} [index]
 * @returns {WasmVectorObject}
 */
-export function secantLineForPlot(f, x_1, x_2, length, axes, x_min, x_max, y_min, y_max, color, stroke_width, line_cap, line_join, index) {
+module.exports.secantLineForPlot = function(f, x_1, x_2, length, axes, x_min, x_max, y_min, y_max, color, stroke_width, line_cap, line_join, index) {
     try {
         _assertClass(axes, WasmVectorObject);
         let ptr0 = 0;
@@ -1033,7 +1038,7 @@ export function secantLineForPlot(f, x_1, x_2, length, axes, x_min, x_max, y_min
     } finally {
         heap[stack_pointer++] = undefined;
     }
-}
+};
 
 /**
 * @param {Function} f
@@ -1047,7 +1052,7 @@ export function secantLineForPlot(f, x_1, x_2, length, axes, x_min, x_max, y_min
 * @param {number | undefined} [index]
 * @returns {WasmVectorObject}
 */
-export function parametricFunction(f, t_min, t_max, t_step, color, stroke_width, line_cap, line_join, index) {
+module.exports.parametricFunction = function(f, t_min, t_max, t_step, color, stroke_width, line_cap, line_join, index) {
     try {
         let ptr0 = 0;
         if (!isLikeNone(color)) {
@@ -1063,7 +1068,7 @@ export function parametricFunction(f, t_min, t_max, t_step, color, stroke_width,
     } finally {
         heap[stack_pointer++] = undefined;
     }
-}
+};
 
 /**
 * @param {Function} f
@@ -1081,7 +1086,7 @@ export function parametricFunction(f, t_min, t_max, t_step, color, stroke_width,
 * @param {Float64Array} intervals
 * @returns {WasmVectorObject}
 */
-export function contourPlot(f, x_min, x_max, y_min, y_max, x_step, y_step, color, stroke_width, line_cap, line_join, index, intervals) {
+module.exports.contourPlot = function(f, x_min, x_max, y_min, y_max, x_step, y_step, color, stroke_width, line_cap, line_join, index, intervals) {
     try {
         let ptr0 = 0;
         if (!isLikeNone(color)) {
@@ -1099,7 +1104,7 @@ export function contourPlot(f, x_min, x_max, y_min, y_max, x_step, y_step, color
     } finally {
         heap[stack_pointer++] = undefined;
     }
-}
+};
 
 /**
 * @param {Function} f
@@ -1113,7 +1118,7 @@ export function contourPlot(f, x_min, x_max, y_min, y_max, x_step, y_step, color
 * @param {number | undefined} [index]
 * @returns {WasmVectorObject}
 */
-export function realFunction(f, x_min, x_max, x_step, color, stroke_width, line_cap, line_join, index) {
+module.exports.realFunction = function(f, x_min, x_max, x_step, color, stroke_width, line_cap, line_join, index) {
     try {
         let ptr0 = 0;
         if (!isLikeNone(color)) {
@@ -1129,7 +1134,7 @@ export function realFunction(f, x_min, x_max, x_step, color, stroke_width, line_
     } finally {
         heap[stack_pointer++] = undefined;
     }
-}
+};
 
 /**
 * @param {number} x_min
@@ -1148,7 +1153,7 @@ export function realFunction(f, x_min, x_max, x_step, color, stroke_width, line_
 * @param {number | undefined} [angle]
 * @returns {WasmVectorObject}
 */
-export function numberLine(x_min, x_max, x_step, color, stroke_width, line_cap, line_join, index, center, length, add_tip, add_ticks, tick_size, angle) {
+module.exports.numberLine = function(x_min, x_max, x_step, color, stroke_width, line_cap, line_join, index, center, length, add_tip, add_ticks, tick_size, angle) {
     let ptr0 = 0;
     if (!isLikeNone(color)) {
         _assertClass(color, WasmColor);
@@ -1160,7 +1165,7 @@ export function numberLine(x_min, x_max, x_step, color, stroke_width, line_cap, 
     var len2 = WASM_VECTOR_LEN;
     const ret = wasm.numberLine(x_min, x_max, x_step, ptr0, !isLikeNone(stroke_width), isLikeNone(stroke_width) ? 0 : stroke_width, ptr1, len1, ptr2, len2, !isLikeNone(index), isLikeNone(index) ? 0 : index, isLikeNone(center) ? 0 : addHeapObject(center), !isLikeNone(length), isLikeNone(length) ? 0 : length, isLikeNone(add_tip) ? 0xFFFFFF : add_tip ? 1 : 0, isLikeNone(add_ticks) ? 0xFFFFFF : add_ticks ? 1 : 0, !isLikeNone(tick_size), isLikeNone(tick_size) ? 0 : tick_size, !isLikeNone(angle), isLikeNone(angle) ? 0 : angle);
     return WasmVectorObject.__wrap(ret);
-}
+};
 
 /**
 * @param {WasmVectorObject} number_line
@@ -1169,11 +1174,11 @@ export function numberLine(x_min, x_max, x_step, color, stroke_width, line_cap, 
 * @param {number} x_max
 * @returns {Array<any>}
 */
-export function numberToPoint(number_line, number, x_min, x_max) {
+module.exports.numberToPoint = function(number_line, number, x_min, x_max) {
     _assertClass(number_line, WasmVectorObject);
     const ret = wasm.numberToPoint(number_line.__wbg_ptr, number, x_min, x_max);
     return takeObject(ret);
-}
+};
 
 /**
 * @param {WasmVectorObject} number_line
@@ -1182,11 +1187,11 @@ export function numberToPoint(number_line, number, x_min, x_max) {
 * @param {number} x_max
 * @returns {number}
 */
-export function pointToNumber(number_line, point, x_min, x_max) {
+module.exports.pointToNumber = function(number_line, point, x_min, x_max) {
     _assertClass(number_line, WasmVectorObject);
     const ret = wasm.pointToNumber(number_line.__wbg_ptr, addHeapObject(point), x_min, x_max);
     return ret;
-}
+};
 
 /**
 * @param {WasmVectorObject} number_line
@@ -1200,23 +1205,238 @@ export function pointToNumber(number_line, point, x_min, x_max) {
 * @param {number | undefined} [index]
 * @returns {Promise<WasmVectorObject>}
 */
-export function getNumbersTex(number_line, numbers, number_to_vector, x_min, x_max, height, direction, buff, index) {
+module.exports.getNumbersTex = function(number_line, numbers, number_to_vector, x_min, x_max, height, direction, buff, index) {
     _assertClass(number_line, WasmVectorObject);
     var ptr0 = number_line.__destroy_into_raw();
     const ret = wasm.getNumbersTex(ptr0, addHeapObject(numbers), addHeapObject(number_to_vector), x_min, x_max, height, isLikeNone(direction) ? 0 : addHeapObject(direction), !isLikeNone(buff), isLikeNone(buff) ? 0 : buff, !isLikeNone(index), isLikeNone(index) ? 0 : index);
     return takeObject(ret);
-}
+};
 
 /**
 * @param {string} svg
 * @returns {WasmVectorObject}
 */
-export function svgToVector(svg) {
+module.exports.svgToVector = function(svg) {
     const ptr0 = passStringToWasm0(svg, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
     const len0 = WASM_VECTOR_LEN;
     const ret = wasm.svgToVector(ptr0, len0);
     return WasmVectorObject.__wrap(ret);
-}
+};
+
+/**
+* @param {number} angle
+* @param {number} axis
+* @returns {Array<any>}
+*/
+module.exports.rotMatrix = function(angle, axis) {
+    const ret = wasm.rotMatrix(angle, axis);
+    return takeObject(ret);
+};
+
+/**
+* @param {Array<any>} a
+* @param {Array<any>} b
+* @returns {Array<any>}
+*/
+module.exports.matrixProduct = function(a, b) {
+    const ret = wasm.matrixProduct(addHeapObject(a), addHeapObject(b));
+    return takeObject(ret);
+};
+
+/**
+* @param {number} phi
+* @param {number} theta
+* @param {number} gamma
+* @returns {Array<any>}
+*/
+module.exports.rotMatrixEuler = function(phi, theta, gamma) {
+    const ret = wasm.rotMatrixEuler(phi, theta, gamma);
+    return takeObject(ret);
+};
+
+/**
+* @param {Array<any>} a
+* @returns {Array<any>}
+*/
+module.exports.transposeMatrix = function(a) {
+    const ret = wasm.transposeMatrix(addHeapObject(a));
+    return takeObject(ret);
+};
+
+/**
+* @param {Array<any>} matrix
+* @param {Array<any>} points
+* @returns {Array<any>}
+*/
+module.exports.applyMatrix = function(matrix, points) {
+    const ret = wasm.applyMatrix(addHeapObject(matrix), addHeapObject(points));
+    return takeObject(ret);
+};
+
+/**
+* @param {Array<any>} points
+* @param {Array<any>} shift
+* @returns {Array<any>}
+*/
+module.exports.shiftPoints3D = function(points, shift) {
+    const ret = wasm.shiftPoints3D(addHeapObject(points), addHeapObject(shift));
+    return takeObject(ret);
+};
+
+/**
+* @param {WasmGradientImageOrColor} color
+* @returns {WasmGradientImageOrColor}
+*/
+module.exports.ensureValidThreeDColor = function(color) {
+    _assertClass(color, WasmGradientImageOrColor);
+    var ptr0 = color.__destroy_into_raw();
+    const ret = wasm.ensureValidThreeDColor(ptr0);
+    return WasmGradientImageOrColor.__wrap(ret);
+};
+
+/**
+* @param {WasmColor} color
+* @param {Array<any>} point
+* @param {Array<any>} unit_normal
+* @param {WasmLightSource} light_source
+* @returns {WasmColor}
+*/
+module.exports.getShadedRgb = function(color, point, unit_normal, light_source) {
+    _assertClass(color, WasmColor);
+    var ptr0 = color.__destroy_into_raw();
+    _assertClass(light_source, WasmLightSource);
+    const ret = wasm.getShadedRgb(ptr0, addHeapObject(point), addHeapObject(unit_normal), light_source.__wbg_ptr);
+    return WasmColor.__wrap(ret);
+};
+
+/**
+* @param {Array<any>} points
+* @returns {Array<any>}
+*/
+module.exports.getStartCorner = function(points) {
+    const ret = wasm.getStartCorner(addHeapObject(points));
+    return takeObject(ret);
+};
+
+/**
+* @param {Array<any>} points
+* @returns {Array<any>}
+*/
+module.exports.getEndCorner = function(points) {
+    const ret = wasm.getEndCorner(addHeapObject(points));
+    return takeObject(ret);
+};
+
+/**
+* @param {Array<any>} a
+* @param {Array<any>} b
+* @returns {Array<any>}
+*/
+module.exports.crossProduct = function(a, b) {
+    const ret = wasm.crossProduct(addHeapObject(a), addHeapObject(b));
+    return takeObject(ret);
+};
+
+/**
+* @param {Array<any>} v1
+* @param {Array<any>} v2
+* @returns {Array<any>}
+*/
+module.exports.getUnitNormal = function(v1, v2) {
+    const ret = wasm.getUnitNormal(addHeapObject(v1), addHeapObject(v2));
+    return takeObject(ret);
+};
+
+/**
+* @param {Array<any>} points
+* @returns {Array<any>}
+*/
+module.exports.getStartAnchors = function(points) {
+    const ret = wasm.getStartAnchors(addHeapObject(points));
+    return takeObject(ret);
+};
+
+/**
+* @param {Array<any>} points
+* @returns {Array<any>}
+*/
+module.exports.getEndAnchors = function(points) {
+    const ret = wasm.getEndAnchors(addHeapObject(points));
+    return takeObject(ret);
+};
+
+/**
+* @param {Array<any>} points
+* @returns {Array<any>}
+*/
+module.exports.getAnchors = function(points) {
+    const ret = wasm.getAnchors(addHeapObject(points));
+    return takeObject(ret);
+};
+
+/**
+* @param {Array<any>} points
+* @param {number} index
+* @returns {Array<any>}
+*/
+module.exports.getCornerUnitNormal = function(points, index) {
+    const ret = wasm.getCornerUnitNormal(addHeapObject(points), index);
+    return takeObject(ret);
+};
+
+/**
+* @param {Array<any>} points
+* @returns {Array<any>}
+*/
+module.exports.getStartCornerUnitNormal = function(points) {
+    const ret = wasm.getStartCornerUnitNormal(addHeapObject(points));
+    return takeObject(ret);
+};
+
+/**
+* @param {Array<any>} points
+* @returns {Array<any>}
+*/
+module.exports.getEndCornerUnitNormal = function(points) {
+    const ret = wasm.getEndCornerUnitNormal(addHeapObject(points));
+    return takeObject(ret);
+};
+
+/**
+* @param {WasmGradientImageOrColor} color
+* @param {Array<any>} points
+* @param {WasmLightSource} light_source
+* @param {WasmCamera} camera
+* @returns {WasmGradientImageOrColor}
+*/
+module.exports.getShadedColor = function(color, points, light_source, camera) {
+    _assertClass(color, WasmGradientImageOrColor);
+    _assertClass(light_source, WasmLightSource);
+    _assertClass(camera, WasmCamera);
+    const ret = wasm.getShadedColor(color.__wbg_ptr, addHeapObject(points), light_source.__wbg_ptr, camera.__wbg_ptr);
+    return WasmGradientImageOrColor.__wrap(ret);
+};
+
+/**
+* @param {Array<any>} points
+* @param {WasmCamera} camera
+* @returns {Array<any>}
+*/
+module.exports.projectPoints = function(points, camera) {
+    _assertClass(camera, WasmCamera);
+    const ret = wasm.projectPoints(addHeapObject(points), camera.__wbg_ptr);
+    return takeObject(ret);
+};
+
+/**
+* @param {Array<any>} point1
+* @param {Array<any>} point2
+* @returns {Array<any>}
+*/
+module.exports.lineAsCubicBezier3D = function(point1, point2) {
+    const ret = wasm.lineAsCubicBezier3D(addHeapObject(point1), addHeapObject(point2));
+    return takeObject(ret);
+};
 
 function passArray32ToWasm0(arg, malloc) {
     const ptr = malloc(arg.length * 4, 4) >>> 0;
@@ -1224,290 +1444,6 @@ function passArray32ToWasm0(arg, malloc) {
     WASM_VECTOR_LEN = arg.length;
     return ptr;
 }
-
-function getArrayF64FromWasm0(ptr, len) {
-    ptr = ptr >>> 0;
-    return getFloat64Memory0().subarray(ptr / 8, ptr / 8 + len);
-}
-/**
-* @param {number} num_anim_funcs
-* @param {number} lag_ratio
-* @returns {Float64Array}
-*/
-export function makeTimings(num_anim_funcs, lag_ratio) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        wasm.makeTimings(retptr, num_anim_funcs, lag_ratio);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var v1 = getArrayF64FromWasm0(r0, r1).slice();
-        wasm.__wbindgen_free(r0, r1 * 8, 8);
-        return v1;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-}
-
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {(Function)[]} anim_funcs
-* @param {number} lag_ratio
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function animationGroup(vec_obj, anim_funcs, lag_ratio, t) {
-    _assertClass(vec_obj, WasmVectorObject);
-    var ptr0 = vec_obj.__destroy_into_raw();
-    const ptr1 = passArrayJsValueToWasm0(anim_funcs, wasm.__wbindgen_malloc);
-    const len1 = WASM_VECTOR_LEN;
-    const ret = wasm.animationGroup(ptr0, ptr1, len1, lag_ratio, t);
-    return WasmVectorObject.__wrap(ret);
-}
-
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function create(vec_obj, t) {
-    _assertClass(vec_obj, WasmVectorObject);
-    var ptr0 = vec_obj.__destroy_into_raw();
-    const ret = wasm.create(ptr0, t);
-    return WasmVectorObject.__wrap(ret);
-}
-
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function drawStrokeThenFill(vec_obj, t) {
-    _assertClass(vec_obj, WasmVectorObject);
-    var ptr0 = vec_obj.__destroy_into_raw();
-    const ret = wasm.drawStrokeThenFill(ptr0, t);
-    return WasmVectorObject.__wrap(ret);
-}
-
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} lag_ratio
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function write(vec_obj, lag_ratio, t) {
-    _assertClass(vec_obj, WasmVectorObject);
-    var ptr0 = vec_obj.__destroy_into_raw();
-    const ret = wasm.write(ptr0, lag_ratio, t);
-    return WasmVectorObject.__wrap(ret);
-}
-
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} scale_factor
-* @param {Array<any>} shift
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function fadeIn(vec_obj, scale_factor, shift, t) {
-    _assertClass(vec_obj, WasmVectorObject);
-    var ptr0 = vec_obj.__destroy_into_raw();
-    const ret = wasm.fadeIn(ptr0, scale_factor, addHeapObject(shift), t);
-    return WasmVectorObject.__wrap(ret);
-}
-
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} scale_factor
-* @param {Array<any>} shift
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function fadeOut(vec_obj, scale_factor, shift, t) {
-    _assertClass(vec_obj, WasmVectorObject);
-    var ptr0 = vec_obj.__destroy_into_raw();
-    const ret = wasm.fadeOut(ptr0, scale_factor, addHeapObject(shift), t);
-    return WasmVectorObject.__wrap(ret);
-}
-
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function growArrowWithFinalTip(vec_obj, t) {
-    _assertClass(vec_obj, WasmVectorObject);
-    var ptr0 = vec_obj.__destroy_into_raw();
-    const ret = wasm.growArrowWithFinalTip(ptr0, t);
-    return WasmVectorObject.__wrap(ret);
-}
-
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function growArrowWithInitialTip(vec_obj, t) {
-    _assertClass(vec_obj, WasmVectorObject);
-    var ptr0 = vec_obj.__destroy_into_raw();
-    const ret = wasm.growArrowWithInitialTip(ptr0, t);
-    return WasmVectorObject.__wrap(ret);
-}
-
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function growArrowWithTipsAtBothEnds(vec_obj, t) {
-    _assertClass(vec_obj, WasmVectorObject);
-    var ptr0 = vec_obj.__destroy_into_raw();
-    const ret = wasm.growArrowWithTipsAtBothEnds(ptr0, t);
-    return WasmVectorObject.__wrap(ret);
-}
-
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function growFromCenter(vec_obj, t) {
-    _assertClass(vec_obj, WasmVectorObject);
-    var ptr0 = vec_obj.__destroy_into_raw();
-    const ret = wasm.growFromCenter(ptr0, t);
-    return WasmVectorObject.__wrap(ret);
-}
-
-/**
-* @param {WasmVectorObject} original
-* @param {WasmVectorObject} target
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function morphShape(original, target, t) {
-    _assertClass(original, WasmVectorObject);
-    var ptr0 = original.__destroy_into_raw();
-    _assertClass(target, WasmVectorObject);
-    var ptr1 = target.__destroy_into_raw();
-    const ret = wasm.morphShape(ptr0, ptr1, t);
-    return WasmVectorObject.__wrap(ret);
-}
-
-/**
-* @param {Array<any>} top_left_corner
-* @param {Array<any>} bottom_right_corner
-* @param {SVGScene} scene
-* @param {number} t
-*/
-export function moveCameraSVG(top_left_corner, bottom_right_corner, scene, t) {
-    _assertClass(scene, SVGScene);
-    wasm.moveCameraSVG(addHeapObject(top_left_corner), addHeapObject(bottom_right_corner), scene.__wbg_ptr, t);
-}
-
-/**
-* @param {Array<any>} top_left_corner
-* @param {Array<any>} bottom_right_corner
-* @param {Scene} scene
-* @param {number} t
-*/
-export function moveCamera(top_left_corner, bottom_right_corner, scene, t) {
-    _assertClass(scene, Scene);
-    wasm.moveCamera(addHeapObject(top_left_corner), addHeapObject(bottom_right_corner), scene.__wbg_ptr, t);
-}
-
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} angle
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function rotateAnimation(vec_obj, angle, t) {
-    _assertClass(vec_obj, WasmVectorObject);
-    var ptr0 = vec_obj.__destroy_into_raw();
-    const ret = wasm.rotateAnimation(ptr0, angle, t);
-    return WasmVectorObject.__wrap(ret);
-}
-
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} scale_factor
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function scaleInPlace(vec_obj, scale_factor, t) {
-    _assertClass(vec_obj, WasmVectorObject);
-    var ptr0 = vec_obj.__destroy_into_raw();
-    const ret = wasm.scaleInPlace(ptr0, scale_factor, t);
-    return WasmVectorObject.__wrap(ret);
-}
-
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {WasmColor} target_fill
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function setFillAnimation(vec_obj, target_fill, t) {
-    _assertClass(vec_obj, WasmVectorObject);
-    var ptr0 = vec_obj.__destroy_into_raw();
-    _assertClass(target_fill, WasmColor);
-    var ptr1 = target_fill.__destroy_into_raw();
-    const ret = wasm.setFillAnimation(ptr0, ptr1, t);
-    return WasmVectorObject.__wrap(ret);
-}
-
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {WasmColor} target_stroke
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function setStrokeAnimation(vec_obj, target_stroke, t) {
-    _assertClass(vec_obj, WasmVectorObject);
-    var ptr0 = vec_obj.__destroy_into_raw();
-    _assertClass(target_stroke, WasmColor);
-    var ptr1 = target_stroke.__destroy_into_raw();
-    const ret = wasm.setStrokeAnimation(ptr0, ptr1, t);
-    return WasmVectorObject.__wrap(ret);
-}
-
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {Array<any>} shift
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function shiftAnimation(vec_obj, shift, t) {
-    _assertClass(vec_obj, WasmVectorObject);
-    var ptr0 = vec_obj.__destroy_into_raw();
-    const ret = wasm.shiftAnimation(ptr0, addHeapObject(shift), t);
-    return WasmVectorObject.__wrap(ret);
-}
-
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function showTemporaily(vec_obj, t) {
-    _assertClass(vec_obj, WasmVectorObject);
-    var ptr0 = vec_obj.__destroy_into_raw();
-    const ret = wasm.showTemporaily(ptr0, t);
-    return WasmVectorObject.__wrap(ret);
-}
-
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} angle
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function spinningGrow(vec_obj, angle, t) {
-    _assertClass(vec_obj, WasmVectorObject);
-    var ptr0 = vec_obj.__destroy_into_raw();
-    const ret = wasm.spinningGrow(ptr0, angle, t);
-    return WasmVectorObject.__wrap(ret);
-}
-
 /**
 * @param {number} ux
 * @param {number} uy
@@ -1515,10 +1451,10 @@ export function spinningGrow(vec_obj, angle, t) {
 * @param {number} vy
 * @returns {number}
 */
-export function radian(ux, uy, vx, vy) {
+module.exports.radian = function(ux, uy, vx, vy) {
     const ret = wasm.radian(ux, uy, vx, vy);
     return ret;
-}
+};
 
 /**
 * @param {Array<any>} last_move
@@ -1531,90 +1467,90 @@ export function radian(ux, uy, vx, vy) {
 * @param {number} y
 * @returns {Array<any>}
 */
-export function ellipticalArcPath(last_move, rx, ry, rotation, large_arc, sweep, x, y) {
+module.exports.ellipticalArcPath = function(last_move, rx, ry, rotation, large_arc, sweep, x, y) {
     const ret = wasm.ellipticalArcPath(addHeapObject(last_move), rx, ry, rotation, large_arc, sweep, x, y);
     return takeObject(ret);
-}
+};
 
 /**
 * @param {Array<any>} points
 * @returns {Array<any>}
 */
-export function getBbox(points) {
+module.exports.getBbox = function(points) {
     const ret = wasm.getBbox(addHeapObject(points));
     return takeObject(ret);
-}
+};
 
 /**
 * @param {Array<any>} points
 * @param {Array<any>} center_if_no_points
 * @returns {Array<any>}
 */
-export function center(points, center_if_no_points) {
+module.exports.center = function(points, center_if_no_points) {
     const ret = wasm.center(addHeapObject(points), addHeapObject(center_if_no_points));
     return takeObject(ret);
-}
+};
 
 /**
 * @param {bigint} n
 * @returns {bigint}
 */
-export function factorial(n) {
+module.exports.factorial = function(n) {
     const ret = wasm.factorial(n);
     return BigInt.asUintN(64, ret);
-}
+};
 
 /**
 * @param {string} hex
 * @param {number} a
 * @returns {WasmColor}
 */
-export function hexToColor(hex, a) {
+module.exports.hexToColor = function(hex, a) {
     const ptr0 = passStringToWasm0(hex, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
     const len0 = WASM_VECTOR_LEN;
     const ret = wasm.hexToColor(ptr0, len0, a);
     return WasmColor.__wrap(ret);
-}
+};
 
 /**
 * @param {Array<any>} points
 * @param {number} t
 * @returns {Array<any>}
 */
-export function bezier(points, t) {
+module.exports.bezier = function(points, t) {
     const ret = wasm.bezier(addHeapObject(points), t);
     return takeObject(ret);
-}
+};
 
 /**
 * @param {Array<any>} numbers
 * @param {number} t
 * @returns {number}
 */
-export function bezierNumber(numbers, t) {
+module.exports.bezierNumber = function(numbers, t) {
     const ret = wasm.bezierNumber(addHeapObject(numbers), t);
     return ret;
-}
+};
 
 /**
 * @param {bigint} n
 * @param {bigint} r
 * @returns {bigint}
 */
-export function permutation(n, r) {
+module.exports.permutation = function(n, r) {
     const ret = wasm.permutation(n, r);
     return BigInt.asUintN(64, ret);
-}
+};
 
 /**
 * @param {bigint} n
 * @param {bigint} r
 * @returns {bigint}
 */
-export function choose(n, r) {
+module.exports.choose = function(n, r) {
     const ret = wasm.choose(n, r);
     return BigInt.asUintN(64, ret);
-}
+};
 
 /**
 * @param {number} x1
@@ -1623,10 +1559,10 @@ export function choose(n, r) {
 * @param {number} y2
 * @returns {number}
 */
-export function distanceSquared(x1, y1, x2, y2) {
+module.exports.distanceSquared = function(x1, y1, x2, y2) {
     const ret = wasm.distanceSquared(x1, y1, x2, y2);
     return ret;
-}
+};
 
 /**
 * @param {number} x
@@ -1634,10 +1570,10 @@ export function distanceSquared(x1, y1, x2, y2) {
 * @param {number} t
 * @returns {number}
 */
-export function interpolate(x, y, t) {
+module.exports.interpolate = function(x, y, t) {
     const ret = wasm.interpolate(x, y, t);
     return ret;
-}
+};
 
 /**
 * @param {Array<any>} x
@@ -1645,10 +1581,10 @@ export function interpolate(x, y, t) {
 * @param {number} t
 * @returns {Array<any>}
 */
-export function interpolateTuple(x, y, t) {
+module.exports.interpolateTuple = function(x, y, t) {
     const ret = wasm.interpolateTuple(addHeapObject(x), addHeapObject(y), t);
     return takeObject(ret);
-}
+};
 
 /**
 * @param {Array<any>} x
@@ -1656,10 +1592,10 @@ export function interpolateTuple(x, y, t) {
 * @param {number} t
 * @returns {Array<any>}
 */
-export function interpolateTuple3D(x, y, t) {
+module.exports.interpolateTuple3D = function(x, y, t) {
     const ret = wasm.interpolateTuple3D(addHeapObject(x), addHeapObject(y), t);
     return takeObject(ret);
-}
+};
 
 /**
 * @param {WasmColor} x
@@ -1667,14 +1603,14 @@ export function interpolateTuple3D(x, y, t) {
 * @param {number} t
 * @returns {WasmColor}
 */
-export function interpolateColor(x, y, t) {
+module.exports.interpolateColor = function(x, y, t) {
     _assertClass(x, WasmColor);
     var ptr0 = x.__destroy_into_raw();
     _assertClass(y, WasmColor);
     var ptr1 = y.__destroy_into_raw();
     const ret = wasm.interpolateColor(ptr0, ptr1, t);
     return WasmColor.__wrap(ret);
-}
+};
 
 /**
 * @param {Array<any>} anchors1
@@ -1683,63 +1619,63 @@ export function interpolateColor(x, y, t) {
 * @param {Array<any>} anchors2
 * @returns {Array<any>}
 */
-export function pointsFromAnchorsAndHandles(anchors1, handles1, handles2, anchors2) {
+module.exports.pointsFromAnchorsAndHandles = function(anchors1, handles1, handles2, anchors2) {
     const ret = wasm.pointsFromAnchorsAndHandles(addHeapObject(anchors1), addHeapObject(handles1), addHeapObject(handles2), addHeapObject(anchors2));
     return takeObject(ret);
-}
+};
 
 /**
 * @param {Array<any>} points
 * @param {Array<any>} point
 * @returns {Array<any>}
 */
-export function startNewPath(points, point) {
+module.exports.startNewPath = function(points, point) {
     const ret = wasm.startNewPath(addHeapObject(points), addHeapObject(point));
     return takeObject(ret);
-}
+};
 
 /**
 * @param {Array<any>} points
 * @returns {boolean}
 */
-export function hasNewPathBegun(points) {
+module.exports.hasNewPathBegun = function(points) {
     const ret = wasm.hasNewPathBegun(addHeapObject(points));
     return ret !== 0;
-}
+};
 
 /**
 * @param {Array<any>} points
 * @param {number} n
 * @returns {Array<any>}
 */
-export function getNthSubpath(points, n) {
+module.exports.getNthSubpath = function(points, n) {
     const ret = wasm.getNthSubpath(addHeapObject(points), n);
     return takeObject(ret);
-}
+};
 
 /**
 * @param {number} n
 * @param {Array<any>} points
 * @returns {Array<any>}
 */
-export function insertNCurvesToPointList(n, points) {
+module.exports.insertNCurvesToPointList = function(n, points) {
     const ret = wasm.insertNCurvesToPointList(n, addHeapObject(points));
     return takeObject(ret);
-}
+};
 
 /**
 * @param {WasmVectorObject} vec_obj1
 * @param {WasmVectorObject} vec_obj2
 * @returns {Array<any>}
 */
-export function nullPointAlign(vec_obj1, vec_obj2) {
+module.exports.nullPointAlign = function(vec_obj1, vec_obj2) {
     _assertClass(vec_obj1, WasmVectorObject);
     var ptr0 = vec_obj1.__destroy_into_raw();
     _assertClass(vec_obj2, WasmVectorObject);
     var ptr1 = vec_obj2.__destroy_into_raw();
     const ret = wasm.nullPointAlign(ptr0, ptr1);
     return takeObject(ret);
-}
+};
 
 /**
 * @param {Array<any>} points1
@@ -1747,10 +1683,10 @@ export function nullPointAlign(vec_obj1, vec_obj2) {
 * @param {Array<any>} center_if_no_points
 * @returns {Array<any>}
 */
-export function alignPoints(points1, points2, center_if_no_points) {
+module.exports.alignPoints = function(points1, points2, center_if_no_points) {
     const ret = wasm.alignPoints(addHeapObject(points1), addHeapObject(points2), addHeapObject(center_if_no_points));
     return takeObject(ret);
-}
+};
 
 /**
 * @param {WasmVectorObject} vec_obj
@@ -1758,12 +1694,12 @@ export function alignPoints(points1, points2, center_if_no_points) {
 * @param {Array<any>} center_if_no_points
 * @returns {WasmVectorObject}
 */
-export function addNMoreSubobjects(vec_obj, n, center_if_no_points) {
+module.exports.addNMoreSubobjects = function(vec_obj, n, center_if_no_points) {
     _assertClass(vec_obj, WasmVectorObject);
     var ptr0 = vec_obj.__destroy_into_raw();
     const ret = wasm.addNMoreSubobjects(ptr0, n, addHeapObject(center_if_no_points));
     return WasmVectorObject.__wrap(ret);
-}
+};
 
 /**
 * @param {WasmVectorObject} vec_obj1
@@ -1771,7 +1707,7 @@ export function addNMoreSubobjects(vec_obj, n, center_if_no_points) {
 * @param {Array<any>} center_if_no_points
 * @returns {(WasmVectorObject)[]}
 */
-export function alignSubobjects(vec_obj1, vec_obj2, center_if_no_points) {
+module.exports.alignSubobjects = function(vec_obj1, vec_obj2, center_if_no_points) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         _assertClass(vec_obj1, WasmVectorObject);
@@ -1787,7 +1723,7 @@ export function alignSubobjects(vec_obj1, vec_obj2, center_if_no_points) {
     } finally {
         wasm.__wbindgen_add_to_stack_pointer(16);
     }
-}
+};
 
 /**
 * @param {WasmVectorObject} vec_obj1
@@ -1796,14 +1732,14 @@ export function alignSubobjects(vec_obj1, vec_obj2, center_if_no_points) {
 * @param {Array<any>} center_if_no_points
 * @returns {Array<any>}
 */
-export function alignData(vec_obj1, vec_obj2, skip_point_align, center_if_no_points) {
+module.exports.alignData = function(vec_obj1, vec_obj2, skip_point_align, center_if_no_points) {
     _assertClass(vec_obj1, WasmVectorObject);
     var ptr0 = vec_obj1.__destroy_into_raw();
     _assertClass(vec_obj2, WasmVectorObject);
     var ptr1 = vec_obj2.__destroy_into_raw();
     const ret = wasm.alignData(ptr0, ptr1, skip_point_align, addHeapObject(center_if_no_points));
     return takeObject(ret);
-}
+};
 
 /**
 * @param {number} x
@@ -1811,10 +1747,10 @@ export function alignData(vec_obj1, vec_obj2, skip_point_align, center_if_no_poi
 * @param {number} t
 * @returns {Array<any>}
 */
-export function integerInterpolate(x, y, t) {
+module.exports.integerInterpolate = function(x, y, t) {
     const ret = wasm.integerInterpolate(x, y, t);
     return takeObject(ret);
-}
+};
 
 /**
 * @param {number} x1
@@ -1823,10 +1759,10 @@ export function integerInterpolate(x, y, t) {
 * @param {number} y2
 * @returns {Array<any>}
 */
-export function lineAsCubicBezier(x1, y1, x2, y2) {
+module.exports.lineAsCubicBezier = function(x1, y1, x2, y2) {
     const ret = wasm.lineAsCubicBezier(x1, y1, x2, y2);
     return takeObject(ret);
-}
+};
 
 /**
 * @param {number} x1
@@ -1837,10 +1773,10 @@ export function lineAsCubicBezier(x1, y1, x2, y2) {
 * @param {number} y3
 * @returns {Array<any>}
 */
-export function quadraticBezierAsCubicBezier(x1, y1, x2, y2, x3, y3) {
+module.exports.quadraticBezierAsCubicBezier = function(x1, y1, x2, y2, x3, y3) {
     const ret = wasm.quadraticBezierAsCubicBezier(x1, y1, x2, y2, x3, y3);
     return takeObject(ret);
-}
+};
 
 /**
 * @param {number} x1
@@ -1849,133 +1785,133 @@ export function quadraticBezierAsCubicBezier(x1, y1, x2, y2, x3, y3) {
 * @param {number} y2
 * @returns {boolean}
 */
-export function considerPointsEquals(x1, y1, x2, y2) {
+module.exports.considerPointsEquals = function(x1, y1, x2, y2) {
     const ret = wasm.considerPointsEquals(x1, y1, x2, y2);
     return ret !== 0;
-}
+};
 
 /**
 * @param {number} t
 * @returns {number}
 */
-export function sigmoid(t) {
+module.exports.sigmoid = function(t) {
     const ret = wasm.sigmoid(t);
     return ret;
-}
+};
 
 /**
 * @param {number} t
 * @returns {number}
 */
-export function linear(t) {
+module.exports.linear = function(t) {
     const ret = wasm.linear(t);
     return ret;
-}
+};
 
 /**
 * @param {number} t
 * @param {number} inflection
 * @returns {number}
 */
-export function smooth(t, inflection) {
+module.exports.smooth = function(t, inflection) {
     const ret = wasm.smooth(t, inflection);
     return ret;
-}
+};
 
 /**
 * @param {number} t
 * @returns {number}
 */
-export function smoothstep(t) {
+module.exports.smoothstep = function(t) {
     const ret = wasm.smoothstep(t);
     return ret;
-}
+};
 
 /**
 * @param {number} t
 * @returns {number}
 */
-export function smootherstep(t) {
+module.exports.smootherstep = function(t) {
     const ret = wasm.smootherstep(t);
     return ret;
-}
+};
 
 /**
 * @param {number} t
 * @returns {number}
 */
-export function smoothererstep(t) {
+module.exports.smoothererstep = function(t) {
     const ret = wasm.smoothererstep(t);
     return ret;
-}
+};
 
 /**
 * @param {number} t
 * @param {number} inflection
 * @returns {number}
 */
-export function rushInto(t, inflection) {
+module.exports.rushInto = function(t, inflection) {
     const ret = wasm.rushInto(t, inflection);
     return ret;
-}
+};
 
 /**
 * @param {number} t
 * @param {number} inflection
 * @returns {number}
 */
-export function rushFrom(t, inflection) {
+module.exports.rushFrom = function(t, inflection) {
     const ret = wasm.rushFrom(t, inflection);
     return ret;
-}
+};
 
 /**
 * @param {number} t
 * @returns {number}
 */
-export function slowInto(t) {
+module.exports.slowInto = function(t) {
     const ret = wasm.easeOutCirc(t);
     return ret;
-}
+};
 
 /**
 * @param {number} t
 * @returns {number}
 */
-export function doubleSmooth(t) {
+module.exports.doubleSmooth = function(t) {
     const ret = wasm.doubleSmooth(t);
     return ret;
-}
+};
 
 /**
 * @param {number} t
 * @param {number} inflection
 * @returns {number}
 */
-export function thereAndBack(t, inflection) {
+module.exports.thereAndBack = function(t, inflection) {
     const ret = wasm.thereAndBack(t, inflection);
     return ret;
-}
+};
 
 /**
 * @param {number} t
 * @param {number} pause_ratio
 * @returns {number}
 */
-export function thereAndBackWithPause(t, pause_ratio) {
+module.exports.thereAndBackWithPause = function(t, pause_ratio) {
     const ret = wasm.thereAndBackWithPause(t, pause_ratio);
     return ret;
-}
+};
 
 /**
 * @param {number} t
 * @param {number} pull_factor
 * @returns {number}
 */
-export function runningStart(t, pull_factor) {
+module.exports.runningStart = function(t, pull_factor) {
     const ret = wasm.runningStart(t, pull_factor);
     return ret;
-}
+};
 
 /**
 * @param {Function} func
@@ -1983,20 +1919,20 @@ export function runningStart(t, pull_factor) {
 * @param {number} proportion
 * @returns {number}
 */
-export function notQuiteThere(func, t, proportion) {
+module.exports.notQuiteThere = function(func, t, proportion) {
     const ret = wasm.notQuiteThere(addHeapObject(func), t, proportion);
     return ret;
-}
+};
 
 /**
 * @param {number} t
 * @param {number} wiggles
 * @returns {number}
 */
-export function wiggle(t, wiggles) {
+module.exports.wiggle = function(t, wiggles) {
     const ret = wasm.wiggle(t, wiggles);
     return ret;
-}
+};
 
 /**
 * @param {Function} func
@@ -2005,539 +1941,596 @@ export function wiggle(t, wiggles) {
 * @param {number} b
 * @returns {number}
 */
-export function squishRateFunc(func, t, a, b) {
+module.exports.squishRateFunc = function(func, t, a, b) {
     const ret = wasm.squishRateFunc(addHeapObject(func), t, a, b);
     return ret;
-}
+};
 
 /**
 * @param {number} t
 * @returns {number}
 */
-export function lingering(t) {
+module.exports.lingering = function(t) {
     const ret = wasm.lingering(t);
     return ret;
-}
+};
 
 /**
 * @param {number} t
 * @param {number} half_life
 * @returns {number}
 */
-export function exponentialDecay(t, half_life) {
+module.exports.exponentialDecay = function(t, half_life) {
     const ret = wasm.exponentialDecay(t, half_life);
     return ret;
-}
+};
 
 /**
 * @param {number} t
 * @returns {number}
 */
-export function easeInSine(t) {
+module.exports.easeInSine = function(t) {
     const ret = wasm.easeInSine(t);
     return ret;
-}
+};
 
 /**
 * @param {number} t
 * @returns {number}
 */
-export function easeOutSine(t) {
+module.exports.easeOutSine = function(t) {
     const ret = wasm.easeOutSine(t);
     return ret;
-}
+};
 
 /**
 * @param {number} t
 * @returns {number}
 */
-export function easeInOutSine(t) {
+module.exports.easeInOutSine = function(t) {
     const ret = wasm.easeInOutSine(t);
     return ret;
-}
+};
 
 /**
 * @param {number} t
 * @returns {number}
 */
-export function easeInQuad(t) {
+module.exports.easeInQuad = function(t) {
     const ret = wasm.easeInQuad(t);
     return ret;
-}
+};
 
 /**
 * @param {number} t
 * @returns {number}
 */
-export function easeOutQuad(t) {
+module.exports.easeOutQuad = function(t) {
     const ret = wasm.easeOutQuad(t);
     return ret;
-}
+};
 
 /**
 * @param {number} t
 * @returns {number}
 */
-export function easeInOutQuad(t) {
+module.exports.easeInOutQuad = function(t) {
     const ret = wasm.easeInOutQuad(t);
     return ret;
-}
+};
 
 /**
 * @param {number} t
 * @returns {number}
 */
-export function easeInCubic(t) {
+module.exports.easeInCubic = function(t) {
     const ret = wasm.easeInCubic(t);
     return ret;
-}
+};
 
 /**
 * @param {number} t
 * @returns {number}
 */
-export function easeOutCubic(t) {
+module.exports.easeOutCubic = function(t) {
     const ret = wasm.easeOutCubic(t);
     return ret;
-}
+};
 
 /**
 * @param {number} t
 * @returns {number}
 */
-export function easeInOutCubic(t) {
+module.exports.easeInOutCubic = function(t) {
     const ret = wasm.easeInOutCubic(t);
     return ret;
-}
+};
 
 /**
 * @param {number} t
 * @returns {number}
 */
-export function easeInQuart(t) {
+module.exports.easeInQuart = function(t) {
     const ret = wasm.easeInQuart(t);
     return ret;
-}
+};
 
 /**
 * @param {number} t
 * @returns {number}
 */
-export function easeOutQuart(t) {
+module.exports.easeOutQuart = function(t) {
     const ret = wasm.easeOutQuart(t);
     return ret;
-}
+};
 
 /**
 * @param {number} t
 * @returns {number}
 */
-export function easeInOutQuart(t) {
+module.exports.easeInOutQuart = function(t) {
     const ret = wasm.easeInOutQuart(t);
     return ret;
-}
+};
 
 /**
 * @param {number} t
 * @returns {number}
 */
-export function easeInQuint(t) {
+module.exports.easeInQuint = function(t) {
     const ret = wasm.easeInQuint(t);
     return ret;
-}
+};
 
 /**
 * @param {number} t
 * @returns {number}
 */
-export function easeOutQuint(t) {
+module.exports.easeOutQuint = function(t) {
     const ret = wasm.easeOutQuint(t);
     return ret;
-}
+};
 
 /**
 * @param {number} t
 * @returns {number}
 */
-export function easeInOutQuint(t) {
+module.exports.easeInOutQuint = function(t) {
     const ret = wasm.easeInOutQuint(t);
     return ret;
-}
+};
 
 /**
 * @param {number} t
 * @returns {number}
 */
-export function easeInExpo(t) {
+module.exports.easeInExpo = function(t) {
     const ret = wasm.easeInExpo(t);
     return ret;
-}
+};
 
 /**
 * @param {number} t
 * @returns {number}
 */
-export function easeOutExpo(t) {
+module.exports.easeOutExpo = function(t) {
     const ret = wasm.easeOutExpo(t);
     return ret;
-}
+};
 
 /**
 * @param {number} t
 * @returns {number}
 */
-export function easeInOutExpo(t) {
+module.exports.easeInOutExpo = function(t) {
     const ret = wasm.easeInOutExpo(t);
     return ret;
-}
+};
 
 /**
 * @param {number} t
 * @returns {number}
 */
-export function easeInCirc(t) {
+module.exports.easeInCirc = function(t) {
     const ret = wasm.easeInCirc(t);
     return ret;
-}
+};
 
 /**
 * @param {number} t
 * @returns {number}
 */
-export function easeOutCirc(t) {
+module.exports.easeOutCirc = function(t) {
     const ret = wasm.easeOutCirc(t);
     return ret;
-}
+};
 
 /**
 * @param {number} t
 * @returns {number}
 */
-export function easeInOutCirc(t) {
+module.exports.easeInOutCirc = function(t) {
     const ret = wasm.easeInOutCirc(t);
     return ret;
-}
+};
 
 /**
 * @param {number} t
 * @returns {number}
 */
-export function easeInBack(t) {
+module.exports.easeInBack = function(t) {
     const ret = wasm.easeInBack(t);
     return ret;
-}
+};
 
 /**
 * @param {number} t
 * @returns {number}
 */
-export function easeOutBack(t) {
+module.exports.easeOutBack = function(t) {
     const ret = wasm.easeInBack(t);
     return ret;
-}
+};
 
 /**
 * @param {number} t
 * @returns {number}
 */
-export function easeInOutBack(t) {
+module.exports.easeInOutBack = function(t) {
     const ret = wasm.easeInOutBack(t);
     return ret;
-}
+};
 
 /**
 * @param {number} t
 * @returns {number}
 */
-export function easeInElastic(t) {
+module.exports.easeInElastic = function(t) {
     const ret = wasm.easeInElastic(t);
     return ret;
-}
+};
 
 /**
 * @param {number} t
 * @returns {number}
 */
-export function easeOutElastic(t) {
+module.exports.easeOutElastic = function(t) {
     const ret = wasm.easeOutElastic(t);
     return ret;
-}
+};
 
 /**
 * @param {number} t
 * @returns {number}
 */
-export function easeInOutElastic(t) {
+module.exports.easeInOutElastic = function(t) {
     const ret = wasm.easeInOutElastic(t);
     return ret;
-}
+};
 
 /**
 * @param {number} t
 * @returns {number}
 */
-export function easeOutBounce(t) {
+module.exports.easeOutBounce = function(t) {
     const ret = wasm.easeInBounce(t);
     return ret;
-}
+};
 
 /**
 * @param {number} t
 * @returns {number}
 */
-export function easeInBounce(t) {
+module.exports.easeInBounce = function(t) {
     const ret = wasm.easeInBounce(t);
     return ret;
-}
+};
 
 /**
 * @param {number} t
 * @returns {number}
 */
-export function easeInOutBounce(t) {
+module.exports.easeInOutBounce = function(t) {
     const ret = wasm.easeInOutBounce(t);
     return ret;
-}
-
-/**
-* @param {number} angle
-* @param {number} axis
-* @returns {Array<any>}
-*/
-export function rotMatrix(angle, axis) {
-    const ret = wasm.rotMatrix(angle, axis);
-    return takeObject(ret);
-}
-
-/**
-* @param {Array<any>} a
-* @param {Array<any>} b
-* @returns {Array<any>}
-*/
-export function matrixProduct(a, b) {
-    const ret = wasm.matrixProduct(addHeapObject(a), addHeapObject(b));
-    return takeObject(ret);
-}
-
-/**
-* @param {number} phi
-* @param {number} theta
-* @param {number} gamma
-* @returns {Array<any>}
-*/
-export function rotMatrixEuler(phi, theta, gamma) {
-    const ret = wasm.rotMatrixEuler(phi, theta, gamma);
-    return takeObject(ret);
-}
-
-/**
-* @param {Array<any>} a
-* @returns {Array<any>}
-*/
-export function transposeMatrix(a) {
-    const ret = wasm.transposeMatrix(addHeapObject(a));
-    return takeObject(ret);
-}
-
-/**
-* @param {Array<any>} matrix
-* @param {Array<any>} points
-* @returns {Array<any>}
-*/
-export function applyMatrix(matrix, points) {
-    const ret = wasm.applyMatrix(addHeapObject(matrix), addHeapObject(points));
-    return takeObject(ret);
-}
-
-/**
-* @param {Array<any>} points
-* @param {Array<any>} shift
-* @returns {Array<any>}
-*/
-export function shiftPoints3D(points, shift) {
-    const ret = wasm.shiftPoints3D(addHeapObject(points), addHeapObject(shift));
-    return takeObject(ret);
-}
-
-/**
-* @param {WasmGradientImageOrColor} color
-* @returns {WasmGradientImageOrColor}
-*/
-export function ensureValidThreeDColor(color) {
-    _assertClass(color, WasmGradientImageOrColor);
-    var ptr0 = color.__destroy_into_raw();
-    const ret = wasm.ensureValidThreeDColor(ptr0);
-    return WasmGradientImageOrColor.__wrap(ret);
-}
-
-/**
-* @param {WasmColor} color
-* @param {Array<any>} point
-* @param {Array<any>} unit_normal
-* @param {WasmLightSource} light_source
-* @returns {WasmColor}
-*/
-export function getShadedRgb(color, point, unit_normal, light_source) {
-    _assertClass(color, WasmColor);
-    var ptr0 = color.__destroy_into_raw();
-    _assertClass(light_source, WasmLightSource);
-    const ret = wasm.getShadedRgb(ptr0, addHeapObject(point), addHeapObject(unit_normal), light_source.__wbg_ptr);
-    return WasmColor.__wrap(ret);
-}
-
-/**
-* @param {Array<any>} points
-* @returns {Array<any>}
-*/
-export function getStartCorner(points) {
-    const ret = wasm.getStartCorner(addHeapObject(points));
-    return takeObject(ret);
-}
-
-/**
-* @param {Array<any>} points
-* @returns {Array<any>}
-*/
-export function getEndCorner(points) {
-    const ret = wasm.getEndCorner(addHeapObject(points));
-    return takeObject(ret);
-}
-
-/**
-* @param {Array<any>} a
-* @param {Array<any>} b
-* @returns {Array<any>}
-*/
-export function crossProduct(a, b) {
-    const ret = wasm.crossProduct(addHeapObject(a), addHeapObject(b));
-    return takeObject(ret);
-}
-
-/**
-* @param {Array<any>} v1
-* @param {Array<any>} v2
-* @returns {Array<any>}
-*/
-export function getUnitNormal(v1, v2) {
-    const ret = wasm.getUnitNormal(addHeapObject(v1), addHeapObject(v2));
-    return takeObject(ret);
-}
-
-/**
-* @param {Array<any>} points
-* @returns {Array<any>}
-*/
-export function getStartAnchors(points) {
-    const ret = wasm.getStartAnchors(addHeapObject(points));
-    return takeObject(ret);
-}
-
-/**
-* @param {Array<any>} points
-* @returns {Array<any>}
-*/
-export function getEndAnchors(points) {
-    const ret = wasm.getEndAnchors(addHeapObject(points));
-    return takeObject(ret);
-}
-
-/**
-* @param {Array<any>} points
-* @returns {Array<any>}
-*/
-export function getAnchors(points) {
-    const ret = wasm.getAnchors(addHeapObject(points));
-    return takeObject(ret);
-}
-
-/**
-* @param {Array<any>} points
-* @param {number} index
-* @returns {Array<any>}
-*/
-export function getCornerUnitNormal(points, index) {
-    const ret = wasm.getCornerUnitNormal(addHeapObject(points), index);
-    return takeObject(ret);
-}
-
-/**
-* @param {Array<any>} points
-* @returns {Array<any>}
-*/
-export function getStartCornerUnitNormal(points) {
-    const ret = wasm.getStartCornerUnitNormal(addHeapObject(points));
-    return takeObject(ret);
-}
-
-/**
-* @param {Array<any>} points
-* @returns {Array<any>}
-*/
-export function getEndCornerUnitNormal(points) {
-    const ret = wasm.getEndCornerUnitNormal(addHeapObject(points));
-    return takeObject(ret);
-}
-
-/**
-* @param {WasmGradientImageOrColor} color
-* @param {Array<any>} points
-* @param {WasmLightSource} light_source
-* @param {WasmCamera} camera
-* @returns {WasmGradientImageOrColor}
-*/
-export function getShadedColor(color, points, light_source, camera) {
-    _assertClass(color, WasmGradientImageOrColor);
-    _assertClass(light_source, WasmLightSource);
-    _assertClass(camera, WasmCamera);
-    const ret = wasm.getShadedColor(color.__wbg_ptr, addHeapObject(points), light_source.__wbg_ptr, camera.__wbg_ptr);
-    return WasmGradientImageOrColor.__wrap(ret);
-}
-
-/**
-* @param {Array<any>} points
-* @param {WasmCamera} camera
-* @returns {Array<any>}
-*/
-export function projectPoints(points, camera) {
-    _assertClass(camera, WasmCamera);
-    const ret = wasm.projectPoints(addHeapObject(points), camera.__wbg_ptr);
-    return takeObject(ret);
-}
-
-/**
-* @param {Array<any>} point1
-* @param {Array<any>} point2
-* @returns {Array<any>}
-*/
-export function lineAsCubicBezier3D(point1, point2) {
-    const ret = wasm.lineAsCubicBezier3D(addHeapObject(point1), addHeapObject(point2));
-    return takeObject(ret);
-}
+};
 
 /**
 * @param {string} expression
 * @returns {Promise<WasmVectorObject>}
 */
-export function mathjax(expression) {
+module.exports.mathjax = function(expression) {
     const ptr0 = passStringToWasm0(expression, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
     const len0 = WASM_VECTOR_LEN;
     const ret = wasm.mathjax(ptr0, len0);
     return takeObject(ret);
-}
+};
 
 /**
 * @param {string} text
 * @param {string} font_family
 * @returns {Promise<WasmVectorObject>}
 */
-export function textToVector(text, font_family) {
+module.exports.textToVector = function(text, font_family) {
     const ptr0 = passStringToWasm0(text, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
     const len0 = WASM_VECTOR_LEN;
     const ptr1 = passStringToWasm0(font_family, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
     const len1 = WASM_VECTOR_LEN;
     const ret = wasm.textToVector(ptr0, len0, ptr1, len1);
     return takeObject(ret);
+};
+
+function getArrayF64FromWasm0(ptr, len) {
+    ptr = ptr >>> 0;
+    return getFloat64Memory0().subarray(ptr / 8, ptr / 8 + len);
 }
+/**
+* @param {number} num_anim_funcs
+* @param {number} lag_ratio
+* @returns {Float64Array}
+*/
+module.exports.makeTimings = function(num_anim_funcs, lag_ratio) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        wasm.makeTimings(retptr, num_anim_funcs, lag_ratio);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var v1 = getArrayF64FromWasm0(r0, r1).slice();
+        wasm.__wbindgen_free(r0, r1 * 8, 8);
+        return v1;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+};
+
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {(Function)[]} anim_funcs
+* @param {number} lag_ratio
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+module.exports.animationGroup = function(vec_obj, anim_funcs, lag_ratio, t) {
+    _assertClass(vec_obj, WasmVectorObject);
+    var ptr0 = vec_obj.__destroy_into_raw();
+    const ptr1 = passArrayJsValueToWasm0(anim_funcs, wasm.__wbindgen_malloc);
+    const len1 = WASM_VECTOR_LEN;
+    const ret = wasm.animationGroup(ptr0, ptr1, len1, lag_ratio, t);
+    return WasmVectorObject.__wrap(ret);
+};
+
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+module.exports.create = function(vec_obj, t) {
+    _assertClass(vec_obj, WasmVectorObject);
+    var ptr0 = vec_obj.__destroy_into_raw();
+    const ret = wasm.create(ptr0, t);
+    return WasmVectorObject.__wrap(ret);
+};
+
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+module.exports.drawStrokeThenFill = function(vec_obj, t) {
+    _assertClass(vec_obj, WasmVectorObject);
+    var ptr0 = vec_obj.__destroy_into_raw();
+    const ret = wasm.drawStrokeThenFill(ptr0, t);
+    return WasmVectorObject.__wrap(ret);
+};
+
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {number} lag_ratio
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+module.exports.write = function(vec_obj, lag_ratio, t) {
+    _assertClass(vec_obj, WasmVectorObject);
+    var ptr0 = vec_obj.__destroy_into_raw();
+    const ret = wasm.write(ptr0, lag_ratio, t);
+    return WasmVectorObject.__wrap(ret);
+};
+
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {number} scale_factor
+* @param {Array<any>} shift
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+module.exports.fadeIn = function(vec_obj, scale_factor, shift, t) {
+    _assertClass(vec_obj, WasmVectorObject);
+    var ptr0 = vec_obj.__destroy_into_raw();
+    const ret = wasm.fadeIn(ptr0, scale_factor, addHeapObject(shift), t);
+    return WasmVectorObject.__wrap(ret);
+};
+
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {number} scale_factor
+* @param {Array<any>} shift
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+module.exports.fadeOut = function(vec_obj, scale_factor, shift, t) {
+    _assertClass(vec_obj, WasmVectorObject);
+    var ptr0 = vec_obj.__destroy_into_raw();
+    const ret = wasm.fadeOut(ptr0, scale_factor, addHeapObject(shift), t);
+    return WasmVectorObject.__wrap(ret);
+};
+
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+module.exports.growArrowWithFinalTip = function(vec_obj, t) {
+    _assertClass(vec_obj, WasmVectorObject);
+    var ptr0 = vec_obj.__destroy_into_raw();
+    const ret = wasm.growArrowWithFinalTip(ptr0, t);
+    return WasmVectorObject.__wrap(ret);
+};
+
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+module.exports.growArrowWithInitialTip = function(vec_obj, t) {
+    _assertClass(vec_obj, WasmVectorObject);
+    var ptr0 = vec_obj.__destroy_into_raw();
+    const ret = wasm.growArrowWithInitialTip(ptr0, t);
+    return WasmVectorObject.__wrap(ret);
+};
+
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+module.exports.growArrowWithTipsAtBothEnds = function(vec_obj, t) {
+    _assertClass(vec_obj, WasmVectorObject);
+    var ptr0 = vec_obj.__destroy_into_raw();
+    const ret = wasm.growArrowWithTipsAtBothEnds(ptr0, t);
+    return WasmVectorObject.__wrap(ret);
+};
+
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+module.exports.growFromCenter = function(vec_obj, t) {
+    _assertClass(vec_obj, WasmVectorObject);
+    var ptr0 = vec_obj.__destroy_into_raw();
+    const ret = wasm.growFromCenter(ptr0, t);
+    return WasmVectorObject.__wrap(ret);
+};
+
+/**
+* @param {WasmVectorObject} original
+* @param {WasmVectorObject} target
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+module.exports.morphShape = function(original, target, t) {
+    _assertClass(original, WasmVectorObject);
+    var ptr0 = original.__destroy_into_raw();
+    _assertClass(target, WasmVectorObject);
+    var ptr1 = target.__destroy_into_raw();
+    const ret = wasm.morphShape(ptr0, ptr1, t);
+    return WasmVectorObject.__wrap(ret);
+};
+
+/**
+* @param {Array<any>} top_left_corner
+* @param {Array<any>} bottom_right_corner
+* @param {VideoScene} scene
+* @param {number} t
+*/
+module.exports.moveCameraVideo = function(top_left_corner, bottom_right_corner, scene, t) {
+    _assertClass(scene, VideoScene);
+    wasm.moveCameraVideo(addHeapObject(top_left_corner), addHeapObject(bottom_right_corner), scene.__wbg_ptr, t);
+};
+
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {number} angle
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+module.exports.rotateAnimation = function(vec_obj, angle, t) {
+    _assertClass(vec_obj, WasmVectorObject);
+    var ptr0 = vec_obj.__destroy_into_raw();
+    const ret = wasm.rotateAnimation(ptr0, angle, t);
+    return WasmVectorObject.__wrap(ret);
+};
+
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {number} scale_factor
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+module.exports.scaleInPlace = function(vec_obj, scale_factor, t) {
+    _assertClass(vec_obj, WasmVectorObject);
+    var ptr0 = vec_obj.__destroy_into_raw();
+    const ret = wasm.scaleInPlace(ptr0, scale_factor, t);
+    return WasmVectorObject.__wrap(ret);
+};
+
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {WasmColor} target_fill
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+module.exports.setFillAnimation = function(vec_obj, target_fill, t) {
+    _assertClass(vec_obj, WasmVectorObject);
+    var ptr0 = vec_obj.__destroy_into_raw();
+    _assertClass(target_fill, WasmColor);
+    var ptr1 = target_fill.__destroy_into_raw();
+    const ret = wasm.setFillAnimation(ptr0, ptr1, t);
+    return WasmVectorObject.__wrap(ret);
+};
+
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {WasmColor} target_stroke
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+module.exports.setStrokeAnimation = function(vec_obj, target_stroke, t) {
+    _assertClass(vec_obj, WasmVectorObject);
+    var ptr0 = vec_obj.__destroy_into_raw();
+    _assertClass(target_stroke, WasmColor);
+    var ptr1 = target_stroke.__destroy_into_raw();
+    const ret = wasm.setStrokeAnimation(ptr0, ptr1, t);
+    return WasmVectorObject.__wrap(ret);
+};
+
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {Array<any>} shift
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+module.exports.shiftAnimation = function(vec_obj, shift, t) {
+    _assertClass(vec_obj, WasmVectorObject);
+    var ptr0 = vec_obj.__destroy_into_raw();
+    const ret = wasm.shiftAnimation(ptr0, addHeapObject(shift), t);
+    return WasmVectorObject.__wrap(ret);
+};
+
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+module.exports.showTemporaily = function(vec_obj, t) {
+    _assertClass(vec_obj, WasmVectorObject);
+    var ptr0 = vec_obj.__destroy_into_raw();
+    const ret = wasm.showTemporaily(ptr0, t);
+    return WasmVectorObject.__wrap(ret);
+};
+
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {number} angle
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+module.exports.spinningGrow = function(vec_obj, angle, t) {
+    _assertClass(vec_obj, WasmVectorObject);
+    var ptr0 = vec_obj.__destroy_into_raw();
+    const ret = wasm.spinningGrow(ptr0, angle, t);
+    return WasmVectorObject.__wrap(ret);
+};
 
 function handleError(f, args) {
     try {
@@ -2546,8 +2539,8 @@ function handleError(f, args) {
         wasm.__wbindgen_exn_store(addHeapObject(e));
     }
 }
-function __wbg_adapter_552(arg0, arg1, arg2, arg3) {
-    wasm.wasm_bindgen__convert__closures__invoke2_mut__h60fd2dc8490fe53c(arg0, arg1, addHeapObject(arg2), addHeapObject(arg3));
+function __wbg_adapter_490(arg0, arg1, arg2, arg3) {
+    wasm.wasm_bindgen__convert__closures__invoke2_mut__h271b87efd55193df(arg0, arg1, addHeapObject(arg2), addHeapObject(arg3));
 }
 
 const GenericSceneFinalization = (typeof FinalizationRegistry === 'undefined')
@@ -2555,7 +2548,7 @@ const GenericSceneFinalization = (typeof FinalizationRegistry === 'undefined')
     : new FinalizationRegistry(ptr => wasm.__wbg_genericscene_free(ptr >>> 0));
 /**
 */
-export class GenericScene {
+class GenericScene {
 
     static __wrap(ptr) {
         ptr = ptr >>> 0;
@@ -2577,30 +2570,20 @@ export class GenericScene {
         wasm.__wbg_genericscene_free(ptr);
     }
     /**
-    * @param {Scene} scene
+    * @param {VideoScene} scene
     * @returns {GenericScene}
     */
-    static fromScene(scene) {
-        _assertClass(scene, Scene);
+    static fromVideoScene(scene) {
+        _assertClass(scene, VideoScene);
         var ptr0 = scene.__destroy_into_raw();
-        const ret = wasm.genericscene_fromScene(ptr0);
-        return GenericScene.__wrap(ret);
-    }
-    /**
-    * @param {SVGScene} scene
-    * @returns {GenericScene}
-    */
-    static fromSVGScene(scene) {
-        _assertClass(scene, SVGScene);
-        var ptr0 = scene.__destroy_into_raw();
-        const ret = wasm.genericscene_fromSVGScene(ptr0);
+        const ret = wasm.genericscene_fromVideoScene(ptr0);
         return GenericScene.__wrap(ret);
     }
     /**
     * @returns {boolean}
     */
     isScene() {
-        const ret = wasm.genericscene_isScene(this.__wbg_ptr);
+        const ret = wasm.genericscene_isSVGScene(this.__wbg_ptr);
         return ret !== 0;
     }
     /**
@@ -2608,6 +2591,13 @@ export class GenericScene {
     */
     isSVGScene() {
         const ret = wasm.genericscene_isSVGScene(this.__wbg_ptr);
+        return ret !== 0;
+    }
+    /**
+    * @returns {boolean}
+    */
+    isVideoScene() {
+        const ret = wasm.genericscene_isVideoScene(this.__wbg_ptr);
         return ret !== 0;
     }
     /**
@@ -2728,16 +2718,10 @@ export class GenericScene {
         return takeObject(ret);
     }
     /**
-    * @param {CanvasRenderingContext2D} context
+    * @param {any} context
     */
-    setCanvasContext(context) {
-        wasm.genericscene_setCanvasContext(this.__wbg_ptr, addHeapObject(context));
-    }
-    /**
-    * @param {HTMLDivElement} div_container
-    */
-    setDivContainer(div_container) {
-        wasm.genericscene_setDivContainer(this.__wbg_ptr, addHeapObject(div_container));
+    setContext(context) {
+        wasm.genericscene_setContext(this.__wbg_ptr, addHeapObject(context));
     }
     /**
     * @param {number} duration_in_ms
@@ -2797,40 +2781,26 @@ export class GenericScene {
         const ret = wasm.genericscene_callCallback(this.__wbg_ptr);
         return takeObject(ret);
     }
-    /**
-    * @param {number} index
-    * @param {string} _class
-    */
-    setClass(index, _class) {
-        const ptr0 = passStringToWasm0(_class, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-        const len0 = WASM_VECTOR_LEN;
-        wasm.genericscene_setClass(this.__wbg_ptr, index, ptr0, len0);
-    }
-    /**
-    * @param {number} index
-    */
-    setStyle(index) {
-        wasm.genericscene_setStyle(this.__wbg_ptr, index);
-    }
 }
+module.exports.GenericScene = GenericScene;
 
-const SVGSceneFinalization = (typeof FinalizationRegistry === 'undefined')
+const VideoSceneFinalization = (typeof FinalizationRegistry === 'undefined')
     ? { register: () => {}, unregister: () => {} }
-    : new FinalizationRegistry(ptr => wasm.__wbg_svgscene_free(ptr >>> 0));
+    : new FinalizationRegistry(ptr => wasm.__wbg_videoscene_free(ptr >>> 0));
 /**
 */
-export class SVGScene {
+class VideoScene {
 
     __destroy_into_raw() {
         const ptr = this.__wbg_ptr;
         this.__wbg_ptr = 0;
-        SVGSceneFinalization.unregister(this);
+        VideoSceneFinalization.unregister(this);
         return ptr;
     }
 
     free() {
         const ptr = this.__destroy_into_raw();
-        wasm.__wbg_svgscene_free(ptr);
+        wasm.__wbg_videoscene_free(ptr);
     }
     /**
     * @param {bigint} width
@@ -2838,7 +2808,7 @@ export class SVGScene {
     * @param {bigint} fps
     */
     constructor(width, height, fps) {
-        const ret = wasm.svgscene_new_js(width, height, fps);
+        const ret = wasm.videoscene_new_js(width, height, fps);
         this.__wbg_ptr = ret >>> 0;
         return this;
     }
@@ -2846,71 +2816,71 @@ export class SVGScene {
     * @returns {bigint}
     */
     getFps() {
-        const ret = wasm.svgscene_getFps(this.__wbg_ptr);
+        const ret = wasm.videoscene_getFps(this.__wbg_ptr);
         return BigInt.asUintN(64, ret);
     }
     /**
     * @returns {bigint}
     */
     getHeight() {
-        const ret = wasm.svgscene_getHeight(this.__wbg_ptr);
+        const ret = wasm.videoscene_getHeight(this.__wbg_ptr);
         return BigInt.asUintN(64, ret);
     }
     /**
     * @returns {bigint}
     */
     getWidth() {
-        const ret = wasm.svgscene_getWidth(this.__wbg_ptr);
+        const ret = wasm.videoscene_getWidth(this.__wbg_ptr);
         return BigInt.asUintN(64, ret);
     }
     /**
     */
     renderFrame() {
-        wasm.svgscene_renderFrame(this.__wbg_ptr);
+        wasm.videoscene_renderFrame(this.__wbg_ptr);
     }
     /**
     */
     clear() {
-        wasm.svgscene_clear(this.__wbg_ptr);
+        wasm.videoscene_clear(this.__wbg_ptr);
     }
     /**
     * @param {number} n
     */
     restore(n) {
-        wasm.svgscene_restore(this.__wbg_ptr, n);
+        wasm.videoscene_restore(this.__wbg_ptr, n);
     }
     /**
     * @param {number} n
     */
     saveState(n) {
-        wasm.svgscene_saveState(this.__wbg_ptr, n);
+        wasm.videoscene_saveState(this.__wbg_ptr, n);
     }
     /**
     * @param {number} x
     * @param {number} y
     */
     setTopLeftCorner(x, y) {
-        wasm.svgscene_setTopLeftCorner(this.__wbg_ptr, x, y);
+        wasm.videoscene_setTopLeftCorner(this.__wbg_ptr, x, y);
     }
     /**
     * @param {number} x
     * @param {number} y
     */
     setBottomRightCorner(x, y) {
-        wasm.svgscene_setBottomRightCorner(this.__wbg_ptr, x, y);
+        wasm.videoscene_setBottomRightCorner(this.__wbg_ptr, x, y);
     }
     /**
     * @returns {Array<any>}
     */
     getTopLeftCorner() {
-        const ret = wasm.svgscene_getTopLeftCorner(this.__wbg_ptr);
+        const ret = wasm.videoscene_getTopLeftCorner(this.__wbg_ptr);
         return takeObject(ret);
     }
     /**
     * @returns {Array<any>}
     */
     getBottomRightCorner() {
-        const ret = wasm.svgscene_getBottomRightCorner(this.__wbg_ptr);
+        const ret = wasm.videoscene_getBottomRightCorner(this.__wbg_ptr);
         return takeObject(ret);
     }
     /**
@@ -2919,7 +2889,7 @@ export class SVGScene {
     setBackground(background) {
         _assertClass(background, WasmGradientImageOrColor);
         var ptr0 = background.__destroy_into_raw();
-        wasm.svgscene_setBackground(this.__wbg_ptr, ptr0);
+        wasm.videoscene_setBackground(this.__wbg_ptr, ptr0);
     }
     /**
     * @param {WasmVectorObject} vec_obj
@@ -2927,7 +2897,7 @@ export class SVGScene {
     add(vec_obj) {
         _assertClass(vec_obj, WasmVectorObject);
         var ptr0 = vec_obj.__destroy_into_raw();
-        wasm.svgscene_add(this.__wbg_ptr, ptr0);
+        wasm.videoscene_add(this.__wbg_ptr, ptr0);
     }
     /**
     * @param {number} index
@@ -2936,245 +2906,19 @@ export class SVGScene {
     insert(index, vec_obj) {
         _assertClass(vec_obj, WasmVectorObject);
         var ptr0 = vec_obj.__destroy_into_raw();
-        wasm.svgscene_insert(this.__wbg_ptr, index, ptr0);
+        wasm.videoscene_insert(this.__wbg_ptr, index, ptr0);
     }
     /**
     * @param {number} index
     */
     remove(index) {
-        wasm.svgscene_remove(this.__wbg_ptr, index);
-    }
-    /**
-    * @param {Array<any>} object_indices
-    * @returns {Map<any, any>}
-    */
-    getObjectsFromIndices(object_indices) {
-        const ret = wasm.svgscene_getObjectsFromIndices(this.__wbg_ptr, addHeapObject(object_indices));
-        return takeObject(ret);
-    }
-    /**
-    * @param {HTMLDivElement} div_container
-    */
-    setDivContainer(div_container) {
-        wasm.svgscene_setDivContainer(this.__wbg_ptr, addHeapObject(div_container));
-    }
-    /**
-    * @param {number} duration_in_ms
-    * @returns {Promise<void>}
-    */
-    sleep(duration_in_ms) {
-        const ret = wasm.svgscene_sleep(this.__wbg_ptr, duration_in_ms);
-        return takeObject(ret);
-    }
-    /**
-    * @param {Function} animation_func
-    * @param {Uint32Array} object_indices
-    * @param {bigint} duration_in_frames
-    * @param {Function} rate_func
-    * @returns {Promise<void>}
-    */
-    play(animation_func, object_indices, duration_in_frames, rate_func) {
-        const ptr0 = passArray32ToWasm0(object_indices, wasm.__wbindgen_malloc);
-        const len0 = WASM_VECTOR_LEN;
-        const ret = wasm.svgscene_play(this.__wbg_ptr, addHeapObject(animation_func), ptr0, len0, duration_in_frames, addHeapObject(rate_func));
-        return takeObject(ret);
-    }
-    /**
-    * @param {Function} animation_func
-    * @param {Array<any>} objects
-    * @param {number} t
-    * @returns {Promise<void>}
-    */
-    makeFrame(animation_func, objects, t) {
-        const ret = wasm.svgscene_makeFrame(this.__wbg_ptr, addHeapObject(animation_func), addHeapObject(objects), t);
-        return takeObject(ret);
-    }
-    /**
-    * @param {Array<any>} objects
-    */
-    setObjects(objects) {
-        wasm.svgscene_setObjects(this.__wbg_ptr, addHeapObject(objects));
+        wasm.videoscene_remove(this.__wbg_ptr, index);
     }
     /**
     * @returns {Array<any>}
     */
     getObjects() {
-        const ret = wasm.svgscene_getObjects(this.__wbg_ptr);
-        return takeObject(ret);
-    }
-    /**
-    * @param {bigint} duration_in_frames
-    * @returns {Promise<void>}
-    */
-    wait(duration_in_frames) {
-        const ret = wasm.svgscene_wait(this.__wbg_ptr, duration_in_frames);
-        return takeObject(ret);
-    }
-    /**
-    * @param {Function} callback
-    */
-    setCallback(callback) {
-        wasm.svgscene_setCallback(this.__wbg_ptr, addHeapObject(callback));
-    }
-    /**
-    * @returns {Promise<void>}
-    */
-    callCallback() {
-        const ret = wasm.svgscene_callCallback(this.__wbg_ptr);
-        return takeObject(ret);
-    }
-    /**
-    * @param {number} index
-    * @param {string} id
-    */
-    setClass(index, id) {
-        const ptr0 = passStringToWasm0(id, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-        const len0 = WASM_VECTOR_LEN;
-        wasm.svgscene_setClass(this.__wbg_ptr, index, ptr0, len0);
-    }
-    /**
-    * @param {number} index
-    */
-    removeClass(index) {
-        wasm.svgscene_removeClass(this.__wbg_ptr, index);
-    }
-}
-
-const SceneFinalization = (typeof FinalizationRegistry === 'undefined')
-    ? { register: () => {}, unregister: () => {} }
-    : new FinalizationRegistry(ptr => wasm.__wbg_scene_free(ptr >>> 0));
-/**
-*/
-export class Scene {
-
-    __destroy_into_raw() {
-        const ptr = this.__wbg_ptr;
-        this.__wbg_ptr = 0;
-        SceneFinalization.unregister(this);
-        return ptr;
-    }
-
-    free() {
-        const ptr = this.__destroy_into_raw();
-        wasm.__wbg_scene_free(ptr);
-    }
-    /**
-    * @param {bigint} width
-    * @param {bigint} height
-    * @param {bigint} fps
-    */
-    constructor(width, height, fps) {
-        const ret = wasm.scene_new_js(width, height, fps);
-        this.__wbg_ptr = ret >>> 0;
-        return this;
-    }
-    /**
-    * @returns {bigint}
-    */
-    getFps() {
-        const ret = wasm.scene_getFps(this.__wbg_ptr);
-        return BigInt.asUintN(64, ret);
-    }
-    /**
-    * @returns {bigint}
-    */
-    getHeight() {
-        const ret = wasm.scene_getHeight(this.__wbg_ptr);
-        return BigInt.asUintN(64, ret);
-    }
-    /**
-    * @returns {bigint}
-    */
-    getWidth() {
-        const ret = wasm.scene_getWidth(this.__wbg_ptr);
-        return BigInt.asUintN(64, ret);
-    }
-    /**
-    */
-    renderFrame() {
-        wasm.scene_renderFrame(this.__wbg_ptr);
-    }
-    /**
-    */
-    clear() {
-        wasm.scene_clear(this.__wbg_ptr);
-    }
-    /**
-    * @param {number} n
-    */
-    restore(n) {
-        wasm.scene_restore(this.__wbg_ptr, n);
-    }
-    /**
-    * @param {number} n
-    */
-    saveState(n) {
-        wasm.scene_saveState(this.__wbg_ptr, n);
-    }
-    /**
-    * @param {number} x
-    * @param {number} y
-    */
-    setTopLeftCorner(x, y) {
-        wasm.scene_setTopLeftCorner(this.__wbg_ptr, x, y);
-    }
-    /**
-    * @param {number} x
-    * @param {number} y
-    */
-    setBottomRightCorner(x, y) {
-        wasm.scene_setBottomRightCorner(this.__wbg_ptr, x, y);
-    }
-    /**
-    * @returns {Array<any>}
-    */
-    getTopLeftCorner() {
-        const ret = wasm.scene_getTopLeftCorner(this.__wbg_ptr);
-        return takeObject(ret);
-    }
-    /**
-    * @returns {Array<any>}
-    */
-    getBottomRightCorner() {
-        const ret = wasm.scene_getBottomRightCorner(this.__wbg_ptr);
-        return takeObject(ret);
-    }
-    /**
-    * @param {WasmGradientImageOrColor} background
-    */
-    setBackground(background) {
-        _assertClass(background, WasmGradientImageOrColor);
-        var ptr0 = background.__destroy_into_raw();
-        wasm.scene_setBackground(this.__wbg_ptr, ptr0);
-    }
-    /**
-    * @param {WasmVectorObject} vec_obj
-    */
-    add(vec_obj) {
-        _assertClass(vec_obj, WasmVectorObject);
-        var ptr0 = vec_obj.__destroy_into_raw();
-        wasm.scene_add(this.__wbg_ptr, ptr0);
-    }
-    /**
-    * @param {number} index
-    * @param {WasmVectorObject} vec_obj
-    */
-    insert(index, vec_obj) {
-        _assertClass(vec_obj, WasmVectorObject);
-        var ptr0 = vec_obj.__destroy_into_raw();
-        wasm.scene_insert(this.__wbg_ptr, index, ptr0);
-    }
-    /**
-    * @param {number} index
-    */
-    remove(index) {
-        wasm.scene_remove(this.__wbg_ptr, index);
-    }
-    /**
-    * @returns {Array<any>}
-    */
-    getObjects() {
-        const ret = wasm.scene_getObjects(this.__wbg_ptr);
+        const ret = wasm.videoscene_getObjects(this.__wbg_ptr);
         return takeObject(ret);
     }
     /**
@@ -3182,28 +2926,28 @@ export class Scene {
     * @returns {Map<any, any>}
     */
     getObjectsFromIndices(object_indices) {
-        const ret = wasm.scene_getObjectsFromIndices(this.__wbg_ptr, addHeapObject(object_indices));
+        const ret = wasm.videoscene_getObjectsFromIndices(this.__wbg_ptr, addHeapObject(object_indices));
         return takeObject(ret);
     }
     /**
-    * @param {CanvasRenderingContext2D} context
+    * @param {any} context
     */
     setCanvasContext(context) {
-        wasm.scene_setCanvasContext(this.__wbg_ptr, addHeapObject(context));
+        wasm.videoscene_setCanvasContext(this.__wbg_ptr, addHeapObject(context));
     }
     /**
     * @param {number} duration_in_ms
     * @returns {Promise<void>}
     */
     sleep(duration_in_ms) {
-        const ret = wasm.scene_sleep(this.__wbg_ptr, duration_in_ms);
+        const ret = wasm.videoscene_sleep(this.__wbg_ptr, duration_in_ms);
         return takeObject(ret);
     }
     /**
     * @param {Array<any>} objects
     */
     setObjects(objects) {
-        wasm.scene_setObjects(this.__wbg_ptr, addHeapObject(objects));
+        wasm.videoscene_setObjects(this.__wbg_ptr, addHeapObject(objects));
     }
     /**
     * @param {Function} animation_func
@@ -3215,7 +2959,7 @@ export class Scene {
     play(animation_func, object_indices, duration_in_frames, rate_func) {
         const ptr0 = passArray32ToWasm0(object_indices, wasm.__wbindgen_malloc);
         const len0 = WASM_VECTOR_LEN;
-        const ret = wasm.scene_play(this.__wbg_ptr, addHeapObject(animation_func), ptr0, len0, duration_in_frames, addHeapObject(rate_func));
+        const ret = wasm.videoscene_play(this.__wbg_ptr, addHeapObject(animation_func), ptr0, len0, duration_in_frames, addHeapObject(rate_func));
         return takeObject(ret);
     }
     /**
@@ -3225,7 +2969,7 @@ export class Scene {
     * @returns {Promise<void>}
     */
     makeFrame(animation_func, objects, t) {
-        const ret = wasm.scene_makeFrame(this.__wbg_ptr, addHeapObject(animation_func), addHeapObject(objects), t);
+        const ret = wasm.videoscene_makeFrame(this.__wbg_ptr, addHeapObject(animation_func), addHeapObject(objects), t);
         return takeObject(ret);
     }
     /**
@@ -3233,30 +2977,50 @@ export class Scene {
     * @returns {Promise<void>}
     */
     wait(duration_in_frames) {
-        const ret = wasm.scene_wait(this.__wbg_ptr, duration_in_frames);
+        const ret = wasm.videoscene_wait(this.__wbg_ptr, duration_in_frames);
         return takeObject(ret);
     }
     /**
     * @param {Function} callback
     */
     setCallback(callback) {
-        wasm.scene_setCallback(this.__wbg_ptr, addHeapObject(callback));
+        wasm.videoscene_setCallback(this.__wbg_ptr, addHeapObject(callback));
     }
     /**
     * @returns {Promise<void>}
     */
     callCallback() {
-        const ret = wasm.scene_callCallback(this.__wbg_ptr);
+        const ret = wasm.videoscene_callCallback(this.__wbg_ptr);
         return takeObject(ret);
     }
+    /**
+    * @param {string} path
+    * @param {string | undefined} [codec]
+    * @param {string | undefined} [pix_fmt]
+    */
+    initFFmpeg(path, codec, pix_fmt) {
+        const ptr0 = passStringToWasm0(path, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len0 = WASM_VECTOR_LEN;
+        var ptr1 = isLikeNone(codec) ? 0 : passStringToWasm0(codec, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        var len1 = WASM_VECTOR_LEN;
+        var ptr2 = isLikeNone(pix_fmt) ? 0 : passStringToWasm0(pix_fmt, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        var len2 = WASM_VECTOR_LEN;
+        wasm.videoscene_initFFmpeg(this.__wbg_ptr, ptr0, len0, ptr1, len1, ptr2, len2);
+    }
+    /**
+    */
+    closeFFmpeg() {
+        wasm.videoscene_closeFFmpeg(this.__wbg_ptr);
+    }
 }
+module.exports.VideoScene = VideoScene;
 
 const WasmCameraFinalization = (typeof FinalizationRegistry === 'undefined')
     ? { register: () => {}, unregister: () => {} }
     : new FinalizationRegistry(ptr => wasm.__wbg_wasmcamera_free(ptr >>> 0));
 /**
 */
-export class WasmCamera {
+class WasmCamera {
 
     static __wrap(ptr) {
         ptr = ptr >>> 0;
@@ -3340,13 +3104,14 @@ export class WasmCamera {
         return WasmCamera.__wrap(ret);
     }
 }
+module.exports.WasmCamera = WasmCamera;
 
 const WasmColorFinalization = (typeof FinalizationRegistry === 'undefined')
     ? { register: () => {}, unregister: () => {} }
     : new FinalizationRegistry(ptr => wasm.__wbg_wasmcolor_free(ptr >>> 0));
 /**
 */
-export class WasmColor {
+class WasmColor {
 
     static __wrap(ptr) {
         ptr = ptr >>> 0;
@@ -3414,13 +3179,14 @@ export class WasmColor {
         return ret;
     }
 }
+module.exports.WasmColor = WasmColor;
 
 const WasmGradientImageOrColorFinalization = (typeof FinalizationRegistry === 'undefined')
     ? { register: () => {}, unregister: () => {} }
     : new FinalizationRegistry(ptr => wasm.__wbg_wasmgradientimageorcolor_free(ptr >>> 0));
 /**
 */
-export class WasmGradientImageOrColor {
+class WasmGradientImageOrColor {
 
     static __wrap(ptr) {
         ptr = ptr >>> 0;
@@ -3545,13 +3311,14 @@ export class WasmGradientImageOrColor {
         return WasmGradientImageOrColor.__wrap(ret);
     }
 }
+module.exports.WasmGradientImageOrColor = WasmGradientImageOrColor;
 
 const WasmGradientStopFinalization = (typeof FinalizationRegistry === 'undefined')
     ? { register: () => {}, unregister: () => {} }
     : new FinalizationRegistry(ptr => wasm.__wbg_wasmgradientstop_free(ptr >>> 0));
 /**
 */
-export class WasmGradientStop {
+class WasmGradientStop {
 
     static __wrap(ptr) {
         ptr = ptr >>> 0;
@@ -3605,13 +3372,14 @@ export class WasmGradientStop {
         return WasmColor.__wrap(ret);
     }
 }
+module.exports.WasmGradientStop = WasmGradientStop;
 
 const WasmImageFinalization = (typeof FinalizationRegistry === 'undefined')
     ? { register: () => {}, unregister: () => {} }
     : new FinalizationRegistry(ptr => wasm.__wbg_wasmimage_free(ptr >>> 0));
 /**
 */
-export class WasmImage {
+class WasmImage {
 
     static __wrap(ptr) {
         ptr = ptr >>> 0;
@@ -3724,13 +3492,14 @@ export class WasmImage {
         return ret;
     }
 }
+module.exports.WasmImage = WasmImage;
 
 const WasmLightSourceFinalization = (typeof FinalizationRegistry === 'undefined')
     ? { register: () => {}, unregister: () => {} }
     : new FinalizationRegistry(ptr => wasm.__wbg_wasmlightsource_free(ptr >>> 0));
 /**
 */
-export class WasmLightSource {
+class WasmLightSource {
 
     static __wrap(ptr) {
         ptr = ptr >>> 0;
@@ -3774,13 +3543,14 @@ export class WasmLightSource {
         return WasmLightSource.__wrap(ret);
     }
 }
+module.exports.WasmLightSource = WasmLightSource;
 
 const WasmLinearGradientFinalization = (typeof FinalizationRegistry === 'undefined')
     ? { register: () => {}, unregister: () => {} }
     : new FinalizationRegistry(ptr => wasm.__wbg_wasmlineargradient_free(ptr >>> 0));
 /**
 */
-export class WasmLinearGradient {
+class WasmLinearGradient {
 
     static __wrap(ptr) {
         ptr = ptr >>> 0;
@@ -3868,13 +3638,14 @@ export class WasmLinearGradient {
         return ret;
     }
 }
+module.exports.WasmLinearGradient = WasmLinearGradient;
 
 const WasmRadialGradientFinalization = (typeof FinalizationRegistry === 'undefined')
     ? { register: () => {}, unregister: () => {} }
     : new FinalizationRegistry(ptr => wasm.__wbg_wasmradialgradient_free(ptr >>> 0));
 /**
 */
-export class WasmRadialGradient {
+class WasmRadialGradient {
 
     static __wrap(ptr) {
         ptr = ptr >>> 0;
@@ -3970,13 +3741,14 @@ export class WasmRadialGradient {
         return ret;
     }
 }
+module.exports.WasmRadialGradient = WasmRadialGradient;
 
 const WasmThreeDObjectFinalization = (typeof FinalizationRegistry === 'undefined')
     ? { register: () => {}, unregister: () => {} }
     : new FinalizationRegistry(ptr => wasm.__wbg_wasmthreedobject_free(ptr >>> 0));
 /**
 */
-export class WasmThreeDObject {
+class WasmThreeDObject {
 
     static __wrap(ptr) {
         ptr = ptr >>> 0;
@@ -4227,13 +3999,14 @@ export class WasmThreeDObject {
         return WasmThreeDObject.__wrap(ret);
     }
 }
+module.exports.WasmThreeDObject = WasmThreeDObject;
 
 const WasmVectorObjectFinalization = (typeof FinalizationRegistry === 'undefined')
     ? { register: () => {}, unregister: () => {} }
     : new FinalizationRegistry(ptr => wasm.__wbg_wasmvectorobject_free(ptr >>> 0));
 /**
 */
-export class WasmVectorObject {
+class WasmVectorObject {
 
     static __wrap(ptr) {
         ptr = ptr >>> 0;
@@ -4645,563 +4418,509 @@ export class WasmVectorObject {
         return WasmVectorObject.__wrap(ret);
     }
 }
+module.exports.WasmVectorObject = WasmVectorObject;
 
-async function __wbg_load(module, imports) {
-    if (typeof Response === 'function' && module instanceof Response) {
-        if (typeof WebAssembly.instantiateStreaming === 'function') {
-            try {
-                return await WebAssembly.instantiateStreaming(module, imports);
+module.exports.__wbg_wasmvectorobject_new = function(arg0) {
+    const ret = WasmVectorObject.__wrap(arg0);
+    return addHeapObject(ret);
+};
 
-            } catch (e) {
-                if (module.headers.get('Content-Type') != 'application/wasm') {
-                    console.warn("`WebAssembly.instantiateStreaming` failed because your server does not serve wasm with `application/wasm` MIME type. Falling back to `WebAssembly.instantiate` which is slower. Original error:\n", e);
+module.exports.__wbg_wasmgradientstop_new = function(arg0) {
+    const ret = WasmGradientStop.__wrap(arg0);
+    return addHeapObject(ret);
+};
 
-                } else {
-                    throw e;
-                }
-            }
-        }
+module.exports.__wbg_wasmthreedobject_new = function(arg0) {
+    const ret = WasmThreeDObject.__wrap(arg0);
+    return addHeapObject(ret);
+};
 
-        const bytes = await module.arrayBuffer();
-        return await WebAssembly.instantiate(bytes, imports);
+module.exports.__wbindgen_object_drop_ref = function(arg0) {
+    takeObject(arg0);
+};
 
-    } else {
-        const instance = await WebAssembly.instantiate(module, imports);
+module.exports.__wbindgen_number_get = function(arg0, arg1) {
+    const obj = getObject(arg1);
+    const ret = typeof(obj) === 'number' ? obj : undefined;
+    getFloat64Memory0()[arg0 / 8 + 1] = isLikeNone(ret) ? 0 : ret;
+    getInt32Memory0()[arg0 / 4 + 0] = !isLikeNone(ret);
+};
 
-        if (instance instanceof WebAssembly.Instance) {
-            return { instance, module };
+module.exports.__wbindgen_number_new = function(arg0) {
+    const ret = arg0;
+    return addHeapObject(ret);
+};
 
-        } else {
-            return instance;
-        }
+module.exports.__wbindgen_string_new = function(arg0, arg1) {
+    const ret = getStringFromWasm0(arg0, arg1);
+    return addHeapObject(ret);
+};
+
+module.exports.__wbindgen_boolean_get = function(arg0) {
+    const v = getObject(arg0);
+    const ret = typeof(v) === 'boolean' ? (v ? 1 : 0) : 2;
+    return ret;
+};
+
+module.exports.__wbindgen_string_get = function(arg0, arg1) {
+    const obj = getObject(arg1);
+    const ret = typeof(obj) === 'string' ? obj : undefined;
+    var ptr1 = isLikeNone(ret) ? 0 : passStringToWasm0(ret, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    var len1 = WASM_VECTOR_LEN;
+    getInt32Memory0()[arg0 / 4 + 1] = len1;
+    getInt32Memory0()[arg0 / 4 + 0] = ptr1;
+};
+
+module.exports.__wbindgen_is_function = function(arg0) {
+    const ret = typeof(getObject(arg0)) === 'function';
+    return ret;
+};
+
+module.exports.__wbg_wasmcolor_unwrap = function(arg0) {
+    const ret = WasmColor.__unwrap(takeObject(arg0));
+    return ret;
+};
+
+module.exports.__wbg_wasmgradientstop_unwrap = function(arg0) {
+    const ret = WasmGradientStop.__unwrap(takeObject(arg0));
+    return ret;
+};
+
+module.exports.__wbg_wasmvectorobject_unwrap = function(arg0) {
+    const ret = WasmVectorObject.__unwrap(takeObject(arg0));
+    return ret;
+};
+
+module.exports.__wbg_log_cc851dd35ef4eecf = function(arg0, arg1) {
+    console.log(getStringFromWasm0(arg0, arg1));
+};
+
+module.exports.__wbindgen_object_clone_ref = function(arg0) {
+    const ret = getObject(arg0);
+    return addHeapObject(ret);
+};
+
+module.exports.__wbg_wasmthreedobject_unwrap = function(arg0) {
+    const ret = WasmThreeDObject.__unwrap(takeObject(arg0));
+    return ret;
+};
+
+module.exports.__wbg_stdin_8a5336578d1318a9 = function(arg0) {
+    const ret = getObject(arg0).stdin;
+    return addHeapObject(ret);
+};
+
+module.exports.__wbg_end_f2e511d95e0a897c = function(arg0) {
+    getObject(arg0).end();
+};
+
+module.exports.__wbg_beginPath_4ad108852f78c838 = function(arg0) {
+    getObject(arg0).beginPath();
+};
+
+module.exports.__wbg_moveTo_000b6268eb6bd0db = function(arg0, arg1, arg2) {
+    getObject(arg0).moveTo(arg1, arg2);
+};
+
+module.exports.__wbg_bezierCurveTo_952417ed973b3416 = function(arg0, arg1, arg2, arg3, arg4, arg5, arg6) {
+    getObject(arg0).bezierCurveTo(arg1, arg2, arg3, arg4, arg5, arg6);
+};
+
+module.exports.__wbg_closePath_1698241a65a32fd8 = function(arg0) {
+    getObject(arg0).closePath();
+};
+
+module.exports.__wbg_setfillStyle_526505467d9e1413 = function(arg0, arg1, arg2) {
+    let deferred0_0;
+    let deferred0_1;
+    try {
+        deferred0_0 = arg1;
+        deferred0_1 = arg2;
+        getObject(arg0).fillStyle = getStringFromWasm0(arg1, arg2);
+    } finally {
+        wasm.__wbindgen_free(deferred0_0, deferred0_1, 1);
     }
-}
+};
 
-function __wbg_get_imports() {
-    const imports = {};
-    imports.wbg = {};
-    imports.wbg.__wbg_wasmgradientstop_new = function(arg0) {
-        const ret = WasmGradientStop.__wrap(arg0);
-        return addHeapObject(ret);
-    };
-    imports.wbg.__wbg_wasmthreedobject_new = function(arg0) {
-        const ret = WasmThreeDObject.__wrap(arg0);
-        return addHeapObject(ret);
-    };
-    imports.wbg.__wbg_wasmvectorobject_new = function(arg0) {
-        const ret = WasmVectorObject.__wrap(arg0);
-        return addHeapObject(ret);
-    };
-    imports.wbg.__wbindgen_object_drop_ref = function(arg0) {
-        takeObject(arg0);
-    };
-    imports.wbg.__wbindgen_number_get = function(arg0, arg1) {
-        const obj = getObject(arg1);
-        const ret = typeof(obj) === 'number' ? obj : undefined;
-        getFloat64Memory0()[arg0 / 8 + 1] = isLikeNone(ret) ? 0 : ret;
-        getInt32Memory0()[arg0 / 4 + 0] = !isLikeNone(ret);
-    };
-    imports.wbg.__wbg_log_70a90a6655f3a50e = function(arg0, arg1) {
-        console.log(getStringFromWasm0(arg0, arg1));
-    };
-    imports.wbg.__wbindgen_number_new = function(arg0) {
-        const ret = arg0;
-        return addHeapObject(ret);
-    };
-    imports.wbg.__wbindgen_string_new = function(arg0, arg1) {
-        const ret = getStringFromWasm0(arg0, arg1);
-        return addHeapObject(ret);
-    };
-    imports.wbg.__wbindgen_boolean_get = function(arg0) {
-        const v = getObject(arg0);
-        const ret = typeof(v) === 'boolean' ? (v ? 1 : 0) : 2;
-        return ret;
-    };
-    imports.wbg.__wbindgen_string_get = function(arg0, arg1) {
-        const obj = getObject(arg1);
-        const ret = typeof(obj) === 'string' ? obj : undefined;
-        var ptr1 = isLikeNone(ret) ? 0 : passStringToWasm0(ret, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-        var len1 = WASM_VECTOR_LEN;
-        getInt32Memory0()[arg0 / 4 + 1] = len1;
-        getInt32Memory0()[arg0 / 4 + 0] = ptr1;
-    };
-    imports.wbg.__wbindgen_is_function = function(arg0) {
-        const ret = typeof(getObject(arg0)) === 'function';
-        return ret;
-    };
-    imports.wbg.__wbg_wasmcolor_unwrap = function(arg0) {
-        const ret = WasmColor.__unwrap(takeObject(arg0));
-        return ret;
-    };
-    imports.wbg.__wbg_wasmgradientstop_unwrap = function(arg0) {
-        const ret = WasmGradientStop.__unwrap(takeObject(arg0));
-        return ret;
-    };
-    imports.wbg.__wbg_wasmvectorobject_unwrap = function(arg0) {
-        const ret = WasmVectorObject.__unwrap(takeObject(arg0));
-        return ret;
-    };
-    imports.wbg.__wbindgen_object_clone_ref = function(arg0) {
-        const ret = getObject(arg0);
-        return addHeapObject(ret);
-    };
-    imports.wbg.__wbindgen_error_new = function(arg0, arg1) {
-        const ret = new Error(getStringFromWasm0(arg0, arg1));
-        return addHeapObject(ret);
-    };
-    imports.wbg.__wbg_error_1d1494369a12f4f8 = function(arg0) {
-        console.error(takeObject(arg0));
-    };
-    imports.wbg.__wbg_wasmthreedobject_unwrap = function(arg0) {
-        const ret = WasmThreeDObject.__unwrap(takeObject(arg0));
-        return ret;
-    };
-    imports.wbg.__wbindgen_cb_drop = function(arg0) {
-        const obj = takeObject(arg0).original;
-        if (obj.cnt-- == 1) {
-            obj.a = 0;
-            return true;
-        }
-        const ret = false;
-        return ret;
-    };
-    imports.wbg.__wbg_instanceof_Window_f401953a2cf86220 = function(arg0) {
-        let result;
-        try {
-            result = getObject(arg0) instanceof Window;
-        } catch (_) {
-            result = false;
-        }
-        const ret = result;
-        return ret;
-    };
-    imports.wbg.__wbg_document_5100775d18896c16 = function(arg0) {
-        const ret = getObject(arg0).document;
-        return isLikeNone(ret) ? 0 : addHeapObject(ret);
-    };
-    imports.wbg.__wbg_setTimeout_c172d5704ef82276 = function() { return handleError(function (arg0, arg1, arg2) {
-        const ret = getObject(arg0).setTimeout(getObject(arg1), arg2);
-        return ret;
-    }, arguments) };
-    imports.wbg.__wbg_setinnerHTML_26d69b59e1af99c7 = function(arg0, arg1, arg2) {
-        getObject(arg0).innerHTML = getStringFromWasm0(arg1, arg2);
-    };
-    imports.wbg.__wbg_outerHTML_e073aa84e7bc1eaf = function(arg0, arg1) {
-        const ret = getObject(arg1).outerHTML;
-        const ptr1 = passStringToWasm0(ret, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-        const len1 = WASM_VECTOR_LEN;
-        getInt32Memory0()[arg0 / 4 + 1] = len1;
-        getInt32Memory0()[arg0 / 4 + 0] = ptr1;
-    };
-    imports.wbg.__wbg_setAttribute_3c9f6c303b696daa = function() { return handleError(function (arg0, arg1, arg2, arg3, arg4) {
-        getObject(arg0).setAttribute(getStringFromWasm0(arg1, arg2), getStringFromWasm0(arg3, arg4));
-    }, arguments) };
-    imports.wbg.__wbg_createElement_8bae7856a4bb7411 = function() { return handleError(function (arg0, arg1, arg2) {
-        const ret = getObject(arg0).createElement(getStringFromWasm0(arg1, arg2));
-        return addHeapObject(ret);
-    }, arguments) };
-    imports.wbg.__wbg_createElementNS_556a62fb298be5a2 = function() { return handleError(function (arg0, arg1, arg2, arg3, arg4) {
-        const ret = getObject(arg0).createElementNS(arg1 === 0 ? undefined : getStringFromWasm0(arg1, arg2), getStringFromWasm0(arg3, arg4));
-        return addHeapObject(ret);
-    }, arguments) };
-    imports.wbg.__wbg_instanceof_CanvasRenderingContext2d_20bf99ccc051643b = function(arg0) {
-        let result;
-        try {
-            result = getObject(arg0) instanceof CanvasRenderingContext2D;
-        } catch (_) {
-            result = false;
-        }
-        const ret = result;
-        return ret;
-    };
-    imports.wbg.__wbg_setglobalAlpha_d73578e4c446b8b4 = function(arg0, arg1) {
-        getObject(arg0).globalAlpha = arg1;
-    };
-    imports.wbg.__wbg_setstrokeStyle_c79ba6bc36a7f302 = function(arg0, arg1) {
-        getObject(arg0).strokeStyle = getObject(arg1);
-    };
-    imports.wbg.__wbg_setfillStyle_4de94b275f5761f2 = function(arg0, arg1) {
-        getObject(arg0).fillStyle = getObject(arg1);
-    };
-    imports.wbg.__wbg_setlineWidth_ea4c8cb72d8cdc31 = function(arg0, arg1) {
-        getObject(arg0).lineWidth = arg1;
-    };
-    imports.wbg.__wbg_setlineCap_561c8efd4e48949c = function(arg0, arg1, arg2) {
-        getObject(arg0).lineCap = getStringFromWasm0(arg1, arg2);
-    };
-    imports.wbg.__wbg_setlineJoin_c2f314b5744d240f = function(arg0, arg1, arg2) {
-        getObject(arg0).lineJoin = getStringFromWasm0(arg1, arg2);
-    };
-    imports.wbg.__wbg_drawImage_14f72ed9b8430e9d = function() { return handleError(function (arg0, arg1, arg2, arg3, arg4, arg5) {
-        getObject(arg0).drawImage(getObject(arg1), arg2, arg3, arg4, arg5);
-    }, arguments) };
-    imports.wbg.__wbg_beginPath_c7b9e681f2d031ca = function(arg0) {
-        getObject(arg0).beginPath();
-    };
-    imports.wbg.__wbg_fill_7f376d2e52c3054e = function(arg0) {
-        getObject(arg0).fill();
-    };
-    imports.wbg.__wbg_stroke_b125233fc8b11e59 = function(arg0) {
-        getObject(arg0).stroke();
-    };
-    imports.wbg.__wbg_createLinearGradient_c6e8705fffba9558 = function(arg0, arg1, arg2, arg3, arg4) {
-        const ret = getObject(arg0).createLinearGradient(arg1, arg2, arg3, arg4);
-        return addHeapObject(ret);
-    };
-    imports.wbg.__wbg_createPattern_f88dd375094c94dc = function() { return handleError(function (arg0, arg1, arg2, arg3) {
-        const ret = getObject(arg0).createPattern(getObject(arg1), getStringFromWasm0(arg2, arg3));
-        return isLikeNone(ret) ? 0 : addHeapObject(ret);
-    }, arguments) };
-    imports.wbg.__wbg_createRadialGradient_72dd3cd4393b5c5d = function() { return handleError(function (arg0, arg1, arg2, arg3, arg4, arg5, arg6) {
-        const ret = getObject(arg0).createRadialGradient(arg1, arg2, arg3, arg4, arg5, arg6);
-        return addHeapObject(ret);
-    }, arguments) };
-    imports.wbg.__wbg_bezierCurveTo_b022738e9f321e48 = function(arg0, arg1, arg2, arg3, arg4, arg5, arg6) {
-        getObject(arg0).bezierCurveTo(arg1, arg2, arg3, arg4, arg5, arg6);
-    };
-    imports.wbg.__wbg_closePath_1e01ade2e4928be9 = function(arg0) {
-        getObject(arg0).closePath();
-    };
-    imports.wbg.__wbg_moveTo_5526d0fa563650fa = function(arg0, arg1, arg2) {
-        getObject(arg0).moveTo(arg1, arg2);
-    };
-    imports.wbg.__wbg_clearRect_05de681275dda635 = function(arg0, arg1, arg2, arg3, arg4) {
-        getObject(arg0).clearRect(arg1, arg2, arg3, arg4);
-    };
-    imports.wbg.__wbg_fillRect_b5c8166281bac9df = function(arg0, arg1, arg2, arg3, arg4) {
-        getObject(arg0).fillRect(arg1, arg2, arg3, arg4);
-    };
-    imports.wbg.__wbg_resetTransform_69a6c2187d17b61f = function() { return handleError(function (arg0) {
-        getObject(arg0).resetTransform();
-    }, arguments) };
-    imports.wbg.__wbg_scale_9babba91f6f5b5d4 = function() { return handleError(function (arg0, arg1, arg2) {
-        getObject(arg0).scale(arg1, arg2);
-    }, arguments) };
-    imports.wbg.__wbg_translate_2ec050ab1f49f6fc = function() { return handleError(function (arg0, arg1, arg2) {
-        getObject(arg0).translate(arg1, arg2);
-    }, arguments) };
-    imports.wbg.__wbg_addColorStop_9269a253957ed919 = function() { return handleError(function (arg0, arg1, arg2, arg3) {
-        getObject(arg0).addColorStop(arg1, getStringFromWasm0(arg2, arg3));
-    }, arguments) };
-    imports.wbg.__wbg_appendChild_580ccb11a660db68 = function() { return handleError(function (arg0, arg1) {
-        const ret = getObject(arg0).appendChild(getObject(arg1));
-        return addHeapObject(ret);
-    }, arguments) };
-    imports.wbg.__wbg_src_4486cdef354bb1c6 = function(arg0, arg1) {
-        const ret = getObject(arg1).src;
-        const ptr1 = passStringToWasm0(ret, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-        const len1 = WASM_VECTOR_LEN;
-        getInt32Memory0()[arg0 / 4 + 1] = len1;
-        getInt32Memory0()[arg0 / 4 + 0] = ptr1;
-    };
-    imports.wbg.__wbg_setsrc_681ceacdf6845f60 = function(arg0, arg1, arg2) {
+module.exports.__wbg_fill_ef7ee248b4f60911 = function(arg0) {
+    getObject(arg0).fill();
+};
+
+module.exports.__wbg_new_7bb3ec69235bc40f = function() {
+    const ret = new Image();
+    return addHeapObject(ret);
+};
+
+module.exports.__wbg_setsrc_a364657720a65c09 = function(arg0, arg1, arg2) {
+    let deferred0_0;
+    let deferred0_1;
+    try {
+        deferred0_0 = arg1;
+        deferred0_1 = arg2;
         getObject(arg0).src = getStringFromWasm0(arg1, arg2);
-    };
-    imports.wbg.__wbg_new_e6ce9457ca710f38 = function() { return handleError(function () {
-        const ret = new Image();
-        return addHeapObject(ret);
-    }, arguments) };
-    imports.wbg.__wbg_instanceof_HtmlCanvasElement_46bdbf323b0b18d1 = function(arg0) {
-        let result;
-        try {
-            result = getObject(arg0) instanceof HTMLCanvasElement;
-        } catch (_) {
-            result = false;
-        }
-        const ret = result;
-        return ret;
-    };
-    imports.wbg.__wbg_setwidth_080107476e633963 = function(arg0, arg1) {
-        getObject(arg0).width = arg1 >>> 0;
-    };
-    imports.wbg.__wbg_setheight_dc240617639f1f51 = function(arg0, arg1) {
-        getObject(arg0).height = arg1 >>> 0;
-    };
-    imports.wbg.__wbg_getContext_df50fa48a8876636 = function() { return handleError(function (arg0, arg1, arg2) {
-        const ret = getObject(arg0).getContext(getStringFromWasm0(arg1, arg2));
-        return isLikeNone(ret) ? 0 : addHeapObject(ret);
-    }, arguments) };
-    imports.wbg.__wbg_queueMicrotask_481971b0d87f3dd4 = function(arg0) {
-        queueMicrotask(getObject(arg0));
-    };
-    imports.wbg.__wbg_queueMicrotask_3cbae2ec6b6cd3d6 = function(arg0) {
-        const ret = getObject(arg0).queueMicrotask;
-        return addHeapObject(ret);
-    };
-    imports.wbg.__wbg_crypto_1d1f22824a6a080c = function(arg0) {
-        const ret = getObject(arg0).crypto;
-        return addHeapObject(ret);
-    };
-    imports.wbg.__wbindgen_is_object = function(arg0) {
-        const val = getObject(arg0);
-        const ret = typeof(val) === 'object' && val !== null;
-        return ret;
-    };
-    imports.wbg.__wbg_process_4a72847cc503995b = function(arg0) {
-        const ret = getObject(arg0).process;
-        return addHeapObject(ret);
-    };
-    imports.wbg.__wbg_versions_f686565e586dd935 = function(arg0) {
-        const ret = getObject(arg0).versions;
-        return addHeapObject(ret);
-    };
-    imports.wbg.__wbg_node_104a2ff8d6ea03a2 = function(arg0) {
-        const ret = getObject(arg0).node;
-        return addHeapObject(ret);
-    };
-    imports.wbg.__wbindgen_is_string = function(arg0) {
-        const ret = typeof(getObject(arg0)) === 'string';
-        return ret;
-    };
-    imports.wbg.__wbg_msCrypto_eb05e62b530a1508 = function(arg0) {
-        const ret = getObject(arg0).msCrypto;
-        return addHeapObject(ret);
-    };
-    imports.wbg.__wbg_require_cca90b1a94a0255b = function() { return handleError(function () {
-        const ret = module.require;
-        return addHeapObject(ret);
-    }, arguments) };
-    imports.wbg.__wbg_randomFillSync_5c9c955aa56b6049 = function() { return handleError(function (arg0, arg1) {
-        getObject(arg0).randomFillSync(takeObject(arg1));
-    }, arguments) };
-    imports.wbg.__wbg_getRandomValues_3aa56aa6edec874c = function() { return handleError(function (arg0, arg1) {
-        getObject(arg0).getRandomValues(getObject(arg1));
-    }, arguments) };
-    imports.wbg.__wbg_get_bd8e338fbd5f5cc8 = function(arg0, arg1) {
-        const ret = getObject(arg0)[arg1 >>> 0];
-        return addHeapObject(ret);
-    };
-    imports.wbg.__wbg_length_cd7af8117672b8b8 = function(arg0) {
-        const ret = getObject(arg0).length;
-        return ret;
-    };
-    imports.wbg.__wbg_new_16b304a2cfa7ff4a = function() {
-        const ret = new Array();
-        return addHeapObject(ret);
-    };
-    imports.wbg.__wbg_newnoargs_e258087cd0daa0ea = function(arg0, arg1) {
-        const ret = new Function(getStringFromWasm0(arg0, arg1));
-        return addHeapObject(ret);
-    };
-    imports.wbg.__wbg_new_d9bc3a0147634640 = function() {
-        const ret = new Map();
-        return addHeapObject(ret);
-    };
-    imports.wbg.__wbg_get_e3c254076557e348 = function() { return handleError(function (arg0, arg1) {
-        const ret = Reflect.get(getObject(arg0), getObject(arg1));
-        return addHeapObject(ret);
-    }, arguments) };
-    imports.wbg.__wbg_call_27c0f87801dedf93 = function() { return handleError(function (arg0, arg1) {
-        const ret = getObject(arg0).call(getObject(arg1));
-        return addHeapObject(ret);
-    }, arguments) };
-    imports.wbg.__wbg_self_ce0dbfc45cf2f5be = function() { return handleError(function () {
-        const ret = self.self;
-        return addHeapObject(ret);
-    }, arguments) };
-    imports.wbg.__wbg_window_c6fb939a7f436783 = function() { return handleError(function () {
-        const ret = window.window;
-        return addHeapObject(ret);
-    }, arguments) };
-    imports.wbg.__wbg_globalThis_d1e6af4856ba331b = function() { return handleError(function () {
-        const ret = globalThis.globalThis;
-        return addHeapObject(ret);
-    }, arguments) };
-    imports.wbg.__wbg_global_207b558942527489 = function() { return handleError(function () {
-        const ret = global.global;
-        return addHeapObject(ret);
-    }, arguments) };
-    imports.wbg.__wbindgen_is_undefined = function(arg0) {
-        const ret = getObject(arg0) === undefined;
-        return ret;
-    };
-    imports.wbg.__wbg_eval_020a6ea487e91ede = function() { return handleError(function (arg0, arg1) {
-        const ret = eval(getStringFromWasm0(arg0, arg1));
-        return addHeapObject(ret);
-    }, arguments) };
-    imports.wbg.__wbg_from_89e3fc3ba5e6fb48 = function(arg0) {
-        const ret = Array.from(getObject(arg0));
-        return addHeapObject(ret);
-    };
-    imports.wbg.__wbg_isArray_2ab64d95e09ea0ae = function(arg0) {
-        const ret = Array.isArray(getObject(arg0));
-        return ret;
-    };
-    imports.wbg.__wbg_of_4a2b313a453ec059 = function(arg0) {
-        const ret = Array.of(getObject(arg0));
-        return addHeapObject(ret);
-    };
-    imports.wbg.__wbg_of_647f9238b4d5407a = function(arg0, arg1) {
-        const ret = Array.of(getObject(arg0), getObject(arg1));
-        return addHeapObject(ret);
-    };
-    imports.wbg.__wbg_of_6a70eed8d41f469c = function(arg0, arg1, arg2) {
-        const ret = Array.of(getObject(arg0), getObject(arg1), getObject(arg2));
-        return addHeapObject(ret);
-    };
-    imports.wbg.__wbg_of_40f6b8e691c04867 = function(arg0, arg1, arg2, arg3) {
-        const ret = Array.of(getObject(arg0), getObject(arg1), getObject(arg2), getObject(arg3));
-        return addHeapObject(ret);
-    };
-    imports.wbg.__wbg_push_a5b05aedc7234f9f = function(arg0, arg1) {
-        const ret = getObject(arg0).push(getObject(arg1));
-        return ret;
-    };
-    imports.wbg.__wbg_call_b3ca7c6051f9bec1 = function() { return handleError(function (arg0, arg1, arg2) {
-        const ret = getObject(arg0).call(getObject(arg1), getObject(arg2));
-        return addHeapObject(ret);
-    }, arguments) };
-    imports.wbg.__wbg_call_8e7cb608789c2528 = function() { return handleError(function (arg0, arg1, arg2, arg3) {
-        const ret = getObject(arg0).call(getObject(arg1), getObject(arg2), getObject(arg3));
-        return addHeapObject(ret);
-    }, arguments) };
-    imports.wbg.__wbg_set_8417257aaedc936b = function(arg0, arg1, arg2) {
-        const ret = getObject(arg0).set(getObject(arg1), getObject(arg2));
-        return addHeapObject(ret);
-    };
-    imports.wbg.__wbg_instanceof_Promise_b438ddea4cacc51f = function(arg0) {
-        let result;
-        try {
-            result = getObject(arg0) instanceof Promise;
-        } catch (_) {
-            result = false;
-        }
-        const ret = result;
-        return ret;
-    };
-    imports.wbg.__wbg_new_81740750da40724f = function(arg0, arg1) {
-        try {
-            var state0 = {a: arg0, b: arg1};
-            var cb0 = (arg0, arg1) => {
-                const a = state0.a;
-                state0.a = 0;
-                try {
-                    return __wbg_adapter_552(a, state0.b, arg0, arg1);
-                } finally {
-                    state0.a = a;
-                }
-            };
-            const ret = new Promise(cb0);
-            return addHeapObject(ret);
-        } finally {
-            state0.a = state0.b = 0;
-        }
-    };
-    imports.wbg.__wbg_resolve_b0083a7967828ec8 = function(arg0) {
-        const ret = Promise.resolve(getObject(arg0));
-        return addHeapObject(ret);
-    };
-    imports.wbg.__wbg_then_0c86a60e8fcfe9f6 = function(arg0, arg1) {
-        const ret = getObject(arg0).then(getObject(arg1));
-        return addHeapObject(ret);
-    };
-    imports.wbg.__wbg_then_a73caa9a87991566 = function(arg0, arg1, arg2) {
-        const ret = getObject(arg0).then(getObject(arg1), getObject(arg2));
-        return addHeapObject(ret);
-    };
-    imports.wbg.__wbg_buffer_12d079cc21e14bdb = function(arg0) {
-        const ret = getObject(arg0).buffer;
-        return addHeapObject(ret);
-    };
-    imports.wbg.__wbg_newwithbyteoffsetandlength_aa4a17c33a06e5cb = function(arg0, arg1, arg2) {
-        const ret = new Uint8Array(getObject(arg0), arg1 >>> 0, arg2 >>> 0);
-        return addHeapObject(ret);
-    };
-    imports.wbg.__wbg_new_63b92bc8671ed464 = function(arg0) {
-        const ret = new Uint8Array(getObject(arg0));
-        return addHeapObject(ret);
-    };
-    imports.wbg.__wbg_set_a47bac70306a19a7 = function(arg0, arg1, arg2) {
-        getObject(arg0).set(getObject(arg1), arg2 >>> 0);
-    };
-    imports.wbg.__wbg_newwithlength_e9b4878cebadb3d3 = function(arg0) {
-        const ret = new Uint8Array(arg0 >>> 0);
-        return addHeapObject(ret);
-    };
-    imports.wbg.__wbg_subarray_a1f73cd4b5b42fe1 = function(arg0, arg1, arg2) {
-        const ret = getObject(arg0).subarray(arg1 >>> 0, arg2 >>> 0);
-        return addHeapObject(ret);
-    };
-    imports.wbg.__wbindgen_debug_string = function(arg0, arg1) {
-        const ret = debugString(getObject(arg1));
-        const ptr1 = passStringToWasm0(ret, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-        const len1 = WASM_VECTOR_LEN;
-        getInt32Memory0()[arg0 / 4 + 1] = len1;
-        getInt32Memory0()[arg0 / 4 + 0] = ptr1;
-    };
-    imports.wbg.__wbindgen_throw = function(arg0, arg1) {
-        throw new Error(getStringFromWasm0(arg0, arg1));
-    };
-    imports.wbg.__wbindgen_memory = function() {
-        const ret = wasm.memory;
-        return addHeapObject(ret);
-    };
-    imports.wbg.__wbindgen_closure_wrapper1260 = function(arg0, arg1, arg2) {
-        const ret = makeClosure(arg0, arg1, 162, __wbg_adapter_34);
-        return addHeapObject(ret);
-    };
-    imports.wbg.__wbindgen_closure_wrapper1262 = function(arg0, arg1, arg2) {
-        const ret = makeClosure(arg0, arg1, 162, __wbg_adapter_37);
-        return addHeapObject(ret);
-    };
-    imports.wbg.__wbindgen_closure_wrapper1608 = function(arg0, arg1, arg2) {
-        const ret = makeMutClosure(arg0, arg1, 185, __wbg_adapter_40);
-        return addHeapObject(ret);
-    };
-
-    return imports;
-}
-
-function __wbg_init_memory(imports, maybe_memory) {
-
-}
-
-function __wbg_finalize_init(instance, module) {
-    wasm = instance.exports;
-    __wbg_init.__wbindgen_wasm_module = module;
-    cachedFloat64Memory0 = null;
-    cachedInt32Memory0 = null;
-    cachedUint32Memory0 = null;
-    cachedUint8Memory0 = null;
-
-
-    return wasm;
-}
-
-function initSync(module) {
-    if (wasm !== undefined) return wasm;
-
-    const imports = __wbg_get_imports();
-
-    __wbg_init_memory(imports);
-
-    if (!(module instanceof WebAssembly.Module)) {
-        module = new WebAssembly.Module(module);
+    } finally {
+        wasm.__wbindgen_free(deferred0_0, deferred0_1, 1);
     }
+};
 
-    const instance = new WebAssembly.Instance(module, imports);
+module.exports.__wbg_createCanvas_fdc2fea77a8a514f = function(arg0, arg1) {
+    const ret = createCanvas(arg0 >>> 0, arg1 >>> 0);
+    return addHeapObject(ret);
+};
 
-    return __wbg_finalize_init(instance, module);
-}
+module.exports.__wbg_getContext_6637f1991ec6d07e = function(arg0, arg1, arg2) {
+    const ret = getObject(arg0).getContext(getStringFromWasm0(arg1, arg2));
+    return addHeapObject(ret);
+};
 
-async function __wbg_init(input) {
-    if (wasm !== undefined) return wasm;
+module.exports.__wbg_setglobalAlpha_e889dd7be1b5907d = function(arg0, arg1) {
+    getObject(arg0).globalAlpha = arg1;
+};
 
-    if (typeof input === 'undefined') {
-        input = new URL('mathlikeanim_rs_bg.wasm', import.meta.url);
+module.exports.__wbg_drawImage_eafef83c5e82d70d = function(arg0, arg1, arg2, arg3, arg4, arg5) {
+    getObject(arg0).drawImage(getObject(arg1), arg2, arg3, arg4, arg5);
+};
+
+module.exports.__wbg_createPattern_eb37906af7d1f341 = function(arg0, arg1, arg2, arg3) {
+    const ret = getObject(arg0).createPattern(getObject(arg1), getStringFromWasm0(arg2, arg3));
+    return addHeapObject(ret);
+};
+
+module.exports.__wbg_createRadialGradient_87ad393b8a514c73 = function(arg0, arg1, arg2, arg3, arg4, arg5, arg6) {
+    const ret = getObject(arg0).createRadialGradient(arg1, arg2, arg3, arg4, arg5, arg6);
+    return addHeapObject(ret);
+};
+
+module.exports.__wbg_addColorStop_63c6e5012cc9a608 = function(arg0, arg1, arg2, arg3) {
+    let deferred0_0;
+    let deferred0_1;
+    try {
+        deferred0_0 = arg2;
+        deferred0_1 = arg3;
+        getObject(arg0).addColorStop(arg1, getStringFromWasm0(arg2, arg3));
+    } finally {
+        wasm.__wbindgen_free(deferred0_0, deferred0_1, 1);
     }
-    const imports = __wbg_get_imports();
+};
 
-    if (typeof input === 'string' || (typeof Request === 'function' && input instanceof Request) || (typeof URL === 'function' && input instanceof URL)) {
-        input = fetch(input);
+module.exports.__wbg_createLinearGradient_919a0605c3af95f5 = function(arg0, arg1, arg2, arg3, arg4) {
+    const ret = getObject(arg0).createLinearGradient(arg1, arg2, arg3, arg4);
+    return addHeapObject(ret);
+};
+
+module.exports.__wbg_setstrokeStyle_34cf132923c1997b = function(arg0, arg1, arg2) {
+    let deferred0_0;
+    let deferred0_1;
+    try {
+        deferred0_0 = arg1;
+        deferred0_1 = arg2;
+        getObject(arg0).strokeStyle = getStringFromWasm0(arg1, arg2);
+    } finally {
+        wasm.__wbindgen_free(deferred0_0, deferred0_1, 1);
     }
+};
 
-    __wbg_init_memory(imports);
+module.exports.__wbg_setlineWidth_9a98480fb9816d3d = function(arg0, arg1) {
+    getObject(arg0).lineWidth = arg1;
+};
 
-    const { instance, module } = await __wbg_load(await input, imports);
+module.exports.__wbg_setlineCap_8a3cda5ba4245879 = function(arg0, arg1, arg2) {
+    let deferred0_0;
+    let deferred0_1;
+    try {
+        deferred0_0 = arg1;
+        deferred0_1 = arg2;
+        getObject(arg0).lineCap = getStringFromWasm0(arg1, arg2);
+    } finally {
+        wasm.__wbindgen_free(deferred0_0, deferred0_1, 1);
+    }
+};
 
-    return __wbg_finalize_init(instance, module);
-}
+module.exports.__wbg_setlineJoin_557d760c03f67dd4 = function(arg0, arg1, arg2) {
+    let deferred0_0;
+    let deferred0_1;
+    try {
+        deferred0_0 = arg1;
+        deferred0_1 = arg2;
+        getObject(arg0).lineJoin = getStringFromWasm0(arg1, arg2);
+    } finally {
+        wasm.__wbindgen_free(deferred0_0, deferred0_1, 1);
+    }
+};
 
-export { initSync }
-export default __wbg_init;
+module.exports.__wbg_stroke_e99ac5d116acfdf3 = function(arg0) {
+    getObject(arg0).stroke();
+};
+
+module.exports.__wbg_resetTransform_1e476c48b22205e8 = function(arg0) {
+    getObject(arg0).resetTransform();
+};
+
+module.exports.__wbg_scale_5a1d90184913e406 = function(arg0, arg1, arg2) {
+    getObject(arg0).scale(arg1, arg2);
+};
+
+module.exports.__wbg_translate_402fe425a7018f68 = function(arg0, arg1, arg2) {
+    getObject(arg0).translate(arg1, arg2);
+};
+
+module.exports.__wbg_clearRect_e3d144d8d4f10337 = function(arg0, arg1, arg2, arg3, arg4) {
+    getObject(arg0).clearRect(arg1, arg2, arg3, arg4);
+};
+
+module.exports.__wbg_setwidth_a99fe372f3ab7f34 = function(arg0, arg1) {
+    getObject(arg0).width = arg1 >>> 0;
+};
+
+module.exports.__wbg_setheight_2450e499382b7774 = function(arg0, arg1) {
+    getObject(arg0).height = arg1 >>> 0;
+};
+
+module.exports.__wbg_fillRect_b76073eec5b1643f = function(arg0, arg1, arg2, arg3, arg4) {
+    getObject(arg0).fillRect(arg1, arg2, arg3, arg4);
+};
+
+module.exports.__wbg_spawn_9edbebce9caddd48 = function(arg0, arg1, arg2, arg3) {
+    var v0 = getArrayJsValueFromWasm0(arg2, arg3).slice();
+    wasm.__wbindgen_free(arg2, arg3 * 4, 4);
+    const ret = spawn(getStringFromWasm0(arg0, arg1), v0);
+    return addHeapObject(ret);
+};
+
+module.exports.__wbg_canvas_e1176aa37ea713a2 = function(arg0) {
+    const ret = getObject(arg0).canvas;
+    return addHeapObject(ret);
+};
+
+module.exports.__wbg_toBuffer_70d1b5130af7a926 = function(arg0, arg1, arg2) {
+    const ret = getObject(arg0).toBuffer(getStringFromWasm0(arg1, arg2));
+    return addHeapObject(ret);
+};
+
+module.exports.__wbg_write_74ed4694c385fd83 = function(arg0, arg1) {
+    getObject(arg0).write(takeObject(arg1));
+};
+
+module.exports.__wbindgen_cb_drop = function(arg0) {
+    const obj = takeObject(arg0).original;
+    if (obj.cnt-- == 1) {
+        obj.a = 0;
+        return true;
+    }
+    const ret = false;
+    return ret;
+};
+
+module.exports.__wbindgen_error_new = function(arg0, arg1) {
+    const ret = new Error(getStringFromWasm0(arg0, arg1));
+    return addHeapObject(ret);
+};
+
+module.exports.__wbg_error_716e8f1278ad61d6 = function(arg0) {
+    console.error(takeObject(arg0));
+};
+
+module.exports.__wbg_queueMicrotask_481971b0d87f3dd4 = function(arg0) {
+    queueMicrotask(getObject(arg0));
+};
+
+module.exports.__wbg_queueMicrotask_3cbae2ec6b6cd3d6 = function(arg0) {
+    const ret = getObject(arg0).queueMicrotask;
+    return addHeapObject(ret);
+};
+
+module.exports.__wbg_get_bd8e338fbd5f5cc8 = function(arg0, arg1) {
+    const ret = getObject(arg0)[arg1 >>> 0];
+    return addHeapObject(ret);
+};
+
+module.exports.__wbg_length_cd7af8117672b8b8 = function(arg0) {
+    const ret = getObject(arg0).length;
+    return ret;
+};
+
+module.exports.__wbg_new_16b304a2cfa7ff4a = function() {
+    const ret = new Array();
+    return addHeapObject(ret);
+};
+
+module.exports.__wbg_newnoargs_e258087cd0daa0ea = function(arg0, arg1) {
+    const ret = new Function(getStringFromWasm0(arg0, arg1));
+    return addHeapObject(ret);
+};
+
+module.exports.__wbg_new_d9bc3a0147634640 = function() {
+    const ret = new Map();
+    return addHeapObject(ret);
+};
+
+module.exports.__wbg_get_e3c254076557e348 = function() { return handleError(function (arg0, arg1) {
+    const ret = Reflect.get(getObject(arg0), getObject(arg1));
+    return addHeapObject(ret);
+}, arguments) };
+
+module.exports.__wbg_call_27c0f87801dedf93 = function() { return handleError(function (arg0, arg1) {
+    const ret = getObject(arg0).call(getObject(arg1));
+    return addHeapObject(ret);
+}, arguments) };
+
+module.exports.__wbg_self_ce0dbfc45cf2f5be = function() { return handleError(function () {
+    const ret = self.self;
+    return addHeapObject(ret);
+}, arguments) };
+
+module.exports.__wbg_window_c6fb939a7f436783 = function() { return handleError(function () {
+    const ret = window.window;
+    return addHeapObject(ret);
+}, arguments) };
+
+module.exports.__wbg_globalThis_d1e6af4856ba331b = function() { return handleError(function () {
+    const ret = globalThis.globalThis;
+    return addHeapObject(ret);
+}, arguments) };
+
+module.exports.__wbg_global_207b558942527489 = function() { return handleError(function () {
+    const ret = global.global;
+    return addHeapObject(ret);
+}, arguments) };
+
+module.exports.__wbindgen_is_undefined = function(arg0) {
+    const ret = getObject(arg0) === undefined;
+    return ret;
+};
+
+module.exports.__wbg_eval_020a6ea487e91ede = function() { return handleError(function (arg0, arg1) {
+    const ret = eval(getStringFromWasm0(arg0, arg1));
+    return addHeapObject(ret);
+}, arguments) };
+
+module.exports.__wbg_from_89e3fc3ba5e6fb48 = function(arg0) {
+    const ret = Array.from(getObject(arg0));
+    return addHeapObject(ret);
+};
+
+module.exports.__wbg_isArray_2ab64d95e09ea0ae = function(arg0) {
+    const ret = Array.isArray(getObject(arg0));
+    return ret;
+};
+
+module.exports.__wbg_of_4a2b313a453ec059 = function(arg0) {
+    const ret = Array.of(getObject(arg0));
+    return addHeapObject(ret);
+};
+
+module.exports.__wbg_of_647f9238b4d5407a = function(arg0, arg1) {
+    const ret = Array.of(getObject(arg0), getObject(arg1));
+    return addHeapObject(ret);
+};
+
+module.exports.__wbg_of_6a70eed8d41f469c = function(arg0, arg1, arg2) {
+    const ret = Array.of(getObject(arg0), getObject(arg1), getObject(arg2));
+    return addHeapObject(ret);
+};
+
+module.exports.__wbg_of_40f6b8e691c04867 = function(arg0, arg1, arg2, arg3) {
+    const ret = Array.of(getObject(arg0), getObject(arg1), getObject(arg2), getObject(arg3));
+    return addHeapObject(ret);
+};
+
+module.exports.__wbg_push_a5b05aedc7234f9f = function(arg0, arg1) {
+    const ret = getObject(arg0).push(getObject(arg1));
+    return ret;
+};
+
+module.exports.__wbg_call_b3ca7c6051f9bec1 = function() { return handleError(function (arg0, arg1, arg2) {
+    const ret = getObject(arg0).call(getObject(arg1), getObject(arg2));
+    return addHeapObject(ret);
+}, arguments) };
+
+module.exports.__wbg_call_8e7cb608789c2528 = function() { return handleError(function (arg0, arg1, arg2, arg3) {
+    const ret = getObject(arg0).call(getObject(arg1), getObject(arg2), getObject(arg3));
+    return addHeapObject(ret);
+}, arguments) };
+
+module.exports.__wbg_set_8417257aaedc936b = function(arg0, arg1, arg2) {
+    const ret = getObject(arg0).set(getObject(arg1), getObject(arg2));
+    return addHeapObject(ret);
+};
+
+module.exports.__wbg_instanceof_Promise_b438ddea4cacc51f = function(arg0) {
+    let result;
+    try {
+        result = getObject(arg0) instanceof Promise;
+    } catch (_) {
+        result = false;
+    }
+    const ret = result;
+    return ret;
+};
+
+module.exports.__wbg_new_81740750da40724f = function(arg0, arg1) {
+    try {
+        var state0 = {a: arg0, b: arg1};
+        var cb0 = (arg0, arg1) => {
+            const a = state0.a;
+            state0.a = 0;
+            try {
+                return __wbg_adapter_490(a, state0.b, arg0, arg1);
+            } finally {
+                state0.a = a;
+            }
+        };
+        const ret = new Promise(cb0);
+        return addHeapObject(ret);
+    } finally {
+        state0.a = state0.b = 0;
+    }
+};
+
+module.exports.__wbg_resolve_b0083a7967828ec8 = function(arg0) {
+    const ret = Promise.resolve(getObject(arg0));
+    return addHeapObject(ret);
+};
+
+module.exports.__wbg_then_0c86a60e8fcfe9f6 = function(arg0, arg1) {
+    const ret = getObject(arg0).then(getObject(arg1));
+    return addHeapObject(ret);
+};
+
+module.exports.__wbg_then_a73caa9a87991566 = function(arg0, arg1, arg2) {
+    const ret = getObject(arg0).then(getObject(arg1), getObject(arg2));
+    return addHeapObject(ret);
+};
+
+module.exports.__wbindgen_debug_string = function(arg0, arg1) {
+    const ret = debugString(getObject(arg1));
+    const ptr1 = passStringToWasm0(ret, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    const len1 = WASM_VECTOR_LEN;
+    getInt32Memory0()[arg0 / 4 + 1] = len1;
+    getInt32Memory0()[arg0 / 4 + 0] = ptr1;
+};
+
+module.exports.__wbindgen_throw = function(arg0, arg1) {
+    throw new Error(getStringFromWasm0(arg0, arg1));
+};
+
+module.exports.__wbindgen_closure_wrapper934 = function(arg0, arg1, arg2) {
+    const ret = makeClosure(arg0, arg1, 49, __wbg_adapter_28);
+    return addHeapObject(ret);
+};
+
+module.exports.__wbindgen_closure_wrapper936 = function(arg0, arg1, arg2) {
+    const ret = makeClosure(arg0, arg1, 49, __wbg_adapter_31);
+    return addHeapObject(ret);
+};
+
+module.exports.__wbindgen_closure_wrapper1205 = function(arg0, arg1, arg2) {
+    const ret = makeMutClosure(arg0, arg1, 155, __wbg_adapter_34);
+    return addHeapObject(ret);
+};
+
+const path = require('path').join(__dirname, 'mathlikeanim_rs_bg.wasm');
+const bytes = require('fs').readFileSync(path);
+
+const wasmModule = new WebAssembly.Module(bytes);
+const wasmInstance = new WebAssembly.Instance(wasmModule, imports);
+wasm = wasmInstance.exports;
+module.exports.__wasm = wasm;
+

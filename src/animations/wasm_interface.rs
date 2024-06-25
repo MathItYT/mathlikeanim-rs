@@ -2,7 +2,12 @@ use js_sys::{Array, Function};
 use wasm_bindgen::prelude::*;
 
 use crate::objects::{vector_object::VectorFeatures, wasm_interface::{WasmColor, WasmVectorObject}};
-use crate::{scene::Scene, svg_scene::SVGScene, animations::{move_camera_svg::move_camera_svg, move_camera::move_camera}};
+#[cfg(feature = "browser")]
+use crate::{scene::Scene, svg_scene::SVGScene};
+#[cfg(feature = "node")]
+use crate::video_scene::VideoScene;
+#[cfg(feature = "browser")]
+use super::{move_camera::move_camera, move_camera_svg::move_camera_svg};
 
 use super::{animation_group::{animation_group, make_timings}, create::create, draw_stroke_then_fill::{draw_stroke_then_fill, write}, fade::{fade_in, fade_out}, grow_arrow::{grow_arrow_with_final_tip, grow_arrow_with_initial_tip, grow_arrow_with_tips_at_both_ends}, grow_from_center::grow_from_center, morph_shape::morph_shape, rotate_animation::rotate_animation, scale_in_place::scale_in_place, set_fill_animation::set_fill_animation, set_stroke_animation::set_stroke_animation, shift_animation::shift_animation, show_temporarily::show_temporarily, spinning_grow::spinning_grow};
 
@@ -144,6 +149,7 @@ pub fn morph_shape_js(
     return WasmVectorObject { native_vec_features: morph_shape(original.native_vec_features, target.native_vec_features, t) };
 }
 
+#[cfg(feature = "browser")]
 #[wasm_bindgen(js_name = moveCameraSVG)]
 pub fn move_camera_svg_js(
     top_left_corner: Array,
@@ -156,6 +162,8 @@ pub fn move_camera_svg_js(
     move_camera_svg(top_left_corner, bottom_right_corner, scene, t);
 }
 
+
+#[cfg(feature = "browser")]
 #[wasm_bindgen(js_name = moveCamera)]
 pub fn move_camera_js(
     top_left_corner: Array,
@@ -166,6 +174,22 @@ pub fn move_camera_js(
     let top_left_corner = (top_left_corner.get(0).as_f64().unwrap(), top_left_corner.get(1).as_f64().unwrap());
     let bottom_right_corner = (bottom_right_corner.get(0).as_f64().unwrap(), bottom_right_corner.get(1).as_f64().unwrap());
     move_camera(top_left_corner, bottom_right_corner, scene, t);
+}
+
+
+#[cfg(feature = "node")]
+#[wasm_bindgen(js_name = moveCameraVideo)]
+pub fn move_camera_video_js(
+    top_left_corner: Array,
+    bottom_right_corner: Array,
+    scene: &mut VideoScene,
+    t: f64
+) {
+    use super::move_camera_video::move_camera_video;
+
+    let top_left_corner = (top_left_corner.get(0).as_f64().unwrap(), top_left_corner.get(1).as_f64().unwrap());
+    let bottom_right_corner = (bottom_right_corner.get(0).as_f64().unwrap(), bottom_right_corner.get(1).as_f64().unwrap());
+    move_camera_video(top_left_corner, bottom_right_corner, scene, t);
 }
 
 

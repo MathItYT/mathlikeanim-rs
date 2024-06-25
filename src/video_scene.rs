@@ -1,13 +1,13 @@
 use std::collections::HashMap;
+
 use js_sys::{Array, Function, Promise};
 use wasm_bindgen::prelude::*;
-use wasm_bindgen_futures::JsFuture;
 
-use crate::{colors::{Color, GradientImageOrColor}, objects::{vector_object::VectorFeatures, wasm_interface::{WasmGradientImageOrColor, WasmVectorObject}}, web_renderer::render_all_vectors_svg, scene_api::SceneAPI, utils::sleep};
+use crate::{colors::GradientImageOrColor, node_renderer::{end_ffmpeg, init_ffmpeg, render_all_vectors, write_frame_to_ffmpeg, CanvasRenderingContext2D, ChildProcess}, objects::{vector_object::VectorFeatures, wasm_interface::{WasmGradientImageOrColor, WasmVectorObject}}, scene_api::SceneAPI};
+
 
 #[wasm_bindgen]
-#[derive(Clone)]
-pub struct SVGScene {
+pub struct VideoScene {
     #[wasm_bindgen(skip)]
     pub objects: Vec<VectorFeatures>,
     #[wasm_bindgen(skip)]
@@ -17,31 +17,31 @@ pub struct SVGScene {
     #[wasm_bindgen(skip)]
     pub fps: u64,
     #[wasm_bindgen(skip)]
-    pub div_container: Option<web_sys::HtmlDivElement>,
-    #[wasm_bindgen(skip)]
     pub background: GradientImageOrColor,
     #[wasm_bindgen(skip)]
     pub top_left_corner: (f64, f64),
     #[wasm_bindgen(skip)]
     pub bottom_right_corner: (f64, f64),
     #[wasm_bindgen(skip)]
+    pub context: Option<CanvasRenderingContext2D>,
+    #[wasm_bindgen(skip)]
     pub states: HashMap<usize, (Vec<VectorFeatures>, GradientImageOrColor, (f64, f64), (f64, f64))>,
     #[wasm_bindgen(skip)]
     pub callback: Function,
     #[wasm_bindgen(skip)]
-    pub classes: HashMap<usize, String>
+    pub process: Option<ChildProcess>
 }
 
 
-impl SceneAPI for SVGScene {
-    fn new(width: u64, height: u64, fps: u64) -> SVGScene {
-        return SVGScene {
+impl SceneAPI for VideoScene {
+    fn new(width: u64, height: u64, fps: u64) -> VideoScene {
+        return VideoScene {
             objects: Vec::new(),
             width,
             height,
             fps,
-            div_container: None,
-            background: GradientImageOrColor::Color(Color {
+            context: None,
+            background: GradientImageOrColor::Color(crate::colors::Color {
                 red: 0.0,
                 green: 0.0,
                 blue: 0.0,
@@ -51,15 +51,52 @@ impl SceneAPI for SVGScene {
             bottom_right_corner: (width as f64, height as f64),
             states: HashMap::new(),
             callback: Closure::wrap(Box::new(|| Promise::resolve(&JsValue::NULL)) as Box<dyn Fn() -> Promise>).into_js_value().dyn_into().unwrap(),
-            classes: HashMap::new()
+            process: None
         };
-    }
-    fn clear(&mut self) {
-        self.objects = Vec::new();
     }
     async fn on_rendered(&self) {
         let promise = self.callback.call0(&JsValue::NULL).unwrap().dyn_into::<Promise>().unwrap();
-        JsFuture::from(promise).await.unwrap();
+        wasm_bindgen_futures::JsFuture::from(promise).await.unwrap();
+    }
+    fn get_fps(&self) -> &u64 {
+        return &self.fps;
+    }
+    fn get_width(&self) -> &u64 {
+        return &self.width;
+    }
+    fn get_height(&self) -> &u64 {
+        return &self.height;
+    }
+    fn get_top_left_corner(&self) -> (f64, f64) {
+        return self.top_left_corner;
+    }
+    fn get_bottom_right_corner(&self) -> (f64, f64) {
+        return self.bottom_right_corner;
+    }
+    fn add(&mut self, vec_obj: VectorFeatures) {
+        self.remove(vec_obj.index);
+        self.objects.push(vec_obj);
+    }
+    fn remove(&mut self, index: usize) {
+        self.objects.retain(|x| x.index != index);
+    }
+    fn get_objects_from_indices(&self, object_indices: Vec<usize>) -> HashMap<usize, VectorFeatures> {
+        let mut objects = HashMap::new();
+        for index in object_indices {
+            for object in &self.objects {
+                if object.index == index {
+                    objects.insert(index, object.clone());
+                }
+            }
+        }
+        return objects;
+    }
+    fn clear(&mut self) {
+        self.objects.clear();
+    }
+    fn render_frame(&self) {
+        render_all_vectors(&self.objects, self.width, self.height, self.context.as_ref().unwrap(), self.background.clone(), self.top_left_corner, self.bottom_right_corner);
+        write_frame_to_ffmpeg(self.context.as_ref().unwrap(), &self.process.as_ref().unwrap().stdin());
     }
     fn restore(&mut self, n: usize) {
         let (objects, background, top_left_corner, bottom_right_corner) = self.states.get(&n).unwrap().clone();
@@ -75,56 +112,20 @@ impl SceneAPI for SVGScene {
         self.top_left_corner = top_left_corner;
         self.bottom_right_corner = bottom_right_corner;
     }
-    fn get_top_left_corner(&self) -> (f64, f64) {
-        return self.top_left_corner;
-    }
-    fn get_bottom_right_corner(&self) -> (f64, f64) {
-        return self.bottom_right_corner;
-    }
     fn set_background(&mut self, background: GradientImageOrColor) {
         self.background = background;
     }
-    fn add(&mut self, vec_obj: VectorFeatures) {
-        self.remove(vec_obj.index);
-        self.objects.push(vec_obj);
-    }
-    fn remove(&mut self, index: usize) {
-        self.objects = self.objects.clone().into_iter().filter(|obj| obj.index != index).collect();
-    }
-    fn get_fps(&self) -> &u64 {
-        return &self.fps;
-    }
-    fn get_height(&self) -> &u64 {
-        return &self.height;
-    }
-    fn get_width(&self) -> &u64 {
-        return &self.width;
-    }
-    fn render_frame(&self) {
-        render_all_vectors_svg(&self);
-    }
-    fn get_objects_from_indices(&self, object_indices: Vec<usize>) -> HashMap<usize, VectorFeatures> {
-        let mut objects = HashMap::new();
-        for index in object_indices {
-            for obj in &self.objects {
-                if obj.index == index {
-                    objects.insert(index, obj.clone());
-                }
-            }
-        }
-        return objects;
-    }
-    async fn sleep(&mut self, duration_in_ms: i32) {
-        sleep(duration_in_ms).await;
+    async fn sleep(&mut self, _: i32) {
+        // Do nothing
     }
 }
 
 
 #[wasm_bindgen]
-impl SVGScene {
+impl VideoScene {
     #[wasm_bindgen(constructor)]
-    pub fn new_js(width: u64, height: u64, fps: u64) -> SVGScene {
-        return SVGScene::new(width, height, fps);
+    pub fn new_js(width: u64, height: u64, fps: u64) -> VideoScene {
+        return VideoScene::new(width, height, fps);
     }
     #[wasm_bindgen(js_name = getFps)]
     pub fn get_fps_js(&self) -> u64 {
@@ -194,6 +195,16 @@ impl SVGScene {
     pub fn remove_js(&mut self, index: usize) {
         self.remove(index);
     }
+    #[wasm_bindgen(js_name = getObjects)]
+    pub fn get_objects_js(&self) -> js_sys::Array {
+        let js_array = js_sys::Array::new();
+        for obj in &self.objects {
+            js_array.push(&JsValue::from(WasmVectorObject {
+                native_vec_features: obj.clone()
+            }));
+        }
+        return js_array;
+    }
     #[wasm_bindgen(js_name = getObjectsFromIndices)]
     pub fn get_objects_from_indices_js(&self, object_indices: js_sys::Array) -> js_sys::Map {
         let original = self.get_objects_from_indices(object_indices.iter().map(|x| x.as_f64().unwrap() as usize).collect());
@@ -205,13 +216,17 @@ impl SVGScene {
         }
         return js_map;
     }
-    #[wasm_bindgen(js_name = setDivContainer)]
-    pub fn set_div_container_js(&mut self, div_container: web_sys::HtmlDivElement) {
-        self.div_container = Some(div_container);
+    #[wasm_bindgen(js_name = setCanvasContext)]
+    pub fn set_canvas_context_js(&mut self, context: CanvasRenderingContext2D) {
+        self.context = Some(context);
     }
     #[wasm_bindgen(js_name = sleep)]
     pub async fn sleep_js(&mut self, duration_in_ms: i32) {
         self.sleep(duration_in_ms).await;
+    }
+    #[wasm_bindgen(js_name = setObjects)]
+    pub fn set_objects_js(&mut self, objects: js_sys::Array) {
+        self.objects = objects.iter().map(|x| x.dyn_into::<WasmVectorObject>().unwrap().native_vec_features).collect();
     }
     #[wasm_bindgen(js_name = play)]
     pub async fn play_js(
@@ -232,22 +247,8 @@ impl SVGScene {
         animation_func: &js_sys::Function,
         objects: &Array,
         t: f64
-    ) {
+    ) { 
         self.make_frame(animation_func, objects, t).await;
-    }
-    #[wasm_bindgen(js_name = setObjects)]
-    pub fn set_objects_js(&mut self, objects: js_sys::Array) {
-        self.objects = objects.iter().map(|x| x.dyn_into::<WasmVectorObject>().unwrap().native_vec_features).collect();
-    }
-    #[wasm_bindgen(js_name = getObjects)]
-    pub fn get_objects_js(&self) -> js_sys::Array {
-        let js_array = js_sys::Array::new();
-        for obj in &self.objects {
-            js_array.push(&JsValue::from(WasmVectorObject {
-                native_vec_features: obj.clone()
-            }));
-        }
-        return js_array;
     }
     #[wasm_bindgen(js_name = wait)]
     pub async fn wait_js(&mut self, duration_in_frames: u64) {
@@ -261,12 +262,13 @@ impl SVGScene {
     pub async fn call_callback_js(&self) {
         self.on_rendered().await;
     }
-    #[wasm_bindgen(js_name = setClass)]
-    pub fn set_class_js(&mut self, index: usize, id: String) {
-        self.classes.insert(index, id);
+    #[wasm_bindgen(js_name = initFFmpeg)]
+    pub fn init_ffmpeg_js(&mut self, path: String, codec: Option<String>, pix_fmt: Option<String>) {
+        self.process = Some(init_ffmpeg(self.width, self.height, self.fps as i32, codec.unwrap_or("libx264".to_string()).as_str(), pix_fmt.unwrap_or("yuv420p".to_string()).as_str(), path.as_str()));
     }
-    #[wasm_bindgen(js_name = removeClass)]
-    pub fn remove_class_js(&mut self, index: usize) {
-        self.classes.remove(&index);
+    #[wasm_bindgen(js_name = closeFFmpeg)]
+    pub fn close_ffmpeg_js(&mut self) {
+        end_ffmpeg(self.process.as_ref().unwrap());
+        self.process = None;
     }
 }

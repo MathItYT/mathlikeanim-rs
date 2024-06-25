@@ -443,147 +443,138 @@ export function getNumbersTex(number_line: WasmVectorObject, numbers: Array<any>
 */
 export function svgToVector(svg: string): WasmVectorObject;
 /**
-* @param {number} num_anim_funcs
-* @param {number} lag_ratio
-* @returns {Float64Array}
-*/
-export function makeTimings(num_anim_funcs: number, lag_ratio: number): Float64Array;
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {(Function)[]} anim_funcs
-* @param {number} lag_ratio
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function animationGroup(vec_obj: WasmVectorObject, anim_funcs: (Function)[], lag_ratio: number, t: number): WasmVectorObject;
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function create(vec_obj: WasmVectorObject, t: number): WasmVectorObject;
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function drawStrokeThenFill(vec_obj: WasmVectorObject, t: number): WasmVectorObject;
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} lag_ratio
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function write(vec_obj: WasmVectorObject, lag_ratio: number, t: number): WasmVectorObject;
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} scale_factor
-* @param {Array<any>} shift
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function fadeIn(vec_obj: WasmVectorObject, scale_factor: number, shift: Array<any>, t: number): WasmVectorObject;
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} scale_factor
-* @param {Array<any>} shift
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function fadeOut(vec_obj: WasmVectorObject, scale_factor: number, shift: Array<any>, t: number): WasmVectorObject;
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function growArrowWithFinalTip(vec_obj: WasmVectorObject, t: number): WasmVectorObject;
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function growArrowWithInitialTip(vec_obj: WasmVectorObject, t: number): WasmVectorObject;
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function growArrowWithTipsAtBothEnds(vec_obj: WasmVectorObject, t: number): WasmVectorObject;
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function growFromCenter(vec_obj: WasmVectorObject, t: number): WasmVectorObject;
-/**
-* @param {WasmVectorObject} original
-* @param {WasmVectorObject} target
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function morphShape(original: WasmVectorObject, target: WasmVectorObject, t: number): WasmVectorObject;
-/**
-* @param {Array<any>} top_left_corner
-* @param {Array<any>} bottom_right_corner
-* @param {SVGScene} scene
-* @param {number} t
-*/
-export function moveCameraSVG(top_left_corner: Array<any>, bottom_right_corner: Array<any>, scene: SVGScene, t: number): void;
-/**
-* @param {Array<any>} top_left_corner
-* @param {Array<any>} bottom_right_corner
-* @param {Scene} scene
-* @param {number} t
-*/
-export function moveCamera(top_left_corner: Array<any>, bottom_right_corner: Array<any>, scene: Scene, t: number): void;
-/**
-* @param {WasmVectorObject} vec_obj
 * @param {number} angle
-* @param {number} t
-* @returns {WasmVectorObject}
+* @param {number} axis
+* @returns {Array<any>}
 */
-export function rotateAnimation(vec_obj: WasmVectorObject, angle: number, t: number): WasmVectorObject;
+export function rotMatrix(angle: number, axis: number): Array<any>;
 /**
-* @param {WasmVectorObject} vec_obj
-* @param {number} scale_factor
-* @param {number} t
-* @returns {WasmVectorObject}
+* @param {Array<any>} a
+* @param {Array<any>} b
+* @returns {Array<any>}
 */
-export function scaleInPlace(vec_obj: WasmVectorObject, scale_factor: number, t: number): WasmVectorObject;
+export function matrixProduct(a: Array<any>, b: Array<any>): Array<any>;
 /**
-* @param {WasmVectorObject} vec_obj
-* @param {WasmColor} target_fill
-* @param {number} t
-* @returns {WasmVectorObject}
+* @param {number} phi
+* @param {number} theta
+* @param {number} gamma
+* @returns {Array<any>}
 */
-export function setFillAnimation(vec_obj: WasmVectorObject, target_fill: WasmColor, t: number): WasmVectorObject;
+export function rotMatrixEuler(phi: number, theta: number, gamma: number): Array<any>;
 /**
-* @param {WasmVectorObject} vec_obj
-* @param {WasmColor} target_stroke
-* @param {number} t
-* @returns {WasmVectorObject}
+* @param {Array<any>} a
+* @returns {Array<any>}
 */
-export function setStrokeAnimation(vec_obj: WasmVectorObject, target_stroke: WasmColor, t: number): WasmVectorObject;
+export function transposeMatrix(a: Array<any>): Array<any>;
 /**
-* @param {WasmVectorObject} vec_obj
+* @param {Array<any>} matrix
+* @param {Array<any>} points
+* @returns {Array<any>}
+*/
+export function applyMatrix(matrix: Array<any>, points: Array<any>): Array<any>;
+/**
+* @param {Array<any>} points
 * @param {Array<any>} shift
-* @param {number} t
-* @returns {WasmVectorObject}
+* @returns {Array<any>}
 */
-export function shiftAnimation(vec_obj: WasmVectorObject, shift: Array<any>, t: number): WasmVectorObject;
+export function shiftPoints3D(points: Array<any>, shift: Array<any>): Array<any>;
 /**
-* @param {WasmVectorObject} vec_obj
-* @param {number} t
-* @returns {WasmVectorObject}
+* @param {WasmGradientImageOrColor} color
+* @returns {WasmGradientImageOrColor}
 */
-export function showTemporaily(vec_obj: WasmVectorObject, t: number): WasmVectorObject;
+export function ensureValidThreeDColor(color: WasmGradientImageOrColor): WasmGradientImageOrColor;
 /**
-* @param {WasmVectorObject} vec_obj
-* @param {number} angle
-* @param {number} t
-* @returns {WasmVectorObject}
+* @param {WasmColor} color
+* @param {Array<any>} point
+* @param {Array<any>} unit_normal
+* @param {WasmLightSource} light_source
+* @returns {WasmColor}
 */
-export function spinningGrow(vec_obj: WasmVectorObject, angle: number, t: number): WasmVectorObject;
+export function getShadedRgb(color: WasmColor, point: Array<any>, unit_normal: Array<any>, light_source: WasmLightSource): WasmColor;
+/**
+* @param {Array<any>} points
+* @returns {Array<any>}
+*/
+export function getStartCorner(points: Array<any>): Array<any>;
+/**
+* @param {Array<any>} points
+* @returns {Array<any>}
+*/
+export function getEndCorner(points: Array<any>): Array<any>;
+/**
+* @param {Array<any>} a
+* @param {Array<any>} b
+* @returns {Array<any>}
+*/
+export function crossProduct(a: Array<any>, b: Array<any>): Array<any>;
+/**
+* @param {Array<any>} v1
+* @param {Array<any>} v2
+* @returns {Array<any>}
+*/
+export function getUnitNormal(v1: Array<any>, v2: Array<any>): Array<any>;
+/**
+* @param {Array<any>} points
+* @returns {Array<any>}
+*/
+export function getStartAnchors(points: Array<any>): Array<any>;
+/**
+* @param {Array<any>} points
+* @returns {Array<any>}
+*/
+export function getEndAnchors(points: Array<any>): Array<any>;
+/**
+* @param {Array<any>} points
+* @returns {Array<any>}
+*/
+export function getAnchors(points: Array<any>): Array<any>;
+/**
+* @param {Array<any>} points
+* @param {number} index
+* @returns {Array<any>}
+*/
+export function getCornerUnitNormal(points: Array<any>, index: number): Array<any>;
+/**
+* @param {Array<any>} points
+* @returns {Array<any>}
+*/
+export function getStartCornerUnitNormal(points: Array<any>): Array<any>;
+/**
+* @param {Array<any>} points
+* @returns {Array<any>}
+*/
+export function getEndCornerUnitNormal(points: Array<any>): Array<any>;
+/**
+* @param {WasmGradientImageOrColor} color
+* @param {Array<any>} points
+* @param {WasmLightSource} light_source
+* @param {WasmCamera} camera
+* @returns {WasmGradientImageOrColor}
+*/
+export function getShadedColor(color: WasmGradientImageOrColor, points: Array<any>, light_source: WasmLightSource, camera: WasmCamera): WasmGradientImageOrColor;
+/**
+* @param {Array<any>} points
+* @param {WasmCamera} camera
+* @returns {Array<any>}
+*/
+export function projectPoints(points: Array<any>, camera: WasmCamera): Array<any>;
+/**
+* @param {Array<any>} point1
+* @param {Array<any>} point2
+* @returns {Array<any>}
+*/
+export function lineAsCubicBezier3D(point1: Array<any>, point2: Array<any>): Array<any>;
+/**
+* @param {string} expression
+* @returns {Promise<WasmVectorObject>}
+*/
+export function mathjax(expression: string): Promise<WasmVectorObject>;
+/**
+* @param {string} text
+* @param {string} font_family
+* @returns {Promise<WasmVectorObject>}
+*/
+export function textToVector(text: string, font_family: string): Promise<WasmVectorObject>;
 /**
 * @param {number} ux
 * @param {number} uy
@@ -1039,138 +1030,147 @@ export function easeInBounce(t: number): number;
 */
 export function easeInOutBounce(t: number): number;
 /**
-* @param {number} angle
-* @param {number} axis
-* @returns {Array<any>}
+* @param {number} num_anim_funcs
+* @param {number} lag_ratio
+* @returns {Float64Array}
 */
-export function rotMatrix(angle: number, axis: number): Array<any>;
+export function makeTimings(num_anim_funcs: number, lag_ratio: number): Float64Array;
 /**
-* @param {Array<any>} a
-* @param {Array<any>} b
-* @returns {Array<any>}
+* @param {WasmVectorObject} vec_obj
+* @param {(Function)[]} anim_funcs
+* @param {number} lag_ratio
+* @param {number} t
+* @returns {WasmVectorObject}
 */
-export function matrixProduct(a: Array<any>, b: Array<any>): Array<any>;
+export function animationGroup(vec_obj: WasmVectorObject, anim_funcs: (Function)[], lag_ratio: number, t: number): WasmVectorObject;
 /**
-* @param {number} phi
-* @param {number} theta
-* @param {number} gamma
-* @returns {Array<any>}
+* @param {WasmVectorObject} vec_obj
+* @param {number} t
+* @returns {WasmVectorObject}
 */
-export function rotMatrixEuler(phi: number, theta: number, gamma: number): Array<any>;
+export function create(vec_obj: WasmVectorObject, t: number): WasmVectorObject;
 /**
-* @param {Array<any>} a
-* @returns {Array<any>}
+* @param {WasmVectorObject} vec_obj
+* @param {number} t
+* @returns {WasmVectorObject}
 */
-export function transposeMatrix(a: Array<any>): Array<any>;
+export function drawStrokeThenFill(vec_obj: WasmVectorObject, t: number): WasmVectorObject;
 /**
-* @param {Array<any>} matrix
-* @param {Array<any>} points
-* @returns {Array<any>}
+* @param {WasmVectorObject} vec_obj
+* @param {number} lag_ratio
+* @param {number} t
+* @returns {WasmVectorObject}
 */
-export function applyMatrix(matrix: Array<any>, points: Array<any>): Array<any>;
+export function write(vec_obj: WasmVectorObject, lag_ratio: number, t: number): WasmVectorObject;
 /**
-* @param {Array<any>} points
+* @param {WasmVectorObject} vec_obj
+* @param {number} scale_factor
 * @param {Array<any>} shift
-* @returns {Array<any>}
+* @param {number} t
+* @returns {WasmVectorObject}
 */
-export function shiftPoints3D(points: Array<any>, shift: Array<any>): Array<any>;
+export function fadeIn(vec_obj: WasmVectorObject, scale_factor: number, shift: Array<any>, t: number): WasmVectorObject;
 /**
-* @param {WasmGradientImageOrColor} color
-* @returns {WasmGradientImageOrColor}
+* @param {WasmVectorObject} vec_obj
+* @param {number} scale_factor
+* @param {Array<any>} shift
+* @param {number} t
+* @returns {WasmVectorObject}
 */
-export function ensureValidThreeDColor(color: WasmGradientImageOrColor): WasmGradientImageOrColor;
+export function fadeOut(vec_obj: WasmVectorObject, scale_factor: number, shift: Array<any>, t: number): WasmVectorObject;
 /**
-* @param {WasmColor} color
-* @param {Array<any>} point
-* @param {Array<any>} unit_normal
-* @param {WasmLightSource} light_source
-* @returns {WasmColor}
+* @param {WasmVectorObject} vec_obj
+* @param {number} t
+* @returns {WasmVectorObject}
 */
-export function getShadedRgb(color: WasmColor, point: Array<any>, unit_normal: Array<any>, light_source: WasmLightSource): WasmColor;
+export function growArrowWithFinalTip(vec_obj: WasmVectorObject, t: number): WasmVectorObject;
 /**
-* @param {Array<any>} points
-* @returns {Array<any>}
+* @param {WasmVectorObject} vec_obj
+* @param {number} t
+* @returns {WasmVectorObject}
 */
-export function getStartCorner(points: Array<any>): Array<any>;
+export function growArrowWithInitialTip(vec_obj: WasmVectorObject, t: number): WasmVectorObject;
 /**
-* @param {Array<any>} points
-* @returns {Array<any>}
+* @param {WasmVectorObject} vec_obj
+* @param {number} t
+* @returns {WasmVectorObject}
 */
-export function getEndCorner(points: Array<any>): Array<any>;
+export function growArrowWithTipsAtBothEnds(vec_obj: WasmVectorObject, t: number): WasmVectorObject;
 /**
-* @param {Array<any>} a
-* @param {Array<any>} b
-* @returns {Array<any>}
+* @param {WasmVectorObject} vec_obj
+* @param {number} t
+* @returns {WasmVectorObject}
 */
-export function crossProduct(a: Array<any>, b: Array<any>): Array<any>;
+export function growFromCenter(vec_obj: WasmVectorObject, t: number): WasmVectorObject;
 /**
-* @param {Array<any>} v1
-* @param {Array<any>} v2
-* @returns {Array<any>}
+* @param {WasmVectorObject} original
+* @param {WasmVectorObject} target
+* @param {number} t
+* @returns {WasmVectorObject}
 */
-export function getUnitNormal(v1: Array<any>, v2: Array<any>): Array<any>;
+export function morphShape(original: WasmVectorObject, target: WasmVectorObject, t: number): WasmVectorObject;
 /**
-* @param {Array<any>} points
-* @returns {Array<any>}
+* @param {Array<any>} top_left_corner
+* @param {Array<any>} bottom_right_corner
+* @param {SVGScene} scene
+* @param {number} t
 */
-export function getStartAnchors(points: Array<any>): Array<any>;
+export function moveCameraSVG(top_left_corner: Array<any>, bottom_right_corner: Array<any>, scene: SVGScene, t: number): void;
 /**
-* @param {Array<any>} points
-* @returns {Array<any>}
+* @param {Array<any>} top_left_corner
+* @param {Array<any>} bottom_right_corner
+* @param {Scene} scene
+* @param {number} t
 */
-export function getEndAnchors(points: Array<any>): Array<any>;
+export function moveCamera(top_left_corner: Array<any>, bottom_right_corner: Array<any>, scene: Scene, t: number): void;
 /**
-* @param {Array<any>} points
-* @returns {Array<any>}
+* @param {WasmVectorObject} vec_obj
+* @param {number} angle
+* @param {number} t
+* @returns {WasmVectorObject}
 */
-export function getAnchors(points: Array<any>): Array<any>;
+export function rotateAnimation(vec_obj: WasmVectorObject, angle: number, t: number): WasmVectorObject;
 /**
-* @param {Array<any>} points
-* @param {number} index
-* @returns {Array<any>}
+* @param {WasmVectorObject} vec_obj
+* @param {number} scale_factor
+* @param {number} t
+* @returns {WasmVectorObject}
 */
-export function getCornerUnitNormal(points: Array<any>, index: number): Array<any>;
+export function scaleInPlace(vec_obj: WasmVectorObject, scale_factor: number, t: number): WasmVectorObject;
 /**
-* @param {Array<any>} points
-* @returns {Array<any>}
+* @param {WasmVectorObject} vec_obj
+* @param {WasmColor} target_fill
+* @param {number} t
+* @returns {WasmVectorObject}
 */
-export function getStartCornerUnitNormal(points: Array<any>): Array<any>;
+export function setFillAnimation(vec_obj: WasmVectorObject, target_fill: WasmColor, t: number): WasmVectorObject;
 /**
-* @param {Array<any>} points
-* @returns {Array<any>}
+* @param {WasmVectorObject} vec_obj
+* @param {WasmColor} target_stroke
+* @param {number} t
+* @returns {WasmVectorObject}
 */
-export function getEndCornerUnitNormal(points: Array<any>): Array<any>;
+export function setStrokeAnimation(vec_obj: WasmVectorObject, target_stroke: WasmColor, t: number): WasmVectorObject;
 /**
-* @param {WasmGradientImageOrColor} color
-* @param {Array<any>} points
-* @param {WasmLightSource} light_source
-* @param {WasmCamera} camera
-* @returns {WasmGradientImageOrColor}
+* @param {WasmVectorObject} vec_obj
+* @param {Array<any>} shift
+* @param {number} t
+* @returns {WasmVectorObject}
 */
-export function getShadedColor(color: WasmGradientImageOrColor, points: Array<any>, light_source: WasmLightSource, camera: WasmCamera): WasmGradientImageOrColor;
+export function shiftAnimation(vec_obj: WasmVectorObject, shift: Array<any>, t: number): WasmVectorObject;
 /**
-* @param {Array<any>} points
-* @param {WasmCamera} camera
-* @returns {Array<any>}
+* @param {WasmVectorObject} vec_obj
+* @param {number} t
+* @returns {WasmVectorObject}
 */
-export function projectPoints(points: Array<any>, camera: WasmCamera): Array<any>;
+export function showTemporaily(vec_obj: WasmVectorObject, t: number): WasmVectorObject;
 /**
-* @param {Array<any>} point1
-* @param {Array<any>} point2
-* @returns {Array<any>}
+* @param {WasmVectorObject} vec_obj
+* @param {number} angle
+* @param {number} t
+* @returns {WasmVectorObject}
 */
-export function lineAsCubicBezier3D(point1: Array<any>, point2: Array<any>): Array<any>;
-/**
-* @param {string} expression
-* @returns {Promise<WasmVectorObject>}
-*/
-export function mathjax(expression: string): Promise<WasmVectorObject>;
-/**
-* @param {string} text
-* @param {string} font_family
-* @returns {Promise<WasmVectorObject>}
-*/
-export function textToVector(text: string, font_family: string): Promise<WasmVectorObject>;
+export function spinningGrow(vec_obj: WasmVectorObject, angle: number, t: number): WasmVectorObject;
 /**
 */
 export class GenericScene {
@@ -1193,6 +1193,10 @@ export class GenericScene {
 * @returns {boolean}
 */
   isSVGScene(): boolean;
+/**
+* @returns {boolean}
+*/
+  isVideoScene(): boolean;
 /**
 * @returns {bigint}
 */
@@ -2340,164 +2344,6 @@ export interface InitOutput {
   readonly wasmimage_getBottom: (a: number) => number;
   readonly wasmimage_getRight: (a: number) => number;
   readonly wasmimage_getAlpha: (a: number) => number;
-  readonly __wbg_scene_free: (a: number) => void;
-  readonly scene_new_js: (a: number, b: number, c: number) => number;
-  readonly scene_getFps: (a: number) => number;
-  readonly scene_getHeight: (a: number) => number;
-  readonly scene_getWidth: (a: number) => number;
-  readonly scene_renderFrame: (a: number) => void;
-  readonly scene_clear: (a: number) => void;
-  readonly scene_restore: (a: number, b: number) => void;
-  readonly scene_saveState: (a: number, b: number) => void;
-  readonly scene_setTopLeftCorner: (a: number, b: number, c: number) => void;
-  readonly scene_setBottomRightCorner: (a: number, b: number, c: number) => void;
-  readonly scene_getTopLeftCorner: (a: number) => number;
-  readonly scene_getBottomRightCorner: (a: number) => number;
-  readonly scene_setBackground: (a: number, b: number) => void;
-  readonly scene_add: (a: number, b: number) => void;
-  readonly scene_insert: (a: number, b: number, c: number) => void;
-  readonly scene_remove: (a: number, b: number) => void;
-  readonly scene_getObjects: (a: number) => number;
-  readonly scene_getObjectsFromIndices: (a: number, b: number) => number;
-  readonly scene_setCanvasContext: (a: number, b: number) => void;
-  readonly scene_sleep: (a: number, b: number) => number;
-  readonly scene_setObjects: (a: number, b: number) => void;
-  readonly scene_play: (a: number, b: number, c: number, d: number, e: number, f: number) => number;
-  readonly scene_makeFrame: (a: number, b: number, c: number, d: number) => number;
-  readonly scene_wait: (a: number, b: number) => number;
-  readonly scene_setCallback: (a: number, b: number) => void;
-  readonly scene_callCallback: (a: number) => number;
-  readonly makeTimings: (a: number, b: number, c: number) => void;
-  readonly animationGroup: (a: number, b: number, c: number, d: number, e: number) => number;
-  readonly create: (a: number, b: number) => number;
-  readonly drawStrokeThenFill: (a: number, b: number) => number;
-  readonly write: (a: number, b: number, c: number) => number;
-  readonly fadeIn: (a: number, b: number, c: number, d: number) => number;
-  readonly fadeOut: (a: number, b: number, c: number, d: number) => number;
-  readonly growArrowWithFinalTip: (a: number, b: number) => number;
-  readonly growArrowWithInitialTip: (a: number, b: number) => number;
-  readonly growArrowWithTipsAtBothEnds: (a: number, b: number) => number;
-  readonly growFromCenter: (a: number, b: number) => number;
-  readonly morphShape: (a: number, b: number, c: number) => number;
-  readonly moveCameraSVG: (a: number, b: number, c: number, d: number) => void;
-  readonly moveCamera: (a: number, b: number, c: number, d: number) => void;
-  readonly rotateAnimation: (a: number, b: number, c: number) => number;
-  readonly scaleInPlace: (a: number, b: number, c: number) => number;
-  readonly setFillAnimation: (a: number, b: number, c: number) => number;
-  readonly setStrokeAnimation: (a: number, b: number, c: number) => number;
-  readonly shiftAnimation: (a: number, b: number, c: number) => number;
-  readonly showTemporaily: (a: number, b: number) => number;
-  readonly spinningGrow: (a: number, b: number, c: number) => number;
-  readonly radian: (a: number, b: number, c: number, d: number) => number;
-  readonly ellipticalArcPath: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number) => number;
-  readonly getBbox: (a: number) => number;
-  readonly center: (a: number, b: number) => number;
-  readonly factorial: (a: number) => number;
-  readonly hexToColor: (a: number, b: number, c: number) => number;
-  readonly bezier: (a: number, b: number) => number;
-  readonly bezierNumber: (a: number, b: number) => number;
-  readonly permutation: (a: number, b: number) => number;
-  readonly choose: (a: number, b: number) => number;
-  readonly distanceSquared: (a: number, b: number, c: number, d: number) => number;
-  readonly interpolate: (a: number, b: number, c: number) => number;
-  readonly interpolateTuple: (a: number, b: number, c: number) => number;
-  readonly interpolateTuple3D: (a: number, b: number, c: number) => number;
-  readonly interpolateColor: (a: number, b: number, c: number) => number;
-  readonly pointsFromAnchorsAndHandles: (a: number, b: number, c: number, d: number) => number;
-  readonly startNewPath: (a: number, b: number) => number;
-  readonly hasNewPathBegun: (a: number) => number;
-  readonly getNthSubpath: (a: number, b: number) => number;
-  readonly insertNCurvesToPointList: (a: number, b: number) => number;
-  readonly nullPointAlign: (a: number, b: number) => number;
-  readonly alignPoints: (a: number, b: number, c: number) => number;
-  readonly addNMoreSubobjects: (a: number, b: number, c: number) => number;
-  readonly alignSubobjects: (a: number, b: number, c: number, d: number) => void;
-  readonly alignData: (a: number, b: number, c: number, d: number) => number;
-  readonly integerInterpolate: (a: number, b: number, c: number) => number;
-  readonly lineAsCubicBezier: (a: number, b: number, c: number, d: number) => number;
-  readonly quadraticBezierAsCubicBezier: (a: number, b: number, c: number, d: number, e: number, f: number) => number;
-  readonly considerPointsEquals: (a: number, b: number, c: number, d: number) => number;
-  readonly sigmoid: (a: number) => number;
-  readonly linear: (a: number) => number;
-  readonly smooth: (a: number, b: number) => number;
-  readonly smoothstep: (a: number) => number;
-  readonly smootherstep: (a: number) => number;
-  readonly smoothererstep: (a: number) => number;
-  readonly rushInto: (a: number, b: number) => number;
-  readonly rushFrom: (a: number, b: number) => number;
-  readonly doubleSmooth: (a: number) => number;
-  readonly thereAndBack: (a: number, b: number) => number;
-  readonly thereAndBackWithPause: (a: number, b: number) => number;
-  readonly runningStart: (a: number, b: number) => number;
-  readonly notQuiteThere: (a: number, b: number, c: number) => number;
-  readonly wiggle: (a: number, b: number) => number;
-  readonly squishRateFunc: (a: number, b: number, c: number, d: number) => number;
-  readonly lingering: (a: number) => number;
-  readonly exponentialDecay: (a: number, b: number) => number;
-  readonly easeInSine: (a: number) => number;
-  readonly easeOutSine: (a: number) => number;
-  readonly easeInOutSine: (a: number) => number;
-  readonly easeInQuad: (a: number) => number;
-  readonly easeOutQuad: (a: number) => number;
-  readonly easeInOutQuad: (a: number) => number;
-  readonly easeInCubic: (a: number) => number;
-  readonly easeOutCubic: (a: number) => number;
-  readonly easeInOutCubic: (a: number) => number;
-  readonly easeInQuart: (a: number) => number;
-  readonly easeOutQuart: (a: number) => number;
-  readonly easeInOutQuart: (a: number) => number;
-  readonly easeInQuint: (a: number) => number;
-  readonly easeOutQuint: (a: number) => number;
-  readonly easeInOutQuint: (a: number) => number;
-  readonly easeInExpo: (a: number) => number;
-  readonly easeOutExpo: (a: number) => number;
-  readonly easeInOutExpo: (a: number) => number;
-  readonly easeInCirc: (a: number) => number;
-  readonly easeOutCirc: (a: number) => number;
-  readonly easeInOutCirc: (a: number) => number;
-  readonly easeInBack: (a: number) => number;
-  readonly easeInOutBack: (a: number) => number;
-  readonly easeInElastic: (a: number) => number;
-  readonly easeOutElastic: (a: number) => number;
-  readonly easeInOutElastic: (a: number) => number;
-  readonly easeInBounce: (a: number) => number;
-  readonly easeInOutBounce: (a: number) => number;
-  readonly __wbg_genericscene_free: (a: number) => void;
-  readonly genericscene_fromScene: (a: number) => number;
-  readonly genericscene_fromSVGScene: (a: number) => number;
-  readonly genericscene_isScene: (a: number) => number;
-  readonly genericscene_isSVGScene: (a: number) => number;
-  readonly genericscene_getFps: (a: number) => number;
-  readonly genericscene_getHeight: (a: number) => number;
-  readonly genericscene_getWidth: (a: number) => number;
-  readonly genericscene_renderFrame: (a: number) => void;
-  readonly genericscene_clear: (a: number) => void;
-  readonly genericscene_restore: (a: number, b: number) => void;
-  readonly genericscene_saveState: (a: number, b: number) => void;
-  readonly genericscene_setTopLeftCorner: (a: number, b: number, c: number) => void;
-  readonly genericscene_setBottomRightCorner: (a: number, b: number, c: number) => void;
-  readonly genericscene_getTopLeftCorner: (a: number) => number;
-  readonly genericscene_getBottomRightCorner: (a: number) => number;
-  readonly genericscene_setBackground: (a: number, b: number) => void;
-  readonly genericscene_add: (a: number, b: number) => void;
-  readonly genericscene_insert: (a: number, b: number, c: number) => void;
-  readonly genericscene_remove: (a: number, b: number) => void;
-  readonly genericscene_getObjects: (a: number) => number;
-  readonly genericscene_getObjectsFromIndices: (a: number, b: number) => number;
-  readonly genericscene_setCanvasContext: (a: number, b: number) => void;
-  readonly genericscene_setDivContainer: (a: number, b: number) => void;
-  readonly genericscene_sleep: (a: number, b: number) => number;
-  readonly genericscene_setObjects: (a: number, b: number) => void;
-  readonly genericscene_play: (a: number, b: number, c: number, d: number, e: number, f: number) => number;
-  readonly genericscene_makeFrame: (a: number, b: number, c: number, d: number) => number;
-  readonly genericscene_wait: (a: number, b: number) => number;
-  readonly genericscene_setCallback: (a: number, b: number) => void;
-  readonly genericscene_callCallback: (a: number) => number;
-  readonly genericscene_setClass: (a: number, b: number, c: number, d: number) => void;
-  readonly genericscene_setStyle: (a: number, b: number) => void;
-  readonly easeOutBack: (a: number) => number;
-  readonly slowInto: (a: number) => number;
-  readonly easeOutBounce: (a: number) => number;
   readonly rotMatrix: (a: number, b: number) => number;
   readonly matrixProduct: (a: number, b: number) => number;
   readonly rotMatrixEuler: (a: number, b: number, c: number) => number;
@@ -2587,16 +2433,175 @@ export interface InitOutput {
   readonly svgscene_removeClass: (a: number, b: number) => void;
   readonly mathjax: (a: number, b: number) => number;
   readonly textToVector: (a: number, b: number, c: number, d: number) => number;
+  readonly radian: (a: number, b: number, c: number, d: number) => number;
+  readonly ellipticalArcPath: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number) => number;
+  readonly getBbox: (a: number) => number;
+  readonly center: (a: number, b: number) => number;
+  readonly factorial: (a: number) => number;
+  readonly hexToColor: (a: number, b: number, c: number) => number;
+  readonly bezier: (a: number, b: number) => number;
+  readonly bezierNumber: (a: number, b: number) => number;
+  readonly permutation: (a: number, b: number) => number;
+  readonly choose: (a: number, b: number) => number;
+  readonly distanceSquared: (a: number, b: number, c: number, d: number) => number;
+  readonly interpolate: (a: number, b: number, c: number) => number;
+  readonly interpolateTuple: (a: number, b: number, c: number) => number;
+  readonly interpolateTuple3D: (a: number, b: number, c: number) => number;
+  readonly interpolateColor: (a: number, b: number, c: number) => number;
+  readonly pointsFromAnchorsAndHandles: (a: number, b: number, c: number, d: number) => number;
+  readonly startNewPath: (a: number, b: number) => number;
+  readonly hasNewPathBegun: (a: number) => number;
+  readonly getNthSubpath: (a: number, b: number) => number;
+  readonly insertNCurvesToPointList: (a: number, b: number) => number;
+  readonly nullPointAlign: (a: number, b: number) => number;
+  readonly alignPoints: (a: number, b: number, c: number) => number;
+  readonly addNMoreSubobjects: (a: number, b: number, c: number) => number;
+  readonly alignSubobjects: (a: number, b: number, c: number, d: number) => void;
+  readonly alignData: (a: number, b: number, c: number, d: number) => number;
+  readonly integerInterpolate: (a: number, b: number, c: number) => number;
+  readonly lineAsCubicBezier: (a: number, b: number, c: number, d: number) => number;
+  readonly quadraticBezierAsCubicBezier: (a: number, b: number, c: number, d: number, e: number, f: number) => number;
+  readonly considerPointsEquals: (a: number, b: number, c: number, d: number) => number;
+  readonly sigmoid: (a: number) => number;
+  readonly linear: (a: number) => number;
+  readonly smooth: (a: number, b: number) => number;
+  readonly smoothstep: (a: number) => number;
+  readonly smootherstep: (a: number) => number;
+  readonly smoothererstep: (a: number) => number;
+  readonly rushInto: (a: number, b: number) => number;
+  readonly rushFrom: (a: number, b: number) => number;
+  readonly doubleSmooth: (a: number) => number;
+  readonly thereAndBack: (a: number, b: number) => number;
+  readonly thereAndBackWithPause: (a: number, b: number) => number;
+  readonly runningStart: (a: number, b: number) => number;
+  readonly notQuiteThere: (a: number, b: number, c: number) => number;
+  readonly wiggle: (a: number, b: number) => number;
+  readonly squishRateFunc: (a: number, b: number, c: number, d: number) => number;
+  readonly lingering: (a: number) => number;
+  readonly exponentialDecay: (a: number, b: number) => number;
+  readonly easeInSine: (a: number) => number;
+  readonly easeOutSine: (a: number) => number;
+  readonly easeInOutSine: (a: number) => number;
+  readonly easeInQuad: (a: number) => number;
+  readonly easeOutQuad: (a: number) => number;
+  readonly easeInOutQuad: (a: number) => number;
+  readonly easeInCubic: (a: number) => number;
+  readonly easeOutCubic: (a: number) => number;
+  readonly easeInOutCubic: (a: number) => number;
+  readonly easeInQuart: (a: number) => number;
+  readonly easeOutQuart: (a: number) => number;
+  readonly easeInOutQuart: (a: number) => number;
+  readonly easeInQuint: (a: number) => number;
+  readonly easeOutQuint: (a: number) => number;
+  readonly easeInOutQuint: (a: number) => number;
+  readonly easeInExpo: (a: number) => number;
+  readonly easeOutExpo: (a: number) => number;
+  readonly easeInOutExpo: (a: number) => number;
+  readonly easeInCirc: (a: number) => number;
+  readonly easeOutCirc: (a: number) => number;
+  readonly easeInOutCirc: (a: number) => number;
+  readonly easeInBack: (a: number) => number;
+  readonly easeInOutBack: (a: number) => number;
+  readonly easeInElastic: (a: number) => number;
+  readonly easeOutElastic: (a: number) => number;
+  readonly easeInOutElastic: (a: number) => number;
+  readonly easeInBounce: (a: number) => number;
+  readonly easeInOutBounce: (a: number) => number;
+  readonly slowInto: (a: number) => number;
+  readonly easeOutBounce: (a: number) => number;
+  readonly easeOutBack: (a: number) => number;
+  readonly __wbg_scene_free: (a: number) => void;
+  readonly scene_new_js: (a: number, b: number, c: number) => number;
+  readonly scene_getFps: (a: number) => number;
+  readonly scene_getHeight: (a: number) => number;
+  readonly scene_getWidth: (a: number) => number;
+  readonly scene_renderFrame: (a: number) => void;
+  readonly scene_clear: (a: number) => void;
+  readonly scene_restore: (a: number, b: number) => void;
+  readonly scene_saveState: (a: number, b: number) => void;
+  readonly scene_setTopLeftCorner: (a: number, b: number, c: number) => void;
+  readonly scene_setBottomRightCorner: (a: number, b: number, c: number) => void;
+  readonly scene_getTopLeftCorner: (a: number) => number;
+  readonly scene_getBottomRightCorner: (a: number) => number;
+  readonly scene_setBackground: (a: number, b: number) => void;
+  readonly scene_add: (a: number, b: number) => void;
+  readonly scene_insert: (a: number, b: number, c: number) => void;
+  readonly scene_remove: (a: number, b: number) => void;
+  readonly scene_getObjects: (a: number) => number;
+  readonly scene_getObjectsFromIndices: (a: number, b: number) => number;
+  readonly scene_setCanvasContext: (a: number, b: number) => void;
+  readonly scene_sleep: (a: number, b: number) => number;
+  readonly scene_setObjects: (a: number, b: number) => void;
+  readonly scene_play: (a: number, b: number, c: number, d: number, e: number, f: number) => number;
+  readonly scene_makeFrame: (a: number, b: number, c: number, d: number) => number;
+  readonly scene_wait: (a: number, b: number) => number;
+  readonly scene_setCallback: (a: number, b: number) => void;
+  readonly scene_callCallback: (a: number) => number;
+  readonly makeTimings: (a: number, b: number, c: number) => void;
+  readonly animationGroup: (a: number, b: number, c: number, d: number, e: number) => number;
+  readonly create: (a: number, b: number) => number;
+  readonly drawStrokeThenFill: (a: number, b: number) => number;
+  readonly write: (a: number, b: number, c: number) => number;
+  readonly fadeIn: (a: number, b: number, c: number, d: number) => number;
+  readonly fadeOut: (a: number, b: number, c: number, d: number) => number;
+  readonly growArrowWithFinalTip: (a: number, b: number) => number;
+  readonly growArrowWithInitialTip: (a: number, b: number) => number;
+  readonly growArrowWithTipsAtBothEnds: (a: number, b: number) => number;
+  readonly growFromCenter: (a: number, b: number) => number;
+  readonly morphShape: (a: number, b: number, c: number) => number;
+  readonly moveCameraSVG: (a: number, b: number, c: number, d: number) => void;
+  readonly moveCamera: (a: number, b: number, c: number, d: number) => void;
+  readonly rotateAnimation: (a: number, b: number, c: number) => number;
+  readonly scaleInPlace: (a: number, b: number, c: number) => number;
+  readonly setFillAnimation: (a: number, b: number, c: number) => number;
+  readonly setStrokeAnimation: (a: number, b: number, c: number) => number;
+  readonly shiftAnimation: (a: number, b: number, c: number) => number;
+  readonly showTemporaily: (a: number, b: number) => number;
+  readonly spinningGrow: (a: number, b: number, c: number) => number;
+  readonly __wbg_genericscene_free: (a: number) => void;
+  readonly genericscene_fromScene: (a: number) => number;
+  readonly genericscene_fromSVGScene: (a: number) => number;
+  readonly genericscene_isScene: (a: number) => number;
+  readonly genericscene_isSVGScene: (a: number) => number;
+  readonly genericscene_isVideoScene: (a: number) => number;
+  readonly genericscene_getFps: (a: number) => number;
+  readonly genericscene_getHeight: (a: number) => number;
+  readonly genericscene_getWidth: (a: number) => number;
+  readonly genericscene_renderFrame: (a: number) => void;
+  readonly genericscene_clear: (a: number) => void;
+  readonly genericscene_restore: (a: number, b: number) => void;
+  readonly genericscene_saveState: (a: number, b: number) => void;
+  readonly genericscene_setTopLeftCorner: (a: number, b: number, c: number) => void;
+  readonly genericscene_setBottomRightCorner: (a: number, b: number, c: number) => void;
+  readonly genericscene_getTopLeftCorner: (a: number) => number;
+  readonly genericscene_getBottomRightCorner: (a: number) => number;
+  readonly genericscene_setBackground: (a: number, b: number) => void;
+  readonly genericscene_add: (a: number, b: number) => void;
+  readonly genericscene_insert: (a: number, b: number, c: number) => void;
+  readonly genericscene_remove: (a: number, b: number) => void;
+  readonly genericscene_getObjects: (a: number) => number;
+  readonly genericscene_getObjectsFromIndices: (a: number, b: number) => number;
+  readonly genericscene_setCanvasContext: (a: number, b: number) => void;
+  readonly genericscene_setDivContainer: (a: number, b: number) => void;
+  readonly genericscene_sleep: (a: number, b: number) => number;
+  readonly genericscene_setObjects: (a: number, b: number) => void;
+  readonly genericscene_play: (a: number, b: number, c: number, d: number, e: number, f: number) => number;
+  readonly genericscene_makeFrame: (a: number, b: number, c: number, d: number) => number;
+  readonly genericscene_wait: (a: number, b: number) => number;
+  readonly genericscene_setCallback: (a: number, b: number) => void;
+  readonly genericscene_callCallback: (a: number) => number;
+  readonly genericscene_setClass: (a: number, b: number, c: number, d: number) => void;
+  readonly genericscene_setStyle: (a: number, b: number) => void;
   readonly __wbindgen_malloc: (a: number, b: number) => number;
   readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
   readonly __wbindgen_export_2: WebAssembly.Table;
-  readonly _dyn_core__ops__function__Fn_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h12ca61d4395ba71c: (a: number, b: number) => number;
-  readonly wasm_bindgen__convert__closures__invoke2__h3666646dbf75527c: (a: number, b: number, c: number, d: number) => number;
-  readonly _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h658c7ef59a74f654: (a: number, b: number, c: number) => void;
+  readonly _dyn_core__ops__function__Fn__A_B___Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h6d64b0991b389f85: (a: number, b: number, c: number, d: number) => number;
+  readonly _dyn_core__ops__function__Fn_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__ha1cf8fb80f0e40d3: (a: number, b: number) => number;
+  readonly _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h36f54c9e7475dd01: (a: number, b: number, c: number) => void;
   readonly __wbindgen_add_to_stack_pointer: (a: number) => number;
   readonly __wbindgen_free: (a: number, b: number, c: number) => void;
   readonly __wbindgen_exn_store: (a: number) => void;
-  readonly wasm_bindgen__convert__closures__invoke2_mut__h60fd2dc8490fe53c: (a: number, b: number, c: number, d: number) => void;
+  readonly wasm_bindgen__convert__closures__invoke2_mut__h271b87efd55193df: (a: number, b: number, c: number, d: number) => void;
 }
 
 export type SyncInitInput = BufferSource | WebAssembly.Module;

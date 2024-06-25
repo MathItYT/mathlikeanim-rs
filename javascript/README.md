@@ -11,16 +11,26 @@ This is an animation library written in Rust, widely inspired by [Manim](https:/
 - [x] Function plotting.
 - [x] Animations in HTML Canvas and SVG.
 - [x] Text rendering.
+- [x] Browser and Node.js support.
 - [ ] 3D rendering (coming soon).
 
 
-## How to use it?
-You can embed the library in your HTML file by adding a script tag, and don't forget to include your HTML Canvas for raster animations or DIV container for SVG animations! You can either use the CDN or install it via npm.
+## How to use it in the browser?
+You can embed the library in your HTML file by adding a script tag, and don't forget to include your HTML Canvas for raster animations or DIV container for SVG animations!
 
 ```html
 <script type="module">
-import mathlikeanimRs from 'https://cdn.jsdelivr.net/npm/mathlikeanim-rs@0.7.2/+esm'
+    import mathlikeanimRs from './node_modules/mathlikeanim-rs/browser/mathlikeanim_rs.js';
 </script>
+```
+
+## How to use it in Node.js?
+You can use the library in Node.js by importing the module and using it as a CommonJS module.
+
+**Note:** Interactivity is not supported in Node.js.
+
+```javascript
+const mathlikeanimRs = require('mathlikeanim-rs')
 ```
 
 
@@ -36,7 +46,12 @@ npm i mathlikeanim-rs
 If you want to contribute to this project, you can clone a fork of this repository and work with the Rust codebase, and then build the WebAssembly module by running in the main directory:
 
 ```bash
-wasm-pack build --target web --out-dir javascript
+wasm-pack build --target web --out-dir javascript/browser --features browser --no-default-features
+wasm-pack build --target nodejs --out-dir javascript/node --features node --no-default-features
 ```
 
 By the moment we don't have any tests, so your contributions are welcome!
+
+
+## Documentation
+You can find the documentation of this project in [https://mathlikeanim-rs.vercel.app/](https://mathlikeanim-rs.vercel.app/).
