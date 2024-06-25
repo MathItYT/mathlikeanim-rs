@@ -30,7 +30,7 @@
     "input-otp": "^1.2.4",
     "is-mobile": "^4.0.0",
     "lucide-react": "^0.394.0",
-    "mathlikeanim-rs": "file:../javascript",
+    "mathlikeanim-rs": "file:../javascript/browser",
     "matter-js": "^0.19.0",
     "next": "14.2.4",
     "next-themes": "^0.3.0",
