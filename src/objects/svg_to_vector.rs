@@ -1,5 +1,3 @@
-use core::str;
-
 use lightningcss::properties::transform::{Matrix, Transform};
 use lightningcss::traits::Parse;
 use svg::node::element::path::{Command, Data};
@@ -948,14 +946,17 @@ pub fn svg_to_vector(svg: &str) -> VectorFeatures {
                 let transform = attributes.get("transform").map(|transform| {
                     transform.to_string()
                 });
-                let vec_obj = id_vec_obj_map.get(&Some(x_link_href.clone().unwrap_or(href.clone().unwrap())));
-                if vec_obj.is_none() {
+                let vec_obj = if href.is_some() {
+                    id_vec_obj_map.get(&href).unwrap()
+                } else if x_link_href.is_some() {
+                    id_vec_obj_map.get(&x_link_href).unwrap()
+                } else {
                     #[cfg(target_arch = "wasm32")]
                     log(&format!("Warning: no object with id: {:?}", x_link_href.clone().unwrap_or(href.clone().unwrap())));
                     println!("Warning: no object with id: {:?}", x_link_href.clone().unwrap_or(href.clone().unwrap()));
                     continue;
-                }
-                let mut vec_obj = vec_obj.unwrap().clone();
+                };
+                let mut vec_obj = vec_obj.clone();
                 let fill_color = fill.last();
                 let stroke_color = stroke.last();
                 let stroke_width = sw.last().unwrap_or(&vec_obj.stroke_width).clone();
@@ -1007,6 +1008,8 @@ pub fn svg_to_vector(svg: &str) -> VectorFeatures {
                     }
                     for transf in new_transfs {
                         let transf = transf.trim();
+                        #[cfg(target_arch = "wasm32")]
+                        log(&format!("Transform: {:?}", transf));
                         let transf = Transform::parse_string(transf.replace(", ", " ").replace(" ", ",").as_str()).unwrap();
                         let matrix = transf.to_matrix().unwrap().to_matrix2d().unwrap();
                         for point in points.iter() {

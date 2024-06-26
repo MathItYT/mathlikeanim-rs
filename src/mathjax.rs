@@ -71,7 +71,7 @@ pub async fn mathjax_node(expression: String) -> WasmVectorObject {
 require('mathjax-full/es5/tex-svg.js');
 
 const texConfig = {
-  display: true, // false 为行间公式
+  display: true,
   em: 32,
   ex: 16,
   containerWidth: 80 * 16,
@@ -79,12 +79,11 @@ const texConfig = {
 
 async (tex) => {
   await MathJax.startup.promise
-  const dirtySvg = await MathJax.tex2svgPromise(tex, texConfig).then(node =>
-    MathJax.startup.adaptor.innerHTML(node)
-  )
-  const lastIndex = dirtySvg.lastIndexOf('</svg>')
-  const svg = dirtySvg.slice(0, lastIndex + 6) // '</svg>'.length === 6
-  return svg
+  const svg = await MathJax.tex2svgPromise(tex, texConfig).then(node =>
+    MathJax.startup.adaptor.outerHTML(node.children[0])
+  );
+  console.log(svg)
+  return svg;
 }"#,
     ).unwrap().dyn_into::<js_sys::Function>().unwrap();
     let promise = func.call1(
@@ -93,5 +92,6 @@ async (tex) => {
     ).unwrap().dyn_into::<Promise>().unwrap();
     let result = JsFuture::from(promise).await.unwrap();
     let svg = result.as_string().unwrap();
+    eval(&format!("console.log({:?})", svg)).unwrap();
     svg_to_vector_js(svg)
 }
