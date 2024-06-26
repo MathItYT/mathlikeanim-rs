@@ -928,7 +928,12 @@ pub fn svg_to_vector(svg: &str) -> VectorFeatures {
                         xlink_href[1..].to_string()
                     }
                 );
-                if x_link_href.is_none() {
+                let href = attributes.get("href").map(
+                    |href| {
+                        href.to_string()
+                    }
+                );
+                if x_link_href.is_none() && href.is_none() {
                     continue;
                 }
                 let x = attributes.get("x").map(|x| {
@@ -940,11 +945,11 @@ pub fn svg_to_vector(svg: &str) -> VectorFeatures {
                 let transform = attributes.get("transform").map(|transform| {
                     transform.to_string()
                 });
-                let vec_obj = id_vec_obj_map.get(&x_link_href);
+                let vec_obj = id_vec_obj_map.get(&Some(x_link_href.clone().unwrap_or(href.clone().unwrap())));
                 if vec_obj.is_none() {
                     #[cfg(target_arch = "wasm32")]
-                    log(&format!("Warning: no object with id: {:?}", x_link_href));
-                    println!("Warning: no object with id: {:?}", x_link_href);
+                    log(&format!("Warning: no object with id: {:?}", x_link_href.clone().unwrap_or(href.clone().unwrap())));
+                    println!("Warning: no object with id: {:?}", x_link_href.clone().unwrap_or(href.clone().unwrap()));
                     continue;
                 }
                 let mut vec_obj = vec_obj.unwrap().clone();
