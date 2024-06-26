@@ -712,7 +712,6 @@ pub fn svg_to_vector(svg: &str) -> VectorFeatures {
     let mut id_vec_obj_map = std::collections::HashMap::new();
     let mut subobjects = Vec::new();
     let mut subobjects_indices = Vec::new();
-    let mut vec_objs_with_no_id = Vec::new();
     let mut fill = Vec::new();
     let mut applied_fill = Vec::new();
     let mut stroke = Vec::new();
@@ -867,7 +866,8 @@ pub fn svg_to_vector(svg: &str) -> VectorFeatures {
                 if id.is_some() {
                     id_vec_obj_map.insert(id, vec_obj.clone());
                 } else {
-                    vec_objs_with_no_id.push(vec_obj.clone());
+                    subobjects.push(vec_obj.clone());
+                    subobjects_indices.push(index);
                 }
                 index += 1;
             },
@@ -884,7 +884,8 @@ pub fn svg_to_vector(svg: &str) -> VectorFeatures {
                 if id.is_some() {
                     id_vec_obj_map.insert(id, vec_obj.clone());
                 } else {
-                    vec_objs_with_no_id.push(vec_obj.clone());
+                    subobjects.push(vec_obj.clone());
+                    subobjects_indices.push(index);
                 }
                 index += 1;
             }
@@ -901,7 +902,8 @@ pub fn svg_to_vector(svg: &str) -> VectorFeatures {
                 if id.is_some() {
                     id_vec_obj_map.insert(id, vec_obj.clone());
                 } else {
-                    vec_objs_with_no_id.push(vec_obj.clone());
+                    subobjects.push(vec_obj.clone());
+                    subobjects_indices.push(index);
                 }
                 index += 1;
             }
@@ -918,7 +920,8 @@ pub fn svg_to_vector(svg: &str) -> VectorFeatures {
                 if id.is_some() {
                     id_vec_obj_map.insert(id, vec_obj.clone());
                 } else {
-                    vec_objs_with_no_id.push(vec_obj.clone());
+                    subobjects.push(vec_obj.clone());
+                    subobjects_indices.push(index);
                 }
                 index += 1;
             }
@@ -1043,11 +1046,6 @@ pub fn svg_to_vector(svg: &str) -> VectorFeatures {
                 log("Error while parsing SVG");
                 panic!("Error while parsing SVG");
             },
-        }
-    }
-    if vec_objs_with_no_id.len() > 0 {
-        for vec_obj in vec_objs_with_no_id {
-            subobjects.push(vec_obj);
         }
     }
     return VectorFeatures {
