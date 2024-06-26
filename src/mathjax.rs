@@ -91,6 +91,5 @@ async (tex) => {
     ).unwrap().dyn_into::<Promise>().unwrap();
     let result = JsFuture::from(promise).await.unwrap();
     let svg = result.as_string().unwrap();
-    eval(&format!("console.log({:?})", svg)).unwrap();
     svg_to_vector_js(svg)
 }
