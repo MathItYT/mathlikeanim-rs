@@ -82,7 +82,6 @@ async (tex) => {
   const svg = await MathJax.tex2svgPromise(tex, texConfig).then(node =>
     MathJax.startup.adaptor.outerHTML(node.children[0])
   );
-  console.log(svg)
   return svg;
 }"#,
     ).unwrap().dyn_into::<js_sys::Function>().unwrap();
