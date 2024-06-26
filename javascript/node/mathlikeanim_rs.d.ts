@@ -565,11 +565,6 @@ export function projectPoints(points: Array<any>, camera: WasmCamera): Array<any
 */
 export function lineAsCubicBezier3D(point1: Array<any>, point2: Array<any>): Array<any>;
 /**
-* @param {string} expression
-* @returns {Promise<WasmVectorObject>}
-*/
-export function mathjax(expression: string): Promise<WasmVectorObject>;
-/**
 * @param {number} num_anim_funcs
 * @param {number} lag_ratio
 * @returns {Float64Array}
@@ -1159,6 +1154,11 @@ export function easeInBounce(t: number): number;
 */
 export function easeInOutBounce(t: number): number;
 /**
+* @param {string} expression
+* @returns {Promise<WasmVectorObject>}
+*/
+export function mathjax(expression: string): Promise<WasmVectorObject>;
+/**
 * @param {string} text
 * @param {string} font_family
 * @returns {Promise<WasmVectorObject>}
@@ -1259,6 +1259,16 @@ export class GenericScene {
 * @param {any} context
 */
   setCanvasContext(context: any): void;
+/**
+* @param {string} path
+* @param {string | undefined} [codec]
+* @param {string | undefined} [pix_fmt]
+* @param {string | undefined} [qp]
+*/
+  initFFmpeg(path: string, codec?: string, pix_fmt?: string, qp?: string): void;
+/**
+*/
+  closeFFmpeg(): void;
 /**
 * @param {number} duration_in_ms
 * @returns {Promise<void>}

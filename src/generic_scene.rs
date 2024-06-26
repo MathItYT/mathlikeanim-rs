@@ -375,6 +375,32 @@ impl GenericScene {
             }
         }
     }
+    #[cfg(feature = "node")]
+    #[wasm_bindgen(js_name = initFFmpeg)]
+    pub fn init_ffmpeg(&mut self, path: String, codec: Option<String>, pix_fmt: Option<String>, qp: Option<String>) {
+        match self.scene {
+            SceneEnum::VideoScene(ref mut scene) => {
+                scene.init_ffmpeg_js(path, codec, pix_fmt, qp);
+            }
+            #[cfg(feature = "browser")]
+            _ => {
+                error(JsError::new("initFFmpeg can only be called on a VideoScene"));
+            }
+        }
+    }
+    #[cfg(feature = "node")]
+    #[wasm_bindgen(js_name = closeFFmpeg)]
+    pub fn close_ffmpeg(&mut self) {
+        match self.scene {
+            SceneEnum::VideoScene(ref mut scene) => {
+                scene.close_ffmpeg_js();
+            }
+            #[cfg(feature = "browser")]
+            _ => {
+                error(JsError::new("closeFFmpeg can only be called on a VideoScene"));
+            }
+        }
+    }
     #[cfg(feature = "browser")]
     #[wasm_bindgen(js_name = setDivContainer)]
     pub fn set_div_container(&mut self, div_container: web_sys::HtmlDivElement) {
