@@ -930,7 +930,7 @@ pub fn svg_to_vector(svg: &str) -> VectorFeatures {
                 );
                 let href = attributes.get("href").map(
                     |href| {
-                        href.to_string()
+                        href[1..].to_string()
                     }
                 );
                 if x_link_href.is_none() && href.is_none() {
