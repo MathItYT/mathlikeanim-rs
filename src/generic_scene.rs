@@ -358,7 +358,6 @@ impl GenericScene {
             }
         }
     }
-    #[cfg(feature = "browser")]
     #[wasm_bindgen(js_name = setCanvasContext)]
     pub fn set_canvas_context(&mut self, context: JsValue) {
         match &mut self.scene {
