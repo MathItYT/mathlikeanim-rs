@@ -23,16 +23,18 @@ pub async fn text_to_vector_browser(text: String, font_family: String) -> WasmVe
             };
             script.onload = () => {
                 opentype.load(fontFamily).then((font) => {
-                    const path = font.getPath(text, 0, 0, 144);
-                    const svg = path.toSVG();
+                    const paths = font.getPaths(text, 0, 0, 144);
+                    const svgs = paths.map((path) => path.toSVG());
+                    const svg = svgs.join('\n');
                     resolve(svg);
                 });
             };
             document.head.appendChild(script);
         } else {
             opentype.load(fontFamily).then((font) => {
-                const path = font.getPath(text, 0, 0, 144);
-                const svg = path.toSVG();
+                const paths = font.getPaths(text, 0, 0, 144);
+                const svgs = paths.map((path) => path.toSVG());
+                const svg = svgs.join('\n');
                 resolve(svg);
             });
         }
@@ -59,8 +61,9 @@ pub async fn text_to_vector_node(text: String, font_family: String) -> WasmVecto
     return new Promise((resolve, reject) => {
         const opentype = require('opentype.js');
         opentype.load(fontFamily).then((font) => {
-            const path = font.getPath(text, 0, 0, 144);
-            const svg = path.toSVG();
+            const paths = font.getPaths(text, 0, 0, 144);
+            const svgs = paths.map((path) => path.toSVG());
+            const svg = svgs.join('\n');
             resolve(svg);
         });
     });
