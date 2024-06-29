@@ -443,127 +443,13 @@ export function getNumbersTex(number_line: WasmVectorObject, numbers: Array<any>
 */
 export function svgToVector(svg: string): WasmVectorObject;
 /**
-* @param {number} angle
-* @param {number} axis
-* @returns {Array<any>}
+* @returns {Theme}
 */
-export function rotMatrix(angle: number, axis: number): Array<any>;
+export function getGithubDark(): Theme;
 /**
-* @param {Array<any>} a
-* @param {Array<any>} b
-* @returns {Array<any>}
+* @returns {Lexer}
 */
-export function matrixProduct(a: Array<any>, b: Array<any>): Array<any>;
-/**
-* @param {number} phi
-* @param {number} theta
-* @param {number} gamma
-* @returns {Array<any>}
-*/
-export function rotMatrixEuler(phi: number, theta: number, gamma: number): Array<any>;
-/**
-* @param {Array<any>} a
-* @returns {Array<any>}
-*/
-export function transposeMatrix(a: Array<any>): Array<any>;
-/**
-* @param {Array<any>} matrix
-* @param {Array<any>} points
-* @returns {Array<any>}
-*/
-export function applyMatrix(matrix: Array<any>, points: Array<any>): Array<any>;
-/**
-* @param {Array<any>} points
-* @param {Array<any>} shift
-* @returns {Array<any>}
-*/
-export function shiftPoints3D(points: Array<any>, shift: Array<any>): Array<any>;
-/**
-* @param {WasmGradientImageOrColor} color
-* @returns {WasmGradientImageOrColor}
-*/
-export function ensureValidThreeDColor(color: WasmGradientImageOrColor): WasmGradientImageOrColor;
-/**
-* @param {WasmColor} color
-* @param {Array<any>} point
-* @param {Array<any>} unit_normal
-* @param {WasmLightSource} light_source
-* @returns {WasmColor}
-*/
-export function getShadedRgb(color: WasmColor, point: Array<any>, unit_normal: Array<any>, light_source: WasmLightSource): WasmColor;
-/**
-* @param {Array<any>} points
-* @returns {Array<any>}
-*/
-export function getStartCorner(points: Array<any>): Array<any>;
-/**
-* @param {Array<any>} points
-* @returns {Array<any>}
-*/
-export function getEndCorner(points: Array<any>): Array<any>;
-/**
-* @param {Array<any>} a
-* @param {Array<any>} b
-* @returns {Array<any>}
-*/
-export function crossProduct(a: Array<any>, b: Array<any>): Array<any>;
-/**
-* @param {Array<any>} v1
-* @param {Array<any>} v2
-* @returns {Array<any>}
-*/
-export function getUnitNormal(v1: Array<any>, v2: Array<any>): Array<any>;
-/**
-* @param {Array<any>} points
-* @returns {Array<any>}
-*/
-export function getStartAnchors(points: Array<any>): Array<any>;
-/**
-* @param {Array<any>} points
-* @returns {Array<any>}
-*/
-export function getEndAnchors(points: Array<any>): Array<any>;
-/**
-* @param {Array<any>} points
-* @returns {Array<any>}
-*/
-export function getAnchors(points: Array<any>): Array<any>;
-/**
-* @param {Array<any>} points
-* @param {number} index
-* @returns {Array<any>}
-*/
-export function getCornerUnitNormal(points: Array<any>, index: number): Array<any>;
-/**
-* @param {Array<any>} points
-* @returns {Array<any>}
-*/
-export function getStartCornerUnitNormal(points: Array<any>): Array<any>;
-/**
-* @param {Array<any>} points
-* @returns {Array<any>}
-*/
-export function getEndCornerUnitNormal(points: Array<any>): Array<any>;
-/**
-* @param {WasmGradientImageOrColor} color
-* @param {Array<any>} points
-* @param {WasmLightSource} light_source
-* @param {WasmCamera} camera
-* @returns {WasmGradientImageOrColor}
-*/
-export function getShadedColor(color: WasmGradientImageOrColor, points: Array<any>, light_source: WasmLightSource, camera: WasmCamera): WasmGradientImageOrColor;
-/**
-* @param {Array<any>} points
-* @param {WasmCamera} camera
-* @returns {Array<any>}
-*/
-export function projectPoints(points: Array<any>, camera: WasmCamera): Array<any>;
-/**
-* @param {Array<any>} point1
-* @param {Array<any>} point2
-* @returns {Array<any>}
-*/
-export function lineAsCubicBezier3D(point1: Array<any>, point2: Array<any>): Array<any>;
+export function getPythonLexer(): Lexer;
 /**
 * @param {number} num_anim_funcs
 * @param {number} lag_ratio
@@ -699,6 +585,12 @@ export function showTemporaily(vec_obj: WasmVectorObject, t: number): WasmVector
 * @returns {WasmVectorObject}
 */
 export function spinningGrow(vec_obj: WasmVectorObject, angle: number, t: number): WasmVectorObject;
+/**
+* @param {string} text
+* @param {string} font_family
+* @returns {Promise<WasmVectorObject>}
+*/
+export function textToVector(text: string, font_family: string): Promise<WasmVectorObject>;
 /**
 * @param {number} ux
 * @param {number} uy
@@ -1154,16 +1046,166 @@ export function easeInBounce(t: number): number;
 */
 export function easeInOutBounce(t: number): number;
 /**
+* @param {number} angle
+* @param {number} axis
+* @returns {Array<any>}
+*/
+export function rotMatrix(angle: number, axis: number): Array<any>;
+/**
+* @param {Array<any>} a
+* @param {Array<any>} b
+* @returns {Array<any>}
+*/
+export function matrixProduct(a: Array<any>, b: Array<any>): Array<any>;
+/**
+* @param {number} phi
+* @param {number} theta
+* @param {number} gamma
+* @returns {Array<any>}
+*/
+export function rotMatrixEuler(phi: number, theta: number, gamma: number): Array<any>;
+/**
+* @param {Array<any>} a
+* @returns {Array<any>}
+*/
+export function transposeMatrix(a: Array<any>): Array<any>;
+/**
+* @param {Array<any>} matrix
+* @param {Array<any>} points
+* @returns {Array<any>}
+*/
+export function applyMatrix(matrix: Array<any>, points: Array<any>): Array<any>;
+/**
+* @param {Array<any>} points
+* @param {Array<any>} shift
+* @returns {Array<any>}
+*/
+export function shiftPoints3D(points: Array<any>, shift: Array<any>): Array<any>;
+/**
+* @param {WasmGradientImageOrColor} color
+* @returns {WasmGradientImageOrColor}
+*/
+export function ensureValidThreeDColor(color: WasmGradientImageOrColor): WasmGradientImageOrColor;
+/**
+* @param {WasmColor} color
+* @param {Array<any>} point
+* @param {Array<any>} unit_normal
+* @param {WasmLightSource} light_source
+* @returns {WasmColor}
+*/
+export function getShadedRgb(color: WasmColor, point: Array<any>, unit_normal: Array<any>, light_source: WasmLightSource): WasmColor;
+/**
+* @param {Array<any>} points
+* @returns {Array<any>}
+*/
+export function getStartCorner(points: Array<any>): Array<any>;
+/**
+* @param {Array<any>} points
+* @returns {Array<any>}
+*/
+export function getEndCorner(points: Array<any>): Array<any>;
+/**
+* @param {Array<any>} a
+* @param {Array<any>} b
+* @returns {Array<any>}
+*/
+export function crossProduct(a: Array<any>, b: Array<any>): Array<any>;
+/**
+* @param {Array<any>} v1
+* @param {Array<any>} v2
+* @returns {Array<any>}
+*/
+export function getUnitNormal(v1: Array<any>, v2: Array<any>): Array<any>;
+/**
+* @param {Array<any>} points
+* @returns {Array<any>}
+*/
+export function getStartAnchors(points: Array<any>): Array<any>;
+/**
+* @param {Array<any>} points
+* @returns {Array<any>}
+*/
+export function getEndAnchors(points: Array<any>): Array<any>;
+/**
+* @param {Array<any>} points
+* @returns {Array<any>}
+*/
+export function getAnchors(points: Array<any>): Array<any>;
+/**
+* @param {Array<any>} points
+* @param {number} index
+* @returns {Array<any>}
+*/
+export function getCornerUnitNormal(points: Array<any>, index: number): Array<any>;
+/**
+* @param {Array<any>} points
+* @returns {Array<any>}
+*/
+export function getStartCornerUnitNormal(points: Array<any>): Array<any>;
+/**
+* @param {Array<any>} points
+* @returns {Array<any>}
+*/
+export function getEndCornerUnitNormal(points: Array<any>): Array<any>;
+/**
+* @param {WasmGradientImageOrColor} color
+* @param {Array<any>} points
+* @param {WasmLightSource} light_source
+* @param {WasmCamera} camera
+* @returns {WasmGradientImageOrColor}
+*/
+export function getShadedColor(color: WasmGradientImageOrColor, points: Array<any>, light_source: WasmLightSource, camera: WasmCamera): WasmGradientImageOrColor;
+/**
+* @param {Array<any>} points
+* @param {WasmCamera} camera
+* @returns {Array<any>}
+*/
+export function projectPoints(points: Array<any>, camera: WasmCamera): Array<any>;
+/**
+* @param {Array<any>} point1
+* @param {Array<any>} point2
+* @returns {Array<any>}
+*/
+export function lineAsCubicBezier3D(point1: Array<any>, point2: Array<any>): Array<any>;
+/**
 * @param {string} expression
 * @returns {Promise<WasmVectorObject>}
 */
 export function mathjax(expression: string): Promise<WasmVectorObject>;
 /**
-* @param {string} text
+* @param {string} code
+* @param {Lexer} lexer
+* @param {Theme} theme
 * @param {string} font_family
 * @returns {Promise<WasmVectorObject>}
 */
-export function textToVector(text: string, font_family: string): Promise<WasmVectorObject>;
+export function codeObject(code: string, lexer: Lexer, theme: Theme, font_family: string): Promise<WasmVectorObject>;
+/**
+*/
+export enum TokenType {
+  Illegal = 0,
+  Declaration = 1,
+  Comment = 2,
+  MethodDeclaration = 3,
+  MethodIdentifier = 4,
+  FormattedString = 5,
+  FormatOpen = 6,
+  FormatClose = 7,
+  Newline = 8,
+  Identifier = 9,
+  ClassIdentifier = 10,
+  Separator = 11,
+  Number = 12,
+  String = 13,
+  Assign = 14,
+  Operator = 15,
+  Whitespace = 16,
+  Constant = 17,
+  Keyword = 18,
+  Special = 19,
+  LParen = 20,
+  RParen = 21,
+}
 /**
 */
 export class GenericScene {
@@ -1306,6 +1348,463 @@ export class GenericScene {
 * @returns {Promise<void>}
 */
   callCallback(): Promise<void>;
+}
+/**
+*/
+export class Lexer {
+  free(): void;
+/**
+* @param {(string)[]} keywords
+* @param {(string)[]} specials
+* @param {(string)[]} illegals
+* @param {(string)[]} declarations
+* @param {(string)[]} method_declaration
+* @param {(string)[]} operators
+* @param {(string)[]} l_parens
+* @param {(string)[]} r_parens
+* @param {(string)[]} comment_initial_characters
+* @param {(string)[]} constants
+* @param {(string)[]} assignments
+* @param {(string)[]} separators
+* @param {(string)[]} string_open_delimiters
+* @param {(string)[]} string_close_delimiters
+* @param {(string)[]} formated_string_open_delimiters
+* @param {(string)[]} formated_string_close_delimiters
+* @param {(string)[]} format_opens
+* @param {(string)[]} format_closes
+* @param {string} class_identifier_pattern
+*/
+  constructor(keywords: (string)[], specials: (string)[], illegals: (string)[], declarations: (string)[], method_declaration: (string)[], operators: (string)[], l_parens: (string)[], r_parens: (string)[], comment_initial_characters: (string)[], constants: (string)[], assignments: (string)[], separators: (string)[], string_open_delimiters: (string)[], string_close_delimiters: (string)[], formated_string_open_delimiters: (string)[], formated_string_close_delimiters: (string)[], format_opens: (string)[], format_closes: (string)[], class_identifier_pattern: string);
+/**
+* @returns {(string)[]}
+*/
+  getKeywords(): (string)[];
+/**
+* @returns {(string)[]}
+*/
+  getSpecials(): (string)[];
+/**
+* @returns {(string)[]}
+*/
+  getMethodDeclarations(): (string)[];
+/**
+* @returns {(string)[]}
+*/
+  getIllegals(): (string)[];
+/**
+* @returns {(string)[]}
+*/
+  getDeclarations(): (string)[];
+/**
+* @returns {(string)[]}
+*/
+  getOperators(): (string)[];
+/**
+* @returns {(string)[]}
+*/
+  getSeparators(): (string)[];
+/**
+* @returns {(string)[]}
+*/
+  getLParens(): (string)[];
+/**
+* @returns {(string)[]}
+*/
+  getRParens(): (string)[];
+/**
+* @returns {(string)[]}
+*/
+  getFormatOpens(): (string)[];
+/**
+* @returns {(string)[]}
+*/
+  getFormatCloses(): (string)[];
+/**
+* @returns {(string)[]}
+*/
+  getStringOpenDelimiters(): (string)[];
+/**
+* @returns {(string)[]}
+*/
+  getFormatedStringOpenDelimiters(): (string)[];
+/**
+* @returns {(string)[]}
+*/
+  getFormatedStringCloseDelimiters(): (string)[];
+/**
+* @returns {(string)[]}
+*/
+  getStringCloseDelimiters(): (string)[];
+/**
+* @returns {(string)[]}
+*/
+  getCommentCharacters(): (string)[];
+/**
+* @returns {(string)[]}
+*/
+  getAssignments(): (string)[];
+/**
+* @returns {(string)[]}
+*/
+  getConstants(): (string)[];
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  isKeyword(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  isSpecial(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  isIllegal(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  isFormatedStringOpenDelimiter(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  isFormatedStringCloseDelimiter(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  isMethodDeclaration(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  isStringOpenDelimiter(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  isStringCloseDelimiter(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  isCommentCharacter(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  isWhitespace(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  isDigit(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  isQuote(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  containsQuoteInitial(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  isDeclaration(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  isSeparator(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  isOperator(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  isLParen(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  isRParen(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  isNewline(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  isConstant(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  hasFormatedStringOpenInitial(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  hasFormatedStringCloseInitial(token: string): boolean;
+/**
+* @returns {string}
+*/
+  getClassIdentifierPattern(): string;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  containsOperator(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  containsAssignment(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  hasFormatOpen(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  hasFormatClose(token: string): boolean;
+/**
+* @param {string} token
+* @returns {string | undefined}
+*/
+  removeLastOperator(token: string): string | undefined;
+/**
+* @param {string} token
+* @returns {string | undefined}
+*/
+  removeLastAssignment(token: string): string | undefined;
+/**
+* @param {string} token
+* @returns {string | undefined}
+*/
+  removeLastSeparator(token: string): string | undefined;
+/**
+* @param {string} token
+* @returns {string | undefined}
+*/
+  removeLastQuote(token: string): string | undefined;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  hasOperatorInitial(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  hasAssignmentInitial(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  isAssignment(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  hasSeparatorInitial(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  containsQuote(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  containsNonAlphabeticalOperator(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  endsWithStringCloseDelimiter(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  startsWithStringOpenDelimiter(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  hasFormatStringClose(token: string): boolean;
+/**
+* @returns {Lexer}
+*/
+  clone(): Lexer;
+/**
+* @param {string} token
+* @returns {string | undefined}
+*/
+  removeFormatOpen(token: string): string | undefined;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  startsWithCommentCharacter(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  hasCommentInitial(token: string): boolean;
+/**
+* @param {string} token
+* @returns {string | undefined}
+*/
+  removeFormatClose(token: string): string | undefined;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  hasFormatStringOpen(token: string): boolean;
+/**
+* @param {string} input
+* @returns {(Token)[]}
+*/
+  getTokens(input: string): (Token)[];
+}
+/**
+*/
+export class Theme {
+  free(): void;
+/**
+* @param {string} keyword_color
+* @param {string} special_color
+* @param {string} illegal_color
+* @param {string} declaration_color
+* @param {string} operator_color
+* @param {string} paren_color
+* @param {string} constant_color
+* @param {string} number_color
+* @param {string} string_color
+* @param {string} identifier_color
+* @param {string} assign_color
+* @param {string} separator_color
+* @param {string} method_identifier_color
+* @param {string} method_declaration_color
+* @param {string} formatted_string_color
+* @param {string} format_open_color
+* @param {string} format_close_color
+* @param {string} comment_color
+* @param {string} class_identifier_color
+*/
+  constructor(keyword_color: string, special_color: string, illegal_color: string, declaration_color: string, operator_color: string, paren_color: string, constant_color: string, number_color: string, string_color: string, identifier_color: string, assign_color: string, separator_color: string, method_identifier_color: string, method_declaration_color: string, formatted_string_color: string, format_open_color: string, format_close_color: string, comment_color: string, class_identifier_color: string);
+/**
+* @returns {string}
+*/
+  getKeywordColor(): string;
+/**
+* @returns {string}
+*/
+  getSpecialColor(): string;
+/**
+* @returns {string}
+*/
+  getIllegalColor(): string;
+/**
+* @returns {string}
+*/
+  getDeclarationColor(): string;
+/**
+* @returns {string}
+*/
+  getOperatorColor(): string;
+/**
+* @returns {string}
+*/
+  getParenColor(): string;
+/**
+* @returns {string}
+*/
+  getConstantColor(): string;
+/**
+* @returns {string}
+*/
+  getNumberColor(): string;
+/**
+* @returns {string}
+*/
+  getStringColor(): string;
+/**
+* @returns {string}
+*/
+  getIdentifierColor(): string;
+/**
+* @returns {string}
+*/
+  getAssignColor(): string;
+/**
+* @returns {string}
+*/
+  getClassIdentifierColor(): string;
+/**
+* @returns {string}
+*/
+  getSeparatorColor(): string;
+/**
+* @returns {string}
+*/
+  getMethodDeclarationColor(): string;
+/**
+* @returns {string}
+*/
+  getMethodIdentifierColor(): string;
+/**
+* @returns {string}
+*/
+  getFormattedStringColor(): string;
+/**
+* @returns {string}
+*/
+  getFormatOpenColor(): string;
+/**
+* @returns {string}
+*/
+  getFormatCloseColor(): string;
+/**
+* @returns {Theme}
+*/
+  clone(): Theme;
+/**
+* @returns {string}
+*/
+  getCommentColor(): string;
+}
+/**
+*/
+export class Token {
+  free(): void;
+/**
+* @param {TokenType} token_type
+* @param {string} literal
+*/
+  constructor(token_type: TokenType, literal: string);
+/**
+* @returns {TokenType}
+*/
+  getType(): TokenType;
+/**
+* @returns {string}
+*/
+  getLiteral(): string;
 }
 /**
 */
@@ -1880,6 +2379,40 @@ export class WasmVectorObject {
 * @returns {Array<any>}
 */
   getPoints(): Array<any>;
+/**
+* @param {WasmVectorObject} new_subobject
+* @returns {WasmVectorObject}
+*/
+  add(new_subobject: WasmVectorObject): WasmVectorObject;
+/**
+* @param {number} index
+* @returns {WasmVectorObject}
+*/
+  remove(index: number): WasmVectorObject;
+/**
+* @param {number} index
+* @returns {WasmVectorObject}
+*/
+  getSubobject(index: number): WasmVectorObject;
+/**
+* @param {number} start
+* @param {number} end
+* @returns {(WasmVectorObject)[]}
+*/
+  sliceSubobjects(start: number, end: number): (WasmVectorObject)[];
+/**
+* @param {number} index
+* @param {WasmVectorObject} new_subobject
+* @returns {WasmVectorObject}
+*/
+  setSubobject(index: number, new_subobject: WasmVectorObject): WasmVectorObject;
+/**
+* @param {number} start
+* @param {number} end
+* @param {(WasmVectorObject)[]} new_subobjects
+* @returns {WasmVectorObject}
+*/
+  setSliceSubobjects(start: number, end: number, new_subobjects: (WasmVectorObject)[]): WasmVectorObject;
 /**
 * @returns {WasmGradientImageOrColor}
 */

@@ -386,6 +386,34 @@ pub trait VectorObject {
         aligned_edge: (f64, f64),
         recursive: bool
     ) -> Self;
+    fn add(
+        &self,
+        other: &VectorFeatures
+    ) -> Self;
+    fn remove(
+        &self,
+        index: usize,
+    ) -> Self;
+    fn get_subobject(
+        &self,
+        index: usize
+    ) -> VectorFeatures;
+    fn slice_subobjects(
+        &self,
+        start: usize,
+        end: usize
+    ) -> Vec<VectorFeatures>;
+    fn set_subobject(
+        &self,
+        index: usize,
+        subobject: VectorFeatures
+    ) -> Self;
+    fn set_slice_subobjects(
+        &self,
+        start: usize,
+        end: usize,
+        subobjects: Vec<VectorFeatures>
+    ) -> Self;
     fn set_background_image(&self, image_base64: String, mime_type: String, width: usize, height: usize, recursive: bool) -> Self;
     fn set_fill_image_corners(&self, top_left_corner: (f64, f64), bottom_right_corner: (f64, f64), recursive: bool) -> Self;
     fn set_stroke_image_corners(&self, top_left_corner: (f64, f64), bottom_right_corner: (f64, f64), recursive: bool) -> Self;
@@ -515,6 +543,43 @@ impl VectorObject for VectorFeatures {
             index: self.index,
         };
     }
+    fn set_subobject(
+        &self,
+        index: usize,
+        subobject: VectorFeatures
+    ) -> Self {
+        let mut new_subobjects = self.subobjects.clone();
+        new_subobjects[index] = subobject;
+        return VectorFeatures {
+            points: self.points.clone(),
+            fill: self.fill.clone(),
+            stroke: self.stroke.clone(),
+            stroke_width: self.stroke_width,
+            line_cap: self.line_cap,
+            line_join: self.line_join,
+            subobjects: new_subobjects,
+            index: self.index,
+        };
+    }
+    fn set_slice_subobjects(
+        &self,
+        start: usize,
+        end: usize,
+        subobjects: Vec<VectorFeatures>
+    ) -> Self {
+        let mut new_subobjects = self.subobjects.clone();
+        new_subobjects.splice(start..end, subobjects.iter().cloned());
+        return VectorFeatures {
+            points: self.points.clone(),
+            fill: self.fill.clone(),
+            stroke: self.stroke.clone(),
+            stroke_width: self.stroke_width,
+            line_cap: self.line_cap,
+            line_join: self.line_join,
+            subobjects: new_subobjects,
+            index: self.index,
+        };
+    }
     fn stretch(&self, stretch: (f64, f64), recursive: bool) -> Self {
         let center = self.get_center();
         if !recursive {
@@ -539,6 +604,19 @@ impl VectorObject for VectorFeatures {
             subobjects: self.subobjects.iter().map(|subobject| subobject.stretch(stretch, true)).collect(),
             index: self.index,
         };
+    }
+    fn get_subobject(
+        &self,
+        index: usize
+    ) -> VectorFeatures {
+        return self.subobjects[index].clone();
+    }
+    fn slice_subobjects(
+        &self,
+        start: usize,
+        end: usize
+    ) -> Vec<Self> {
+        return self.subobjects[start..end].to_vec();
     }
     fn shift(&self, shift: (f64, f64), recursive: bool) -> VectorFeatures {
         if !recursive {
@@ -672,6 +750,16 @@ impl VectorObject for VectorFeatures {
             subobjects: self.subobjects.clone(),
             index: self.index,
         };
+    }
+    fn add(&self, other: &VectorFeatures) -> Self {
+        let mut new_subobjects = self.subobjects.clone();
+        new_subobjects.push(other.clone());
+        return self.set_subobjects(new_subobjects);
+    }
+    fn remove(&self, index: usize) -> Self {
+        let mut new_subobjects = self.subobjects.clone();
+        new_subobjects.remove(index);
+        return self.set_subobjects(new_subobjects);
     }
     fn set_stroke_opacity(&self, opacity: f64, recursive: bool) -> VectorFeatures {
         let new_stroke = match &self.stroke {

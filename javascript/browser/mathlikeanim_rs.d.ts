@@ -443,127 +443,13 @@ export function getNumbersTex(number_line: WasmVectorObject, numbers: Array<any>
 */
 export function svgToVector(svg: string): WasmVectorObject;
 /**
-* @param {number} angle
-* @param {number} axis
-* @returns {Array<any>}
+* @returns {Theme}
 */
-export function rotMatrix(angle: number, axis: number): Array<any>;
+export function getGithubDark(): Theme;
 /**
-* @param {Array<any>} a
-* @param {Array<any>} b
-* @returns {Array<any>}
+* @returns {Lexer}
 */
-export function matrixProduct(a: Array<any>, b: Array<any>): Array<any>;
-/**
-* @param {number} phi
-* @param {number} theta
-* @param {number} gamma
-* @returns {Array<any>}
-*/
-export function rotMatrixEuler(phi: number, theta: number, gamma: number): Array<any>;
-/**
-* @param {Array<any>} a
-* @returns {Array<any>}
-*/
-export function transposeMatrix(a: Array<any>): Array<any>;
-/**
-* @param {Array<any>} matrix
-* @param {Array<any>} points
-* @returns {Array<any>}
-*/
-export function applyMatrix(matrix: Array<any>, points: Array<any>): Array<any>;
-/**
-* @param {Array<any>} points
-* @param {Array<any>} shift
-* @returns {Array<any>}
-*/
-export function shiftPoints3D(points: Array<any>, shift: Array<any>): Array<any>;
-/**
-* @param {WasmGradientImageOrColor} color
-* @returns {WasmGradientImageOrColor}
-*/
-export function ensureValidThreeDColor(color: WasmGradientImageOrColor): WasmGradientImageOrColor;
-/**
-* @param {WasmColor} color
-* @param {Array<any>} point
-* @param {Array<any>} unit_normal
-* @param {WasmLightSource} light_source
-* @returns {WasmColor}
-*/
-export function getShadedRgb(color: WasmColor, point: Array<any>, unit_normal: Array<any>, light_source: WasmLightSource): WasmColor;
-/**
-* @param {Array<any>} points
-* @returns {Array<any>}
-*/
-export function getStartCorner(points: Array<any>): Array<any>;
-/**
-* @param {Array<any>} points
-* @returns {Array<any>}
-*/
-export function getEndCorner(points: Array<any>): Array<any>;
-/**
-* @param {Array<any>} a
-* @param {Array<any>} b
-* @returns {Array<any>}
-*/
-export function crossProduct(a: Array<any>, b: Array<any>): Array<any>;
-/**
-* @param {Array<any>} v1
-* @param {Array<any>} v2
-* @returns {Array<any>}
-*/
-export function getUnitNormal(v1: Array<any>, v2: Array<any>): Array<any>;
-/**
-* @param {Array<any>} points
-* @returns {Array<any>}
-*/
-export function getStartAnchors(points: Array<any>): Array<any>;
-/**
-* @param {Array<any>} points
-* @returns {Array<any>}
-*/
-export function getEndAnchors(points: Array<any>): Array<any>;
-/**
-* @param {Array<any>} points
-* @returns {Array<any>}
-*/
-export function getAnchors(points: Array<any>): Array<any>;
-/**
-* @param {Array<any>} points
-* @param {number} index
-* @returns {Array<any>}
-*/
-export function getCornerUnitNormal(points: Array<any>, index: number): Array<any>;
-/**
-* @param {Array<any>} points
-* @returns {Array<any>}
-*/
-export function getStartCornerUnitNormal(points: Array<any>): Array<any>;
-/**
-* @param {Array<any>} points
-* @returns {Array<any>}
-*/
-export function getEndCornerUnitNormal(points: Array<any>): Array<any>;
-/**
-* @param {WasmGradientImageOrColor} color
-* @param {Array<any>} points
-* @param {WasmLightSource} light_source
-* @param {WasmCamera} camera
-* @returns {WasmGradientImageOrColor}
-*/
-export function getShadedColor(color: WasmGradientImageOrColor, points: Array<any>, light_source: WasmLightSource, camera: WasmCamera): WasmGradientImageOrColor;
-/**
-* @param {Array<any>} points
-* @param {WasmCamera} camera
-* @returns {Array<any>}
-*/
-export function projectPoints(points: Array<any>, camera: WasmCamera): Array<any>;
-/**
-* @param {Array<any>} point1
-* @param {Array<any>} point2
-* @returns {Array<any>}
-*/
-export function lineAsCubicBezier3D(point1: Array<any>, point2: Array<any>): Array<any>;
+export function getPythonLexer(): Lexer;
 /**
 * @param {number} num_anim_funcs
 * @param {number} lag_ratio
@@ -706,11 +592,6 @@ export function showTemporaily(vec_obj: WasmVectorObject, t: number): WasmVector
 * @returns {WasmVectorObject}
 */
 export function spinningGrow(vec_obj: WasmVectorObject, angle: number, t: number): WasmVectorObject;
-/**
-* @param {string} expression
-* @returns {Promise<WasmVectorObject>}
-*/
-export function mathjax(expression: string): Promise<WasmVectorObject>;
 /**
 * @param {string} text
 * @param {string} font_family
@@ -1172,6 +1053,167 @@ export function easeInBounce(t: number): number;
 */
 export function easeInOutBounce(t: number): number;
 /**
+* @param {string} code
+* @param {Lexer} lexer
+* @param {Theme} theme
+* @param {string} font_family
+* @returns {Promise<WasmVectorObject>}
+*/
+export function codeObject(code: string, lexer: Lexer, theme: Theme, font_family: string): Promise<WasmVectorObject>;
+/**
+* @param {number} angle
+* @param {number} axis
+* @returns {Array<any>}
+*/
+export function rotMatrix(angle: number, axis: number): Array<any>;
+/**
+* @param {Array<any>} a
+* @param {Array<any>} b
+* @returns {Array<any>}
+*/
+export function matrixProduct(a: Array<any>, b: Array<any>): Array<any>;
+/**
+* @param {number} phi
+* @param {number} theta
+* @param {number} gamma
+* @returns {Array<any>}
+*/
+export function rotMatrixEuler(phi: number, theta: number, gamma: number): Array<any>;
+/**
+* @param {Array<any>} a
+* @returns {Array<any>}
+*/
+export function transposeMatrix(a: Array<any>): Array<any>;
+/**
+* @param {Array<any>} matrix
+* @param {Array<any>} points
+* @returns {Array<any>}
+*/
+export function applyMatrix(matrix: Array<any>, points: Array<any>): Array<any>;
+/**
+* @param {Array<any>} points
+* @param {Array<any>} shift
+* @returns {Array<any>}
+*/
+export function shiftPoints3D(points: Array<any>, shift: Array<any>): Array<any>;
+/**
+* @param {WasmGradientImageOrColor} color
+* @returns {WasmGradientImageOrColor}
+*/
+export function ensureValidThreeDColor(color: WasmGradientImageOrColor): WasmGradientImageOrColor;
+/**
+* @param {WasmColor} color
+* @param {Array<any>} point
+* @param {Array<any>} unit_normal
+* @param {WasmLightSource} light_source
+* @returns {WasmColor}
+*/
+export function getShadedRgb(color: WasmColor, point: Array<any>, unit_normal: Array<any>, light_source: WasmLightSource): WasmColor;
+/**
+* @param {Array<any>} points
+* @returns {Array<any>}
+*/
+export function getStartCorner(points: Array<any>): Array<any>;
+/**
+* @param {Array<any>} points
+* @returns {Array<any>}
+*/
+export function getEndCorner(points: Array<any>): Array<any>;
+/**
+* @param {Array<any>} a
+* @param {Array<any>} b
+* @returns {Array<any>}
+*/
+export function crossProduct(a: Array<any>, b: Array<any>): Array<any>;
+/**
+* @param {Array<any>} v1
+* @param {Array<any>} v2
+* @returns {Array<any>}
+*/
+export function getUnitNormal(v1: Array<any>, v2: Array<any>): Array<any>;
+/**
+* @param {Array<any>} points
+* @returns {Array<any>}
+*/
+export function getStartAnchors(points: Array<any>): Array<any>;
+/**
+* @param {Array<any>} points
+* @returns {Array<any>}
+*/
+export function getEndAnchors(points: Array<any>): Array<any>;
+/**
+* @param {Array<any>} points
+* @returns {Array<any>}
+*/
+export function getAnchors(points: Array<any>): Array<any>;
+/**
+* @param {Array<any>} points
+* @param {number} index
+* @returns {Array<any>}
+*/
+export function getCornerUnitNormal(points: Array<any>, index: number): Array<any>;
+/**
+* @param {Array<any>} points
+* @returns {Array<any>}
+*/
+export function getStartCornerUnitNormal(points: Array<any>): Array<any>;
+/**
+* @param {Array<any>} points
+* @returns {Array<any>}
+*/
+export function getEndCornerUnitNormal(points: Array<any>): Array<any>;
+/**
+* @param {WasmGradientImageOrColor} color
+* @param {Array<any>} points
+* @param {WasmLightSource} light_source
+* @param {WasmCamera} camera
+* @returns {WasmGradientImageOrColor}
+*/
+export function getShadedColor(color: WasmGradientImageOrColor, points: Array<any>, light_source: WasmLightSource, camera: WasmCamera): WasmGradientImageOrColor;
+/**
+* @param {Array<any>} points
+* @param {WasmCamera} camera
+* @returns {Array<any>}
+*/
+export function projectPoints(points: Array<any>, camera: WasmCamera): Array<any>;
+/**
+* @param {Array<any>} point1
+* @param {Array<any>} point2
+* @returns {Array<any>}
+*/
+export function lineAsCubicBezier3D(point1: Array<any>, point2: Array<any>): Array<any>;
+/**
+* @param {string} expression
+* @returns {Promise<WasmVectorObject>}
+*/
+export function mathjax(expression: string): Promise<WasmVectorObject>;
+/**
+*/
+export enum TokenType {
+  Illegal = 0,
+  Declaration = 1,
+  Comment = 2,
+  MethodDeclaration = 3,
+  MethodIdentifier = 4,
+  FormattedString = 5,
+  FormatOpen = 6,
+  FormatClose = 7,
+  Newline = 8,
+  Identifier = 9,
+  ClassIdentifier = 10,
+  Separator = 11,
+  Number = 12,
+  String = 13,
+  Assign = 14,
+  Operator = 15,
+  Whitespace = 16,
+  Constant = 17,
+  Keyword = 18,
+  Special = 19,
+  LParen = 20,
+  RParen = 21,
+}
+/**
 */
 export class GenericScene {
   free(): void;
@@ -1321,6 +1363,338 @@ export class GenericScene {
 * @param {number} index
 */
   setStyle(index: number): void;
+}
+/**
+*/
+export class Lexer {
+  free(): void;
+/**
+* @param {(string)[]} keywords
+* @param {(string)[]} specials
+* @param {(string)[]} illegals
+* @param {(string)[]} declarations
+* @param {(string)[]} method_declaration
+* @param {(string)[]} operators
+* @param {(string)[]} l_parens
+* @param {(string)[]} r_parens
+* @param {(string)[]} comment_initial_characters
+* @param {(string)[]} constants
+* @param {(string)[]} assignments
+* @param {(string)[]} separators
+* @param {(string)[]} string_open_delimiters
+* @param {(string)[]} string_close_delimiters
+* @param {(string)[]} formated_string_open_delimiters
+* @param {(string)[]} formated_string_close_delimiters
+* @param {(string)[]} format_opens
+* @param {(string)[]} format_closes
+* @param {string} class_identifier_pattern
+*/
+  constructor(keywords: (string)[], specials: (string)[], illegals: (string)[], declarations: (string)[], method_declaration: (string)[], operators: (string)[], l_parens: (string)[], r_parens: (string)[], comment_initial_characters: (string)[], constants: (string)[], assignments: (string)[], separators: (string)[], string_open_delimiters: (string)[], string_close_delimiters: (string)[], formated_string_open_delimiters: (string)[], formated_string_close_delimiters: (string)[], format_opens: (string)[], format_closes: (string)[], class_identifier_pattern: string);
+/**
+* @returns {(string)[]}
+*/
+  getKeywords(): (string)[];
+/**
+* @returns {(string)[]}
+*/
+  getSpecials(): (string)[];
+/**
+* @returns {(string)[]}
+*/
+  getMethodDeclarations(): (string)[];
+/**
+* @returns {(string)[]}
+*/
+  getIllegals(): (string)[];
+/**
+* @returns {(string)[]}
+*/
+  getDeclarations(): (string)[];
+/**
+* @returns {(string)[]}
+*/
+  getOperators(): (string)[];
+/**
+* @returns {(string)[]}
+*/
+  getSeparators(): (string)[];
+/**
+* @returns {(string)[]}
+*/
+  getLParens(): (string)[];
+/**
+* @returns {(string)[]}
+*/
+  getRParens(): (string)[];
+/**
+* @returns {(string)[]}
+*/
+  getFormatOpens(): (string)[];
+/**
+* @returns {(string)[]}
+*/
+  getFormatCloses(): (string)[];
+/**
+* @returns {(string)[]}
+*/
+  getStringOpenDelimiters(): (string)[];
+/**
+* @returns {(string)[]}
+*/
+  getFormatedStringOpenDelimiters(): (string)[];
+/**
+* @returns {(string)[]}
+*/
+  getFormatedStringCloseDelimiters(): (string)[];
+/**
+* @returns {(string)[]}
+*/
+  getStringCloseDelimiters(): (string)[];
+/**
+* @returns {(string)[]}
+*/
+  getCommentCharacters(): (string)[];
+/**
+* @returns {(string)[]}
+*/
+  getAssignments(): (string)[];
+/**
+* @returns {(string)[]}
+*/
+  getConstants(): (string)[];
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  isKeyword(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  isSpecial(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  isIllegal(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  isFormatedStringOpenDelimiter(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  isFormatedStringCloseDelimiter(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  isMethodDeclaration(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  isStringOpenDelimiter(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  isStringCloseDelimiter(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  isCommentCharacter(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  isWhitespace(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  isDigit(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  isQuote(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  containsQuoteInitial(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  isDeclaration(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  isSeparator(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  isOperator(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  isLParen(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  isRParen(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  isNewline(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  isConstant(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  hasFormatedStringOpenInitial(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  hasFormatedStringCloseInitial(token: string): boolean;
+/**
+* @returns {string}
+*/
+  getClassIdentifierPattern(): string;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  containsOperator(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  containsAssignment(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  hasFormatOpen(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  hasFormatClose(token: string): boolean;
+/**
+* @param {string} token
+* @returns {string | undefined}
+*/
+  removeLastOperator(token: string): string | undefined;
+/**
+* @param {string} token
+* @returns {string | undefined}
+*/
+  removeLastAssignment(token: string): string | undefined;
+/**
+* @param {string} token
+* @returns {string | undefined}
+*/
+  removeLastSeparator(token: string): string | undefined;
+/**
+* @param {string} token
+* @returns {string | undefined}
+*/
+  removeLastQuote(token: string): string | undefined;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  hasOperatorInitial(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  hasAssignmentInitial(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  isAssignment(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  hasSeparatorInitial(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  containsQuote(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  containsNonAlphabeticalOperator(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  endsWithStringCloseDelimiter(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  startsWithStringOpenDelimiter(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  hasFormatStringClose(token: string): boolean;
+/**
+* @returns {Lexer}
+*/
+  clone(): Lexer;
+/**
+* @param {string} token
+* @returns {string | undefined}
+*/
+  removeFormatOpen(token: string): string | undefined;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  startsWithCommentCharacter(token: string): boolean;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  hasCommentInitial(token: string): boolean;
+/**
+* @param {string} token
+* @returns {string | undefined}
+*/
+  removeFormatClose(token: string): string | undefined;
+/**
+* @param {string} token
+* @returns {boolean}
+*/
+  hasFormatStringOpen(token: string): boolean;
+/**
+* @param {string} input
+* @returns {(Token)[]}
+*/
+  getTokens(input: string): (Token)[];
 }
 /**
 */
@@ -1574,6 +1948,131 @@ export class Scene {
 * @returns {Promise<void>}
 */
   callCallback(): Promise<void>;
+}
+/**
+*/
+export class Theme {
+  free(): void;
+/**
+* @param {string} keyword_color
+* @param {string} special_color
+* @param {string} illegal_color
+* @param {string} declaration_color
+* @param {string} operator_color
+* @param {string} paren_color
+* @param {string} constant_color
+* @param {string} number_color
+* @param {string} string_color
+* @param {string} identifier_color
+* @param {string} assign_color
+* @param {string} separator_color
+* @param {string} method_identifier_color
+* @param {string} method_declaration_color
+* @param {string} formatted_string_color
+* @param {string} format_open_color
+* @param {string} format_close_color
+* @param {string} comment_color
+* @param {string} class_identifier_color
+*/
+  constructor(keyword_color: string, special_color: string, illegal_color: string, declaration_color: string, operator_color: string, paren_color: string, constant_color: string, number_color: string, string_color: string, identifier_color: string, assign_color: string, separator_color: string, method_identifier_color: string, method_declaration_color: string, formatted_string_color: string, format_open_color: string, format_close_color: string, comment_color: string, class_identifier_color: string);
+/**
+* @returns {string}
+*/
+  getKeywordColor(): string;
+/**
+* @returns {string}
+*/
+  getSpecialColor(): string;
+/**
+* @returns {string}
+*/
+  getIllegalColor(): string;
+/**
+* @returns {string}
+*/
+  getDeclarationColor(): string;
+/**
+* @returns {string}
+*/
+  getOperatorColor(): string;
+/**
+* @returns {string}
+*/
+  getParenColor(): string;
+/**
+* @returns {string}
+*/
+  getConstantColor(): string;
+/**
+* @returns {string}
+*/
+  getNumberColor(): string;
+/**
+* @returns {string}
+*/
+  getStringColor(): string;
+/**
+* @returns {string}
+*/
+  getIdentifierColor(): string;
+/**
+* @returns {string}
+*/
+  getAssignColor(): string;
+/**
+* @returns {string}
+*/
+  getClassIdentifierColor(): string;
+/**
+* @returns {string}
+*/
+  getSeparatorColor(): string;
+/**
+* @returns {string}
+*/
+  getMethodDeclarationColor(): string;
+/**
+* @returns {string}
+*/
+  getMethodIdentifierColor(): string;
+/**
+* @returns {string}
+*/
+  getFormattedStringColor(): string;
+/**
+* @returns {string}
+*/
+  getFormatOpenColor(): string;
+/**
+* @returns {string}
+*/
+  getFormatCloseColor(): string;
+/**
+* @returns {Theme}
+*/
+  clone(): Theme;
+/**
+* @returns {string}
+*/
+  getCommentColor(): string;
+}
+/**
+*/
+export class Token {
+  free(): void;
+/**
+* @param {TokenType} token_type
+* @param {string} literal
+*/
+  constructor(token_type: TokenType, literal: string);
+/**
+* @returns {TokenType}
+*/
+  getType(): TokenType;
+/**
+* @returns {string}
+*/
+  getLiteral(): string;
 }
 /**
 */
@@ -2017,6 +2516,40 @@ export class WasmVectorObject {
 */
   getPoints(): Array<any>;
 /**
+* @param {WasmVectorObject} new_subobject
+* @returns {WasmVectorObject}
+*/
+  add(new_subobject: WasmVectorObject): WasmVectorObject;
+/**
+* @param {number} index
+* @returns {WasmVectorObject}
+*/
+  remove(index: number): WasmVectorObject;
+/**
+* @param {number} index
+* @returns {WasmVectorObject}
+*/
+  getSubobject(index: number): WasmVectorObject;
+/**
+* @param {number} start
+* @param {number} end
+* @returns {(WasmVectorObject)[]}
+*/
+  sliceSubobjects(start: number, end: number): (WasmVectorObject)[];
+/**
+* @param {number} index
+* @param {WasmVectorObject} new_subobject
+* @returns {WasmVectorObject}
+*/
+  setSubobject(index: number, new_subobject: WasmVectorObject): WasmVectorObject;
+/**
+* @param {number} start
+* @param {number} end
+* @param {(WasmVectorObject)[]} new_subobjects
+* @returns {WasmVectorObject}
+*/
+  setSliceSubobjects(start: number, end: number, new_subobjects: (WasmVectorObject)[]): WasmVectorObject;
+/**
 * @returns {WasmGradientImageOrColor}
 */
   getFill(): WasmGradientImageOrColor;
@@ -2259,6 +2792,12 @@ export interface InitOutput {
   readonly wasmvectorobject_getIndex: (a: number) => number;
   readonly wasmvectorobject_incrementIndex: (a: number, b: number, c: number) => number;
   readonly wasmvectorobject_getPoints: (a: number) => number;
+  readonly wasmvectorobject_add: (a: number, b: number) => number;
+  readonly wasmvectorobject_remove: (a: number, b: number) => number;
+  readonly wasmvectorobject_getSubobject: (a: number, b: number) => number;
+  readonly wasmvectorobject_sliceSubobjects: (a: number, b: number, c: number, d: number) => void;
+  readonly wasmvectorobject_setSubobject: (a: number, b: number, c: number) => number;
+  readonly wasmvectorobject_setSliceSubobjects: (a: number, b: number, c: number, d: number, e: number) => number;
   readonly wasmvectorobject_getFill: (a: number) => number;
   readonly wasmvectorobject_getStroke: (a: number) => number;
   readonly wasmvectorobject_getStrokeWidth: (a: number) => number;
@@ -2344,64 +2883,101 @@ export interface InitOutput {
   readonly wasmimage_getBottom: (a: number) => number;
   readonly wasmimage_getRight: (a: number) => number;
   readonly wasmimage_getAlpha: (a: number) => number;
-  readonly rotMatrix: (a: number, b: number) => number;
-  readonly matrixProduct: (a: number, b: number) => number;
-  readonly rotMatrixEuler: (a: number, b: number, c: number) => number;
-  readonly transposeMatrix: (a: number) => number;
-  readonly applyMatrix: (a: number, b: number) => number;
-  readonly shiftPoints3D: (a: number, b: number) => number;
-  readonly ensureValidThreeDColor: (a: number) => number;
-  readonly __wbg_wasmlightsource_free: (a: number) => void;
-  readonly wasmlightsource_new: (a: number) => number;
-  readonly wasmlightsource_getPosition: (a: number) => number;
-  readonly wasmlightsource_clone: (a: number) => number;
-  readonly __wbg_wasmcamera_free: (a: number) => void;
-  readonly wasmcamera_new: (a: number, b: number, c: number, d: number, e: number, f: number) => number;
-  readonly wasmcamera_getPosition: (a: number) => number;
-  readonly wasmcamera_getRotation: (a: number) => number;
-  readonly wasmcamera_getFocalDistance: (a: number) => number;
-  readonly wasmcamera_getZoom: (a: number) => number;
-  readonly wasmcamera_getWidth: (a: number) => number;
-  readonly wasmcamera_getHeight: (a: number) => number;
-  readonly wasmcamera_clone: (a: number) => number;
-  readonly getShadedRgb: (a: number, b: number, c: number, d: number) => number;
-  readonly getStartCorner: (a: number) => number;
-  readonly getEndCorner: (a: number) => number;
-  readonly crossProduct: (a: number, b: number) => number;
-  readonly getUnitNormal: (a: number, b: number) => number;
-  readonly getStartAnchors: (a: number) => number;
-  readonly getEndAnchors: (a: number) => number;
-  readonly getAnchors: (a: number) => number;
-  readonly getCornerUnitNormal: (a: number, b: number) => number;
-  readonly getStartCornerUnitNormal: (a: number) => number;
-  readonly getEndCornerUnitNormal: (a: number) => number;
-  readonly getShadedColor: (a: number, b: number, c: number, d: number) => number;
-  readonly projectPoints: (a: number, b: number) => number;
-  readonly lineAsCubicBezier3D: (a: number, b: number) => number;
-  readonly __wbg_wasmthreedobject_free: (a: number) => void;
-  readonly wasmthreedobject_new: (a: number, b: number, c: number, d: number, e: number, f: number) => number;
-  readonly wasmthreedobject_getPoints: (a: number) => number;
-  readonly wasmthreedobject_getSubobjects: (a: number, b: number) => void;
-  readonly wasmthreedobject_getFill: (a: number) => number;
-  readonly wasmthreedobject_getStroke: (a: number) => number;
-  readonly wasmthreedobject_getStrokeWidth: (a: number) => number;
-  readonly wasmthreedobject_setPoints: (a: number, b: number) => number;
-  readonly wasmthreedobject_setSubobjects: (a: number, b: number, c: number) => number;
-  readonly wasmthreedobject_setFill: (a: number, b: number) => number;
-  readonly wasmthreedobject_setStroke: (a: number, b: number) => number;
-  readonly wasmthreedobject_setStrokeWidth: (a: number, b: number) => number;
-  readonly wasmthreedobject_scale: (a: number, b: number, c: number) => number;
-  readonly wasmthreedobject_stretch: (a: number, b: number, c: number) => number;
-  readonly wasmthreedobject_shift: (a: number, b: number, c: number) => number;
-  readonly wasmthreedobject_rotateX: (a: number, b: number, c: number) => number;
-  readonly wasmthreedobject_rotateY: (a: number, b: number, c: number) => number;
-  readonly wasmthreedobject_rotateZ: (a: number, b: number, c: number) => number;
-  readonly wasmthreedobject_projectAndShade: (a: number, b: number, c: number) => number;
-  readonly wasmthreedobject_fromUvFunction: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, j: number) => number;
-  readonly wasmthreedobject_getBoundingBox: (a: number) => number;
-  readonly wasmthreedobject_getCenter: (a: number) => number;
-  readonly wasmthreedobject_moveTo: (a: number, b: number, c: number) => number;
-  readonly wasmthreedobject_clone: (a: number) => number;
+  readonly __wbg_lexer_free: (a: number) => void;
+  readonly lexer_new: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, j: number, k: number, l: number, m: number, n: number, o: number, p: number, q: number, r: number, s: number, t: number, u: number, v: number, w: number, x: number, y: number, z: number, a1: number, b1: number, c1: number, d1: number, e1: number, f1: number, g1: number, h1: number, i1: number, j1: number, k1: number, l1: number) => number;
+  readonly lexer_getKeywords: (a: number, b: number) => void;
+  readonly lexer_getSpecials: (a: number, b: number) => void;
+  readonly lexer_getMethodDeclarations: (a: number, b: number) => void;
+  readonly lexer_getIllegals: (a: number, b: number) => void;
+  readonly lexer_getDeclarations: (a: number, b: number) => void;
+  readonly lexer_getOperators: (a: number, b: number) => void;
+  readonly lexer_getSeparators: (a: number, b: number) => void;
+  readonly lexer_getLParens: (a: number, b: number) => void;
+  readonly lexer_getRParens: (a: number, b: number) => void;
+  readonly lexer_getFormatOpens: (a: number, b: number) => void;
+  readonly lexer_getFormatCloses: (a: number, b: number) => void;
+  readonly lexer_getStringOpenDelimiters: (a: number, b: number) => void;
+  readonly lexer_getFormatedStringOpenDelimiters: (a: number, b: number) => void;
+  readonly lexer_getFormatedStringCloseDelimiters: (a: number, b: number) => void;
+  readonly lexer_getStringCloseDelimiters: (a: number, b: number) => void;
+  readonly lexer_getCommentCharacters: (a: number, b: number) => void;
+  readonly lexer_getAssignments: (a: number, b: number) => void;
+  readonly lexer_getConstants: (a: number, b: number) => void;
+  readonly lexer_isKeyword: (a: number, b: number, c: number) => number;
+  readonly lexer_isSpecial: (a: number, b: number, c: number) => number;
+  readonly lexer_isIllegal: (a: number, b: number, c: number) => number;
+  readonly lexer_isFormatedStringOpenDelimiter: (a: number, b: number, c: number) => number;
+  readonly lexer_isFormatedStringCloseDelimiter: (a: number, b: number, c: number) => number;
+  readonly lexer_isMethodDeclaration: (a: number, b: number, c: number) => number;
+  readonly lexer_isStringCloseDelimiter: (a: number, b: number, c: number) => number;
+  readonly lexer_isCommentCharacter: (a: number, b: number, c: number) => number;
+  readonly lexer_isWhitespace: (a: number, b: number, c: number) => number;
+  readonly lexer_isDigit: (a: number, b: number, c: number) => number;
+  readonly lexer_isQuote: (a: number, b: number, c: number) => number;
+  readonly lexer_containsQuoteInitial: (a: number, b: number, c: number) => number;
+  readonly lexer_isDeclaration: (a: number, b: number, c: number) => number;
+  readonly lexer_isSeparator: (a: number, b: number, c: number) => number;
+  readonly lexer_isOperator: (a: number, b: number, c: number) => number;
+  readonly lexer_isLParen: (a: number, b: number, c: number) => number;
+  readonly lexer_isRParen: (a: number, b: number, c: number) => number;
+  readonly lexer_isNewline: (a: number, b: number, c: number) => number;
+  readonly lexer_isConstant: (a: number, b: number, c: number) => number;
+  readonly lexer_hasFormatedStringOpenInitial: (a: number, b: number, c: number) => number;
+  readonly lexer_hasFormatedStringCloseInitial: (a: number, b: number, c: number) => number;
+  readonly lexer_getClassIdentifierPattern: (a: number, b: number) => void;
+  readonly lexer_containsOperator: (a: number, b: number, c: number) => number;
+  readonly lexer_containsAssignment: (a: number, b: number, c: number) => number;
+  readonly lexer_hasFormatOpen: (a: number, b: number, c: number) => number;
+  readonly lexer_hasFormatClose: (a: number, b: number, c: number) => number;
+  readonly lexer_removeLastOperator: (a: number, b: number, c: number, d: number) => void;
+  readonly lexer_removeLastAssignment: (a: number, b: number, c: number, d: number) => void;
+  readonly lexer_removeLastSeparator: (a: number, b: number, c: number, d: number) => void;
+  readonly lexer_removeLastQuote: (a: number, b: number, c: number, d: number) => void;
+  readonly lexer_hasOperatorInitial: (a: number, b: number, c: number) => number;
+  readonly lexer_hasAssignmentInitial: (a: number, b: number, c: number) => number;
+  readonly lexer_isAssignment: (a: number, b: number, c: number) => number;
+  readonly lexer_hasSeparatorInitial: (a: number, b: number, c: number) => number;
+  readonly lexer_containsQuote: (a: number, b: number, c: number) => number;
+  readonly lexer_containsNonAlphabeticalOperator: (a: number, b: number, c: number) => number;
+  readonly lexer_endsWithStringCloseDelimiter: (a: number, b: number, c: number) => number;
+  readonly lexer_startsWithStringOpenDelimiter: (a: number, b: number, c: number) => number;
+  readonly lexer_hasFormatStringClose: (a: number, b: number, c: number) => number;
+  readonly lexer_clone: (a: number) => number;
+  readonly lexer_removeFormatOpen: (a: number, b: number, c: number, d: number) => void;
+  readonly lexer_startsWithCommentCharacter: (a: number, b: number, c: number) => number;
+  readonly lexer_hasCommentInitial: (a: number, b: number, c: number) => number;
+  readonly lexer_removeFormatClose: (a: number, b: number, c: number, d: number) => void;
+  readonly lexer_hasFormatStringOpen: (a: number, b: number, c: number) => number;
+  readonly lexer_getTokens: (a: number, b: number, c: number, d: number) => void;
+  readonly lexer_isStringOpenDelimiter: (a: number, b: number, c: number) => number;
+  readonly __wbg_theme_free: (a: number) => void;
+  readonly theme_new: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, j: number, k: number, l: number, m: number, n: number, o: number, p: number, q: number, r: number, s: number, t: number, u: number, v: number, w: number, x: number, y: number, z: number, a1: number, b1: number, c1: number, d1: number, e1: number, f1: number, g1: number, h1: number, i1: number, j1: number, k1: number, l1: number) => number;
+  readonly theme_getKeywordColor: (a: number, b: number) => void;
+  readonly theme_getSpecialColor: (a: number, b: number) => void;
+  readonly theme_getIllegalColor: (a: number, b: number) => void;
+  readonly theme_getDeclarationColor: (a: number, b: number) => void;
+  readonly theme_getOperatorColor: (a: number, b: number) => void;
+  readonly theme_getParenColor: (a: number, b: number) => void;
+  readonly theme_getConstantColor: (a: number, b: number) => void;
+  readonly theme_getNumberColor: (a: number, b: number) => void;
+  readonly theme_getStringColor: (a: number, b: number) => void;
+  readonly theme_getIdentifierColor: (a: number, b: number) => void;
+  readonly theme_getAssignColor: (a: number, b: number) => void;
+  readonly theme_getClassIdentifierColor: (a: number, b: number) => void;
+  readonly theme_getSeparatorColor: (a: number, b: number) => void;
+  readonly theme_getMethodDeclarationColor: (a: number, b: number) => void;
+  readonly theme_getMethodIdentifierColor: (a: number, b: number) => void;
+  readonly theme_getFormattedStringColor: (a: number, b: number) => void;
+  readonly theme_getFormatOpenColor: (a: number, b: number) => void;
+  readonly theme_getFormatCloseColor: (a: number, b: number) => void;
+  readonly theme_clone: (a: number) => number;
+  readonly theme_getCommentColor: (a: number, b: number) => void;
+  readonly getGithubDark: () => number;
+  readonly getPythonLexer: () => number;
+  readonly __wbg_token_free: (a: number) => void;
+  readonly token_new: (a: number, b: number, c: number) => number;
+  readonly token_getType: (a: number) => number;
+  readonly token_getLiteral: (a: number, b: number) => void;
   readonly makeTimings: (a: number, b: number, c: number) => void;
   readonly animationGroup: (a: number, b: number, c: number, d: number, e: number) => number;
   readonly create: (a: number, b: number) => number;
@@ -2423,98 +2999,7 @@ export interface InitOutput {
   readonly shiftAnimation: (a: number, b: number, c: number) => number;
   readonly showTemporaily: (a: number, b: number) => number;
   readonly spinningGrow: (a: number, b: number, c: number) => number;
-  readonly __wbg_scene_free: (a: number) => void;
-  readonly scene_new_js: (a: number, b: number, c: number) => number;
-  readonly scene_getFps: (a: number) => number;
-  readonly scene_getHeight: (a: number) => number;
-  readonly scene_getWidth: (a: number) => number;
-  readonly scene_renderFrame: (a: number) => void;
-  readonly scene_clear: (a: number) => void;
-  readonly scene_restore: (a: number, b: number) => void;
-  readonly scene_saveState: (a: number, b: number) => void;
-  readonly scene_setTopLeftCorner: (a: number, b: number, c: number) => void;
-  readonly scene_setBottomRightCorner: (a: number, b: number, c: number) => void;
-  readonly scene_getTopLeftCorner: (a: number) => number;
-  readonly scene_getBottomRightCorner: (a: number) => number;
-  readonly scene_setBackground: (a: number, b: number) => void;
-  readonly scene_add: (a: number, b: number) => void;
-  readonly scene_insert: (a: number, b: number, c: number) => void;
-  readonly scene_remove: (a: number, b: number) => void;
-  readonly scene_getObjects: (a: number) => number;
-  readonly scene_getObjectsFromIndices: (a: number, b: number) => number;
-  readonly scene_setCanvasContext: (a: number, b: number) => void;
-  readonly scene_sleep: (a: number, b: number) => number;
-  readonly scene_setObjects: (a: number, b: number) => void;
-  readonly scene_play: (a: number, b: number, c: number, d: number, e: number, f: number) => number;
-  readonly scene_makeFrame: (a: number, b: number, c: number, d: number) => number;
-  readonly scene_wait: (a: number, b: number) => number;
-  readonly scene_setCallback: (a: number, b: number) => void;
-  readonly scene_callCallback: (a: number) => number;
-  readonly __wbg_svgscene_free: (a: number) => void;
-  readonly svgscene_new_js: (a: number, b: number, c: number) => number;
-  readonly svgscene_getFps: (a: number) => number;
-  readonly svgscene_getHeight: (a: number) => number;
-  readonly svgscene_getWidth: (a: number) => number;
-  readonly svgscene_renderFrame: (a: number) => void;
-  readonly svgscene_clear: (a: number) => void;
-  readonly svgscene_restore: (a: number, b: number) => void;
-  readonly svgscene_saveState: (a: number, b: number) => void;
-  readonly svgscene_setTopLeftCorner: (a: number, b: number, c: number) => void;
-  readonly svgscene_setBottomRightCorner: (a: number, b: number, c: number) => void;
-  readonly svgscene_getTopLeftCorner: (a: number) => number;
-  readonly svgscene_getBottomRightCorner: (a: number) => number;
-  readonly svgscene_setBackground: (a: number, b: number) => void;
-  readonly svgscene_add: (a: number, b: number) => void;
-  readonly svgscene_insert: (a: number, b: number, c: number) => void;
-  readonly svgscene_remove: (a: number, b: number) => void;
-  readonly svgscene_getObjectsFromIndices: (a: number, b: number) => number;
-  readonly svgscene_setDivContainer: (a: number, b: number) => void;
-  readonly svgscene_sleep: (a: number, b: number) => number;
-  readonly svgscene_play: (a: number, b: number, c: number, d: number, e: number, f: number) => number;
-  readonly svgscene_makeFrame: (a: number, b: number, c: number, d: number) => number;
-  readonly svgscene_setObjects: (a: number, b: number) => void;
-  readonly svgscene_getObjects: (a: number) => number;
-  readonly svgscene_wait: (a: number, b: number) => number;
-  readonly svgscene_setCallback: (a: number, b: number) => void;
-  readonly svgscene_callCallback: (a: number) => number;
-  readonly svgscene_setClass: (a: number, b: number, c: number, d: number) => void;
-  readonly svgscene_removeClass: (a: number, b: number) => void;
-  readonly mathjax: (a: number, b: number) => number;
   readonly textToVector: (a: number, b: number, c: number, d: number) => number;
-  readonly __wbg_genericscene_free: (a: number) => void;
-  readonly genericscene_fromScene: (a: number) => number;
-  readonly genericscene_fromSVGScene: (a: number) => number;
-  readonly genericscene_isScene: (a: number) => number;
-  readonly genericscene_isSVGScene: (a: number) => number;
-  readonly genericscene_isVideoScene: (a: number) => number;
-  readonly genericscene_getFps: (a: number) => number;
-  readonly genericscene_getHeight: (a: number) => number;
-  readonly genericscene_getWidth: (a: number) => number;
-  readonly genericscene_renderFrame: (a: number) => void;
-  readonly genericscene_clear: (a: number) => void;
-  readonly genericscene_restore: (a: number, b: number) => void;
-  readonly genericscene_saveState: (a: number, b: number) => void;
-  readonly genericscene_setTopLeftCorner: (a: number, b: number, c: number) => void;
-  readonly genericscene_setBottomRightCorner: (a: number, b: number, c: number) => void;
-  readonly genericscene_getTopLeftCorner: (a: number) => number;
-  readonly genericscene_getBottomRightCorner: (a: number) => number;
-  readonly genericscene_setBackground: (a: number, b: number) => void;
-  readonly genericscene_add: (a: number, b: number) => void;
-  readonly genericscene_insert: (a: number, b: number, c: number) => void;
-  readonly genericscene_remove: (a: number, b: number) => void;
-  readonly genericscene_getObjects: (a: number) => number;
-  readonly genericscene_getObjectsFromIndices: (a: number, b: number) => number;
-  readonly genericscene_setCanvasContext: (a: number, b: number) => void;
-  readonly genericscene_setDivContainer: (a: number, b: number) => void;
-  readonly genericscene_sleep: (a: number, b: number) => number;
-  readonly genericscene_setObjects: (a: number, b: number) => void;
-  readonly genericscene_play: (a: number, b: number, c: number, d: number, e: number, f: number) => number;
-  readonly genericscene_makeFrame: (a: number, b: number, c: number, d: number) => number;
-  readonly genericscene_wait: (a: number, b: number) => number;
-  readonly genericscene_setCallback: (a: number, b: number) => void;
-  readonly genericscene_callCallback: (a: number) => number;
-  readonly genericscene_setClass: (a: number, b: number, c: number, d: number) => void;
-  readonly genericscene_setStyle: (a: number, b: number) => void;
   readonly radian: (a: number, b: number, c: number, d: number) => number;
   readonly ellipticalArcPath: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number) => number;
   readonly getBbox: (a: number) => number;
@@ -2589,14 +3074,164 @@ export interface InitOutput {
   readonly easeInOutElastic: (a: number) => number;
   readonly easeInBounce: (a: number) => number;
   readonly easeInOutBounce: (a: number) => number;
+  readonly __wbg_genericscene_free: (a: number) => void;
+  readonly genericscene_fromScene: (a: number) => number;
+  readonly genericscene_fromSVGScene: (a: number) => number;
+  readonly genericscene_isScene: (a: number) => number;
+  readonly genericscene_isSVGScene: (a: number) => number;
+  readonly genericscene_isVideoScene: (a: number) => number;
+  readonly genericscene_getFps: (a: number) => number;
+  readonly genericscene_getHeight: (a: number) => number;
+  readonly genericscene_getWidth: (a: number) => number;
+  readonly genericscene_renderFrame: (a: number) => void;
+  readonly genericscene_clear: (a: number) => void;
+  readonly genericscene_restore: (a: number, b: number) => void;
+  readonly genericscene_saveState: (a: number, b: number) => void;
+  readonly genericscene_setTopLeftCorner: (a: number, b: number, c: number) => void;
+  readonly genericscene_setBottomRightCorner: (a: number, b: number, c: number) => void;
+  readonly genericscene_getTopLeftCorner: (a: number) => number;
+  readonly genericscene_getBottomRightCorner: (a: number) => number;
+  readonly genericscene_setBackground: (a: number, b: number) => void;
+  readonly genericscene_add: (a: number, b: number) => void;
+  readonly genericscene_insert: (a: number, b: number, c: number) => void;
+  readonly genericscene_remove: (a: number, b: number) => void;
+  readonly genericscene_getObjects: (a: number) => number;
+  readonly genericscene_getObjectsFromIndices: (a: number, b: number) => number;
+  readonly genericscene_setCanvasContext: (a: number, b: number) => void;
+  readonly genericscene_setDivContainer: (a: number, b: number) => void;
+  readonly genericscene_sleep: (a: number, b: number) => number;
+  readonly genericscene_setObjects: (a: number, b: number) => void;
+  readonly genericscene_play: (a: number, b: number, c: number, d: number, e: number, f: number) => number;
+  readonly genericscene_makeFrame: (a: number, b: number, c: number, d: number) => number;
+  readonly genericscene_wait: (a: number, b: number) => number;
+  readonly genericscene_setCallback: (a: number, b: number) => void;
+  readonly genericscene_callCallback: (a: number) => number;
+  readonly genericscene_setClass: (a: number, b: number, c: number, d: number) => void;
+  readonly genericscene_setStyle: (a: number, b: number) => void;
   readonly slowInto: (a: number) => number;
   readonly easeOutBounce: (a: number) => number;
   readonly easeOutBack: (a: number) => number;
+  readonly codeObject: (a: number, b: number, c: number, d: number, e: number, f: number) => number;
+  readonly rotMatrix: (a: number, b: number) => number;
+  readonly matrixProduct: (a: number, b: number) => number;
+  readonly rotMatrixEuler: (a: number, b: number, c: number) => number;
+  readonly transposeMatrix: (a: number) => number;
+  readonly applyMatrix: (a: number, b: number) => number;
+  readonly shiftPoints3D: (a: number, b: number) => number;
+  readonly ensureValidThreeDColor: (a: number) => number;
+  readonly __wbg_wasmlightsource_free: (a: number) => void;
+  readonly wasmlightsource_new: (a: number) => number;
+  readonly wasmlightsource_getPosition: (a: number) => number;
+  readonly wasmlightsource_clone: (a: number) => number;
+  readonly __wbg_wasmcamera_free: (a: number) => void;
+  readonly wasmcamera_new: (a: number, b: number, c: number, d: number, e: number, f: number) => number;
+  readonly wasmcamera_getPosition: (a: number) => number;
+  readonly wasmcamera_getRotation: (a: number) => number;
+  readonly wasmcamera_getFocalDistance: (a: number) => number;
+  readonly wasmcamera_getZoom: (a: number) => number;
+  readonly wasmcamera_getWidth: (a: number) => number;
+  readonly wasmcamera_getHeight: (a: number) => number;
+  readonly wasmcamera_clone: (a: number) => number;
+  readonly getShadedRgb: (a: number, b: number, c: number, d: number) => number;
+  readonly getStartCorner: (a: number) => number;
+  readonly getEndCorner: (a: number) => number;
+  readonly crossProduct: (a: number, b: number) => number;
+  readonly getUnitNormal: (a: number, b: number) => number;
+  readonly getStartAnchors: (a: number) => number;
+  readonly getEndAnchors: (a: number) => number;
+  readonly getAnchors: (a: number) => number;
+  readonly getCornerUnitNormal: (a: number, b: number) => number;
+  readonly getStartCornerUnitNormal: (a: number) => number;
+  readonly getEndCornerUnitNormal: (a: number) => number;
+  readonly getShadedColor: (a: number, b: number, c: number, d: number) => number;
+  readonly projectPoints: (a: number, b: number) => number;
+  readonly lineAsCubicBezier3D: (a: number, b: number) => number;
+  readonly __wbg_wasmthreedobject_free: (a: number) => void;
+  readonly wasmthreedobject_new: (a: number, b: number, c: number, d: number, e: number, f: number) => number;
+  readonly wasmthreedobject_getPoints: (a: number) => number;
+  readonly wasmthreedobject_getSubobjects: (a: number, b: number) => void;
+  readonly wasmthreedobject_getFill: (a: number) => number;
+  readonly wasmthreedobject_getStroke: (a: number) => number;
+  readonly wasmthreedobject_getStrokeWidth: (a: number) => number;
+  readonly wasmthreedobject_setPoints: (a: number, b: number) => number;
+  readonly wasmthreedobject_setSubobjects: (a: number, b: number, c: number) => number;
+  readonly wasmthreedobject_setFill: (a: number, b: number) => number;
+  readonly wasmthreedobject_setStroke: (a: number, b: number) => number;
+  readonly wasmthreedobject_setStrokeWidth: (a: number, b: number) => number;
+  readonly wasmthreedobject_scale: (a: number, b: number, c: number) => number;
+  readonly wasmthreedobject_stretch: (a: number, b: number, c: number) => number;
+  readonly wasmthreedobject_shift: (a: number, b: number, c: number) => number;
+  readonly wasmthreedobject_rotateX: (a: number, b: number, c: number) => number;
+  readonly wasmthreedobject_rotateY: (a: number, b: number, c: number) => number;
+  readonly wasmthreedobject_rotateZ: (a: number, b: number, c: number) => number;
+  readonly wasmthreedobject_projectAndShade: (a: number, b: number, c: number) => number;
+  readonly wasmthreedobject_fromUvFunction: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, j: number) => number;
+  readonly wasmthreedobject_getBoundingBox: (a: number) => number;
+  readonly wasmthreedobject_getCenter: (a: number) => number;
+  readonly wasmthreedobject_moveTo: (a: number, b: number, c: number) => number;
+  readonly wasmthreedobject_clone: (a: number) => number;
+  readonly __wbg_scene_free: (a: number) => void;
+  readonly scene_new_js: (a: number, b: number, c: number) => number;
+  readonly scene_getFps: (a: number) => number;
+  readonly scene_getHeight: (a: number) => number;
+  readonly scene_getWidth: (a: number) => number;
+  readonly scene_renderFrame: (a: number) => void;
+  readonly scene_clear: (a: number) => void;
+  readonly scene_restore: (a: number, b: number) => void;
+  readonly scene_saveState: (a: number, b: number) => void;
+  readonly scene_setTopLeftCorner: (a: number, b: number, c: number) => void;
+  readonly scene_setBottomRightCorner: (a: number, b: number, c: number) => void;
+  readonly scene_getTopLeftCorner: (a: number) => number;
+  readonly scene_getBottomRightCorner: (a: number) => number;
+  readonly scene_setBackground: (a: number, b: number) => void;
+  readonly scene_add: (a: number, b: number) => void;
+  readonly scene_insert: (a: number, b: number, c: number) => void;
+  readonly scene_remove: (a: number, b: number) => void;
+  readonly scene_getObjects: (a: number) => number;
+  readonly scene_getObjectsFromIndices: (a: number, b: number) => number;
+  readonly scene_setCanvasContext: (a: number, b: number) => void;
+  readonly scene_sleep: (a: number, b: number) => number;
+  readonly scene_setObjects: (a: number, b: number) => void;
+  readonly scene_play: (a: number, b: number, c: number, d: number, e: number, f: number) => number;
+  readonly scene_makeFrame: (a: number, b: number, c: number, d: number) => number;
+  readonly scene_wait: (a: number, b: number) => number;
+  readonly scene_setCallback: (a: number, b: number) => void;
+  readonly scene_callCallback: (a: number) => number;
+  readonly __wbg_svgscene_free: (a: number) => void;
+  readonly svgscene_new_js: (a: number, b: number, c: number) => number;
+  readonly svgscene_getFps: (a: number) => number;
+  readonly svgscene_getHeight: (a: number) => number;
+  readonly svgscene_getWidth: (a: number) => number;
+  readonly svgscene_renderFrame: (a: number) => void;
+  readonly svgscene_clear: (a: number) => void;
+  readonly svgscene_restore: (a: number, b: number) => void;
+  readonly svgscene_saveState: (a: number, b: number) => void;
+  readonly svgscene_setTopLeftCorner: (a: number, b: number, c: number) => void;
+  readonly svgscene_setBottomRightCorner: (a: number, b: number, c: number) => void;
+  readonly svgscene_getTopLeftCorner: (a: number) => number;
+  readonly svgscene_getBottomRightCorner: (a: number) => number;
+  readonly svgscene_setBackground: (a: number, b: number) => void;
+  readonly svgscene_add: (a: number, b: number) => void;
+  readonly svgscene_insert: (a: number, b: number, c: number) => void;
+  readonly svgscene_remove: (a: number, b: number) => void;
+  readonly svgscene_getObjectsFromIndices: (a: number, b: number) => number;
+  readonly svgscene_setDivContainer: (a: number, b: number) => void;
+  readonly svgscene_sleep: (a: number, b: number) => number;
+  readonly svgscene_play: (a: number, b: number, c: number, d: number, e: number, f: number) => number;
+  readonly svgscene_makeFrame: (a: number, b: number, c: number, d: number) => number;
+  readonly svgscene_setObjects: (a: number, b: number) => void;
+  readonly svgscene_getObjects: (a: number) => number;
+  readonly svgscene_wait: (a: number, b: number) => number;
+  readonly svgscene_setCallback: (a: number, b: number) => void;
+  readonly svgscene_callCallback: (a: number) => number;
+  readonly svgscene_setClass: (a: number, b: number, c: number, d: number) => void;
+  readonly svgscene_removeClass: (a: number, b: number) => void;
+  readonly mathjax: (a: number, b: number) => number;
   readonly __wbindgen_malloc: (a: number, b: number) => number;
   readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
   readonly __wbindgen_export_2: WebAssembly.Table;
-  readonly _dyn_core__ops__function__Fn_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__hceb4cda0231f6107: (a: number, b: number) => number;
-  readonly _dyn_core__ops__function__Fn__A_B___Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h4fe4fb58cdf9a37e: (a: number, b: number, c: number, d: number) => number;
+  readonly _dyn_core__ops__function__Fn_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__hc17e99651e5821a0: (a: number, b: number) => number;
+  readonly _dyn_core__ops__function__Fn__A_B___Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h1f0bfe7974df36a6: (a: number, b: number, c: number, d: number) => number;
   readonly _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h36f54c9e7475dd01: (a: number, b: number, c: number) => void;
   readonly __wbindgen_add_to_stack_pointer: (a: number) => number;
   readonly __wbindgen_free: (a: number, b: number, c: number) => void;

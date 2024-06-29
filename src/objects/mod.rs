@@ -4,3 +4,4 @@ pub mod geometry;
 pub mod wasm_interface;
 pub mod plotting;
 pub mod three_d;
+pub mod code_object;

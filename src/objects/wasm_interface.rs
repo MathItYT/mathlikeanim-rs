@@ -560,6 +560,43 @@ impl WasmVectorObject {
         let points = points.iter().map(|point| Array::of2(&point.0.into(), &point.1.into())).collect();
         points
     }
+    #[wasm_bindgen(js_name = add)]
+    pub fn add(&self, new_subobject: WasmVectorObject) -> Self {
+        WasmVectorObject {
+            native_vec_features: self.native_vec_features.add(&new_subobject.native_vec_features)
+        }
+    }
+    #[wasm_bindgen(js_name = remove)]
+    pub fn remove(&self, index: usize) -> Self {
+        WasmVectorObject {
+            native_vec_features: self.native_vec_features.remove(index)
+        }
+    }
+    #[wasm_bindgen(js_name = getSubobject)]
+    pub fn get_subobject(&self, index: usize) -> WasmVectorObject {
+        WasmVectorObject {
+            native_vec_features: self.native_vec_features.get_subobject(index)
+        }
+    }
+    #[wasm_bindgen(js_name = sliceSubobjects)]
+    pub fn slice_subobjects(&self, start: usize, end: usize) -> Vec<WasmVectorObject> {
+        let subobjects = self.native_vec_features.slice_subobjects(start, end);
+        let subobjects = subobjects.iter().map(|object| WasmVectorObject { native_vec_features: object.clone() }).collect();
+        subobjects
+    }
+    #[wasm_bindgen(js_name = setSubobject)]
+    pub fn set_subobject(&self, index: usize, new_subobject: WasmVectorObject) -> Self {
+        WasmVectorObject {
+            native_vec_features: self.native_vec_features.set_subobject(index, new_subobject.native_vec_features)
+        }
+    }
+    #[wasm_bindgen(js_name = setSliceSubobjects)]
+    pub fn set_slice_subobjects(&self, start: usize, end: usize, new_subobjects: Vec<WasmVectorObject>) -> Self {
+        let new_subobjects = new_subobjects.iter().map(|object| object.native_vec_features.clone()).collect();
+        WasmVectorObject {
+            native_vec_features: self.native_vec_features.set_slice_subobjects(start, end, new_subobjects)
+        }
+    }
     #[wasm_bindgen(js_name = getFill)]
     pub fn get_fill(&self) -> WasmGradientImageOrColor {
         WasmGradientImageOrColor { gradient_image_or_color: self.native_vec_features.get_fill() }
