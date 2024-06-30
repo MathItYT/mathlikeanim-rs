@@ -1,3 +1,4 @@
+use js_sys::Number;
 use wasm_bindgen::prelude::*;
 
 use crate::{colors::GradientImageOrColor, objects::vector_object::{generate_cubic_bezier_tuples, generate_subpaths, VectorFeatures}, utils::consider_points_equals};
@@ -6,6 +7,14 @@ use crate::{colors::GradientImageOrColor, objects::vector_object::{generate_cubi
 #[wasm_bindgen(module = "buf")]
 extern "C" {
     pub type Buffer;
+    #[wasm_bindgen(method, getter, js_name = length)]
+    pub fn length(this: &Buffer) -> Number;
+}
+
+#[wasm_bindgen(module = "fs")]
+extern "C" {
+    #[wasm_bindgen(js_name = createWriteStream)]
+    pub fn create_write_stream(file_name: &str) -> Writable;
 }
 
 #[wasm_bindgen(module = "canvas")]
@@ -15,6 +24,7 @@ extern "C" {
     pub type CanvasRenderingContext2D;
     pub type CanvasGradient;
     pub type CanvasPattern;
+    pub type PNGStream;
     #[wasm_bindgen(constructor)]
     fn new() -> Image;
     #[wasm_bindgen(method, setter, js_name = "src")]
@@ -80,9 +90,13 @@ extern "C" {
     #[wasm_bindgen(method, js_name = "translate")]
     fn translate(this: &CanvasRenderingContext2D, x: f64, y: f64);
     #[wasm_bindgen(method, getter, js_name = "canvas")]
-    fn canvas(this: &CanvasRenderingContext2D) -> Canvas;
-    #[wasm_bindgen(method, js_name = "toBuffer")]
-    fn to_buffer(this: &Canvas, raw: &str) -> Buffer;
+    pub fn canvas(this: &CanvasRenderingContext2D) -> Canvas;
+    #[wasm_bindgen(method, js_name = createPNGStream)]
+    pub fn create_png_stream(this: &Canvas, options: &js_sys::Map) -> PNGStream;
+    #[wasm_bindgen(method, js_name = read)]
+    pub fn read(this: &PNGStream) -> Buffer;
+    #[wasm_bindgen(method, js_name = on)]
+    pub fn on(this: &PNGStream, event: &str, callback: &js_sys::Function);
 }
 
 
@@ -90,13 +104,13 @@ extern "C" {
 extern "C" {
     pub type Writable;
     #[wasm_bindgen(method, js_name = write)]
-    pub fn write(this: &Writable, data: Buffer);
+    pub fn write(this: &Writable, data: &Buffer) -> bool;
     #[wasm_bindgen(method, js_name = write)]
     pub fn write_str(this: &Writable, data: &str);
     #[wasm_bindgen(method, js_name = end)]
     pub fn end(this: &Writable);
     #[wasm_bindgen(method, js_name = on)]
-    pub fn pipe(this: &Writable, stream: &Writable);
+    pub fn on(this: &Writable, event: &str, callback: &js_sys::Function);
 }
 
 
@@ -382,45 +396,4 @@ pub fn render_all_vectors(
     for vec in vecs {
         render_vector_wasm(&vec, width, height, &context);
     }
-}
-
-
-pub fn init_ffmpeg(width: u64, height: u64, fps: i32, codec: &str, pix_fmt: &str, file_name: &str, qp: &str) -> ChildProcess {
-    let command = "ffmpeg";
-    let args = vec![
-        "-y".to_string(),
-        "-f".to_string(),
-        "rawvideo".to_string(),
-        "-s".to_string(),
-        format!("{}x{}", width, height),
-        "-pix_fmt".to_string(),
-        "bgra".to_string(),
-        "-r".to_string(),
-        format!("{}", fps),
-        "-i".to_string(),
-        "-".to_string(),
-        "-an".to_string(),
-        "-vcodec".to_string(),
-        codec.to_string(),
-        "-pix_fmt".to_string(),
-        pix_fmt.to_string(),
-        "-qp".to_string(),
-        qp.to_string(),
-        file_name.to_string()
-    ];
-    spawn(command, args)
-}
-
-
-pub fn write_frame_to_ffmpeg(
-    context: &CanvasRenderingContext2D,
-    ffmpeg_stream: &Writable
-) {
-    let buffer = context.canvas().to_buffer("raw");
-    ffmpeg_stream.write(buffer);
-}
-
-
-pub fn end_ffmpeg(child: &ChildProcess) {
-    child.stdin().end();
 }

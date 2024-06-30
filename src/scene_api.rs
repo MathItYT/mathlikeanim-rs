@@ -88,7 +88,7 @@ pub trait SceneAPI {
         }
     }
     fn sleep(&mut self, duration_in_ms: i32) -> impl Future<Output = ()>;
-    fn render_frame(&self);
-    fn on_rendered(&self) -> impl Future<Output = ()>;
+    fn render_frame(&mut self);
+    fn on_rendered(&mut self) -> impl Future<Output = ()>;
     fn get_objects_from_indices(&self, object_indices: Vec<usize>) -> HashMap<usize, VectorFeatures>;
 }

@@ -143,28 +143,28 @@ pub fn get_python_lexer() -> Lexer {
             "...".to_string(),
         ],
         vec![
-            "\"".to_string(),
-            "'".to_string(),
             "\"\"\"".to_string(),
             "'''".to_string(),
-        ],
-        vec![
             "\"".to_string(),
             "'".to_string(),
-            "\"\"\"".to_string(),
-            "'''".to_string(),
         ],
         vec![
+            "\"\"\"".to_string(),
+            "'''".to_string(),
+            "\"".to_string(),
+            "'".to_string(),
+        ],
+        vec![
+            "f\"\"\"".to_string(),
+            "f'''".to_string(),
             "f\"".to_string(),
             "f'".to_string(),
-            "f\"\"\"".to_string(),
-            "f'''".to_string()
         ],
         vec![
+            "\"\"\"".to_string(),
+            "'''".to_string(),
             "\"".to_string(),
             "'".to_string(),
-            "\"\"\"".to_string(),
-            "'''".to_string()
         ],
         vec!["{".to_string()],
         vec!["}".to_string()],

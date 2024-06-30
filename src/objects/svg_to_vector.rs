@@ -1008,8 +1008,6 @@ pub fn svg_to_vector(svg: &str) -> VectorFeatures {
                     }
                     for transf in new_transfs {
                         let transf = transf.trim();
-                        #[cfg(target_arch = "wasm32")]
-                        log(&format!("Transform: {:?}", transf));
                         let transf = Transform::parse_string(transf.replace(", ", " ").replace(" ", ",").as_str()).unwrap();
                         let matrix = transf.to_matrix().unwrap().to_matrix2d().unwrap();
                         for point in points.iter() {

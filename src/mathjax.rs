@@ -51,24 +51,26 @@ pub async fn mathjax_web(expression: String) -> WasmVectorObject {
 #[wasm_bindgen(js_name = mathjax)]
 pub async fn mathjax_node(expression: String) -> WasmVectorObject {
     let func = eval(
-        &r#"MathJax = {
-  loader: {
-    paths: {mathjax: 'mathjax-full/es5'},
-    require: require,
-    load: ['adaptors/liteDOM']
-  },
-  tex: {
-    packages: ['base', 'autoload', 'require', 'ams', 'newcommand'],
-  },
-  svg: {
-    fontCache: 'local'
-  },
-  startup: {
-    typeset: false
-  }
-};
+        &r#"if (typeof MathJax === 'undefined') {
+  MathJax = {
+    loader: {
+      paths: {mathjax: 'mathjax-full/es5'},
+      require: require,
+      load: ['adaptors/liteDOM']
+    },
+    tex: {
+      packages: ['base', 'autoload', 'require', 'ams', 'newcommand'],
+    },
+    svg: {
+      fontCache: 'local'
+    },
+    startup: {
+      typeset: false
+    }
+  };
 
-require('mathjax-full/es5/tex-svg.js');
+  require('mathjax-full/es5/tex-svg.js');
+}
 
 const texConfig = {
   display: true,
@@ -78,7 +80,9 @@ const texConfig = {
 };
 
 async (tex) => {
-  await MathJax.startup.promise
+  if (!MathJax.startup.adaptor) {
+    await MathJax.startup.promise;
+  }
   const svg = await MathJax.tex2svgPromise(tex, texConfig).then(node =>
     MathJax.startup.adaptor.outerHTML(node.children[0])
   );

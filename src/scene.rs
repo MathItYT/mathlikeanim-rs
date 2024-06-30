@@ -51,7 +51,7 @@ impl SceneAPI for Scene {
             callback: Closure::wrap(Box::new(|| Promise::resolve(&JsValue::NULL)) as Box<dyn Fn() -> Promise>).into_js_value().dyn_into().unwrap()
         };
     }
-    async fn on_rendered(&self) {
+    async fn on_rendered(&mut self) {
         let promise = self.callback.call0(&JsValue::NULL).unwrap().dyn_into::<Promise>().unwrap();
         JsFuture::from(promise).await.unwrap();
     }
@@ -64,7 +64,7 @@ impl SceneAPI for Scene {
     fn get_width(&self) -> &u64 {
         return &self.width;
     }
-    fn render_frame(&self) {
+    fn render_frame(&mut self) {
         render_all_vectors(&self.objects.clone(), self.width, self.height, self.context.clone(), self.background.clone(), self.top_left_corner, self.bottom_right_corner);
     }
     fn clear(&mut self) {
@@ -255,7 +255,7 @@ impl Scene {
         self.callback = callback;
     }
     #[wasm_bindgen(js_name = callCallback)]
-    pub async fn call_callback_js(&self) {
+    pub async fn call_callback_js(&mut self) {
         self.on_rendered().await;
     }
 }

@@ -57,7 +57,7 @@ impl SceneAPI for SVGScene {
     fn clear(&mut self) {
         self.objects = Vec::new();
     }
-    async fn on_rendered(&self) {
+    async fn on_rendered(&mut self) {
         let promise = self.callback.call0(&JsValue::NULL).unwrap().dyn_into::<Promise>().unwrap();
         JsFuture::from(promise).await.unwrap();
     }
@@ -100,7 +100,7 @@ impl SceneAPI for SVGScene {
     fn get_width(&self) -> &u64 {
         return &self.width;
     }
-    fn render_frame(&self) {
+    fn render_frame(&mut self) {
         render_all_vectors_svg(&self);
     }
     fn get_objects_from_indices(&self, object_indices: Vec<usize>) -> HashMap<usize, VectorFeatures> {
@@ -258,7 +258,7 @@ impl SVGScene {
         self.callback = callback;
     }
     #[wasm_bindgen(js_name = callCallback)]
-    pub async fn call_callback_js(&self) {
+    pub async fn call_callback_js(&mut self) {
         self.on_rendered().await;
     }
     #[wasm_bindgen(js_name = setClass)]

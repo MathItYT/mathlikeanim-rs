@@ -1,4 +1,4 @@
-use crate::{objects::wasm_interface::{WasmGradientImageOrColor, WasmVectorObject}, utils::log, wasm_interface::hex_to_color_js};
+use crate::{objects::wasm_interface::{WasmGradientImageOrColor, WasmVectorObject}, wasm_interface::hex_to_color_js};
 #[cfg(feature = "browser")]
 use crate::text_to_vector::text_to_vector_browser;
 #[cfg(feature = "node")]
@@ -40,10 +40,8 @@ pub async fn code_object(
         for token in tokens.iter() {
             let literal = token.get_literal();
             let token_type = token.get_type();
-            log(&format!("{}", literal));
             match token_type {
                 TokenType::Whitespace => {
-                    log("Whitespace");
                     current_char += literal.len();
                     continue;
                 }
@@ -151,8 +149,6 @@ pub async fn code_object(
                     continue;
                 }
                 TokenType::Identifier => {
-                    log("Identifier");
-                    log(&format!("{}, {}, {}", literal, current_char, current_char + literal.len()));
                     let slice_subobjects = line_object.slice_subobjects(current_char, current_char + literal.len());
                     for subobject in slice_subobjects {
                         let fill = WasmGradientImageOrColor::from_color(hex_to_color_js(theme.get_identifier_color(), 1.0));
@@ -171,8 +167,6 @@ pub async fn code_object(
                     continue;
                 }
                 TokenType::Keyword => {
-                    log("Keyword");
-                    log(&format!("{}, {}", current_char, current_char + literal.len()));
                     let slice_subobjects = line_object.slice_subobjects(current_char, current_char + literal.len());
                     for subobject in slice_subobjects {
                         let fill = WasmGradientImageOrColor::from_color(hex_to_color_js(theme.get_keyword_color(), 1.0));

@@ -1,5 +1,3 @@
-use crate::utils::log;
-
 use super::{token::Token, token_type::TokenType};
 use regex::Regex;
 use wasm_bindgen::prelude::*;
@@ -368,9 +366,69 @@ impl Lexer {
         }
         None
     }
+    #[wasm_bindgen(js_name = removeStringOpenDelimiterIndex)]
+    pub fn remove_string_open_delimiter_index(&self, token: &str) -> Option<usize> {
+        let token = token.to_string();
+        for (i, string_open) in self.string_open_delimiters.iter().enumerate() {
+            if token.ends_with(string_open) {
+                return Some(i);
+            }
+        }
+        None
+    }
+    #[wasm_bindgen(js_name = removeStringCloseDelimiterIndex)]
+    pub fn remove_string_close_delimiter_index(&self, token: &str) -> Option<usize> {
+        let token = token.to_string();
+        for (i, string_close) in self.string_close_delimiters.iter().enumerate() {
+            if token.ends_with(string_close) {
+                return Some(i);
+            }
+        }
+        None
+    }
     #[wasm_bindgen(js_name = hasFormatStringOpen)]
     pub fn has_formated_string_open(&self, token: &str) -> bool {
         self.formated_string_open_delimiters.iter().any(|delimiter| token.starts_with(delimiter))
+    }
+    #[wasm_bindgen(js_name = getStringOpeningDelimiterIndex)]
+    pub fn get_string_opening_delimiter_index(&self, token: &str) -> Option<usize> {
+        let token = token.to_string();
+        for (i, string_open) in self.string_open_delimiters.iter().enumerate() {
+            if token.starts_with(string_open) {
+                return Some(i);
+            }
+        }
+        None
+    }
+    #[wasm_bindgen(js_name = getStringClosingDelimiterIndex)]
+    pub fn get_string_closing_delimiter_index(&self, token: &str) -> Option<usize> {
+        let token = token.to_string();
+        for (i, string_close) in self.string_close_delimiters.iter().enumerate() {
+            if token.ends_with(string_close) {
+                return Some(i);
+            }
+        }
+        None
+    }
+    #[wasm_bindgen(js_name = getFormatedStringOpeningDelimiterIndex)]
+    pub fn get_formated_string_opening_delimiter_index(&self, token: &str) -> Option<usize> {
+        let token = token.to_string();
+        for (i, formated_string_open) in self.formated_string_open_delimiters.iter().enumerate() {
+            if token.starts_with(formated_string_open) {
+                return Some(i);
+            }
+        }
+        None
+    }
+    #[wasm_bindgen(js_name = getFormatedStringClosingDelimiterIndex)]
+    pub fn get_formated_string_closing_delimiter_index(&self, token: &str) -> Option<usize> {
+        let token = token.to_string();
+        for (i, formated_string_close) in self.formated_string_close_delimiters.iter().enumerate() {
+            if token.ends_with(formated_string_close) {
+                return Some(i);
+            }
+        }
+        None
     }
     #[wasm_bindgen(js_name = getTokens)]
     pub fn get_tokens(&self, input: &str) -> Vec<Token> {
@@ -382,13 +440,11 @@ impl Lexer {
             if self.is_whitespace(&c.to_string()) {
                 tokens.push(Token::new(TokenType::Whitespace, c.to_string()));
                 current += 1;
-                log(&format!("Whitespace: {}", c.to_string()));
                 continue;
             }
             if self.is_illegal(&c.to_string()) {
                 tokens.push(Token::new(TokenType::Illegal, c.to_string()));
                 current += 1;
-                log(&format!("Illegal: {}", c.to_string()));
                 continue;
             }
             if self.contains_quote_initial(&c.to_string()) {
@@ -399,8 +455,7 @@ impl Lexer {
                     let c = input[current];
                     literal.push(c);
                     current += 1;
-                    if self.ends_with_string_close_delimiter(&literal) {
-                        log(&format!("String: {}", literal));
+                    if self.ends_with_string_close_delimiter(&literal) && self.get_string_opening_delimiter_index(&literal).unwrap() == self.get_string_closing_delimiter_index(&literal).unwrap() {
                         tokens.push(Token::new(TokenType::String, literal.clone()));
                         break;
                     }
@@ -412,7 +467,6 @@ impl Lexer {
                 }
             }
             if self.has_formated_string_open_initial(&c.to_string()) {
-                log(&format!("Formated String Open: {}", c.to_string()));
                 let initial_current = current;
                 let mut finished = false;
                 let mut has_format_open = false;
@@ -426,13 +480,11 @@ impl Lexer {
                         current = initial_current;
                         break;
                     }
-                    if self.has_formated_string_close(&literal) && (c.is_alphabetic() || c.is_numeric() || c == '_' || c.is_whitespace() || self.is_l_paren(&c.to_string()) || self.is_r_paren(&c.to_string()) || self.is_newline(&c.to_string())) {
-                        log(&format!("Formated String Finish: {}", literal));
+                    if self.has_formated_string_close(&literal) && (c.is_alphabetic() || c.is_numeric() || c == '_' || c.is_whitespace() || self.is_l_paren(&c.to_string()) || self.is_r_paren(&c.to_string()) || self.is_newline(&c.to_string())) && self.get_formated_string_opening_delimiter_index(&literal).unwrap() == self.get_formated_string_closing_delimiter_index(&literal).unwrap() {
                         finished = true;
                         break;
                     }
                     if self.has_format_open(&literal) {
-                        log(&format!("Formated String: {}", literal));
                         let format_open = self.remove_format_open(&literal).unwrap();
                         literal = literal[..literal.len() - format_open.len()].to_string();
                         tokens.push(Token::new(TokenType::FormattedString, literal.clone()));
@@ -442,7 +494,6 @@ impl Lexer {
                     }
                 }
                 if finished && self.has_formated_string_open(&literal) && self.has_formated_string_close(&literal) {
-                    log(&format!("Formated String: {}", literal));
                     tokens.push(Token::new(TokenType::FormattedString, literal));
                     current += 1;
                     continue;
@@ -452,12 +503,10 @@ impl Lexer {
                     while !finished {
                         let mut literal = String::new();
                         while current < input.len() {
-                            log(&format!("Current: {}", current));
                             let c = input[current];
                             literal.push(c);
                             current += 1;
                             if self.has_format_close(&literal) {
-                                log(&format!("Formated String 2: {}", literal));
                                 let format_close = self.remove_format_close(&literal).unwrap();
                                 literal = literal[..literal.len() - format_close.len()].to_string();
                                 tokens.extend(self.get_tokens(&literal));
@@ -468,18 +517,15 @@ impl Lexer {
                         literal = String::new();
                         while current < input.len() {
                             let c = input[current];
-                            log(&format!("Current: {}", c));
                             literal.push(c);
                             if self.has_format_open(&literal) {
-                                log(&format!("Formated String: {}", literal));
                                 let format_open = self.remove_format_open(&literal).unwrap();
                                 literal = literal[..literal.len() - format_open.len()].to_string();
                                 tokens.push(Token::new(TokenType::FormattedString, literal.clone()));
                                 tokens.push(Token::new(TokenType::FormatOpen, format_open.clone()));
                                 break;
                             }
-                            if self.has_formated_string_close(&literal) && ((current + 1 < input.len() && (self.is_whitespace(&input[current + 1].to_string()) || self.is_l_paren(&input[current + 1].to_string()) || self.is_r_paren(&input[current + 1].to_string()) || self.is_separator(&input[current + 1].to_string()) || self.is_newline(&input[current + 1].to_string()))) || (current + 1 == input.len())) {
-                                log(&format!("Formated String Finished: {}", literal));
+                            if self.has_formated_string_close(&literal) && ((current + 1 < input.len() && (self.is_whitespace(&input[current + 1].to_string()) || self.is_l_paren(&input[current + 1].to_string()) || self.is_r_paren(&input[current + 1].to_string()) || self.is_separator(&input[current + 1].to_string()) || self.is_newline(&input[current + 1].to_string()))) || (current + 1 == input.len())) && self.get_formated_string_opening_delimiter_index(&literal).unwrap() == self.get_formated_string_closing_delimiter_index(&literal).unwrap() {
                                 tokens.push(Token::new(TokenType::FormattedString, literal));
                                 current += 1;
                                 finished = true;
@@ -495,68 +541,29 @@ impl Lexer {
                 let mut literal = String::new();
                 while current < input.len() {
                     let c = input[current];
-                    if !self.is_digit(&c.to_string()) && c != '.' {
+                    if !self.is_digit(&c.to_string()) && c != '.' && c != 'e' {
                         break;
                     }
                     literal.push(c);
                     current += 1;
                 }
-                log(&format!("Number: {}", literal));
                 tokens.push(Token::new(TokenType::Number, literal));
                 continue;
             }
             if self.is_newline(&c.to_string()) {
                 tokens.push(Token::new(TokenType::Newline, c.to_string()));
                 current += 1;
-                log(&format!("Newline: {}", c.to_string()));
                 continue;
             }
             if self.is_l_paren(&c.to_string()) {
                 tokens.push(Token::new(TokenType::LParen, c.to_string()));
                 current += 1;
-                log(&format!("LParen: {}", c.to_string()));
                 continue;
             }
             if self.is_r_paren(&c.to_string()) {
                 tokens.push(Token::new(TokenType::RParen, c.to_string()));
                 current += 1;
-                log(&format!("RParen: {}", c.to_string()));
                 continue;
-            }
-            if self.has_operator_initial(&c.to_string()) {
-                let mut literal = String::new();
-                let initial_current = current;
-                while current < input.len() {
-                    let c = input[current];
-                    if self.is_illegal(&c.to_string())
-                    || self.is_whitespace(&c.to_string())
-                    || self.is_newline(&c.to_string())
-                    || self.is_l_paren(&c.to_string())
-                    || self.is_r_paren(&c.to_string())
-                    || self.is_separator(&c.to_string())
-                    || self.contains_assignment(&literal)
-                    || c.is_alphabetic()
-                    || c.is_numeric()
-                    {
-                        if self.contains_assignment(&literal) {
-                            let assignment = self.remove_last_assignment(&literal).unwrap();
-                            current -= assignment.len();
-                        } else if self.contains_quote(&literal) {
-                            let quote = self.remove_last_quote(&literal).unwrap();
-                            current -= quote.len();
-                        }
-                        break;
-                    }
-                    literal.push(c);
-                    current += 1;
-                }
-                if self.is_operator(&literal) {
-                    log(&format!("Operator: {}", literal));
-                    tokens.push(Token::new(TokenType::Operator, literal));
-                    continue;
-                } else {
-                    current = initial_current;
-                }
             }
             if self.has_assignment_initial(&c.to_string())  {
                 let mut literal = String::new();
@@ -582,8 +589,33 @@ impl Lexer {
                     current += 1;
                 }
                 if self.is_assignment(&literal) {
-                    log(&format!("Assign: {}", literal));
                     tokens.push(Token::new(TokenType::Assign, literal));
+                    continue;
+                } else {
+                    current = initial_current;
+                }
+            }
+            if self.has_operator_initial(&c.to_string()) {
+                let mut literal = String::new();
+                let initial_current = current;
+                while current < input.len() {
+                    let c = input[current];
+                    if self.is_illegal(&c.to_string())
+                    || self.is_whitespace(&c.to_string())
+                    || self.is_newline(&c.to_string())
+                    || self.is_l_paren(&c.to_string())
+                    || self.is_r_paren(&c.to_string())
+                    || self.is_separator(&c.to_string())
+                    || c.is_alphabetic()
+                    || c.is_numeric()
+                    {
+                        break;
+                    }
+                    literal.push(c);
+                    current += 1;
+                }
+                if self.is_operator(&literal) {
+                    tokens.push(Token::new(TokenType::Operator, literal));
                     continue;
                 } else {
                     current = initial_current;
@@ -640,7 +672,6 @@ impl Lexer {
                     current += 1;
                 }
                 if self.is_separator(&literal) {
-                    log(&format!("Separator: {}", literal));
                     tokens.push(Token::new(TokenType::Separator, literal));
                     continue;
                 } else {
@@ -673,27 +704,22 @@ impl Lexer {
                 current += 1;
             }
             if self.is_keyword(&literal) {
-                log(&format!("Keyword: {}", literal));
                 tokens.push(Token::new(TokenType::Keyword, literal));
                 continue;
             }
             if self.is_special(&literal) {
-                log(&format!("Special: {}", literal));
                 tokens.push(Token::new(TokenType::Special, literal));
                 continue;
             }
             if self.is_declaration(&literal) {
-                log(&format!("Declaration: {}", literal));
                 tokens.push(Token::new(TokenType::Declaration, literal));
                 continue;
             }
             if self.is_constant(&literal) {
-                log(&format!("Constant: {}", literal));
                 tokens.push(Token::new(TokenType::Constant, literal));
                 continue;
             }
             if self.is_method_declaration(&literal) && current < input.len() && self.is_whitespace(&input[current].to_string()) {
-                log(&format!("Method Declaration: {}", literal));
                 tokens.push(Token::new(TokenType::MethodDeclaration, literal));
                 let mut literal = String::new();
                 let space = input[current];
@@ -724,21 +750,17 @@ impl Lexer {
                     current += 1;
                 }
                 if Regex::new(&self.class_identifier_pattern).unwrap().is_match(&literal) {
-                    log(&format!("Class Identifier: {}", literal));
                     tokens.push(Token::new(TokenType::ClassIdentifier, literal));
                     continue;
                 } else {
-                    log(&format!("Identifier: {}", literal));
                     tokens.push(Token::new(TokenType::MethodIdentifier, literal));
                     continue;
                 }
             }
             if Regex::new(&self.class_identifier_pattern).unwrap().is_match(&literal) {
-                log(&format!("Class Identifier: {}", literal));
                 tokens.push(Token::new(TokenType::ClassIdentifier, literal));
                 continue;
             }
-            log(&format!("Identifier: {}", literal));
             tokens.push(Token::new(TokenType::Identifier, literal));
         }
         tokens
