@@ -163,13 +163,13 @@ export default function Home() {
       async (objects: WasmVectorObject[], t: number) => {
         if (right) {
           return [
-            fadeOut(objects[0].clone(), 1.0, [0.0, 0.0], t),
-            fadeOut(objects[1].clone(), 1.0, [0.0, 0.0], t)
+            fadeOut(objects[1].clone(), 1.0, [0.0, 0.0], t),
+            fadeOut(objects[0].clone(), 1.0, [0.0, 0.0], t)
           ];
         }
         return [
-          fadeOut(objects[1].clone(), 1.0, [0.0, 0.0], t),
-          fadeOut(objects[0].clone(), 1.0, [0.0, 0.0], t)
+          fadeOut(objects[0].clone(), 1.0, [0.0, 0.0], t),
+          fadeOut(objects[1].clone(), 1.0, [0.0, 0.0], t)
         ];
       },
       Uint32Array.from([18, 19]),
@@ -591,8 +591,8 @@ export default function Home() {
     await scene.play(
       async (objects: WasmVectorObject[], t: number) => {
         return [
-          fadeIn(objects[0].clone(), 1.0, [0.0, 0.0], t),
-          objects[1].clone()
+          fadeIn(objects[1].clone(), 1.0, [0.0, 0.0], t),
+          objects[0].clone()
         ];
       },
       Uint32Array.from([1, 15]),
@@ -634,8 +634,8 @@ export default function Home() {
     await scene.play(
       async (objects: WasmVectorObject[], t: number) => {
         return [
-          fadeOut(objects[0].clone(), 1.0, [0.0, 0.0], t),
-          morphShape(objects[1].clone(), target.clone(), t),
+          fadeOut(objects[1].clone(), 1.0, [0.0, 0.0], t),
+          morphShape(objects[0].clone(), target.clone(), t),
         ];
       },
       Uint32Array.from([1, 15]),
