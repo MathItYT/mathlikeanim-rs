@@ -8,7 +8,7 @@ use crate::objects::wasm_interface::{svg_to_vector_js, WasmVectorObject};
 
 #[cfg(feature = "browser")]
 #[wasm_bindgen(js_name = mathjax)]
-pub async fn mathjax_web(expression: String) -> WasmVectorObject {
+pub async fn mathjax_web(expression: String, default_font_family: Option<String>, default_font_size: Option<f64>) -> WasmVectorObject {
     let function = eval(
         &r#"(expression) => {
     return new Promise((resolve, reject) => {
@@ -43,13 +43,13 @@ pub async fn mathjax_web(expression: String) -> WasmVectorObject {
     ).unwrap().dyn_into::<Promise>().unwrap();
     let result = JsFuture::from(promise).await.unwrap();
     let svg = result.as_string().unwrap();
-    svg_to_vector_js(svg)
+    svg_to_vector_js(svg, default_font_family, default_font_size).await
 }
 
 
 #[cfg(feature = "node")]
 #[wasm_bindgen(js_name = mathjax)]
-pub async fn mathjax_node(expression: String) -> WasmVectorObject {
+pub async fn mathjax_node(expression: String, default_font_family: Option<String>, default_font_size: Option<f64>) -> WasmVectorObject {
     let func = eval(
         &r#"if (typeof MathJax === 'undefined') {
   MathJax = {
@@ -95,5 +95,5 @@ async (tex) => {
     ).unwrap().dyn_into::<Promise>().unwrap();
     let result = JsFuture::from(promise).await.unwrap();
     let svg = result.as_string().unwrap();
-    svg_to_vector_js(svg)
+    svg_to_vector_js(svg, default_font_family, default_font_size).await
 }

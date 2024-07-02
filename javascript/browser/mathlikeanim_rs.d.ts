@@ -439,9 +439,11 @@ export function pointToNumber(number_line: WasmVectorObject, point: Array<any>, 
 export function getNumbersTex(number_line: WasmVectorObject, numbers: Array<any>, number_to_vector: Function, x_min: number, x_max: number, height: number, direction?: Array<any>, buff?: number, index?: number): Promise<WasmVectorObject>;
 /**
 * @param {string} svg
-* @returns {WasmVectorObject}
+* @param {string | undefined} [default_font_family]
+* @param {number | undefined} [default_font_size]
+* @returns {Promise<WasmVectorObject>}
 */
-export function svgToVector(svg: string): WasmVectorObject;
+export function svgToVector(svg: string, default_font_family?: string, default_font_size?: number): Promise<WasmVectorObject>;
 /**
 * @returns {Theme}
 */
@@ -450,6 +452,14 @@ export function getGithubDark(): Theme;
 * @returns {Lexer}
 */
 export function getPythonLexer(): Lexer;
+/**
+* @param {string} code
+* @param {Lexer} lexer
+* @param {Theme} theme
+* @param {string} font_family
+* @returns {Promise<WasmVectorObject>}
+*/
+export function codeObject(code: string, lexer: Lexer, theme: Theme, font_family: string): Promise<WasmVectorObject>;
 /**
 * @param {number} num_anim_funcs
 * @param {number} lag_ratio
@@ -595,9 +605,12 @@ export function spinningGrow(vec_obj: WasmVectorObject, angle: number, t: number
 /**
 * @param {string} text
 * @param {string} font_family
+* @param {number} x
+* @param {number} y
+* @param {number} font_size
 * @returns {Promise<WasmVectorObject>}
 */
-export function textToVector(text: string, font_family: string): Promise<WasmVectorObject>;
+export function textToVector(text: string, font_family: string, x: number, y: number, font_size: number): Promise<WasmVectorObject>;
 /**
 * @param {number} ux
 * @param {number} uy
@@ -1053,14 +1066,6 @@ export function easeInBounce(t: number): number;
 */
 export function easeInOutBounce(t: number): number;
 /**
-* @param {string} code
-* @param {Lexer} lexer
-* @param {Theme} theme
-* @param {string} font_family
-* @returns {Promise<WasmVectorObject>}
-*/
-export function codeObject(code: string, lexer: Lexer, theme: Theme, font_family: string): Promise<WasmVectorObject>;
-/**
 * @param {number} angle
 * @param {number} axis
 * @returns {Array<any>}
@@ -1184,9 +1189,11 @@ export function projectPoints(points: Array<any>, camera: WasmCamera): Array<any
 export function lineAsCubicBezier3D(point1: Array<any>, point2: Array<any>): Array<any>;
 /**
 * @param {string} expression
+* @param {string | undefined} [default_font_family]
+* @param {number | undefined} [default_font_size]
 * @returns {Promise<WasmVectorObject>}
 */
-export function mathjax(expression: string): Promise<WasmVectorObject>;
+export function mathjax(expression: string, default_font_family?: string, default_font_size?: number): Promise<WasmVectorObject>;
 /**
 */
 export enum TokenType {
@@ -2897,7 +2904,7 @@ export interface InitOutput {
   readonly numberToPoint: (a: number, b: number, c: number, d: number) => number;
   readonly pointToNumber: (a: number, b: number, c: number, d: number) => number;
   readonly getNumbersTex: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, j: number, k: number) => number;
-  readonly svgToVector: (a: number, b: number) => number;
+  readonly svgToVector: (a: number, b: number, c: number, d: number, e: number, f: number) => number;
   readonly wasmlineargradient_getX1: (a: number) => number;
   readonly wasmlineargradient_getY1: (a: number) => number;
   readonly wasmlineargradient_getX2: (a: number) => number;
@@ -3010,6 +3017,34 @@ export interface InitOutput {
   readonly theme_getCommentColor: (a: number, b: number) => void;
   readonly getGithubDark: () => number;
   readonly getPythonLexer: () => number;
+  readonly __wbg_scene_free: (a: number) => void;
+  readonly scene_new_js: (a: number, b: number, c: number) => number;
+  readonly scene_getFps: (a: number) => number;
+  readonly scene_getHeight: (a: number) => number;
+  readonly scene_getWidth: (a: number) => number;
+  readonly scene_renderFrame: (a: number) => void;
+  readonly scene_clear: (a: number) => void;
+  readonly scene_restore: (a: number, b: number) => void;
+  readonly scene_saveState: (a: number, b: number) => void;
+  readonly scene_setTopLeftCorner: (a: number, b: number, c: number) => void;
+  readonly scene_setBottomRightCorner: (a: number, b: number, c: number) => void;
+  readonly scene_getTopLeftCorner: (a: number) => number;
+  readonly scene_getBottomRightCorner: (a: number) => number;
+  readonly scene_setBackground: (a: number, b: number) => void;
+  readonly scene_add: (a: number, b: number) => void;
+  readonly scene_insert: (a: number, b: number, c: number) => void;
+  readonly scene_remove: (a: number, b: number) => void;
+  readonly scene_getObjects: (a: number) => number;
+  readonly scene_getObjectsFromIndices: (a: number, b: number) => number;
+  readonly scene_setCanvasContext: (a: number, b: number) => void;
+  readonly scene_sleep: (a: number, b: number) => number;
+  readonly scene_setObjects: (a: number, b: number) => void;
+  readonly scene_play: (a: number, b: number, c: number, d: number, e: number, f: number) => number;
+  readonly scene_makeFrame: (a: number, b: number, c: number, d: number) => number;
+  readonly scene_wait: (a: number, b: number) => number;
+  readonly scene_setCallback: (a: number, b: number) => void;
+  readonly scene_callCallback: (a: number) => number;
+  readonly codeObject: (a: number, b: number, c: number, d: number, e: number, f: number) => number;
   readonly __wbg_token_free: (a: number) => void;
   readonly token_new: (a: number, b: number, c: number) => number;
   readonly token_getType: (a: number) => number;
@@ -3035,7 +3070,7 @@ export interface InitOutput {
   readonly shiftAnimation: (a: number, b: number, c: number) => number;
   readonly showTemporaily: (a: number, b: number) => number;
   readonly spinningGrow: (a: number, b: number, c: number) => number;
-  readonly textToVector: (a: number, b: number, c: number, d: number) => number;
+  readonly textToVector: (a: number, b: number, c: number, d: number, e: number, f: number, g: number) => number;
   readonly radian: (a: number, b: number, c: number, d: number) => number;
   readonly ellipticalArcPath: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number) => number;
   readonly getBbox: (a: number) => number;
@@ -3147,7 +3182,6 @@ export interface InitOutput {
   readonly slowInto: (a: number) => number;
   readonly easeOutBounce: (a: number) => number;
   readonly easeOutBack: (a: number) => number;
-  readonly codeObject: (a: number, b: number, c: number, d: number, e: number, f: number) => number;
   readonly rotMatrix: (a: number, b: number) => number;
   readonly matrixProduct: (a: number, b: number) => number;
   readonly rotMatrixEuler: (a: number, b: number, c: number) => number;
@@ -3206,33 +3240,7 @@ export interface InitOutput {
   readonly wasmthreedobject_getCenter: (a: number) => number;
   readonly wasmthreedobject_moveTo: (a: number, b: number, c: number) => number;
   readonly wasmthreedobject_clone: (a: number) => number;
-  readonly __wbg_scene_free: (a: number) => void;
-  readonly scene_new_js: (a: number, b: number, c: number) => number;
-  readonly scene_getFps: (a: number) => number;
-  readonly scene_getHeight: (a: number) => number;
-  readonly scene_getWidth: (a: number) => number;
-  readonly scene_renderFrame: (a: number) => void;
-  readonly scene_clear: (a: number) => void;
-  readonly scene_restore: (a: number, b: number) => void;
-  readonly scene_saveState: (a: number, b: number) => void;
-  readonly scene_setTopLeftCorner: (a: number, b: number, c: number) => void;
-  readonly scene_setBottomRightCorner: (a: number, b: number, c: number) => void;
-  readonly scene_getTopLeftCorner: (a: number) => number;
-  readonly scene_getBottomRightCorner: (a: number) => number;
-  readonly scene_setBackground: (a: number, b: number) => void;
-  readonly scene_add: (a: number, b: number) => void;
-  readonly scene_insert: (a: number, b: number, c: number) => void;
-  readonly scene_remove: (a: number, b: number) => void;
-  readonly scene_getObjects: (a: number) => number;
-  readonly scene_getObjectsFromIndices: (a: number, b: number) => number;
-  readonly scene_setCanvasContext: (a: number, b: number) => void;
-  readonly scene_sleep: (a: number, b: number) => number;
-  readonly scene_setObjects: (a: number, b: number) => void;
-  readonly scene_play: (a: number, b: number, c: number, d: number, e: number, f: number) => number;
-  readonly scene_makeFrame: (a: number, b: number, c: number, d: number) => number;
-  readonly scene_wait: (a: number, b: number) => number;
-  readonly scene_setCallback: (a: number, b: number) => void;
-  readonly scene_callCallback: (a: number) => number;
+  readonly mathjax: (a: number, b: number, c: number, d: number, e: number, f: number) => number;
   readonly __wbg_svgscene_free: (a: number) => void;
   readonly svgscene_new_js: (a: number, b: number, c: number) => number;
   readonly svgscene_getFps: (a: number) => number;
@@ -3262,7 +3270,6 @@ export interface InitOutput {
   readonly svgscene_callCallback: (a: number) => number;
   readonly svgscene_setClass: (a: number, b: number, c: number, d: number) => void;
   readonly svgscene_removeClass: (a: number, b: number) => void;
-  readonly mathjax: (a: number, b: number) => number;
   readonly __wbindgen_malloc: (a: number, b: number) => number;
   readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
   readonly __wbindgen_export_2: WebAssembly.Table;

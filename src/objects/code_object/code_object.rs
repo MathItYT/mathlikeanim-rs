@@ -28,11 +28,11 @@ pub async fn code_object(
         let mut line_object = WasmVectorObject::new();
         if cfg!(feature = "browser") {
             #[cfg(feature = "browser")] {
-                line_object = text_to_vector_browser(code_line.clone(), font_family.clone()).await;
+                line_object = text_to_vector_browser(code_line.clone(), font_family.clone(), 0.0, 0.0, 144.0).await;
             }
         } else if cfg!(feature = "node") {
             #[cfg(feature = "node")] {
-                line_object = text_to_vector_node(code_line.clone(), font_family.clone()).await;
+                line_object = text_to_vector_node(code_line.clone(), font_family.clone(), 0.0, 0.0, 144.0).await;
             }
         }
         let tokens = lexer.get_tokens(&code_line);

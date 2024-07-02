@@ -1215,13 +1215,17 @@ module.exports.getNumbersTex = function(number_line, numbers, number_to_vector, 
 
 /**
 * @param {string} svg
-* @returns {WasmVectorObject}
+* @param {string | undefined} [default_font_family]
+* @param {number | undefined} [default_font_size]
+* @returns {Promise<WasmVectorObject>}
 */
-module.exports.svgToVector = function(svg) {
+module.exports.svgToVector = function(svg, default_font_family, default_font_size) {
     const ptr0 = passStringToWasm0(svg, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
     const len0 = WASM_VECTOR_LEN;
-    const ret = wasm.svgToVector(ptr0, len0);
-    return WasmVectorObject.__wrap(ret);
+    var ptr1 = isLikeNone(default_font_family) ? 0 : passStringToWasm0(default_font_family, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    var len1 = WASM_VECTOR_LEN;
+    const ret = wasm.svgToVector(ptr0, len0, ptr1, len1, !isLikeNone(default_font_size), isLikeNone(default_font_size) ? 0 : default_font_size);
+    return takeObject(ret);
 };
 
 /**
@@ -1445,17 +1449,6 @@ module.exports.lineAsCubicBezier3D = function(point1, point2) {
 module.exports.getGithubDark = function() {
     const ret = wasm.getGithubDark();
     return Theme.__wrap(ret);
-};
-
-/**
-* @param {string} expression
-* @returns {Promise<WasmVectorObject>}
-*/
-module.exports.mathjax = function(expression) {
-    const ptr0 = passStringToWasm0(expression, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-    const len0 = WASM_VECTOR_LEN;
-    const ret = wasm.mathjax(ptr0, len0);
-    return takeObject(ret);
 };
 
 /**
@@ -2256,42 +2249,17 @@ function passArray32ToWasm0(arg, malloc) {
     return ptr;
 }
 /**
-* @param {string} text
-* @param {string} font_family
+* @param {string} expression
+* @param {string | undefined} [default_font_family]
+* @param {number | undefined} [default_font_size]
 * @returns {Promise<WasmVectorObject>}
 */
-module.exports.textToVector = function(text, font_family) {
-    const ptr0 = passStringToWasm0(text, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+module.exports.mathjax = function(expression, default_font_family, default_font_size) {
+    const ptr0 = passStringToWasm0(expression, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
     const len0 = WASM_VECTOR_LEN;
-    const ptr1 = passStringToWasm0(font_family, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-    const len1 = WASM_VECTOR_LEN;
-    const ret = wasm.textToVector(ptr0, len0, ptr1, len1);
-    return takeObject(ret);
-};
-
-/**
-* @returns {Lexer}
-*/
-module.exports.getPythonLexer = function() {
-    const ret = wasm.getPythonLexer();
-    return Lexer.__wrap(ret);
-};
-
-/**
-* @param {string} code
-* @param {Lexer} lexer
-* @param {Theme} theme
-* @param {string} font_family
-* @returns {Promise<WasmVectorObject>}
-*/
-module.exports.codeObject = function(code, lexer, theme, font_family) {
-    const ptr0 = passStringToWasm0(code, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-    const len0 = WASM_VECTOR_LEN;
-    _assertClass(lexer, Lexer);
-    _assertClass(theme, Theme);
-    const ptr1 = passStringToWasm0(font_family, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-    const len1 = WASM_VECTOR_LEN;
-    const ret = wasm.codeObject(ptr0, len0, lexer.__wbg_ptr, theme.__wbg_ptr, ptr1, len1);
+    var ptr1 = isLikeNone(default_font_family) ? 0 : passStringToWasm0(default_font_family, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    var len1 = WASM_VECTOR_LEN;
+    const ret = wasm.mathjax(ptr0, len0, ptr1, len1, !isLikeNone(default_font_size), isLikeNone(default_font_size) ? 0 : default_font_size);
     return takeObject(ret);
 };
 
@@ -2565,6 +2533,49 @@ module.exports.spinningGrow = function(vec_obj, angle, t) {
     var ptr0 = vec_obj.__destroy_into_raw();
     const ret = wasm.spinningGrow(ptr0, angle, t);
     return WasmVectorObject.__wrap(ret);
+};
+
+/**
+* @returns {Lexer}
+*/
+module.exports.getPythonLexer = function() {
+    const ret = wasm.getPythonLexer();
+    return Lexer.__wrap(ret);
+};
+
+/**
+* @param {string} code
+* @param {Lexer} lexer
+* @param {Theme} theme
+* @param {string} font_family
+* @returns {Promise<WasmVectorObject>}
+*/
+module.exports.codeObject = function(code, lexer, theme, font_family) {
+    const ptr0 = passStringToWasm0(code, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    const len0 = WASM_VECTOR_LEN;
+    _assertClass(lexer, Lexer);
+    _assertClass(theme, Theme);
+    const ptr1 = passStringToWasm0(font_family, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    const len1 = WASM_VECTOR_LEN;
+    const ret = wasm.codeObject(ptr0, len0, lexer.__wbg_ptr, theme.__wbg_ptr, ptr1, len1);
+    return takeObject(ret);
+};
+
+/**
+* @param {string} text
+* @param {string} font_family
+* @param {number} x
+* @param {number} y
+* @param {number} font_size
+* @returns {Promise<WasmVectorObject>}
+*/
+module.exports.textToVector = function(text, font_family, x, y, font_size) {
+    const ptr0 = passStringToWasm0(text, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    const len0 = WASM_VECTOR_LEN;
+    const ptr1 = passStringToWasm0(font_family, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    const len1 = WASM_VECTOR_LEN;
+    const ret = wasm.textToVector(ptr0, len0, ptr1, len1, x, y, font_size);
+    return takeObject(ret);
 };
 
 function handleError(f, args) {
@@ -6139,15 +6150,14 @@ module.exports.__wbindgen_number_get = function(arg0, arg1) {
     getInt32Memory0()[arg0 / 4 + 0] = !isLikeNone(ret);
 };
 
+module.exports.__wbindgen_is_function = function(arg0) {
+    const ret = typeof(getObject(arg0)) === 'function';
+    return ret;
+};
+
 module.exports.__wbindgen_string_new = function(arg0, arg1) {
     const ret = getStringFromWasm0(arg0, arg1);
     return addHeapObject(ret);
-};
-
-module.exports.__wbindgen_boolean_get = function(arg0) {
-    const v = getObject(arg0);
-    const ret = typeof(v) === 'boolean' ? (v ? 1 : 0) : 2;
-    return ret;
 };
 
 module.exports.__wbindgen_string_get = function(arg0, arg1) {
@@ -6159,8 +6169,13 @@ module.exports.__wbindgen_string_get = function(arg0, arg1) {
     getInt32Memory0()[arg0 / 4 + 0] = ptr1;
 };
 
-module.exports.__wbindgen_is_function = function(arg0) {
-    const ret = typeof(getObject(arg0)) === 'function';
+module.exports.__wbg_log_922eab7e32eb1f1b = function(arg0, arg1) {
+    console.log(getStringFromWasm0(arg0, arg1));
+};
+
+module.exports.__wbindgen_boolean_get = function(arg0) {
+    const v = getObject(arg0);
+    const ret = typeof(v) === 'boolean' ? (v ? 1 : 0) : 2;
     return ret;
 };
 
@@ -6177,10 +6192,6 @@ module.exports.__wbg_wasmgradientstop_unwrap = function(arg0) {
 module.exports.__wbg_wasmvectorobject_unwrap = function(arg0) {
     const ret = WasmVectorObject.__unwrap(takeObject(arg0));
     return ret;
-};
-
-module.exports.__wbg_log_922eab7e32eb1f1b = function(arg0, arg1) {
-    console.log(getStringFromWasm0(arg0, arg1));
 };
 
 module.exports.__wbindgen_object_clone_ref = function(arg0) {
@@ -6431,13 +6442,13 @@ module.exports.__wbg_spawn_77f0ce392e494cdc = function(arg0, arg1, arg2, arg3) {
     return addHeapObject(ret);
 };
 
-module.exports.__wbg_error_558a0d3877bfa51b = function(arg0) {
-    console.error(takeObject(arg0));
-};
-
 module.exports.__wbindgen_error_new = function(arg0, arg1) {
     const ret = new Error(getStringFromWasm0(arg0, arg1));
     return addHeapObject(ret);
+};
+
+module.exports.__wbg_error_558a0d3877bfa51b = function(arg0) {
+    console.error(takeObject(arg0));
 };
 
 module.exports.__wbindgen_cb_drop = function(arg0) {
@@ -6631,18 +6642,18 @@ module.exports.__wbindgen_throw = function(arg0, arg1) {
     throw new Error(getStringFromWasm0(arg0, arg1));
 };
 
-module.exports.__wbindgen_closure_wrapper1194 = function(arg0, arg1, arg2) {
-    const ret = makeClosure(arg0, arg1, 144, __wbg_adapter_28);
+module.exports.__wbindgen_closure_wrapper1261 = function(arg0, arg1, arg2) {
+    const ret = makeClosure(arg0, arg1, 156, __wbg_adapter_28);
     return addHeapObject(ret);
 };
 
-module.exports.__wbindgen_closure_wrapper1196 = function(arg0, arg1, arg2) {
-    const ret = makeClosure(arg0, arg1, 144, __wbg_adapter_31);
+module.exports.__wbindgen_closure_wrapper1263 = function(arg0, arg1, arg2) {
+    const ret = makeClosure(arg0, arg1, 156, __wbg_adapter_31);
     return addHeapObject(ret);
 };
 
-module.exports.__wbindgen_closure_wrapper2793 = function(arg0, arg1, arg2) {
-    const ret = makeMutClosure(arg0, arg1, 921, __wbg_adapter_34);
+module.exports.__wbindgen_closure_wrapper2806 = function(arg0, arg1, arg2) {
+    const ret = makeMutClosure(arg0, arg1, 928, __wbg_adapter_34);
     return addHeapObject(ret);
 };
 

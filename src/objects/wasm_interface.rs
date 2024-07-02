@@ -3,7 +3,7 @@ use wasm_bindgen::prelude::*;
 
 use crate::colors::{Color, GradientImageOrColor, GradientStop, Image, LinearGradient, RadialGradient};
 
-use super::{geometry::{add_tip::{add_both_sides_tips, add_final_tip, add_initial_tip}, arc::{annular_sector, arc, circle, ellipse, elliptical_arc}, line::line, poly::{equilateral_triangle, polygon, rectangle, regular_polygon, right_triangle, square, triangle}}, plotting::{axes::{area_under_curve, axes, coords_to_point, contour_plot_in_axes, parametric_plot_in_axes, plot_in_axes, point_to_coords, riemann_rectangles_for_plot, secant_line_for_plot}, functions::{function, contour_plot, parametric_function}, number_line::{get_numbers_tex, number_line, number_to_point, point_to_number}}, svg_to_vector::svg_to_vector, vector_object::{VectorFeatures, VectorObject}};
+use super::{geometry::{add_tip::{add_both_sides_tips, add_final_tip, add_initial_tip}, arc::{annular_sector, arc, circle, ellipse, elliptical_arc}, line::line, poly::{equilateral_triangle, polygon, rectangle, regular_polygon, right_triangle, square, triangle}}, plotting::{axes::{area_under_curve, axes, coords_to_point, contour_plot_in_axes, parametric_plot_in_axes, plot_in_axes, point_to_coords, riemann_rectangles_for_plot, secant_line_for_plot}, functions::{function, contour_plot, parametric_function}, number_line::{get_numbers_tex, number_line, number_to_point, point_to_number}}, svg_to_vector::svg_to_vector_pin, vector_object::{VectorFeatures, VectorObject}};
 
 
 #[wasm_bindgen]
@@ -2735,10 +2735,13 @@ pub async fn get_numbers_tex_js(
 
 
 #[wasm_bindgen(js_name = svgToVector)]
-pub fn svg_to_vector_js(
-    svg: String
+pub async fn svg_to_vector_js(
+    svg: String,
+    default_font_family: Option<String>,
+    default_font_size: Option<f64>
 ) -> WasmVectorObject {
-    return WasmVectorObject {
-        native_vec_features: svg_to_vector(svg.as_str())
-    }
+    let vec_obj = WasmVectorObject {
+        native_vec_features: svg_to_vector_pin(&svg, default_font_family, default_font_size).await
+    };
+    vec_obj
 }

@@ -439,9 +439,11 @@ export function pointToNumber(number_line: WasmVectorObject, point: Array<any>, 
 export function getNumbersTex(number_line: WasmVectorObject, numbers: Array<any>, number_to_vector: Function, x_min: number, x_max: number, height: number, direction?: Array<any>, buff?: number, index?: number): Promise<WasmVectorObject>;
 /**
 * @param {string} svg
-* @returns {WasmVectorObject}
+* @param {string | undefined} [default_font_family]
+* @param {number | undefined} [default_font_size]
+* @returns {Promise<WasmVectorObject>}
 */
-export function svgToVector(svg: string): WasmVectorObject;
+export function svgToVector(svg: string, default_font_family?: string, default_font_size?: number): Promise<WasmVectorObject>;
 /**
 * @param {number} angle
 * @param {number} axis
@@ -568,11 +570,6 @@ export function lineAsCubicBezier3D(point1: Array<any>, point2: Array<any>): Arr
 * @returns {Theme}
 */
 export function getGithubDark(): Theme;
-/**
-* @param {string} expression
-* @returns {Promise<WasmVectorObject>}
-*/
-export function mathjax(expression: string): Promise<WasmVectorObject>;
 /**
 * @param {number} ux
 * @param {number} uy
@@ -1028,23 +1025,12 @@ export function easeInBounce(t: number): number;
 */
 export function easeInOutBounce(t: number): number;
 /**
-* @param {string} text
-* @param {string} font_family
+* @param {string} expression
+* @param {string | undefined} [default_font_family]
+* @param {number | undefined} [default_font_size]
 * @returns {Promise<WasmVectorObject>}
 */
-export function textToVector(text: string, font_family: string): Promise<WasmVectorObject>;
-/**
-* @returns {Lexer}
-*/
-export function getPythonLexer(): Lexer;
-/**
-* @param {string} code
-* @param {Lexer} lexer
-* @param {Theme} theme
-* @param {string} font_family
-* @returns {Promise<WasmVectorObject>}
-*/
-export function codeObject(code: string, lexer: Lexer, theme: Theme, font_family: string): Promise<WasmVectorObject>;
+export function mathjax(expression: string, default_font_family?: string, default_font_size?: number): Promise<WasmVectorObject>;
 /**
 * @param {number} num_anim_funcs
 * @param {number} lag_ratio
@@ -1180,6 +1166,27 @@ export function showTemporaily(vec_obj: WasmVectorObject, t: number): WasmVector
 * @returns {WasmVectorObject}
 */
 export function spinningGrow(vec_obj: WasmVectorObject, angle: number, t: number): WasmVectorObject;
+/**
+* @returns {Lexer}
+*/
+export function getPythonLexer(): Lexer;
+/**
+* @param {string} code
+* @param {Lexer} lexer
+* @param {Theme} theme
+* @param {string} font_family
+* @returns {Promise<WasmVectorObject>}
+*/
+export function codeObject(code: string, lexer: Lexer, theme: Theme, font_family: string): Promise<WasmVectorObject>;
+/**
+* @param {string} text
+* @param {string} font_family
+* @param {number} x
+* @param {number} y
+* @param {number} font_size
+* @returns {Promise<WasmVectorObject>}
+*/
+export function textToVector(text: string, font_family: string, x: number, y: number, font_size: number): Promise<WasmVectorObject>;
 /**
 */
 export enum TokenType {
