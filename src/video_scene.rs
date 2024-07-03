@@ -271,6 +271,8 @@ impl VideoScene {
             pix_fmt.unwrap_or("yuv420p".to_string()).to_string(),
             "-qp".to_string(),
             qp.unwrap_or("0".to_string()).to_string(),
+            "-vf".to_string(),
+            format!("fps={}", self.fps),
             file_name.to_string()
         ];
         self.frame_number = 0;
