@@ -8,20 +8,25 @@
         "url": "https://github.com/MathItYT/mathlikeanim-rs"
     },
     "files": [
-        "browser/mathlikeanim_rs_bg.wasm",
-        "browser/mathlikeanim_rs.js",
-        "browser/mathlikeanim_rs.d.ts",
-        "node/mathlikeanim_rs_bg.wasm",
-        "node/mathlikeanim_rs.js",
-        "node/mathlikeanim_rs.d.ts"
+        "javascript/browser/mathlikeanim_rs_bg.wasm",
+        "javascript/browser/mathlikeanim_rs.js",
+        "javascript/browser/mathlikeanim_rs.d.ts",
+        "javascript/browser/mathlikeanim_rs_bg.wasm.d.ts",
+        "javascript/node/mathlikeanim_rs_bg.wasm",
+        "javascript/node/mathlikeanim_rs_bg.wasm.d.ts",
+        "javascript/node/mathlikeanim_rs.js",
+        "javascript/node/mathlikeanim_rs.d.ts"
     ],
     "exports": {
-      "types": {
-        "node": "./node/mathlikeanim_rs.d.ts",
-        "browser": "./browser/mathlikeanim_rs.d.ts"
+      "./node": {
+        "require": "./javascript/node/mathlikeanim_rs.js",
+        "types": "./javascript/node/mathlikeanim_rs.d.ts"
+      },
+      "./browser": {
+        "import": "./javascript/browser/mathlikeanim_rs.js",
+        "types": "./javascript/browser/mathlikeanim_rs.d.ts"
       }
     },
-    "types": "mathlikeanim_rs.d.ts",
     "sideEffects": [
         "./snippets/*"
     ],
