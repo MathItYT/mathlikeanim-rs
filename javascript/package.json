@@ -1,7 +1,7 @@
 {
     "name": "mathlikeanim-rs",
     "description": "A Rust library for creating mathematical animations",
-    "version": "0.7.20",
+    "version": "0.7.21",
     "license": "MIT",
     "repository": {
         "type": "git",
@@ -16,14 +16,10 @@
         "node/mathlikeanim_rs.d.ts"
     ],
     "exports": {
-        "node": {
-            "require": "./node/mathlikeanim_rs.js",
-            "types": "./node/mathlikeanim_rs.d.ts"
-        },
-        "default": {
-            "import": "./browser/mathlikeanim_rs.js",
-            "types": "./browser/mathlikeanim_rs.d.ts"
-        }
+      "types": {
+        "node": "./node/mathlikeanim_rs.d.ts",
+        "browser": "./browser/mathlikeanim_rs.d.ts"
+      }
     },
     "types": "mathlikeanim_rs.d.ts",
     "sideEffects": [
