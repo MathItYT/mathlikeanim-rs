@@ -95,8 +95,10 @@ extern "C" {
     pub fn create_png_stream(this: &Canvas, options: &js_sys::Map) -> PNGStream;
     #[wasm_bindgen(method, js_name = read)]
     pub fn read(this: &PNGStream) -> Buffer;
+    #[wasm_bindgen(method, js_name = toBuffer)]
+    pub fn to_buffer(this: &Canvas, mime_type: &str) -> Buffer;
     #[wasm_bindgen(method, js_name = on)]
-    pub fn on(this: &PNGStream, event: &str, callback: &js_sys::Function);
+    pub fn on(this: &PNGStream, event: &str, callback: js_sys::Function);
 }
 
 
@@ -110,7 +112,7 @@ extern "C" {
     #[wasm_bindgen(method, js_name = end)]
     pub fn end(this: &Writable);
     #[wasm_bindgen(method, js_name = on)]
-    pub fn on(this: &Writable, event: &str, callback: &js_sys::Function);
+    pub fn on(this: &Writable, event: &str, callback: js_sys::Function);
 }
 
 
@@ -122,7 +124,7 @@ extern "C" {
     #[wasm_bindgen(method, getter, js_name = stdin)]
     pub fn stdin(this: &ChildProcess) -> Writable;
     #[wasm_bindgen(method, js_name = on)]
-    pub fn on(this: &ChildProcess, event: &str, callback: &js_sys::Function);
+    pub fn on(this: &ChildProcess, event: &str, callback: js_sys::Function);
 }
 
 
@@ -163,8 +165,8 @@ pub fn apply_fill_wasm(
     context: &CanvasRenderingContext2D,
     fill: GradientImageOrColor,
     points: Vec<(f64, f64)>,
-    width: u64,
-    height: u64
+    width: u32,
+    height: u32
 ) {
     if points.len() == 0 {
         return;
@@ -234,8 +236,8 @@ pub fn apply_stroke_wasm(
     line_cap: String,
     line_join: String,
     points: Vec<(f64, f64)>,
-    width: u64,
-    height: u64
+    width: u32,
+    height: u32
 ) {
     if points.len() == 0 {
         return;
@@ -312,8 +314,8 @@ pub fn apply_stroke_wasm(
 
 pub fn render_vector_wasm(
     vec: &VectorFeatures,
-    width: u64,
-    height: u64,
+    width: u32,
+    height: u32,
     context: &CanvasRenderingContext2D
 ) {
     let points = vec.points.clone();
@@ -333,8 +335,8 @@ pub fn render_vector_wasm(
 
 pub fn render_all_vectors(
     vecs: &Vec<VectorFeatures>,
-    width: u64,
-    height: u64,
+    width: u32,
+    height: u32,
     context: &CanvasRenderingContext2D,
     background: GradientImageOrColor,
     top_left_corner: (f64, f64),

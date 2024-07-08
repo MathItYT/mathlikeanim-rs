@@ -1,13 +1,13 @@
 use std::{collections::HashMap, future::Future};
 
 use js_sys::{Array, Function, Promise};
-use wasm_bindgen::{closure::Closure, JsCast, JsValue};
+use wasm_bindgen::{JsCast, JsValue};
 use wasm_bindgen_futures::JsFuture;
 
 use crate::{colors::GradientImageOrColor, objects::{vector_object::VectorFeatures, wasm_interface::WasmVectorObject}};
 
 pub trait SceneAPI {
-    fn new(width: u64, height: u64, fps: u64) -> Self;
+    fn new(width: u32, height: u32, fps: u32) -> Self;
     fn clear(&mut self);
     fn restore(&mut self, n: usize);
     fn save_state(&mut self, n: usize);
@@ -17,14 +17,14 @@ pub trait SceneAPI {
     fn set_background(&mut self, background: GradientImageOrColor);
     fn add(&mut self, vec_obj: VectorFeatures);
     fn remove(&mut self, index: usize);
-    fn get_fps(&self) -> &u64;
-    fn get_height(&self) -> &u64;
-    fn get_width(&self) -> &u64;
+    fn get_fps(&self) -> &u32;
+    fn get_height(&self) -> &u32;
+    fn get_width(&self) -> &u32;
     fn play(
         &mut self,
         animation_func: Function,
         object_indices: Vec<usize>,
-        duration_in_frames: u64,
+        duration_in_frames: u32,
         rate_func: impl Fn(f64) -> f64
     ) -> impl Future<Output = ()> {
         async move {
@@ -75,16 +75,13 @@ pub trait SceneAPI {
             }
         }
     }
-    fn wait(&mut self, duration_in_frames: u64) -> impl Future<Output = ()> {
+    fn wait(&mut self, duration_in_frames: u32) -> impl Future<Output = ()> {
         async move {
-            self.play(
-                Closure::wrap(Box::new(|objects: Array, _: f64| {
-                    objects
-                }) as Box<dyn Fn(Array, f64) -> Array>).into_js_value().dyn_into::<Function>().unwrap(),
-                vec![],
-                duration_in_frames,
-                |t| t
-            ).await;
+            for _ in 0..duration_in_frames {
+                self.render_frame();
+                self.on_rendered().await;
+                self.sleep((1000 / self.get_fps()) as i32).await;
+            }
         }
     }
     fn sleep(&mut self, duration_in_ms: i32) -> impl Future<Output = ()>;

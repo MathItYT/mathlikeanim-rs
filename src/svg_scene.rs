@@ -11,11 +11,11 @@ pub struct SVGScene {
     #[wasm_bindgen(skip)]
     pub objects: Vec<VectorFeatures>,
     #[wasm_bindgen(skip)]
-    pub width: u64,
+    pub width: u32,
     #[wasm_bindgen(skip)]
-    pub height: u64,
+    pub height: u32,
     #[wasm_bindgen(skip)]
-    pub fps: u64,
+    pub fps: u32,
     #[wasm_bindgen(skip)]
     pub div_container: Option<web_sys::HtmlDivElement>,
     #[wasm_bindgen(skip)]
@@ -34,7 +34,7 @@ pub struct SVGScene {
 
 
 impl SceneAPI for SVGScene {
-    fn new(width: u64, height: u64, fps: u64) -> SVGScene {
+    fn new(width: u32, height: u32, fps: u32) -> SVGScene {
         return SVGScene {
             objects: Vec::new(),
             width,
@@ -91,13 +91,13 @@ impl SceneAPI for SVGScene {
     fn remove(&mut self, index: usize) {
         self.objects = self.objects.clone().into_iter().filter(|obj| obj.index != index).collect();
     }
-    fn get_fps(&self) -> &u64 {
+    fn get_fps(&self) -> &u32 {
         return &self.fps;
     }
-    fn get_height(&self) -> &u64 {
+    fn get_height(&self) -> &u32 {
         return &self.height;
     }
-    fn get_width(&self) -> &u64 {
+    fn get_width(&self) -> &u32 {
         return &self.width;
     }
     fn render_frame(&mut self) {
@@ -123,19 +123,19 @@ impl SceneAPI for SVGScene {
 #[wasm_bindgen]
 impl SVGScene {
     #[wasm_bindgen(constructor)]
-    pub fn new_js(width: u64, height: u64, fps: u64) -> SVGScene {
+    pub fn new_js(width: u32, height: u32, fps: u32) -> SVGScene {
         return SVGScene::new(width, height, fps);
     }
     #[wasm_bindgen(js_name = getFps)]
-    pub fn get_fps_js(&self) -> u64 {
+    pub fn get_fps_js(&self) -> u32 {
         return self.fps;
     }
     #[wasm_bindgen(js_name = getHeight)]
-    pub fn get_height_js(&self) -> u64 {
+    pub fn get_height_js(&self) -> u32 {
         return self.height;
     }
     #[wasm_bindgen(js_name = getWidth)]
-    pub fn get_width_js(&self) -> u64 {
+    pub fn get_width_js(&self) -> u32 {
         return self.width;
     }
     #[wasm_bindgen(js_name = renderFrame)]
@@ -218,7 +218,7 @@ impl SVGScene {
         &mut self,
         animation_func: js_sys::Function,
         object_indices: Vec<usize>,
-        duration_in_frames: u64,
+        duration_in_frames: u32,
         rate_func: js_sys::Function
     ) {
         let rate_func_rs = |t: f64| -> f64 {
@@ -250,7 +250,7 @@ impl SVGScene {
         return js_array;
     }
     #[wasm_bindgen(js_name = wait)]
-    pub async fn wait_js(&mut self, duration_in_frames: u64) {
+    pub async fn wait_js(&mut self, duration_in_frames: u32) {
         self.wait(duration_in_frames).await;
     }
     #[wasm_bindgen(js_name = setCallback)]

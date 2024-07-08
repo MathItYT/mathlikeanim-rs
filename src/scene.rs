@@ -11,11 +11,11 @@ pub struct Scene {
     #[wasm_bindgen(skip)]
     pub objects: Vec<VectorFeatures>,
     #[wasm_bindgen(skip)]
-    pub width: u64,
+    pub width: u32,
     #[wasm_bindgen(skip)]
-    pub height: u64,
+    pub height: u32,
     #[wasm_bindgen(skip)]
-    pub fps: u64,
+    pub fps: u32,
     #[wasm_bindgen(skip)]
     pub background: GradientImageOrColor,
     #[wasm_bindgen(skip)]
@@ -32,7 +32,7 @@ pub struct Scene {
 
 
 impl SceneAPI for Scene {
-    fn new(width: u64, height: u64, fps: u64) -> Scene {
+    fn new(width: u32, height: u32, fps: u32) -> Scene {
         return Scene {
             objects: Vec::new(),
             width,
@@ -55,13 +55,13 @@ impl SceneAPI for Scene {
         let promise = self.callback.call0(&JsValue::NULL).unwrap().dyn_into::<Promise>().unwrap();
         JsFuture::from(promise).await.unwrap();
     }
-    fn get_fps(&self) -> &u64 {
+    fn get_fps(&self) -> &u32 {
         return &self.fps;
     }
-    fn get_height(&self) -> &u64 {
+    fn get_height(&self) -> &u32 {
         return &self.height;
     }
-    fn get_width(&self) -> &u64 {
+    fn get_width(&self) -> &u32 {
         return &self.width;
     }
     fn render_frame(&mut self) {
@@ -120,19 +120,19 @@ impl SceneAPI for Scene {
 #[wasm_bindgen]
 impl Scene {
     #[wasm_bindgen(constructor)]
-    pub fn new_js(width: u64, height: u64, fps: u64) -> Scene {
+    pub fn new_js(width: u32, height: u32, fps: u32) -> Scene {
         return Scene::new(width, height, fps);
     }
     #[wasm_bindgen(js_name = getFps)]
-    pub fn get_fps_js(&self) -> u64 {
+    pub fn get_fps_js(&self) -> u32 {
         return self.fps;
     }
     #[wasm_bindgen(js_name = getHeight)]
-    pub fn get_height_js(&self) -> u64 {
+    pub fn get_height_js(&self) -> u32 {
         return self.height;
     }
     #[wasm_bindgen(js_name = getWidth)]
-    pub fn get_width_js(&self) -> u64 {
+    pub fn get_width_js(&self) -> u32 {
         return self.width;
     }
     #[wasm_bindgen(js_name = renderFrame)]
@@ -229,7 +229,7 @@ impl Scene {
         &mut self,
         animation_func: js_sys::Function,
         object_indices: Vec<usize>,
-        duration_in_frames: u64,
+        duration_in_frames: u32,
         rate_func: js_sys::Function
     ) {
         let rate_func_rs = |t: f64| -> f64 {
@@ -247,7 +247,7 @@ impl Scene {
         self.make_frame(animation_func, objects, t).await;
     }
     #[wasm_bindgen(js_name = wait)]
-    pub async fn wait_js(&mut self, duration_in_frames: u64) {
+    pub async fn wait_js(&mut self, duration_in_frames: u32) {
         self.wait(duration_in_frames).await;
     }
     #[wasm_bindgen(js_name = setCallback)]

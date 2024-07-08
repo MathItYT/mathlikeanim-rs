@@ -567,10 +567,6 @@ export function projectPoints(points: Array<any>, camera: WasmCamera): Array<any
 */
 export function lineAsCubicBezier3D(point1: Array<any>, point2: Array<any>): Array<any>;
 /**
-* @returns {Theme}
-*/
-export function getGithubDark(): Theme;
-/**
 * @param {number} num_anim_funcs
 * @param {number} lag_ratio
 * @returns {Float64Array}
@@ -714,13 +710,6 @@ export function spinningGrow(vec_obj: WasmVectorObject, angle: number, t: number
 * @returns {Promise<WasmVectorObject>}
 */
 export function textToVector(text: string, font_family: string, x: number, y: number, font_size: number): Promise<WasmVectorObject>;
-/**
-* @param {string} expression
-* @param {string | undefined} [default_font_family]
-* @param {number | undefined} [default_font_size]
-* @returns {Promise<WasmVectorObject>}
-*/
-export function mathjax(expression: string, default_font_family?: string, default_font_size?: number): Promise<WasmVectorObject>;
 /**
 * @param {number} ux
 * @param {number} uy
@@ -1176,6 +1165,17 @@ export function easeInBounce(t: number): number;
 */
 export function easeInOutBounce(t: number): number;
 /**
+* @returns {Lexer}
+*/
+export function getPythonLexer(): Lexer;
+/**
+* @param {string} expression
+* @param {string | undefined} [default_font_family]
+* @param {number | undefined} [default_font_size]
+* @returns {Promise<WasmVectorObject>}
+*/
+export function mathjax(expression: string, default_font_family?: string, default_font_size?: number): Promise<WasmVectorObject>;
+/**
 * @param {string} code
 * @param {Lexer} lexer
 * @param {Theme} theme
@@ -1184,9 +1184,9 @@ export function easeInOutBounce(t: number): number;
 */
 export function codeObject(code: string, lexer: Lexer, theme: Theme, font_family: string): Promise<WasmVectorObject>;
 /**
-* @returns {Lexer}
+* @returns {Theme}
 */
-export function getPythonLexer(): Lexer;
+export function getGithubDark(): Theme;
 /**
 */
 export enum TokenType {
@@ -1235,17 +1235,17 @@ export class GenericScene {
 */
   isVideoScene(): boolean;
 /**
-* @returns {bigint}
+* @returns {number}
 */
-  getFps(): bigint;
+  getFps(): number;
 /**
-* @returns {bigint}
+* @returns {number}
 */
-  getHeight(): bigint;
+  getHeight(): number;
 /**
-* @returns {bigint}
+* @returns {number}
 */
-  getWidth(): bigint;
+  getWidth(): number;
 /**
 */
   renderFrame(): void;
@@ -1320,11 +1320,11 @@ export class GenericScene {
 /**
 * @param {Function} animation_func
 * @param {Uint32Array} object_indices
-* @param {bigint} duration_in_frames
+* @param {number} duration_in_frames
 * @param {Function} rate_func
 * @returns {Promise<void>}
 */
-  play(animation_func: Function, object_indices: Uint32Array, duration_in_frames: bigint, rate_func: Function): Promise<void>;
+  play(animation_func: Function, object_indices: Uint32Array, duration_in_frames: number, rate_func: Function): Promise<void>;
 /**
 * @param {Function} animation_func
 * @param {Array<any>} objects
@@ -1333,10 +1333,10 @@ export class GenericScene {
 */
   makeFrame(animation_func: Function, objects: Array<any>, t: number): Promise<void>;
 /**
-* @param {bigint} duration_in_frames
+* @param {number} duration_in_frames
 * @returns {Promise<void>}
 */
-  wait(duration_in_frames: bigint): Promise<void>;
+  wait(duration_in_frames: number): Promise<void>;
 /**
 * @param {Function} callback
 */
@@ -1838,31 +1838,40 @@ export class Token {
 export class VideoScene {
   free(): void;
 /**
-* @param {bigint} width
-* @param {bigint} height
-* @param {bigint} fps
+* @param {number} width
+* @param {number} height
+* @param {number} fps
 */
-  constructor(width: bigint, height: bigint, fps: bigint);
+  constructor(width: number, height: number, fps: number);
 /**
-* @returns {bigint}
+* @returns {number}
 */
-  getFps(): bigint;
+  getFps(): number;
+/**
+*/
+  toggleSaveFrames(): void;
+/**
+* @param {string | undefined} [codec]
+* @param {string | undefined} [pix_fmt]
+* @param {string | undefined} [qp]
+*/
+  initFFmpegPartialMovie(codec?: string, pix_fmt?: string, qp?: string): void;
 /**
 * @returns {Promise<void>}
 */
-  toggleSaveFrames(): Promise<void>;
+  closeFFmpegPartialMovie(): Promise<void>;
 /**
 * @param {string} file_name_prefix
 */
   setFileNamePrefix(file_name_prefix: string): void;
 /**
-* @returns {bigint}
+* @returns {number}
 */
-  getHeight(): bigint;
+  getHeight(): number;
 /**
-* @returns {bigint}
+* @returns {number}
 */
-  getWidth(): bigint;
+  getWidth(): number;
 /**
 */
   renderFrame(): void;
@@ -1913,6 +1922,11 @@ export class VideoScene {
 */
   remove(index: number): void;
 /**
+* @param {string} file_name
+* @returns {Promise<void>}
+*/
+  saveFrame(file_name: string): Promise<void>;
+/**
 * @returns {Array<any>}
 */
   getObjects(): Array<any>;
@@ -1926,14 +1940,6 @@ export class VideoScene {
 */
   setCanvasContext(context: any): void;
 /**
-* @param {string} file_name
-* @param {string | undefined} [codec]
-* @param {string | undefined} [pix_fmt]
-* @param {string | undefined} [qp]
-* @returns {any}
-*/
-  renderVideo(file_name: string, codec?: string, pix_fmt?: string, qp?: string): any;
-/**
 * @param {number} duration_in_ms
 * @returns {Promise<void>}
 */
@@ -1945,11 +1951,11 @@ export class VideoScene {
 /**
 * @param {Function} animation_func
 * @param {Uint32Array} object_indices
-* @param {bigint} duration_in_frames
+* @param {number} duration_in_frames
 * @param {Function} rate_func
 * @returns {Promise<void>}
 */
-  play(animation_func: Function, object_indices: Uint32Array, duration_in_frames: bigint, rate_func: Function): Promise<void>;
+  play(animation_func: Function, object_indices: Uint32Array, duration_in_frames: number, rate_func: Function): Promise<void>;
 /**
 * @param {Function} animation_func
 * @param {Array<any>} objects
@@ -1958,10 +1964,10 @@ export class VideoScene {
 */
   makeFrame(animation_func: Function, objects: Array<any>, t: number): Promise<void>;
 /**
-* @param {bigint} duration_in_frames
+* @param {number} duration_in_frames
 * @returns {Promise<void>}
 */
-  wait(duration_in_frames: bigint): Promise<void>;
+  wait(duration_in_frames: number): Promise<void>;
 /**
 * @param {Function} callback
 */

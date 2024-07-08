@@ -12,11 +12,11 @@ pub struct VideoScene {
     #[wasm_bindgen(skip)]
     pub objects: Vec<VectorFeatures>,
     #[wasm_bindgen(skip)]
-    pub width: u64,
+    pub width: u32,
     #[wasm_bindgen(skip)]
-    pub height: u64,
+    pub height: u32,
     #[wasm_bindgen(skip)]
-    pub fps: u64,
+    pub fps: u32,
     #[wasm_bindgen(skip)]
     pub save_frames: bool,
     #[wasm_bindgen(skip)]
@@ -34,12 +34,14 @@ pub struct VideoScene {
     #[wasm_bindgen(skip)]
     pub callback: Function,
     #[wasm_bindgen(skip)]
-    pub frame_number: u32,
+    pub animation_number: usize,
+    #[wasm_bindgen(skip)]
+    pub current_ffmpeg: Option<ChildProcess>
 }
 
 
 impl SceneAPI for VideoScene {
-    fn new(width: u64, height: u64, fps: u64) -> VideoScene {
+    fn new(width: u32, height: u32, fps: u32) -> VideoScene {
         return VideoScene {
             objects: Vec::new(),
             width,
@@ -58,37 +60,32 @@ impl SceneAPI for VideoScene {
             bottom_right_corner: (width as f64, height as f64),
             states: HashMap::new(),
             callback: Closure::wrap(Box::new(|| Promise::resolve(&JsValue::NULL)) as Box<dyn Fn() -> Promise>).into_js_value().dyn_into().unwrap(),
-            frame_number: 0,
+            animation_number: 0,
+            current_ffmpeg: None
         };
     }
     async fn on_rendered(&mut self) {
-        if self.save_frames {
-            self.frame_number += 1;
+        if self.save_frames && self.current_ffmpeg.is_some() {
             let canvas = self.context.as_ref().unwrap().canvas();
+            let ffmpeg = self.current_ffmpeg.as_ref().unwrap();
             let options = Map::new();
             options.set(&JsValue::from_str("compressionLevel"), &JsValue::from_f64(0.0));
-            let png_stream = canvas.create_png_stream(&options);
-            let stream = create_write_stream(&format!("{}-{}.png", self.file_name_prefix, self.frame_number));
-            let ok = stream.write(&png_stream.read());
+            let buffer = canvas.to_buffer("raw");
+            let ok = ffmpeg.stdin().write(&buffer);
             if !ok {
-                log("Warning: Frame is too big to save");
+                log("Frame is too big");
             }
-            stream.end();
-            let promise = Promise::new(&mut |resolve, _| {
-                stream.on("close", &resolve);
-            });
-            JsFuture::from(promise).await.unwrap(); 
         }
         let promise = self.callback.call0(&JsValue::NULL).unwrap().dyn_into::<Promise>().unwrap();
         wasm_bindgen_futures::JsFuture::from(promise).await.unwrap();
     }
-    fn get_fps(&self) -> &u64 {
+    fn get_fps(&self) -> &u32 {
         return &self.fps;
     }
-    fn get_width(&self) -> &u64 {
+    fn get_width(&self) -> &u32 {
         return &self.width;
     }
-    fn get_height(&self) -> &u64 {
+    fn get_height(&self) -> &u32 {
         return &self.height;
     }
     fn get_top_left_corner(&self) -> (f64, f64) {
@@ -147,27 +144,66 @@ impl SceneAPI for VideoScene {
 #[wasm_bindgen]
 impl VideoScene {
     #[wasm_bindgen(constructor)]
-    pub fn new_js(width: u64, height: u64, fps: u64) -> VideoScene {
+    pub fn new_js(width: u32, height: u32, fps: u32) -> VideoScene {
         return VideoScene::new(width, height, fps);
     }
     #[wasm_bindgen(js_name = getFps)]
-    pub fn get_fps_js(&self) -> u64 {
+    pub fn get_fps_js(&self) -> u32 {
         return self.fps;
     }
     #[wasm_bindgen(js_name = toggleSaveFrames)]
-    pub async fn toggle_save_frames_js(&mut self) {
+    pub fn toggle_save_frames_js(&mut self) {
         self.save_frames = !self.save_frames;
+    }
+    #[wasm_bindgen(js_name = initFFmpegPartialMovie)]
+    pub fn init_ffmpeg_partial_movie_js(&mut self, codec: Option<String>, pix_fmt: Option<String>, qp: Option<String>) {
+        let command = "ffmpeg";
+        let args = vec![
+            "-y".to_string(),
+            "-f".to_string(),
+            "rawvideo".to_string(),
+            "-s".to_string(),
+            format!("{}x{}", self.width, self.height),
+            "-pix_fmt".to_string(),
+            "bgra".to_string(),
+            "-r".to_string(),
+            format!("{}", self.fps),
+            "-i".to_string(),
+            "-".to_string(),
+            "-an".to_string(),
+            "-vcodec".to_string(),
+            codec.unwrap_or("libx264".to_string()).to_string(),
+            "-pix_fmt".to_string(),
+            pix_fmt.unwrap_or("yuv420p".to_string()).to_string(),
+            "-qp".to_string(),
+            qp.unwrap_or("0".to_string()).to_string(),
+            "-r".to_string(),
+            format!("{}", self.fps),
+            format!("{}-{}.mp4", self.file_name_prefix, self.animation_number)
+        ];
+        self.current_ffmpeg = Some(spawn(command, args));
+    }
+    #[wasm_bindgen(js_name = closeFFmpegPartialMovie)]
+    pub async fn close_ffmpeg_partial_movie_js(&mut self) {
+        let ffmpeg = self.current_ffmpeg.as_ref().unwrap();
+        ffmpeg.stdin().end();
+        let promise = Promise::new(&mut |resolve, _| {
+            ffmpeg.on("close", resolve);
+        });
+        JsFuture::from(promise).await.unwrap();
+        self.current_ffmpeg = None;
+        self.animation_number += 1;
     }
     #[wasm_bindgen(js_name = setFileNamePrefix)]
     pub fn set_file_name_prefix_js(&mut self, file_name_prefix: String) {
         self.file_name_prefix = file_name_prefix;
     }
     #[wasm_bindgen(js_name = getHeight)]
-    pub fn get_height_js(&self) -> u64 {
+    pub fn get_height_js(&self) -> u32 {
         return self.height;
     }
     #[wasm_bindgen(js_name = getWidth)]
-    pub fn get_width_js(&self) -> u64 {
+    pub fn get_width_js(&self) -> u32 {
         return self.width;
     }
     #[wasm_bindgen(js_name = renderFrame)]
@@ -226,6 +262,23 @@ impl VideoScene {
     pub fn remove_js(&mut self, index: usize) {
         self.remove(index);
     }
+    #[wasm_bindgen(js_name = saveFrame)]
+    pub async fn save_frame_js(&mut self, file_name: String) {
+        let canvas = self.context.as_ref().unwrap().canvas();
+        let options = Map::new();
+        options.set(&JsValue::from_str("compressionLevel"), &JsValue::from_f64(0.0));
+        let png_stream = canvas.create_png_stream(&options);
+        let stream = create_write_stream(&file_name);
+        let ok = stream.write(&png_stream.read());
+        if !ok {
+            log("Frame is too big");
+        }
+        stream.end();
+        let promise = Promise::new(&mut |resolve, _| {
+            stream.on("close", resolve);
+        });
+        JsFuture::from(promise).await.unwrap();
+    }
     #[wasm_bindgen(js_name = getObjects)]
     pub fn get_objects_js(&self) -> js_sys::Array {
         let js_array = js_sys::Array::new();
@@ -251,33 +304,6 @@ impl VideoScene {
     pub fn set_canvas_context_js(&mut self, context: CanvasRenderingContext2D) {
         self.context = Some(context);
     }
-    #[wasm_bindgen(js_name = renderVideo)]
-    pub fn render_video_js(&mut self, file_name: String, codec: Option<String>, pix_fmt: Option<String>, qp: Option<String>) -> ChildProcess {
-        let command = "ffmpeg";
-        let args = vec![
-            "-y".to_string(),
-            "-s".to_string(),
-            format!("{}x{}", self.width, self.height),
-            "-pix_fmt".to_string(),
-            "bgra".to_string(),
-            "-r".to_string(),
-            format!("{}", self.fps),
-            "-i".to_string(),
-            format!("{}-%d.png", self.file_name_prefix),
-            "-an".to_string(),
-            "-vcodec".to_string(),
-            codec.unwrap_or("libx264".to_string()).to_string(),
-            "-pix_fmt".to_string(),
-            pix_fmt.unwrap_or("yuv420p".to_string()).to_string(),
-            "-qp".to_string(),
-            qp.unwrap_or("0".to_string()).to_string(),
-            "-vf".to_string(),
-            format!("fps={}", self.fps),
-            file_name.to_string()
-        ];
-        self.frame_number = 0;
-        return spawn(command, args);
-    }
     #[wasm_bindgen(js_name = sleep)]
     pub async fn sleep_js(&mut self, duration_in_ms: i32) {
         self.sleep(duration_in_ms).await;
@@ -291,7 +317,7 @@ impl VideoScene {
         &mut self,
         animation_func: js_sys::Function,
         object_indices: Vec<usize>,
-        duration_in_frames: u64,
+        duration_in_frames: u32,
         rate_func: js_sys::Function
     ) {
         let rate_func_rs = |t: f64| -> f64 {
@@ -309,7 +335,7 @@ impl VideoScene {
         self.make_frame(animation_func, objects, t).await;
     }
     #[wasm_bindgen(js_name = wait)]
-    pub async fn wait_js(&mut self, duration_in_frames: u64) {
+    pub async fn wait_js(&mut self, duration_in_frames: u32) {
         self.wait(duration_in_frames).await;
     }
     #[wasm_bindgen(js_name = setCallback)]

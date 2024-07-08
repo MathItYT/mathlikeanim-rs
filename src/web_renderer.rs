@@ -383,8 +383,8 @@ pub fn apply_fill_wasm(
     context: &web_sys::CanvasRenderingContext2d,
     fill: GradientImageOrColor,
     points: Vec<(f64, f64)>,
-    width: u64,
-    height: u64
+    width: u32,
+    height: u32
 ) {
     if points.len() == 0 {
         return;
@@ -457,8 +457,8 @@ pub fn apply_stroke_wasm(
     line_cap: &str,
     line_join: &str,
     points: Vec<(f64, f64)>,
-    width: u64,
-    height: u64
+    width: u32,
+    height: u32
 ) {
     if points.len() == 0 {
         return;
@@ -623,8 +623,8 @@ pub fn apply_stroke_wasm(
 
 pub fn render_vector_wasm(
     vec: &VectorFeatures,
-    width: u64,
-    height: u64,
+    width: u32,
+    height: u32,
     context: web_sys::CanvasRenderingContext2d
 ) {
     let points = vec.points.clone();
@@ -644,8 +644,8 @@ pub fn render_vector_wasm(
 
 pub fn render_all_vectors(
     vecs: &Vec<VectorFeatures>,
-    width: u64,
-    height: u64,
+    width: u32,
+    height: u32,
     context: Option<web_sys::CanvasRenderingContext2d>,
     background: GradientImageOrColor,
     top_left_corner: (f64, f64),
