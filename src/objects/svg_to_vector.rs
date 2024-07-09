@@ -41,6 +41,7 @@ fn parse_path(attributes: &std::collections::HashMap<String, Value>, index: usiz
     let mut last_move: Option<(f64, f64)> = None;
     let mut curve_start = None;
     let mut last_quadratic_curve = None;
+    let mut last_cubic_curve = None;
     for command in data.iter() {
         match command {
             &Command::Move(ref abs, ref params) => {
@@ -73,6 +74,7 @@ fn parse_path(attributes: &std::collections::HashMap<String, Value>, index: usiz
                 points.extend(line_as_cubic_bezier(last_move.unwrap(), (x, y)));
                 last_move = Some((x, y));
                 last_quadratic_curve = None;
+                last_cubic_curve = None;
             },
             &Command::Close => {
                 if !consider_points_equals(last_move.unwrap(), curve_start.unwrap()) {
@@ -81,6 +83,7 @@ fn parse_path(attributes: &std::collections::HashMap<String, Value>, index: usiz
                 }
                 curve_start = None;
                 last_quadratic_curve = None;
+                last_cubic_curve = None;
             },
             &Command::CubicCurve(ref abs, ref params) => {
                 let mut x1 = params[0] as f64;
@@ -107,6 +110,7 @@ fn parse_path(attributes: &std::collections::HashMap<String, Value>, index: usiz
                 points.push((x, y));
                 last_move = Some((x, y));
                 last_quadratic_curve = None;
+                last_cubic_curve = Some((x2, y2));
             },
             &Command::QuadraticCurve(ref abs, ref params) => {
                 let mut x1 = params[0] as f64;
@@ -126,6 +130,7 @@ fn parse_path(attributes: &std::collections::HashMap<String, Value>, index: usiz
                 points.extend(quadratic_bezier_as_cubic_bezier(last, (x1, y1), (x, y)));
                 last_move = Some((x, y));
                 last_quadratic_curve = Some((x1, y1));
+                last_cubic_curve = None;
             },
             &Command::HorizontalLine(ref abs, ref params) => {
                 let mut x = params[0] as f64;
@@ -138,6 +143,7 @@ fn parse_path(attributes: &std::collections::HashMap<String, Value>, index: usiz
                 points.extend(line_as_cubic_bezier(last_move.unwrap(), (x, last_move.unwrap().1)));
                 last_move = Some((x, last_move.unwrap().1));
                 last_quadratic_curve = None;
+                last_cubic_curve = None;
             },
             &Command::VerticalLine(ref abs, ref params) => {
                 let mut y = params[0] as f64;
@@ -150,6 +156,7 @@ fn parse_path(attributes: &std::collections::HashMap<String, Value>, index: usiz
                 points.extend(line_as_cubic_bezier(last_move.unwrap(), (last_move.unwrap().0, y)));
                 last_move = Some((last_move.unwrap().0, y));
                 last_quadratic_curve = None;
+                last_cubic_curve = None;
             },
             &Command::SmoothCubicCurve(ref abs, ref params) => {
                 let mut x2 = params[0] as f64;
@@ -166,13 +173,22 @@ fn parse_path(attributes: &std::collections::HashMap<String, Value>, index: usiz
                     },
                     _ => {}
                 }
-                let x1 = 2.0 * last.0 - points[points.len() - 2].0;
-                let y1 = 2.0 * last.1 - points[points.len() - 2].1;
+                let x1 = if last_cubic_curve.is_some() {
+                    2.0 * last.0 - last_cubic_curve.unwrap().0
+                } else {
+                    last.0
+                };
+                let y1 = if last_cubic_curve.is_some() {
+                    2.0 * last.1 - last_cubic_curve.unwrap().1
+                } else {
+                    last.1
+                };
                 points.push(last);
                 points.push((x1, y1));
                 points.push((x2, y2));
                 points.push((x, y));
                 last_move = Some((x, y));
+                last_cubic_curve = Some((x2, y2));
                 last_quadratic_curve = None;
             },
             &Command::SmoothQuadraticCurve(ref abs, ref params) => {
@@ -199,6 +215,7 @@ fn parse_path(attributes: &std::collections::HashMap<String, Value>, index: usiz
                 let cubic = quadratic_bezier_as_cubic_bezier(last, (x1, y1), (x, y));
                 points.extend(cubic);
                 last_move = Some((x, y));
+                last_cubic_curve = None;
                 last_quadratic_curve = Some((x1, y1));
             },
             &Command::EllipticalArc(ref abs, ref params) => {
@@ -220,6 +237,7 @@ fn parse_path(attributes: &std::collections::HashMap<String, Value>, index: usiz
                 let arc = elliptical_arc_path(last, rx, ry, rotation, large_arc, sweep, x, y);
                 points.extend(arc);
                 last_move = Some((x, y));
+                last_cubic_curve = None;
                 last_quadratic_curve = None;
             },
         }

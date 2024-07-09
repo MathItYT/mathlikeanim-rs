@@ -17,5 +17,5 @@ pub mod set_stroke_animation;
 #[cfg(feature = "browser")]
 pub mod move_camera_svg;
 #[cfg(feature = "node")]
-pub mod move_camera_video;
+pub mod move_camera_node;
 pub mod wasm_interface;

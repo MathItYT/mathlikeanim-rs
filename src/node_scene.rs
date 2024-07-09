@@ -4,11 +4,11 @@ use js_sys::{Array, Function, Map, Promise};
 use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::JsFuture;
 
-use crate::{colors::GradientImageOrColor, node_renderer::{create_write_stream, render_all_vectors, spawn, CanvasRenderingContext2D, ChildProcess}, objects::{vector_object::VectorFeatures, wasm_interface::{WasmGradientImageOrColor, WasmVectorObject}}, scene_api::SceneAPI, utils::log};
+use crate::{colors::GradientImageOrColor, node_renderer::{create_canvas, create_canvas_with_type, create_write_stream, render_all_vectors, spawn, CanvasRenderingContext2D, ChildProcess}, objects::{vector_object::VectorFeatures, wasm_interface::{WasmGradientImageOrColor, WasmVectorObject}}, scene_api::SceneAPI, utils::log};
 
 
 #[wasm_bindgen]
-pub struct VideoScene {
+pub struct NodeScene {
     #[wasm_bindgen(skip)]
     pub objects: Vec<VectorFeatures>,
     #[wasm_bindgen(skip)]
@@ -36,13 +36,15 @@ pub struct VideoScene {
     #[wasm_bindgen(skip)]
     pub animation_number: usize,
     #[wasm_bindgen(skip)]
-    pub current_ffmpeg: Option<ChildProcess>
+    pub current_ffmpeg: Option<ChildProcess>,
+    #[wasm_bindgen(skip)]
+    pub svg: Option<bool>
 }
 
 
-impl SceneAPI for VideoScene {
-    fn new(width: u32, height: u32, fps: u32) -> VideoScene {
-        return VideoScene {
+impl SceneAPI for NodeScene {
+    fn new(width: u32, height: u32, fps: u32) -> NodeScene {
+        return NodeScene {
             objects: Vec::new(),
             width,
             height,
@@ -61,7 +63,8 @@ impl SceneAPI for VideoScene {
             states: HashMap::new(),
             callback: Closure::wrap(Box::new(|| Promise::resolve(&JsValue::NULL)) as Box<dyn Fn() -> Promise>).into_js_value().dyn_into().unwrap(),
             animation_number: 0,
-            current_ffmpeg: None
+            current_ffmpeg: None,
+            svg: None
         };
     }
     async fn on_rendered(&mut self) {
@@ -70,7 +73,7 @@ impl SceneAPI for VideoScene {
             let ffmpeg = self.current_ffmpeg.as_ref().unwrap();
             let options = Map::new();
             options.set(&JsValue::from_str("compressionLevel"), &JsValue::from_f64(0.0));
-            let buffer = canvas.to_buffer("raw");
+            let buffer = canvas.to_buffer_with_mime_type("raw");
             let ok = ffmpeg.stdin().write(&buffer);
             if !ok {
                 log("Frame is too big");
@@ -142,10 +145,27 @@ impl SceneAPI for VideoScene {
 
 
 #[wasm_bindgen]
-impl VideoScene {
+impl NodeScene {
     #[wasm_bindgen(constructor)]
-    pub fn new_js(width: u32, height: u32, fps: u32) -> VideoScene {
-        return VideoScene::new(width, height, fps);
+    pub fn new_js(width: u32, height: u32, fps: u32) -> NodeScene {
+        return NodeScene::new(width, height, fps);
+    }
+    #[wasm_bindgen(js_name = getContext)]
+    pub fn get_context_js(&self) -> CanvasRenderingContext2D {
+        return self.context.as_ref().unwrap().clone();
+    }
+    #[wasm_bindgen(js_name = initContext)]
+    pub fn init_context_js(&mut self, svg: Option<bool>) {
+        self.context = if svg.unwrap_or(false) {
+            Some(create_canvas_with_type(self.width, self.height, "svg").get_context("2d"))
+        } else {
+            Some(create_canvas(self.width, self.height).get_context("2d"))
+        };
+        self.svg = Some(svg.unwrap_or(false));
+    }
+    #[wasm_bindgen(js_name = isSVG)]
+    pub fn is_svg_js(&self) -> Option<bool> {
+        return self.svg;
     }
     #[wasm_bindgen(js_name = getFps)]
     pub fn get_fps_js(&self) -> u32 {
@@ -262,14 +282,29 @@ impl VideoScene {
     pub fn remove_js(&mut self, index: usize) {
         self.remove(index);
     }
-    #[wasm_bindgen(js_name = saveFrame)]
-    pub async fn save_frame_js(&mut self, file_name: String) {
+    #[wasm_bindgen(js_name = saveFramePNG)]
+    pub async fn save_frame_png_js(&mut self, file_name: String) {
         let canvas = self.context.as_ref().unwrap().canvas();
         let options = Map::new();
         options.set(&JsValue::from_str("compressionLevel"), &JsValue::from_f64(0.0));
         let png_stream = canvas.create_png_stream(&options);
         let stream = create_write_stream(&file_name);
         let ok = stream.write(&png_stream.read());
+        if !ok {
+            log("Frame is too big");
+        }
+        stream.end();
+        let promise = Promise::new(&mut |resolve, _| {
+            stream.on("close", resolve);
+        });
+        JsFuture::from(promise).await.unwrap();
+    }
+    #[wasm_bindgen(js_name = saveFrameSVG)]
+    pub async fn save_frame_svg_js(&mut self, file_name: String) {
+        let canvas = self.context.as_ref().unwrap().canvas();
+        let svg_buffer = canvas.to_buffer();
+        let stream = create_write_stream(&file_name);
+        let ok = stream.write(&svg_buffer);
         if !ok {
             log("Frame is too big");
         }
@@ -299,10 +334,6 @@ impl VideoScene {
             }));
         }
         return js_map;
-    }
-    #[wasm_bindgen(js_name = setCanvasContext)]
-    pub fn set_canvas_context_js(&mut self, context: CanvasRenderingContext2D) {
-        self.context = Some(context);
     }
     #[wasm_bindgen(js_name = sleep)]
     pub async fn sleep_js(&mut self, duration_in_ms: i32) {

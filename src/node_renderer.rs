@@ -21,6 +21,7 @@ extern "C" {
 extern "C" {
     pub type Image;
     pub type Canvas;
+    #[derive(Clone)]
     pub type CanvasRenderingContext2D;
     pub type CanvasGradient;
     pub type CanvasPattern;
@@ -30,9 +31,11 @@ extern "C" {
     #[wasm_bindgen(method, setter, js_name = "src")]
     fn set_src(this: &Image, src: String);
     #[wasm_bindgen(js_name = "createCanvas")]
-    fn create_canvas(width: u32, height: u32) -> Canvas;
+    pub fn create_canvas(width: u32, height: u32) -> Canvas;
+    #[wasm_bindgen(js_name = "createCanvas")]
+    pub fn create_canvas_with_type(width: u32, height: u32, type_: &str) -> Canvas;
     #[wasm_bindgen(method, js_name = getContext)]
-    fn get_context(this: &Canvas, context: &str) -> CanvasRenderingContext2D;
+    pub fn get_context(this: &Canvas, context: &str) -> CanvasRenderingContext2D;
     #[wasm_bindgen(method, js_name = "fillRect")]
     fn fill_rect(this: &CanvasRenderingContext2D, x: f64, y: f64, width: f64, height: f64);
     #[wasm_bindgen(method, js_name = "clearRect")]
@@ -96,7 +99,9 @@ extern "C" {
     #[wasm_bindgen(method, js_name = read)]
     pub fn read(this: &PNGStream) -> Buffer;
     #[wasm_bindgen(method, js_name = toBuffer)]
-    pub fn to_buffer(this: &Canvas, mime_type: &str) -> Buffer;
+    pub fn to_buffer_with_mime_type(this: &Canvas, mime_type: &str) -> Buffer;
+    #[wasm_bindgen(method, js_name = toBuffer)]
+    pub fn to_buffer(this: &Canvas) -> Buffer;
     #[wasm_bindgen(method, js_name = on)]
     pub fn on(this: &PNGStream, event: &str, callback: js_sys::Function);
 }
@@ -240,6 +245,9 @@ pub fn apply_stroke_wasm(
     height: u32
 ) {
     if points.len() == 0 {
+        return;
+    }
+    if stroke_width == 0.0 {
         return;
     }
     match stroke {

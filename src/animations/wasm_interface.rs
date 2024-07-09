@@ -5,7 +5,7 @@ use crate::objects::{vector_object::VectorFeatures, wasm_interface::{WasmColor, 
 #[cfg(feature = "browser")]
 use crate::{scene::Scene, svg_scene::SVGScene};
 #[cfg(feature = "node")]
-use crate::video_scene::VideoScene;
+use crate::node_scene::NodeScene;
 #[cfg(feature = "browser")]
 use super::{move_camera::move_camera, move_camera_svg::move_camera_svg};
 
@@ -56,9 +56,10 @@ pub fn create_js(
 pub fn draw_stroke_then_fill_js(
     vec_obj: WasmVectorObject,
     t: f64,
+    default_stroke_width: Option<f64>,
 ) -> WasmVectorObject {
     let vec_obj = vec_obj.native_vec_features;
-    let new_vec_obj = draw_stroke_then_fill(vec_obj, t);
+    let new_vec_obj = draw_stroke_then_fill(vec_obj, t, default_stroke_width);
     return WasmVectorObject { native_vec_features: new_vec_obj };
 }
 
@@ -67,9 +68,10 @@ pub fn draw_stroke_then_fill_js(
 pub fn write_js(
     vec_obj: WasmVectorObject,
     lag_ratio: f64,
-    t: f64
+    t: f64,
+    default_stroke_width: Option<f64>,
 ) -> WasmVectorObject {
-    let result = write(vec_obj.native_vec_features, lag_ratio, t);
+    let result = write(vec_obj.native_vec_features, lag_ratio, t, default_stroke_width);
     return WasmVectorObject { native_vec_features: result };
 }
 
@@ -178,14 +180,14 @@ pub fn move_camera_js(
 
 
 #[cfg(feature = "node")]
-#[wasm_bindgen(js_name = moveCameraVideo)]
-pub fn move_camera_video_js(
+#[wasm_bindgen(js_name = moveCameraNode)]
+pub fn move_camera_node_js(
     top_left_corner: Array,
     bottom_right_corner: Array,
-    scene: &mut VideoScene,
+    scene: &mut NodeScene,
     t: f64
 ) {
-    use super::move_camera_video::move_camera_video;
+    use super::move_camera_node::move_camera_video;
 
     let top_left_corner = (top_left_corner.get(0).as_f64().unwrap(), top_left_corner.get(1).as_f64().unwrap());
     let bottom_right_corner = (bottom_right_corner.get(0).as_f64().unwrap(), bottom_right_corner.get(1).as_f64().unwrap());

@@ -2,7 +2,7 @@ use crate::objects::wasm_interface::{WasmGradientImageOrColor, WasmVectorObject}
 #[cfg(feature = "browser")]
 use crate::{scene::Scene, svg_scene::SVGScene, utils::error};
 #[cfg(feature = "node")]
-use crate::video_scene::VideoScene;
+use crate::node_scene::NodeScene;
 use js_sys::{Array, Function, Map};
 use wasm_bindgen::prelude::*;
 
@@ -12,7 +12,7 @@ enum SceneEnum {
     #[cfg(feature = "browser")]
     SVGScene(SVGScene),
     #[cfg(feature = "node")]
-    VideoScene(VideoScene)
+    NodeScene(NodeScene)
 }
 
 
@@ -48,13 +48,13 @@ impl GenericScene {
          }
     }
     #[cfg(feature = "node")]
-    #[wasm_bindgen(js_name = fromVideoScene)]
-    pub fn from_video_scene(scene: VideoScene) -> GenericScene {
+    #[wasm_bindgen(js_name = fromNodeScene)]
+    pub fn from_node_scene(scene: NodeScene) -> GenericScene {
         return GenericScene {
             width: scene.width,
             height: scene.height,
             fps: scene.fps,
-            scene: SceneEnum::VideoScene(scene)
+            scene: SceneEnum::NodeScene(scene)
         }
     }
     #[wasm_bindgen(js_name = isScene)]
@@ -69,7 +69,7 @@ impl GenericScene {
                 return false;
             }
             #[cfg(feature = "node")]
-            SceneEnum::VideoScene(_) => {
+            SceneEnum::NodeScene(_) => {
                 return false;
             }
         }
@@ -86,13 +86,13 @@ impl GenericScene {
                 return true;
             }
             #[cfg(feature = "node")]
-            SceneEnum::VideoScene(_) => {
+            SceneEnum::NodeScene(_) => {
                 return false;
             }
         }
     }
-    #[wasm_bindgen(js_name = isVideoScene)]
-    pub fn is_video_scene(&self) -> bool {
+    #[wasm_bindgen(js_name = isNodeScene)]
+    pub fn is_node_scene(&self) -> bool {
         match &self.scene {
             #[cfg(feature = "browser")]
             SceneEnum::Scene(_) => {
@@ -103,7 +103,7 @@ impl GenericScene {
                 return false;
             }
             #[cfg(feature = "node")]
-            SceneEnum::VideoScene(_) => {
+            SceneEnum::NodeScene(_) => {
                 return true;
             }
         }
@@ -132,7 +132,7 @@ impl GenericScene {
                 scene.render_frame_js();
             }
             #[cfg(feature = "node")]
-            SceneEnum::VideoScene(scene) => {
+            SceneEnum::NodeScene(scene) => {
                 scene.render_frame_js();
             }
         }
@@ -149,7 +149,7 @@ impl GenericScene {
                 scene.clear_js();
             }
             #[cfg(feature = "node")]
-            SceneEnum::VideoScene(scene) => {
+            SceneEnum::NodeScene(scene) => {
                 scene.clear_js();
             }
         }
@@ -166,7 +166,7 @@ impl GenericScene {
                 scene.restore_js(n);
             }
             #[cfg(feature = "node")]
-            SceneEnum::VideoScene(scene) => {
+            SceneEnum::NodeScene(scene) => {
                 scene.restore_js(n);
             }
         }
@@ -183,7 +183,7 @@ impl GenericScene {
                 scene.save_state_js(n);
             }
             #[cfg(feature = "node")]
-            SceneEnum::VideoScene(scene) => {
+            SceneEnum::NodeScene(scene) => {
                 scene.save_state_js(n);
             }
         }
@@ -200,7 +200,7 @@ impl GenericScene {
                 scene.set_top_left_corner_js(x, y);
             }
             #[cfg(feature = "node")]
-            SceneEnum::VideoScene(scene) => {
+            SceneEnum::NodeScene(scene) => {
                 scene.set_top_left_corner_js(x, y);
             }
         }
@@ -217,7 +217,7 @@ impl GenericScene {
                 scene.set_bottom_right_corner_js(x, y);
             }
             #[cfg(feature = "node")]
-            SceneEnum::VideoScene(scene) => {
+            SceneEnum::NodeScene(scene) => {
                 scene.set_bottom_right_corner_js(x, y);
             }
         }
@@ -234,7 +234,7 @@ impl GenericScene {
                 return scene.get_top_left_corner_js();
             }
             #[cfg(feature = "node")]
-            SceneEnum::VideoScene(scene) => {
+            SceneEnum::NodeScene(scene) => {
                 return scene.get_top_left_corner_js();
             }
         }
@@ -251,7 +251,7 @@ impl GenericScene {
                 return scene.get_bottom_right_corner_js();
             }
             #[cfg(feature = "node")]
-            SceneEnum::VideoScene(scene) => {
+            SceneEnum::NodeScene(scene) => {
                 return scene.get_bottom_right_corner_js();
             }
         }
@@ -268,7 +268,7 @@ impl GenericScene {
                 scene.set_background_js(color);
             }
             #[cfg(feature = "node")]
-            SceneEnum::VideoScene(scene) => {
+            SceneEnum::NodeScene(scene) => {
                 scene.set_background_js(color);
             }
         }
@@ -285,7 +285,7 @@ impl GenericScene {
                 scene.add_js(object);
             }
             #[cfg(feature = "node")]
-            SceneEnum::VideoScene(scene) => {
+            SceneEnum::NodeScene(scene) => {
                 scene.add_js(object);
             }
         }
@@ -302,7 +302,7 @@ impl GenericScene {
                 scene.insert_js(index, object);
             }
             #[cfg(feature = "node")]
-            SceneEnum::VideoScene(scene) => {
+            SceneEnum::NodeScene(scene) => {
                 scene.insert_js(index, object);
             }
         }
@@ -319,7 +319,7 @@ impl GenericScene {
                 scene.remove_js(index);
             }
             #[cfg(feature = "node")]
-            SceneEnum::VideoScene(scene) => {
+            SceneEnum::NodeScene(scene) => {
                 scene.remove_js(index);
             }
         }
@@ -336,7 +336,7 @@ impl GenericScene {
                 return scene.get_objects_js();
             }
             #[cfg(feature = "node")]
-            SceneEnum::VideoScene(scene) => {
+            SceneEnum::NodeScene(scene) => {
                 return scene.get_objects_js();
             }
         }
@@ -353,7 +353,7 @@ impl GenericScene {
                 return scene.get_objects_from_indices_js(object_indices);
             }
             #[cfg(feature = "node")]
-            SceneEnum::VideoScene(scene) => {
+            SceneEnum::NodeScene(scene) => {
                 return scene.get_objects_from_indices_js(object_indices);
             }
         }
@@ -370,8 +370,8 @@ impl GenericScene {
                 error(JsError::new("SVGScene does not have a canvas context"));
             }
             #[cfg(feature = "node")]
-            SceneEnum::VideoScene(scene) => {
-                scene.set_canvas_context_js(context.dyn_into().unwrap());
+            SceneEnum::NodeScene(scene) => {
+                scene.init_context_js(Some(context.as_bool().unwrap()));
             }
         }
     }
@@ -388,8 +388,8 @@ impl GenericScene {
                 scene.set_div_container_js(div_container);
             }
             #[cfg(feature = "node")]
-            SceneEnum::VideoScene(_) => {
-                error(JsError::new("VideoScene does not have a div container"));
+            SceneEnum::NodeScene(_) => {
+                error(JsError::new("NodeScene does not have a div container"));
             }
         }
     }
@@ -405,7 +405,7 @@ impl GenericScene {
                 scene.sleep_js(duration_in_ms).await;
             }
             #[cfg(feature = "node")]
-            SceneEnum::VideoScene(scene) => {
+            SceneEnum::NodeScene(scene) => {
                 scene.sleep_js(duration_in_ms).await;
             }
         }
@@ -422,7 +422,7 @@ impl GenericScene {
                 scene.set_objects_js(objects);
             }
             #[cfg(feature = "node")]
-            SceneEnum::VideoScene(scene) => {
+            SceneEnum::NodeScene(scene) => {
                 scene.set_objects_js(objects);
             }
         }
@@ -445,7 +445,7 @@ impl GenericScene {
                 scene.play_js(animation_func, object_indices, duration_in_frames, rate_func).await;
             }
             #[cfg(feature = "node")]
-            SceneEnum::VideoScene(scene) => {
+            SceneEnum::NodeScene(scene) => {
                 scene.play_js(animation_func, object_indices, duration_in_frames, rate_func).await;
             }
         }
@@ -467,7 +467,7 @@ impl GenericScene {
                 scene.make_frame_js(animation_func, objects, t).await;
             }
             #[cfg(feature = "node")]
-            SceneEnum::VideoScene(scene) => {
+            SceneEnum::NodeScene(scene) => {
                 scene.make_frame_js(animation_func, objects, t).await;
             }
         }
@@ -484,7 +484,7 @@ impl GenericScene {
                 scene.wait_js(duration_in_frames).await;
             }
             #[cfg(feature = "node")]
-            SceneEnum::VideoScene(scene) => {
+            SceneEnum::NodeScene(scene) => {
                 scene.wait_js(duration_in_frames).await;
             }
         }
@@ -501,7 +501,7 @@ impl GenericScene {
                 scene.set_callback_js(callback);
             }
             #[cfg(feature = "node")]
-            SceneEnum::VideoScene(scene) => {
+            SceneEnum::NodeScene(scene) => {
                 scene.set_callback_js(callback);
             }
         }
@@ -518,7 +518,7 @@ impl GenericScene {
                 scene.call_callback_js().await;
             }
             #[cfg(feature = "node")]
-            SceneEnum::VideoScene(ref mut scene) => {
+            SceneEnum::NodeScene(ref mut scene) => {
                 scene.call_callback_js().await;
             }
         }
@@ -536,8 +536,8 @@ impl GenericScene {
                 scene.set_class_js(index, class);
             }
             #[cfg(feature = "node")]
-            SceneEnum::VideoScene(_) => {
-                error(JsError::new("Can't assign class to an object in a VideoScene"));
+            SceneEnum::NodeScene(_) => {
+                error(JsError::new("Can't assign class to an object in a NodeScene"));
             }
         }
     }
@@ -554,8 +554,8 @@ impl GenericScene {
                 scene.remove_class_js(index);
             }
             #[cfg(feature = "node")]
-            SceneEnum::VideoScene(_) => {
-                error(JsError::new("Can't remove class from an object in a VideoScene"));
+            SceneEnum::NodeScene(_) => {
+                error(JsError::new("Can't remove class from an object in a NodeScene"));
             }
         }
     }

@@ -1,9 +1,9 @@
-use crate::{scene_api::SceneAPI, utils::interpolate_tuple, video_scene::VideoScene};
+use crate::{scene_api::SceneAPI, utils::interpolate_tuple, node_scene::NodeScene};
 
 pub fn move_camera_video(
     top_left_corner: (f64, f64),
     bottom_right_corner: (f64, f64),
-    scene: &mut VideoScene,
+    scene: &mut NodeScene,
     t: f64
 ) {
     let old_top_left_corner = scene.get_top_left_corner();

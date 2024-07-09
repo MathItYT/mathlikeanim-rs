@@ -14,6 +14,6 @@ pub mod text_to_vector;
 pub mod wasm_interface;
 pub mod generic_scene;
 #[cfg(feature = "node")]
-pub mod video_scene;
+pub mod node_scene;
 #[cfg(feature = "node")]
 pub mod node_renderer;
