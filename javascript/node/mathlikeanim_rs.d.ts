@@ -445,146 +445,231 @@ export function getNumbersTex(number_line: WasmVectorObject, numbers: Array<any>
 */
 export function svgToVector(svg: string, default_font_family?: string, default_font_size?: number): Promise<WasmVectorObject>;
 /**
+* @param {number} angle
+* @param {number} axis
+* @returns {Array<any>}
+*/
+export function rotMatrix(angle: number, axis: number): Array<any>;
+/**
+* @param {Array<any>} a
+* @param {Array<any>} b
+* @returns {Array<any>}
+*/
+export function matrixProduct(a: Array<any>, b: Array<any>): Array<any>;
+/**
+* @param {number} phi
+* @param {number} theta
+* @param {number} gamma
+* @returns {Array<any>}
+*/
+export function rotMatrixEuler(phi: number, theta: number, gamma: number): Array<any>;
+/**
+* @param {Array<any>} a
+* @returns {Array<any>}
+*/
+export function transposeMatrix(a: Array<any>): Array<any>;
+/**
+* @param {Array<any>} matrix
+* @param {Array<any>} points
+* @returns {Array<any>}
+*/
+export function applyMatrix(matrix: Array<any>, points: Array<any>): Array<any>;
+/**
+* @param {Array<any>} points
+* @param {Array<any>} shift
+* @returns {Array<any>}
+*/
+export function shiftPoints3D(points: Array<any>, shift: Array<any>): Array<any>;
+/**
+* @param {WasmGradientImageOrColor} color
+* @returns {WasmGradientImageOrColor}
+*/
+export function ensureValidThreeDColor(color: WasmGradientImageOrColor): WasmGradientImageOrColor;
+/**
+* @param {WasmColor} color
+* @param {Array<any>} point
+* @param {Array<any>} unit_normal
+* @param {WasmLightSource} light_source
+* @returns {WasmColor}
+*/
+export function getShadedRgb(color: WasmColor, point: Array<any>, unit_normal: Array<any>, light_source: WasmLightSource): WasmColor;
+/**
+* @param {Array<any>} points
+* @returns {Array<any>}
+*/
+export function getStartCorner(points: Array<any>): Array<any>;
+/**
+* @param {Array<any>} points
+* @returns {Array<any>}
+*/
+export function getEndCorner(points: Array<any>): Array<any>;
+/**
+* @param {Array<any>} a
+* @param {Array<any>} b
+* @returns {Array<any>}
+*/
+export function crossProduct(a: Array<any>, b: Array<any>): Array<any>;
+/**
+* @param {Array<any>} v1
+* @param {Array<any>} v2
+* @returns {Array<any>}
+*/
+export function getUnitNormal(v1: Array<any>, v2: Array<any>): Array<any>;
+/**
+* @param {Array<any>} points
+* @returns {Array<any>}
+*/
+export function getStartAnchors(points: Array<any>): Array<any>;
+/**
+* @param {Array<any>} points
+* @returns {Array<any>}
+*/
+export function getEndAnchors(points: Array<any>): Array<any>;
+/**
+* @param {Array<any>} points
+* @returns {Array<any>}
+*/
+export function getAnchors(points: Array<any>): Array<any>;
+/**
+* @param {Array<any>} points
+* @param {number} index
+* @returns {Array<any>}
+*/
+export function getCornerUnitNormal(points: Array<any>, index: number): Array<any>;
+/**
+* @param {Array<any>} points
+* @returns {Array<any>}
+*/
+export function getStartCornerUnitNormal(points: Array<any>): Array<any>;
+/**
+* @param {Array<any>} points
+* @returns {Array<any>}
+*/
+export function getEndCornerUnitNormal(points: Array<any>): Array<any>;
+/**
+* @param {WasmGradientImageOrColor} color
+* @param {Array<any>} points
+* @param {WasmLightSource} light_source
+* @param {WasmCamera} camera
+* @returns {WasmGradientImageOrColor}
+*/
+export function getShadedColor(color: WasmGradientImageOrColor, points: Array<any>, light_source: WasmLightSource, camera: WasmCamera): WasmGradientImageOrColor;
+/**
+* @param {Array<any>} points
+* @param {WasmCamera} camera
+* @returns {Array<any>}
+*/
+export function projectPoints(points: Array<any>, camera: WasmCamera): Array<any>;
+/**
+* @param {Array<any>} point1
+* @param {Array<any>} point2
+* @returns {Array<any>}
+*/
+export function lineAsCubicBezier3D(point1: Array<any>, point2: Array<any>): Array<any>;
+/**
+* @param {number} x_min
+* @param {number} x_max
+* @param {number} x_step
+* @param {number} y_min
+* @param {number} y_max
+* @param {number} y_step
+* @param {number} z_min
+* @param {number} z_max
+* @param {number} z_step
+* @param {Array<any>} center
+* @param {number | undefined} [x_length]
+* @param {number | undefined} [y_length]
+* @param {number | undefined} [z_length]
+* @param {WasmColor | undefined} [color]
+* @param {number | undefined} [stroke_width]
+* @param {boolean | undefined} [add_x_ticks]
+* @param {boolean | undefined} [add_y_ticks]
+* @param {boolean | undefined} [add_z_ticks]
+* @param {number | undefined} [x_tick_size]
+* @param {number | undefined} [y_tick_size]
+* @param {number | undefined} [z_tick_size]
+* @param {boolean | undefined} [add_x_tip]
+* @param {boolean | undefined} [add_y_tip]
+* @param {boolean | undefined} [add_z_tip]
+* @param {number | undefined} [n_pieces]
+* @returns {WasmThreeDObject}
+*/
+export function threeDAxes(x_min: number, x_max: number, x_step: number, y_min: number, y_max: number, y_step: number, z_min: number, z_max: number, z_step: number, center: Array<any>, x_length?: number, y_length?: number, z_length?: number, color?: WasmColor, stroke_width?: number, add_x_ticks?: boolean, add_y_ticks?: boolean, add_z_ticks?: boolean, x_tick_size?: number, y_tick_size?: number, z_tick_size?: number, add_x_tip?: boolean, add_y_tip?: boolean, add_z_tip?: boolean, n_pieces?: number): WasmThreeDObject;
+/**
+* @param {WasmThreeDObject} axes
+* @param {Array<any>} coords
+* @param {number} x_min
+* @param {number} x_max
+* @param {number} y_min
+* @param {number} y_max
+* @param {number} z_min
+* @param {number} z_max
+* @returns {Array<any>}
+*/
+export function coordsToPoint3D(axes: WasmThreeDObject, coords: Array<any>, x_min: number, x_max: number, y_min: number, y_max: number, z_min: number, z_max: number): Array<any>;
+/**
+* @param {WasmThreeDObject} axes
+* @param {Array<any>} point
+* @param {number} x_min
+* @param {number} x_max
+* @param {number} y_min
+* @param {number} y_max
+* @param {number} z_min
+* @param {number} z_max
+* @returns {Array<any>}
+*/
+export function pointToCoords3D(axes: WasmThreeDObject, point: Array<any>, x_min: number, x_max: number, y_min: number, y_max: number, z_min: number, z_max: number): Array<any>;
+/**
+* @param {WasmThreeDObject} axes
+* @param {Function} f
+* @param {number} u_min
+* @param {number} u_max
+* @param {number} v_min
+* @param {number} v_max
+* @param {number} u_segments
+* @param {number} v_segments
+* @param {(WasmColor)[]} fills
+* @param {(WasmColor)[]} strokes
+* @param {number} stroke_width
+* @returns {WasmThreeDObject}
+*/
+export function parametricPlotInAxes3D(axes: WasmThreeDObject, f: Function, u_min: number, u_max: number, v_min: number, v_max: number, u_segments: number, v_segments: number, fills: (WasmColor)[], strokes: (WasmColor)[], stroke_width: number): WasmThreeDObject;
+/**
+* @param {WasmThreeDObject} axes
+* @param {Function} f
+* @param {number} x_min
+* @param {number} x_max
+* @param {number} y_min
+* @param {number} y_max
+* @param {number} u_segments
+* @param {number} v_segments
+* @param {(WasmColor)[]} fills
+* @param {(WasmColor)[]} strokes
+* @param {number} stroke_width
+* @returns {WasmThreeDObject}
+*/
+export function plotInAxes3D(axes: WasmThreeDObject, f: Function, x_min: number, x_max: number, y_min: number, y_max: number, u_segments: number, v_segments: number, fills: (WasmColor)[], strokes: (WasmColor)[], stroke_width: number): WasmThreeDObject;
+/**
+* @param {WasmThreeDObject} axes
+* @param {Function} f
+* @param {number} u_min
+* @param {number} u_max
+* @param {number} u_segments
+* @param {number} x_min
+* @param {number} x_max
+* @param {number} y_min
+* @param {number} y_max
+* @param {number} z_min
+* @param {number} z_max
+* @param {WasmColor} color
+* @param {number} stroke_width
+* @returns {WasmThreeDObject}
+*/
+export function parametricLinePlotInAxes3D(axes: WasmThreeDObject, f: Function, u_min: number, u_max: number, u_segments: number, x_min: number, x_max: number, y_min: number, y_max: number, z_min: number, z_max: number, color: WasmColor, stroke_width: number): WasmThreeDObject;
+/**
 * @returns {Lexer}
 */
 export function getPythonLexer(): Lexer;
-/**
-* @param {number} num_anim_funcs
-* @param {number} lag_ratio
-* @returns {Float64Array}
-*/
-export function makeTimings(num_anim_funcs: number, lag_ratio: number): Float64Array;
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {(Function)[]} anim_funcs
-* @param {number} lag_ratio
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function animationGroup(vec_obj: WasmVectorObject, anim_funcs: (Function)[], lag_ratio: number, t: number): WasmVectorObject;
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function create(vec_obj: WasmVectorObject, t: number): WasmVectorObject;
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} t
-* @param {number | undefined} [default_stroke_width]
-* @returns {WasmVectorObject}
-*/
-export function drawStrokeThenFill(vec_obj: WasmVectorObject, t: number, default_stroke_width?: number): WasmVectorObject;
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} lag_ratio
-* @param {number} t
-* @param {number | undefined} [default_stroke_width]
-* @returns {WasmVectorObject}
-*/
-export function write(vec_obj: WasmVectorObject, lag_ratio: number, t: number, default_stroke_width?: number): WasmVectorObject;
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} scale_factor
-* @param {Array<any>} shift
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function fadeIn(vec_obj: WasmVectorObject, scale_factor: number, shift: Array<any>, t: number): WasmVectorObject;
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} scale_factor
-* @param {Array<any>} shift
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function fadeOut(vec_obj: WasmVectorObject, scale_factor: number, shift: Array<any>, t: number): WasmVectorObject;
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function growArrowWithFinalTip(vec_obj: WasmVectorObject, t: number): WasmVectorObject;
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function growArrowWithInitialTip(vec_obj: WasmVectorObject, t: number): WasmVectorObject;
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function growArrowWithTipsAtBothEnds(vec_obj: WasmVectorObject, t: number): WasmVectorObject;
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function growFromCenter(vec_obj: WasmVectorObject, t: number): WasmVectorObject;
-/**
-* @param {WasmVectorObject} original
-* @param {WasmVectorObject} target
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function morphShape(original: WasmVectorObject, target: WasmVectorObject, t: number): WasmVectorObject;
-/**
-* @param {Array<any>} top_left_corner
-* @param {Array<any>} bottom_right_corner
-* @param {NodeScene} scene
-* @param {number} t
-*/
-export function moveCameraNode(top_left_corner: Array<any>, bottom_right_corner: Array<any>, scene: NodeScene, t: number): void;
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} angle
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function rotateAnimation(vec_obj: WasmVectorObject, angle: number, t: number): WasmVectorObject;
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} scale_factor
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function scaleInPlace(vec_obj: WasmVectorObject, scale_factor: number, t: number): WasmVectorObject;
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {WasmColor} target_fill
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function setFillAnimation(vec_obj: WasmVectorObject, target_fill: WasmColor, t: number): WasmVectorObject;
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {WasmColor} target_stroke
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function setStrokeAnimation(vec_obj: WasmVectorObject, target_stroke: WasmColor, t: number): WasmVectorObject;
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {Array<any>} shift
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function shiftAnimation(vec_obj: WasmVectorObject, shift: Array<any>, t: number): WasmVectorObject;
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function showTemporaily(vec_obj: WasmVectorObject, t: number): WasmVectorObject;
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} angle
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function spinningGrow(vec_obj: WasmVectorObject, angle: number, t: number): WasmVectorObject;
 /**
 * @param {string} code
 * @param {Lexer} lexer
@@ -593,6 +678,10 @@ export function spinningGrow(vec_obj: WasmVectorObject, angle: number, t: number
 * @returns {Promise<WasmVectorObject>}
 */
 export function codeObject(code: string, lexer: Lexer, theme: Theme, font_family: string): Promise<WasmVectorObject>;
+/**
+* @returns {Theme}
+*/
+export function getGithubDark(): Theme;
 /**
 * @param {number} ux
 * @param {number} uy
@@ -1048,127 +1137,142 @@ export function easeInBounce(t: number): number;
 */
 export function easeInOutBounce(t: number): number;
 /**
-* @param {number} angle
-* @param {number} axis
-* @returns {Array<any>}
+* @param {number} num_anim_funcs
+* @param {number} lag_ratio
+* @returns {Float64Array}
 */
-export function rotMatrix(angle: number, axis: number): Array<any>;
+export function makeTimings(num_anim_funcs: number, lag_ratio: number): Float64Array;
 /**
-* @param {Array<any>} a
-* @param {Array<any>} b
-* @returns {Array<any>}
+* @param {WasmVectorObject} vec_obj
+* @param {(Function)[]} anim_funcs
+* @param {number} lag_ratio
+* @param {number} t
+* @returns {WasmVectorObject}
 */
-export function matrixProduct(a: Array<any>, b: Array<any>): Array<any>;
+export function animationGroup(vec_obj: WasmVectorObject, anim_funcs: (Function)[], lag_ratio: number, t: number): WasmVectorObject;
 /**
-* @param {number} phi
-* @param {number} theta
-* @param {number} gamma
-* @returns {Array<any>}
+* @param {WasmVectorObject} vec_obj
+* @param {number} t
+* @returns {WasmVectorObject}
 */
-export function rotMatrixEuler(phi: number, theta: number, gamma: number): Array<any>;
+export function create(vec_obj: WasmVectorObject, t: number): WasmVectorObject;
 /**
-* @param {Array<any>} a
-* @returns {Array<any>}
+* @param {WasmVectorObject} vec_obj
+* @param {number} t
+* @param {number | undefined} [default_stroke_width]
+* @returns {WasmVectorObject}
 */
-export function transposeMatrix(a: Array<any>): Array<any>;
+export function drawStrokeThenFill(vec_obj: WasmVectorObject, t: number, default_stroke_width?: number): WasmVectorObject;
 /**
-* @param {Array<any>} matrix
-* @param {Array<any>} points
-* @returns {Array<any>}
+* @param {WasmVectorObject} vec_obj
+* @param {number} lag_ratio
+* @param {number} t
+* @param {number | undefined} [default_stroke_width]
+* @returns {WasmVectorObject}
 */
-export function applyMatrix(matrix: Array<any>, points: Array<any>): Array<any>;
+export function write(vec_obj: WasmVectorObject, lag_ratio: number, t: number, default_stroke_width?: number): WasmVectorObject;
 /**
-* @param {Array<any>} points
+* @param {WasmVectorObject} vec_obj
+* @param {number} scale_factor
 * @param {Array<any>} shift
-* @returns {Array<any>}
+* @param {number} t
+* @returns {WasmVectorObject}
 */
-export function shiftPoints3D(points: Array<any>, shift: Array<any>): Array<any>;
+export function fadeIn(vec_obj: WasmVectorObject, scale_factor: number, shift: Array<any>, t: number): WasmVectorObject;
 /**
-* @param {WasmGradientImageOrColor} color
-* @returns {WasmGradientImageOrColor}
+* @param {WasmVectorObject} vec_obj
+* @param {number} scale_factor
+* @param {Array<any>} shift
+* @param {number} t
+* @returns {WasmVectorObject}
 */
-export function ensureValidThreeDColor(color: WasmGradientImageOrColor): WasmGradientImageOrColor;
+export function fadeOut(vec_obj: WasmVectorObject, scale_factor: number, shift: Array<any>, t: number): WasmVectorObject;
 /**
-* @param {WasmColor} color
-* @param {Array<any>} point
-* @param {Array<any>} unit_normal
-* @param {WasmLightSource} light_source
-* @returns {WasmColor}
+* @param {WasmVectorObject} vec_obj
+* @param {number} t
+* @returns {WasmVectorObject}
 */
-export function getShadedRgb(color: WasmColor, point: Array<any>, unit_normal: Array<any>, light_source: WasmLightSource): WasmColor;
+export function growArrowWithFinalTip(vec_obj: WasmVectorObject, t: number): WasmVectorObject;
 /**
-* @param {Array<any>} points
-* @returns {Array<any>}
+* @param {WasmVectorObject} vec_obj
+* @param {number} t
+* @returns {WasmVectorObject}
 */
-export function getStartCorner(points: Array<any>): Array<any>;
+export function growArrowWithInitialTip(vec_obj: WasmVectorObject, t: number): WasmVectorObject;
 /**
-* @param {Array<any>} points
-* @returns {Array<any>}
+* @param {WasmVectorObject} vec_obj
+* @param {number} t
+* @returns {WasmVectorObject}
 */
-export function getEndCorner(points: Array<any>): Array<any>;
+export function growArrowWithTipsAtBothEnds(vec_obj: WasmVectorObject, t: number): WasmVectorObject;
 /**
-* @param {Array<any>} a
-* @param {Array<any>} b
-* @returns {Array<any>}
+* @param {WasmVectorObject} vec_obj
+* @param {number} t
+* @returns {WasmVectorObject}
 */
-export function crossProduct(a: Array<any>, b: Array<any>): Array<any>;
+export function growFromCenter(vec_obj: WasmVectorObject, t: number): WasmVectorObject;
 /**
-* @param {Array<any>} v1
-* @param {Array<any>} v2
-* @returns {Array<any>}
+* @param {WasmVectorObject} original
+* @param {WasmVectorObject} target
+* @param {number} t
+* @returns {WasmVectorObject}
 */
-export function getUnitNormal(v1: Array<any>, v2: Array<any>): Array<any>;
+export function morphShape(original: WasmVectorObject, target: WasmVectorObject, t: number): WasmVectorObject;
 /**
-* @param {Array<any>} points
-* @returns {Array<any>}
+* @param {Array<any>} top_left_corner
+* @param {Array<any>} bottom_right_corner
+* @param {NodeScene} scene
+* @param {number} t
 */
-export function getStartAnchors(points: Array<any>): Array<any>;
+export function moveCameraNode(top_left_corner: Array<any>, bottom_right_corner: Array<any>, scene: NodeScene, t: number): void;
 /**
-* @param {Array<any>} points
-* @returns {Array<any>}
+* @param {WasmVectorObject} vec_obj
+* @param {number} angle
+* @param {number} t
+* @returns {WasmVectorObject}
 */
-export function getEndAnchors(points: Array<any>): Array<any>;
+export function rotateAnimation(vec_obj: WasmVectorObject, angle: number, t: number): WasmVectorObject;
 /**
-* @param {Array<any>} points
-* @returns {Array<any>}
+* @param {WasmVectorObject} vec_obj
+* @param {number} scale_factor
+* @param {number} t
+* @returns {WasmVectorObject}
 */
-export function getAnchors(points: Array<any>): Array<any>;
+export function scaleInPlace(vec_obj: WasmVectorObject, scale_factor: number, t: number): WasmVectorObject;
 /**
-* @param {Array<any>} points
-* @param {number} index
-* @returns {Array<any>}
+* @param {WasmVectorObject} vec_obj
+* @param {WasmColor} target_fill
+* @param {number} t
+* @returns {WasmVectorObject}
 */
-export function getCornerUnitNormal(points: Array<any>, index: number): Array<any>;
+export function setFillAnimation(vec_obj: WasmVectorObject, target_fill: WasmColor, t: number): WasmVectorObject;
 /**
-* @param {Array<any>} points
-* @returns {Array<any>}
+* @param {WasmVectorObject} vec_obj
+* @param {WasmColor} target_stroke
+* @param {number} t
+* @returns {WasmVectorObject}
 */
-export function getStartCornerUnitNormal(points: Array<any>): Array<any>;
+export function setStrokeAnimation(vec_obj: WasmVectorObject, target_stroke: WasmColor, t: number): WasmVectorObject;
 /**
-* @param {Array<any>} points
-* @returns {Array<any>}
+* @param {WasmVectorObject} vec_obj
+* @param {Array<any>} shift
+* @param {number} t
+* @returns {WasmVectorObject}
 */
-export function getEndCornerUnitNormal(points: Array<any>): Array<any>;
+export function shiftAnimation(vec_obj: WasmVectorObject, shift: Array<any>, t: number): WasmVectorObject;
 /**
-* @param {WasmGradientImageOrColor} color
-* @param {Array<any>} points
-* @param {WasmLightSource} light_source
-* @param {WasmCamera} camera
-* @returns {WasmGradientImageOrColor}
+* @param {WasmVectorObject} vec_obj
+* @param {number} t
+* @returns {WasmVectorObject}
 */
-export function getShadedColor(color: WasmGradientImageOrColor, points: Array<any>, light_source: WasmLightSource, camera: WasmCamera): WasmGradientImageOrColor;
+export function showTemporaily(vec_obj: WasmVectorObject, t: number): WasmVectorObject;
 /**
-* @param {Array<any>} points
-* @param {WasmCamera} camera
-* @returns {Array<any>}
+* @param {WasmVectorObject} vec_obj
+* @param {number} angle
+* @param {number} t
+* @returns {WasmVectorObject}
 */
-export function projectPoints(points: Array<any>, camera: WasmCamera): Array<any>;
-/**
-* @param {Array<any>} point1
-* @param {Array<any>} point2
-* @returns {Array<any>}
-*/
-export function lineAsCubicBezier3D(point1: Array<any>, point2: Array<any>): Array<any>;
+export function spinningGrow(vec_obj: WasmVectorObject, angle: number, t: number): WasmVectorObject;
 /**
 * @param {string} expression
 * @param {string | undefined} [default_font_family]
@@ -1176,10 +1280,6 @@ export function lineAsCubicBezier3D(point1: Array<any>, point2: Array<any>): Arr
 * @returns {Promise<WasmVectorObject>}
 */
 export function mathjax(expression: string, default_font_family?: string, default_font_size?: number): Promise<WasmVectorObject>;
-/**
-* @returns {Theme}
-*/
-export function getGithubDark(): Theme;
 /**
 * @param {string} text
 * @param {string} font_family
@@ -2411,6 +2511,15 @@ export class WasmThreeDObject {
 * @returns {WasmThreeDObject}
 */
   clone(): WasmThreeDObject;
+/**
+* @param {WasmVectorObject} vector_object
+* @returns {WasmThreeDObject}
+*/
+  static fromVectorObject(vector_object: WasmVectorObject): WasmThreeDObject;
+/**
+* @returns {(WasmThreeDObject)[]}
+*/
+  getSubobjectsRecursively(): (WasmThreeDObject)[];
 }
 /**
 */
@@ -2498,6 +2607,11 @@ export class WasmVectorObject {
 * @returns {Array<any>}
 */
   getSubpaths(): Array<any>;
+/**
+* @param {number} n_pieces
+* @returns {WasmVectorObject}
+*/
+  getPieces(n_pieces: number): WasmVectorObject;
 /**
 * @returns {Array<any>}
 */

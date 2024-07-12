@@ -632,6 +632,11 @@ impl WasmVectorObject {
         }).collect();
         subpaths
     }
+    #[wasm_bindgen(js_name = getPieces)]
+    pub fn get_pieces(&self, n_pieces: usize) -> WasmVectorObject {
+        let pieces = self.native_vec_features.get_pieces(n_pieces);
+        WasmVectorObject { native_vec_features: pieces }
+    }
     #[wasm_bindgen(js_name = getCubicBezierTuples)]
     pub fn get_cubic_bezier_tuples(&self) -> Array {
         let cubic_bezier_tuples = self.native_vec_features.get_cubic_bezier_tuples();

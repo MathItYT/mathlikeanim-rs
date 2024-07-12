@@ -3,7 +3,7 @@ use wasm_bindgen::prelude::*;
 
 use crate::{colors::Color, objects::wasm_interface::{WasmColor, WasmGradientImageOrColor, WasmVectorObject}};
 
-use super::three_d_object::{apply_matrix, cross_product, ensure_valid_three_d_color, get_anchors, get_corner_unit_normal, get_end_anchors, get_end_corner, get_end_corner_unit_normal, get_shaded_color, get_shaded_rgb, get_start_anchors, get_start_corner, get_start_corner_unit_normal, line_as_cubic_bezier_3d, matrix_product, project_points, rot_matrix, rot_matrix_euler, shift_points_3d, transpose_matrix, Camera, LightSource, ThreeDObject};
+use super::{three_d_axes::{coords_to_point_3d, parametric_line_plot_in_axes_3d, parametric_plot_in_axes_3d, plot_in_axes_3d, point_to_coords_3d, three_d_axes}, three_d_object::{apply_matrix, cross_product, ensure_valid_three_d_color, get_anchors, get_corner_unit_normal, get_end_anchors, get_end_corner, get_end_corner_unit_normal, get_shaded_color, get_shaded_rgb, get_start_anchors, get_start_corner, get_start_corner_unit_normal, line_as_cubic_bezier_3d, matrix_product, project_points, rot_matrix, rot_matrix_euler, shift_points_3d, transpose_matrix, Camera, LightSource, ThreeDObject}};
 
 
 #[wasm_bindgen(js_name = rotMatrix)]
@@ -991,5 +991,271 @@ impl WasmThreeDObject {
     pub fn clone_js(&self) -> WasmThreeDObject {
         self.clone()
     }
+    #[wasm_bindgen(js_name = fromVectorObject)]
+    pub fn from_vector_object(
+        vector_object: &WasmVectorObject,
+    ) -> WasmThreeDObject {
+        return WasmThreeDObject {
+            three_d_object: ThreeDObject::from_vector_object(&vector_object.native_vec_features)
+        }
+    }
+    #[wasm_bindgen(js_name = getSubobjectsRecursively)]
+    pub fn get_subobjects_recursively(&self) -> Vec<WasmThreeDObject> {
+        let subobjects = self.three_d_object.get_subobjects_recursively();
+        let subobjects_js = subobjects.iter().map(
+            |face| {
+                WasmThreeDObject {
+                    three_d_object: face.clone()
+                }
+            }
+        ).collect::<Vec<WasmThreeDObject>>();
+        subobjects_js
+    }
 }
-    
+
+
+#[wasm_bindgen(js_name = threeDAxes)]
+pub fn three_d_axes_js(
+    x_min: f64,
+    x_max: f64,
+    x_step: f64,
+    y_min: f64,
+    y_max: f64,
+    y_step: f64,
+    z_min: f64,
+    z_max: f64,
+    z_step: f64,
+    center: Array,
+    x_length: Option<f64>,
+    y_length: Option<f64>,
+    z_length: Option<f64>,
+    color: Option<WasmColor>,
+    stroke_width: Option<f64>,
+    add_x_ticks: Option<bool>,
+    add_y_ticks: Option<bool>,
+    add_z_ticks: Option<bool>,
+    x_tick_size: Option<f64>,
+    y_tick_size: Option<f64>,
+    z_tick_size: Option<f64>,
+    add_x_tip: Option<bool>,
+    add_y_tip: Option<bool>,
+    add_z_tip: Option<bool>,
+    n_pieces: Option<usize>
+) -> WasmThreeDObject {
+    return WasmThreeDObject {
+        three_d_object: three_d_axes(
+            x_min,
+            x_max,
+            x_step,
+            y_min,
+            y_max,
+            y_step,
+            z_min,
+            z_max,
+            z_step,
+            (
+                center.get(0).as_f64().unwrap(),
+                center.get(1).as_f64().unwrap(),
+                center.get(2).as_f64().unwrap()
+            ),
+            x_length,
+            y_length,
+            z_length,
+            color.map(|color| (color.color.red, color.color.green, color.color.blue, color.color.alpha)),
+            stroke_width,
+            add_x_ticks,
+            add_y_ticks,
+            add_z_ticks,
+            x_tick_size,
+            y_tick_size,
+            z_tick_size,
+            add_x_tip,
+            add_y_tip,
+            add_z_tip,
+            n_pieces
+        )
+    }
+}
+
+
+#[wasm_bindgen(js_name = coordsToPoint3D)]
+pub fn coords_to_point_js(
+    axes: &WasmThreeDObject,
+    coords: Array,
+    x_min: f64,
+    x_max: f64,
+    y_min: f64,
+    y_max: f64,
+    z_min: f64,
+    z_max: f64
+) -> Array {
+    let coords = (
+        coords.get(0).as_f64().unwrap(),
+        coords.get(1).as_f64().unwrap(),
+        coords.get(2).as_f64().unwrap()
+    );
+    let point = coords_to_point_3d(&axes.three_d_object, coords, x_min, x_max, y_min, y_max, z_min, z_max);
+    let point_js = Array::of3(
+        &JsValue::from(point.0),
+        &JsValue::from(point.1),
+        &JsValue::from(point.2)
+    );
+    point_js
+}
+
+
+#[wasm_bindgen(js_name = pointToCoords3D)]
+pub fn point_to_coords_js(
+    axes: &WasmThreeDObject,
+    point: Array,
+    x_min: f64,
+    x_max: f64,
+    y_min: f64,
+    y_max: f64,
+    z_min: f64,
+    z_max: f64
+) -> Array {
+    let point = (
+        point.get(0).as_f64().unwrap(),
+        point.get(1).as_f64().unwrap(),
+        point.get(2).as_f64().unwrap()
+    );
+    let coords = point_to_coords_3d(&axes.three_d_object, point, x_min, x_max, y_min, y_max, z_min, z_max);
+    let coords_js = Array::of3(
+        &JsValue::from(coords.0),
+        &JsValue::from(coords.1),
+        &JsValue::from(coords.2)
+    );
+    coords_js
+}
+
+
+#[wasm_bindgen(js_name = parametricPlotInAxes3D)]
+pub fn parametric_plot_in_axes_js(
+    axes: &WasmThreeDObject,
+    f: Function,
+    u_min: f64,
+    u_max: f64,
+    v_min: f64,
+    v_max: f64,
+    u_segments: usize,
+    v_segments: usize,
+    fills: Vec<WasmColor>,
+    strokes: Vec<WasmColor>,
+    stroke_width: f64
+) -> WasmThreeDObject {
+    let f = move |u: f64, v: f64| -> (f64, f64, f64) {
+        let result = f.call2(&JsValue::NULL, &JsValue::from_f64(u), &JsValue::from_f64(v)).unwrap();
+        let result = result.dyn_into::<Array>().unwrap();
+        (
+            result.get(0).as_f64().unwrap(),
+            result.get(1).as_f64().unwrap(),
+            result.get(2).as_f64().unwrap()
+        )
+    };
+    let fills = fills.iter().map(
+        |fill| {
+            fill.color.clone()
+        }
+    ).collect::<Vec<Color>>();
+    let strokes = strokes.iter().map(
+        |stroke| {
+            stroke.color.clone()
+        }
+    ).collect::<Vec<Color>>();
+    return WasmThreeDObject {
+        three_d_object: parametric_plot_in_axes_3d(
+            &axes.three_d_object,
+            &f,
+            u_min,
+            u_max,
+            v_min,
+            v_max,
+            u_segments,
+            v_segments,
+            fills,
+            strokes,
+            stroke_width
+        )
+    }
+}
+
+
+#[wasm_bindgen(js_name = plotInAxes3D)]
+pub fn plot_in_axes_3d_js(
+    axes: &WasmThreeDObject,
+    f: Function,
+    x_min: f64,
+    x_max: f64,
+    y_min: f64,
+    y_max: f64,
+    u_segments: usize,
+    v_segments: usize,
+    fills: Vec<WasmColor>,
+    strokes: Vec<WasmColor>,
+    stroke_width: f64
+) -> WasmThreeDObject {
+    let f = move |x: f64, y: f64| -> f64 {
+        f.call2(&JsValue::NULL, &JsValue::from_f64(x), &JsValue::from_f64(y)).unwrap().as_f64().unwrap()
+    };
+    return WasmThreeDObject {
+        three_d_object: plot_in_axes_3d(
+            &axes.three_d_object,
+            &f,
+            x_min,
+            x_max,
+            y_min,
+            y_max,
+            u_segments,
+            v_segments,
+            fills.iter().map(|fill| fill.color.clone()).collect::<Vec<Color>>(),
+            strokes.iter().map(|stroke| stroke.color.clone()).collect::<Vec<Color>>(),
+            stroke_width
+        )
+    }
+}
+
+
+#[wasm_bindgen(js_name = parametricLinePlotInAxes3D)]
+pub fn parametric_line_plot_in_axes_3d_js(
+    axes: &WasmThreeDObject,
+    f: Function,
+    u_min: f64,
+    u_max: f64,
+    u_segments: usize,
+    x_min: f64,
+    x_max: f64,
+    y_min: f64,
+    y_max: f64,
+    z_min: f64,
+    z_max: f64,
+    color: WasmColor,
+    stroke_width: f64
+) -> WasmThreeDObject {
+    let f = move |u: f64| -> (f64, f64, f64) {
+        let result = f.call1(&JsValue::NULL, &JsValue::from_f64(u)).unwrap();
+        let result = result.dyn_into::<Array>().unwrap();
+        (
+            result.get(0).as_f64().unwrap(),
+            result.get(1).as_f64().unwrap(),
+            result.get(2).as_f64().unwrap()
+        )
+    };
+    return WasmThreeDObject {
+        three_d_object: parametric_line_plot_in_axes_3d(
+            &axes.three_d_object,
+            &f,
+            u_min,
+            u_max,
+            u_segments,
+            x_min,
+            x_max,
+            y_min,
+            y_max,
+            z_min,
+            z_max,
+            color.color,
+            stroke_width
+        )
+    }
+}

@@ -403,6 +403,7 @@ pub trait VectorObject {
         start: usize,
         end: usize
     ) -> Vec<VectorFeatures>;
+    fn get_pieces(&self, n_pieces: usize) -> VectorFeatures;
     fn set_subobject(
         &self,
         index: usize,
@@ -1138,5 +1139,17 @@ impl VectorObject for VectorFeatures {
             GradientImageOrColor::Image(image) => return (image.top_left_corner, image.bottom_right_corner),
             _ => return ((0.0, 0.0), (0.0, 0.0))
         }
+    }
+    fn get_pieces(&self, n_pieces: usize) -> VectorFeatures {
+        let template = self.set_subobjects(Vec::new());
+        let alphas = (0..n_pieces + 1).map(|i| i as f64 / n_pieces as f64).collect::<Vec<f64>>();
+        let mut pieces = Vec::new();
+        for i in 0..n_pieces {
+            let start = alphas[i];
+            let end = alphas[i + 1];
+            let piece = template.get_partial_copy(start, end, true);
+            pieces.push(piece);
+        }
+        return template.set_subobjects(pieces).set_points(Vec::new());
     }
 }

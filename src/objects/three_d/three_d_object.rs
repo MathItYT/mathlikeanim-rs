@@ -341,7 +341,7 @@ pub fn project_points(points: Vec<(f64, f64, f64)>, camera: &Camera) -> Vec<(f64
             camera.focal_distance / (camera.focal_distance - z)
         };
         let x = point.0 * factor * camera.zoom + camera.width / 2.0;
-        let y = camera.height / 2.0 - point.1 * factor * camera.zoom;
+        let y = point.1 * factor * camera.zoom + camera.height / 2.0;
         (x, y)
     }).collect::<Vec<(f64, f64)>>();
     points
@@ -564,8 +564,15 @@ impl ThreeDObject {
             stroke_width: self.stroke_width
         }
     }
+    pub fn get_subobjects_recursively(&self) -> Vec<ThreeDObject> {
+        let mut subobjects = self.subobjects.clone();
+        for subobject in self.subobjects.iter() {
+            subobjects.extend(subobject.get_subobjects_recursively());
+        }
+        subobjects
+    }
     pub fn project_and_shade(&self, camera: &Camera, light_source: &LightSource) -> VectorFeatures {
-        let mut subobjects_3d = self.subobjects.clone();
+        let mut subobjects_3d = self.get_subobjects_recursively();
         let rot_matrix = rot_matrix_euler(camera.rotation.0, camera.rotation.1, camera.rotation.2);
         subobjects_3d.sort_by(
             |a, b| {
@@ -617,8 +624,8 @@ impl ThreeDObject {
                 let face = ThreeDObject::new(
                     points,
                     vec![],
-                    GradientImageOrColor::Color(fills[(i * v_steps + j) % fills.len()].clone()),
-                    GradientImageOrColor::Color(strokes[(i * v_steps + j) % strokes.len()].clone()),
+                    GradientImageOrColor::Color(fills[(i + j) % fills.len()].clone()),
+                    GradientImageOrColor::Color(strokes[(i + j) % strokes.len()].clone()),
                     stroke_width
                 );
                 faces.push(face);
@@ -692,5 +699,18 @@ impl ThreeDObject {
         let center = self.get_center();
         let shift = (point.0 - center.0, point.1 - center.1, point.2 - center.2);
         self.shift(shift, recursive)
+    }
+    pub fn from_vector_object(vector_object: &VectorFeatures) -> ThreeDObject {
+        ThreeDObject::new(
+            vector_object.points.iter().map(|point| {
+                (point.0, point.1, 0.0)
+            }).collect(),
+            vector_object.subobjects.iter().map(|subobject| {
+                ThreeDObject::from_vector_object(subobject)
+            }).collect(),
+            ensure_valid_three_d_color(vector_object.fill.clone()),
+            ensure_valid_three_d_color(vector_object.stroke.clone()),
+            vector_object.stroke_width
+        )
     }
 }

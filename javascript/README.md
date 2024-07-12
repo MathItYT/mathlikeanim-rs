@@ -9,10 +9,12 @@ This is an animation library written in Rust, widely inspired by [Manim](https:/
 - [x] Interactivity.
 - [x] Basic shapes.
 - [x] Function plotting.
-- [x] Animations in HTML Canvas and SVG.
+- [x] Animations in HTML Canvas, SVG and videos for Node.js.
 - [x] Text rendering.
+- [x] LaTeX rendering.
+- [x] 3D rendering.
 - [x] Browser and Node.js support.
-- [ ] 3D rendering (coming soon).
+- [ ] Python support (coming soon).
 
 
 ## How to use it in the browser?
