@@ -1,7 +1,7 @@
 {
     "name": "mathlikeanim-rs",
     "description": "A Rust library for creating mathematical animations",
-    "version": "0.8.2",
+    "version": "0.8.3",
     "license": "MIT",
     "repository": {
         "type": "git",
@@ -9,6 +9,7 @@
     },
     "files": [
         "index.js",
+        "mathlikeanim_rs_bg.wasm",
         "browser/mathlikeanim_rs_bg.wasm",
         "browser/mathlikeanim_rs.js",
         "browser/mathlikeanim_rs.d.ts",
