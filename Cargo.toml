@@ -1,6 +1,6 @@
 [package]
 name = "mathlikeanim-rs"
-version = "0.8.1"
+version = "0.8.4"
 edition = "2021"
 readme = "README.md"
 description = "A Rust library for creating mathematical animations"

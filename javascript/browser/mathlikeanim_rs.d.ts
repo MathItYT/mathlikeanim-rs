@@ -675,12 +675,14 @@ export function parametricLinePlotInAxes3D(axes: WasmThreeDObject, f: Function, 
 */
 export function codeObject(code: string, lexer: Lexer, theme: Theme, font_family: string): Promise<WasmVectorObject>;
 /**
-* @param {string} expression
-* @param {string | undefined} [default_font_family]
-* @param {number | undefined} [default_font_size]
+* @param {string} text
+* @param {string} font_family
+* @param {number} x
+* @param {number} y
+* @param {number} font_size
 * @returns {Promise<WasmVectorObject>}
 */
-export function mathjax(expression: string, default_font_family?: string, default_font_size?: number): Promise<WasmVectorObject>;
+export function textToVector(text: string, font_family: string, x: number, y: number, font_size: number): Promise<WasmVectorObject>;
 /**
 * @param {number} ux
 * @param {number} uy
@@ -1288,14 +1290,12 @@ export function showTemporaily(vec_obj: WasmVectorObject, t: number): WasmVector
 */
 export function spinningGrow(vec_obj: WasmVectorObject, angle: number, t: number): WasmVectorObject;
 /**
-* @param {string} text
-* @param {string} font_family
-* @param {number} x
-* @param {number} y
-* @param {number} font_size
+* @param {string} expression
+* @param {string | undefined} [default_font_family]
+* @param {number | undefined} [default_font_size]
 * @returns {Promise<WasmVectorObject>}
 */
-export function textToVector(text: string, font_family: string, x: number, y: number, font_size: number): Promise<WasmVectorObject>;
+export function mathjax(expression: string, default_font_family?: string, default_font_size?: number): Promise<WasmVectorObject>;
 /**
 */
 export enum TokenType {
@@ -3177,7 +3177,7 @@ export interface InitOutput {
   readonly plotInAxes3D: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, j: number, k: number, l: number, m: number) => number;
   readonly parametricLinePlotInAxes3D: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, j: number, k: number, l: number, m: number) => number;
   readonly codeObject: (a: number, b: number, c: number, d: number, e: number, f: number) => number;
-  readonly mathjax: (a: number, b: number, c: number, d: number, e: number, f: number) => number;
+  readonly textToVector: (a: number, b: number, c: number, d: number, e: number, f: number, g: number) => number;
   readonly __wbg_token_free: (a: number) => void;
   readonly token_new: (a: number, b: number, c: number) => number;
   readonly token_getType: (a: number) => number;
@@ -3333,7 +3333,7 @@ export interface InitOutput {
   readonly shiftAnimation: (a: number, b: number, c: number) => number;
   readonly showTemporaily: (a: number, b: number) => number;
   readonly spinningGrow: (a: number, b: number, c: number) => number;
-  readonly textToVector: (a: number, b: number, c: number, d: number, e: number, f: number, g: number) => number;
+  readonly mathjax: (a: number, b: number, c: number, d: number, e: number, f: number) => number;
   readonly __wbg_genericscene_free: (a: number) => void;
   readonly genericscene_fromScene: (a: number) => number;
   readonly genericscene_fromSVGScene: (a: number) => number;
@@ -3398,7 +3398,7 @@ export interface InitOutput {
   readonly __wbindgen_malloc: (a: number, b: number) => number;
   readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
   readonly __wbindgen_export_2: WebAssembly.Table;
-  readonly _dyn_core__ops__function__Fn_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h763b2b6694ac907d: (a: number, b: number) => number;
+  readonly _dyn_core__ops__function__Fn_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h316d7e906df34aa5: (a: number, b: number) => number;
   readonly _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h36f54c9e7475dd01: (a: number, b: number, c: number) => void;
   readonly __wbindgen_add_to_stack_pointer: (a: number) => number;
   readonly __wbindgen_free: (a: number, b: number, c: number) => void;

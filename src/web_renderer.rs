@@ -504,8 +504,6 @@ pub fn apply_stroke_wasm(
                 }
             }
             context.stroke();
-            context.set_line_cap("butt");
-            context.set_line_join("miter");
         },
         GradientImageOrColor::LinearGradient(gradient) => {
             let alpha = gradient.alpha;
@@ -518,7 +516,18 @@ pub fn apply_stroke_wasm(
                 let color = format!("rgba({}, {}, {}, {})", r_string, g_string, b_string, a_string);
                 grd.add_color_stop(stop.offset as f32, &color).unwrap();
             }
-            context.set_stroke_style(&grd);
+            if gradient.x1 == gradient.x2 && gradient.y1 == gradient.y2 {
+                let last_color = &gradient.stops[gradient.stops.len() - 1].color;
+                let r_string = format!("{}", (last_color.red * 255.0) as u8);
+                let g_string = format!("{}", (last_color.green * 255.0) as u8);
+                let b_string = format!("{}", (last_color.blue * 255.0) as u8);
+                let a_string = format!("{}", last_color.alpha * alpha);
+                let color = format!("rgba({}, {}, {}, {})", r_string, g_string, b_string, a_string);
+                let color = js_sys::JsString::from(color);
+                context.set_stroke_style(&color);
+            } else {
+                context.set_stroke_style(&grd);
+            }
             context.set_line_width(stroke_width);
             match line_cap {
                 "butt" => {
@@ -549,8 +558,6 @@ pub fn apply_stroke_wasm(
                 }
             }
             context.stroke();
-            context.set_line_cap("butt");
-            context.set_line_join("miter");
         },
         GradientImageOrColor::RadialGradient(gradient) => {
             let alpha = gradient.alpha;
@@ -594,8 +601,6 @@ pub fn apply_stroke_wasm(
                 }
             }
             context.stroke();
-            context.set_line_cap("butt");
-            context.set_line_join("miter");
         },
         GradientImageOrColor::Image(image) => {
             let img = HtmlImageElement::new().unwrap();
@@ -615,6 +620,34 @@ pub fn apply_stroke_wasm(
             let pattern = context.create_pattern_with_html_canvas_element(&canvas2, "repeat").unwrap().unwrap();
             context.set_stroke_style(&pattern);
             context.set_line_width(stroke_width);
+            match line_cap {
+                "butt" => {
+                    context.set_line_cap("butt");
+                },
+                "square" => {
+                    context.set_line_cap("square");
+                },
+                "round" => {
+                    context.set_line_cap("round");
+                },
+                _ => {
+                    panic!("Unknown line cap");
+                }
+            }
+            match line_join {
+                "miter" => {
+                    context.set_line_join("miter");
+                },
+                "bevel" => {
+                    context.set_line_join("bevel");
+                },
+                "round" => {
+                    context.set_line_join("round");
+                },
+                _ => {
+                    panic!("Unknown line join");
+                }
+            }
             context.stroke();
         }
     }
@@ -625,7 +658,7 @@ pub fn render_vector_wasm(
     vec: &VectorFeatures,
     width: u32,
     height: u32,
-    context: web_sys::CanvasRenderingContext2d
+    context: &web_sys::CanvasRenderingContext2d
 ) {
     let points = vec.points.clone();
     let fill = vec.fill.clone();
@@ -637,7 +670,7 @@ pub fn render_vector_wasm(
     apply_fill_wasm(&context, fill, points.clone(), width, height);
     apply_stroke_wasm(&context, stroke, stroke_width, &line_cap, &line_join, points.clone(), width, height);
     for subvec in &vec.subobjects {
-        render_vector_wasm(&subvec, width, height, context.clone());
+        render_vector_wasm(&subvec, width, height, context);
     }
 }
 
@@ -707,6 +740,6 @@ pub fn render_all_vectors(
     };
     context.fill_rect(top_left_corner.0, top_left_corner.1, bottom_right_corner.0 - top_left_corner.0, bottom_right_corner.1 - top_left_corner.1);
     for vec in vecs {
-        render_vector_wasm(&vec, width, height, context.clone());
+        render_vector_wasm(&vec, width, height, &context);
     }
 }
