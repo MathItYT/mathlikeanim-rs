@@ -10,7 +10,7 @@ import useLandscape from "@/lib/use-landscape";
 import { MathJax, MathJaxContext } from "better-react-mathjax";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { RotateCcw } from "lucide-react";
-import init, { InitOutput, Scene, WasmGradientImageOrColor, WasmGradientStop, WasmLinearGradient, WasmVectorObject, animationGroup, areaUnderCurve, axes, coordsToPoint, create, drawStrokeThenFill, equilateralTriangle, fadeIn, fadeOut, getNumbersTex, hexToColor, interpolate, interpolateTuple, mathjax, morphShape, plotInAxes, rectangle, scaleInPlace, shiftAnimation, smooth, write, addFinalTip, line, showTemporaily, alignData } from "mathlikeanim-rs";
+import init, { InitOutput, Scene, WasmGradientImageOrColor, WasmGradientStop, WasmLinearGradient, WasmVectorObject, animationGroup, areaUnderCurve, axes, coordsToPoint, create, drawStrokeThenFill, equilateralTriangle, fadeIn, fadeOut, getNumbersTex, hexToColor, interpolate, interpolateTuple, mathjax, morphShape, plotInAxes, rectangle, scaleInPlace, shiftAnimation, smooth, write, addFinalTip, line, showTemporaily, alignData } from "mathlikeanim-rs/browser";
 import React from "react";
 import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 
@@ -101,7 +101,7 @@ export default function Home() {
   const [scene, setScene] = React.useState<Scene | null>(null);
   React.useEffect(() => {
     if (output) {
-      setScene(new Scene(BigInt(1920), BigInt(1080), BigInt(60)));
+      setScene(new Scene(1920, 1080, 60));
     }
   }, [output]);
   React.useEffect(() => {
@@ -143,7 +143,7 @@ export default function Home() {
         ];
       },
       Uint32Array.from([19]),
-      BigInt(30),
+      30,
       (t: number) => smooth(t, 10.0)
     );
     scene.add(text.clone());
@@ -154,7 +154,7 @@ export default function Home() {
         ];
       },
       Uint32Array.from([18]),
-      BigInt(30),
+      30,
       (t: number) => smooth(t, 10.0)
     );
     scene.renderFrame();
@@ -173,7 +173,7 @@ export default function Home() {
         ];
       },
       Uint32Array.from([18, 19]),
-      BigInt(30),
+      30,
       (t: number) => smooth(t, 10.0)
     );
     scene.remove(18);
@@ -186,7 +186,7 @@ export default function Home() {
         ];
       },
       Uint32Array.from([15, 17]),
-      BigInt(30),
+      30,
       (t: number) => smooth(t, 10.0)
     );
     scene.remove(15);
@@ -222,7 +222,7 @@ export default function Home() {
         });
       },
       Uint32Array.from(rectGroupIndices),
-      BigInt(30),
+      30,
       (t: number) => smooth(t, 10.0)
     );
     let ax = scene.getObjectsFromIndices([2]).get(2) as WasmVectorObject;
@@ -255,7 +255,7 @@ export default function Home() {
         return [drawStrokeThenFill(objects[0].clone(), t)];
       },
       Uint32Array.from([21]),
-      BigInt(30),
+      30,
       (t: number) => smooth(t, 10.0)
     );
     let textXLength = await mathjax("\\textcolor{#EBEBEB}{8}");
@@ -268,7 +268,7 @@ export default function Home() {
         return [fadeIn(objects[0].clone(), 1.5, [0.0, 0.0], t)];
       },
       Uint32Array.from([22]),
-      BigInt(30),
+      30,
       (t: number) => smooth(t, 10.0)
     );
     let area = scene.getObjectsFromIndices([13]).get(13) as WasmVectorObject;
@@ -283,7 +283,7 @@ export default function Home() {
         return [drawStrokeThenFill(objects[0].clone(), t)];
       },
       Uint32Array.from([23]),
-      BigInt(30),
+      30,
       (t: number) => smooth(t, 10.0)
     );
     let textYLength = await mathjax("\\textcolor{#EBEBEB}{8}");
@@ -296,7 +296,7 @@ export default function Home() {
         return [fadeIn(objects[0].clone(), 1.5, [0.0, 0.0], t)];
       },
       Uint32Array.from([24]),
-      BigInt(30),
+      30,
       (t: number) => smooth(t, 10.0)
     );
     const areaGroupIndices = [13, 21, 22, 23, 24];
@@ -355,7 +355,7 @@ export default function Home() {
         return result;
       },
       Uint32Array.from([25, 26]),
-      BigInt(30),
+      30,
       (t: number) => smooth(t, 10.0)
     );
     scene.renderFrame();
@@ -385,7 +385,7 @@ export default function Home() {
         return [result.setSubobjects(subobjs)];
       },
       Uint32Array.from([25]),
-      BigInt(30),
+      30,
       (t: number) => smooth(t, 10.0)
     );
     let text1 = await mathjax("\\textcolor{#EBEBEB}{\\frac{1}{2}(8)(8)}");
@@ -394,8 +394,10 @@ export default function Home() {
     let currentAreaGroup = scene.getObjectsFromIndices([25]).get(25) as WasmVectorObject;
     text1 = text1.nextToOther(currentAreaGroup.clone(), [1.0, 0.0], 100.0, [0.0, 0.0], true);
     let subobjects = text1.getSubobjects();
-    let firstEight = subobjects.splice(3, 1)[0];
-    let secondEight = subobjects.splice(5, 1)[0];
+    let firstEight = subobjects[3].clone();
+    subobjects.splice(3, 1);
+    let secondEight = subobjects[5].clone();
+    subobjects.splice(5, 1);
     text1 = new WasmVectorObject().setSubobjects(subobjects).setIndex(27);
     let eightX = (currentAreaGroup.getSubobjects().find((object) => object.getIndex() === 22) as WasmVectorObject).clone();
     let eightY = (currentAreaGroup.getSubobjects().find((object) => object.getIndex() === 24) as WasmVectorObject).clone();
@@ -419,7 +421,7 @@ export default function Home() {
         });
       },
       Uint32Array.from([27, 28, 29]),
-      BigInt(30),
+      30,
       (t: number) => smooth(t, 10.0)
     );
     scene.remove(28);
@@ -438,7 +440,7 @@ export default function Home() {
         return [morphShape(objects[0].clone(), (aligned[1] as WasmVectorObject).clone(), t)];
       },
       Uint32Array.from([27]),
-      BigInt(30),
+      30,
       (t: number) => smooth(t, 10.0)
     );
     scene.add(text2.clone());
@@ -453,7 +455,7 @@ export default function Home() {
         return [morphShape(objects[0].clone(), (aligned2[1] as WasmVectorObject).clone(), t)];
       },
       Uint32Array.from([27]),
-      BigInt(30),
+      30,
       (t: number) => smooth(t, 10.0)
     );
     scene.add(text3.clone());
@@ -474,7 +476,7 @@ export default function Home() {
         return [showTemporaily(objects[0].clone(), t)];
       },
       Uint32Array.from([30]),
-      BigInt(30),
+      30,
       (t: number) => smooth(t, 10.0)
     );
     scene.remove(30);
@@ -557,7 +559,7 @@ export default function Home() {
         return [fadeIn(objects[0].clone(), 1.5, [0.0, 0.0], t)];
       },
       Uint32Array.from([14]),
-      BigInt(30),
+      30,
       (t: number) => smooth(t, 10.0)
     );
     await scene.play(
@@ -565,7 +567,7 @@ export default function Home() {
         return [objects[0].nextToPoint(coordsToPoint(ax.clone(), interpolate(0.0, 8.0, t), 0.0, 0.0, 10.0, 0.0, 10.0), [0.0, 1.0], 0.0, [0.0, 0.0], true)];
       },
       Uint32Array.from([14]),
-      BigInt(30),
+      30,
       (t: number) => smooth(t, 10.0)
     );
     await scene.play(
@@ -573,7 +575,7 @@ export default function Home() {
         return [fadeOut(objects[0].clone(), 1.0, [0.0, 0.0], t)];
       },
       Uint32Array.from([14]),
-      BigInt(30),
+      30,
       (t: number) => smooth(t, 10.0)
     );
     let fadeRect = rectangle(
@@ -596,7 +598,7 @@ export default function Home() {
         ];
       },
       Uint32Array.from([1, 15]),
-      BigInt(30),
+      30,
       (t: number) => smooth(t, 10.0)
     );
     scene.renderFrame();
@@ -609,7 +611,7 @@ export default function Home() {
         return [result.moveTo(newCenter[0], newCenter[1], true)];
       },
       Uint32Array.from([1]),
-      BigInt(30),
+      30,
       (t: number) => smooth(t, 10.0)
     );
     let oldIntegral = scene.getObjectsFromIndices([1]).get(1) as WasmVectorObject;
@@ -624,7 +626,7 @@ export default function Home() {
         return [morphShape(objects[0].clone(), (aligned[1] as WasmVectorObject).clone(), t)];
       },
       Uint32Array.from([1]),
-      BigInt(30),
+      30,
       (t: number) => smooth(t, 10.0)
     );
     scene.add(newIntegral.clone());
@@ -639,7 +641,7 @@ export default function Home() {
         ];
       },
       Uint32Array.from([1, 15]),
-      BigInt(30),
+      30,
       (t: number) => smooth(t, 10.0)
     );
     let rectGroupIndices = [13, 2, 3, 4, 5, 6, 7, 8, 9, 11];
@@ -673,7 +675,7 @@ export default function Home() {
         });
       },
       Uint32Array.from(rectGroupIndices),
-      BigInt(30),
+      30,
       (t: number) => smooth(t, 10.0)
     );
     let rect = scene.getObjectsFromIndices([8]).get(8) as WasmVectorObject;
@@ -702,7 +704,7 @@ export default function Home() {
         return [animationGroup(objects[0].clone(), animations, 1.0, t)];
       },
       Uint32Array.from([15]),
-      BigInt(30),
+      30,
       (t: number) => smooth(t, 10.0)
     );
     let text1 = await mathjax("\\textcolor{#EBEBEB}{\\text{This area is a triangle!}}");
@@ -721,7 +723,7 @@ export default function Home() {
         return [object.moveTo(center[0], center[1], true)];
       },
       Uint32Array.from([17]),
-      BigInt(30),
+      30,
       (t: number) => smooth(t, 10.0)
     );
     scene.renderFrame();
@@ -742,7 +744,7 @@ export default function Home() {
         ];
       },
       Uint32Array.from([9, 10]),
-      BigInt(30),
+      30,
       (t: number) => smooth(t, 10.0)
     );
     scene.renderFrame();
@@ -755,7 +757,7 @@ export default function Home() {
         return [morphShape(objects[0].clone(), target.clone(), t)];
       },
       Uint32Array.from([1]),
-      BigInt(30),
+      30,
       (t: number) => smooth(t, 10.0)
     );
     let rect = scene.getObjectsFromIndices([8]).get(8) as WasmVectorObject;
@@ -769,7 +771,7 @@ export default function Home() {
         return [write(objects[0].clone(), 0.4, t)];
       },
       Uint32Array.from([11]),
-      BigInt(30),
+      30,
       (t: number) => smooth(t, 10.0)
     );
     for (let i = 0; i < 30; i++) {
@@ -812,7 +814,7 @@ export default function Home() {
         return [animationGroup(objects[0].clone(), animations, 0.4, t)];
       },
       Uint32Array.from([12]),
-      BigInt(30),
+      30,
       (t: number) => smooth(t, 10.0)
     );
     scene.renderFrame();
@@ -832,7 +834,7 @@ export default function Home() {
         return [(scaleInPlace(objects[0].clone(), 1 / 1.5, t) as WasmVectorObject).setFillOpacity(t, true)];
       },
       Uint32Array.from([13]),
-      BigInt(30),
+      30,
       (t: number) => smooth(t, 10.0)
     );
     scene.renderFrame();
@@ -856,7 +858,7 @@ export default function Home() {
         ];
       },
       Uint32Array.from([1, 2, 3]),
-      BigInt(30),
+      30,
       (t: number) => smooth(t, 10.0)
     );
     let ax = axes(
@@ -887,7 +889,7 @@ export default function Home() {
         return [write(objects[0].clone(), 0.4, t)];
       },
       Uint32Array.from([2]),
-      BigInt(30),
+      30,
       (t: number) => smooth(t, 10.0)
     );
     let plot = plotInAxes(
@@ -927,7 +929,7 @@ export default function Home() {
         return [create(objects[0].clone(), t)];
       },
       Uint32Array.from([3]),
-      BigInt(30),
+      30,
       (t: number) => smooth(t, 10.0)
     );
     let axSubobjects = ax.getSubobjects();
@@ -982,7 +984,7 @@ export default function Home() {
         ];
       },
       Uint32Array.from([4, 5, 6, 7]),
-      BigInt(30),
+      30,
       (t: number) => smooth(t, 10.0)
     );
     let figure = new WasmVectorObject();
@@ -1009,7 +1011,7 @@ export default function Home() {
         return [create(objects[0].clone(), t)];
       },
       Uint32Array.from([8]),
-      BigInt(30),
+      30,
       (t: number) => smooth(t, 10.0)
     );
     let fadeRect = rectangle(
@@ -1029,7 +1031,7 @@ export default function Home() {
         return [fadeIn(objects[0].clone(), 1.0, [0.0, 0.0], t)];
       },
       Uint32Array.from([9]),
-      BigInt(30),
+      30,
       (t: number) => smooth(t, 10.0)
     );
     let tap = await mathjax("\\textcolor{#EBEBEB}{\\text{Tap here to continue}}");
@@ -1042,7 +1044,7 @@ export default function Home() {
         return [fadeIn(objects[0].clone(), 1.5, [0.0, 0.0], t)];
       },
       Uint32Array.from([10]),
-      BigInt(30),
+      30,
       (t: number) => smooth(t, 10.0)
     );
     current.onmousedown = continue2;
@@ -1059,7 +1061,7 @@ export default function Home() {
         return [fadeOut(objects[0].clone(), 1.0, [0.0, 0.0], t)];
       },
       Uint32Array.from([0]),
-      BigInt(30),
+      30,
       (t: number) => smooth(t, 10.0)
     );
     let title = await mathjax("\\textcolor{#EBEBEB}{\\text{Understanding integrals}}");
@@ -1072,7 +1074,7 @@ export default function Home() {
         return [drawStrokeThenFill(objects[0].clone(), t)];
       },
       Uint32Array.from([0]),
-      BigInt(30),
+      30,
       (t: number) => smooth(t, 10.0)
     );
     scene.renderFrame();
@@ -1084,7 +1086,7 @@ export default function Home() {
         return [shiftAnimation(objects[0].clone(), shift, t)];
       },
       Uint32Array.from([0]),
-      BigInt(30),
+      30,
       (t: number) => smooth(t, 10.0)
     );
     let integral = await mathjax("\\textcolor{#EBEBEB}{\\int_{a}^{b}f(}\\textcolor{#FFFF00}{x}\\textcolor{#EBEBEB}{)\\,d}\\textcolor{#FFFF00}{x}");
@@ -1101,7 +1103,7 @@ export default function Home() {
         return [animationGroup(objects[0].clone(), animations, 0.4, t)];
       },
       Uint32Array.from([1]),
-      BigInt(30),
+      30,
       (t: number) => smooth(t, 10.0)
     );
     scene.renderFrame();
@@ -1116,7 +1118,7 @@ export default function Home() {
         return [write(objects[0].clone(), 0.4, t)];
       },
       Uint32Array.from([2]),
-      BigInt(30),
+      30,
       (t: number) => smooth(t, 10.0)
     );
     let tap = await mathjax("\\textcolor{#EBEBEB}{\\text{(Tap here to continue)}}");
@@ -1129,7 +1131,7 @@ export default function Home() {
         return [fadeIn(objects[0].clone(), 1.5, [0.0, 0.0], t)];
       },
       Uint32Array.from([3]),
-      BigInt(30),
+      30,
       (t: number) => smooth(t, 10.0)
     );
     current.onmousedown = continue1;
@@ -1151,7 +1153,7 @@ export default function Home() {
     }
   }, [scene, current, ctx]);
   return (
-    <>
+    <MathJaxContext version={3}>
       { !isLandscape && !started ?
       <div className="flex flex-col justify-center items-center h-[80vh]">
         <RotateCcw className="w-56 h-56"/>
@@ -1182,34 +1184,32 @@ export default function Home() {
                     Select the correct answer
                   </DialogDescription>
                 </DialogHeader>
-                <MathJaxContext>
-                  <b>What&apos;s the result of the following expression?</b>
-                  <div className="flex justify-center">
-                    <MathJax>
-                      {'$$\\int_{0}^{8}x\\,dx$$'}
-                    </MathJax>
-                  </div>
-                  <p><b>Hint</b>: Consider the base length and height of the triangle</p>
-                  <Separator />
-                  <div className="flex justify-center">
-                    <InputOTP
-                      maxLength={2}
-                      minLength={2}
-                      onChange={handleChange}
-                      pattern={REGEXP_ONLY_DIGITS}
-                    >
-                      <InputOTPGroup>
-                        <InputOTPSlot index={0}/>
-                        <InputOTPSlot index={1}/>
-                      </InputOTPGroup>
-                    </InputOTP>
-                  </div>
-                  <div></div>
-                  <MathJax dynamic>{answer}</MathJax>
-                  <DialogFooter>
-                    <Button disabled={disabledSubmit} onClick={handleAnswered}>Submit</Button>
-                  </DialogFooter>
-                </MathJaxContext>
+                <b>What&apos;s the result of the following expression?</b>
+                <div className="flex justify-center">
+                  <MathJax>
+                    {'$$\\int_{0}^{8}x\\,dx$$'}
+                  </MathJax>
+                </div>
+                <p><b>Hint</b>: Consider the base length and height of the triangle</p>
+                <Separator />
+                <div className="flex justify-center">
+                  <InputOTP
+                    maxLength={2}
+                    minLength={2}
+                    onChange={handleChange}
+                    pattern={REGEXP_ONLY_DIGITS}
+                  >
+                    <InputOTPGroup>
+                      <InputOTPSlot index={0}/>
+                      <InputOTPSlot index={1}/>
+                    </InputOTPGroup>
+                  </InputOTP>
+                </div>
+                <div></div>
+                <MathJax dynamic>{answer}</MathJax>
+                <DialogFooter>
+                  <Button disabled={disabledSubmit} onClick={handleAnswered}>Submit</Button>
+                </DialogFooter>
               </DialogContent>
             </Dialog> : <Drawer>
               <div className="flex justify-center">
@@ -1225,40 +1225,38 @@ export default function Home() {
                   </DrawerDescription>
                 </DrawerHeader>
                 <div className="p-10">
-                  <MathJaxContext>
-                    <b>What&apos;s the result of the following expression?</b>
-                    <div className="flex justify-center">
-                      <MathJax>
-                        {'$$\\int_{0}^{8}x\\,dx$$'}
-                      </MathJax>
-                    </div>
-                    <p className="pb-5"><b>Hint</b>: Consider the base length and height of the triangle</p>
-                    <Separator />
-                    <div className="flex justify-center pt-5">
-                      <InputOTP
-                        maxLength={2}
-                        minLength={2}
-                        onChange={handleChange}
-                        pattern={REGEXP_ONLY_DIGITS}
-                      >
-                        <InputOTPGroup>
-                          <InputOTPSlot index={0}/>
-                          <InputOTPSlot index={1}/>
-                        </InputOTPGroup>
-                      </InputOTP>
-                    </div>
-                    <div></div>
-                    <MathJax dynamic>{answer}</MathJax>
-                    <DrawerFooter>
-                      <Button disabled={disabledSubmit} onClick={handleAnswered}>Submit</Button>
-                    </DrawerFooter>
-                  </MathJaxContext>
+                  <b>What&apos;s the result of the following expression?</b>
+                  <div className="flex justify-center">
+                    <MathJax>
+                      {'$$\\require{color}\\textcolor{#EBEBEB}{\\int_{0}^{8}\\textcolor{#FF0000}{x}\\,d\\textcolor{#FF0000}{x}}$$'}
+                    </MathJax>
+                  </div>
+                  <p className="pb-5"><b>Hint</b>: Consider the base length and height of the triangle</p>
+                  <Separator />
+                  <div className="flex justify-center pt-5">
+                    <InputOTP
+                      maxLength={2}
+                      minLength={2}
+                      onChange={handleChange}
+                      pattern={REGEXP_ONLY_DIGITS}
+                    >
+                      <InputOTPGroup>
+                        <InputOTPSlot index={0}/>
+                        <InputOTPSlot index={1}/>
+                      </InputOTPGroup>
+                    </InputOTP>
+                  </div>
+                  <div></div>
+                  <MathJax dynamic>{answer}</MathJax>
+                  <DrawerFooter>
+                    <Button disabled={disabledSubmit} onClick={handleAnswered}>Submit</Button>
+                  </DrawerFooter>
                 </div>
               </DrawerContent>
             </Drawer>}
           </div>
         </div>
       </> : null }
-    </>
+    </MathJaxContext>
   );
 }

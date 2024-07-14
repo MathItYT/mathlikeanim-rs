@@ -41,6 +41,7 @@ export default function RootLayout({
             type="font/ttf"
             crossOrigin="anonymous"
           />
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg-full.js" crossOrigin="anonymous" async id="mathjax-script"></script>
           <div className="fixed top-0 left-0 w-16 h-full">
             <ModeToggle />
             <Sheet>
