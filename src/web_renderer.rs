@@ -6,8 +6,9 @@ use crate::objects::vector_object::generate_subpaths;
 
 use crate::svg_scene::SVGScene;
 use crate::utils::consider_points_equals;
+use wasm_bindgen::prelude::Closure;
 use wasm_bindgen::JsCast;
-use web_sys::{HtmlCanvasElement, HtmlImageElement};
+use web_sys::{window, Event, HtmlImageElement};
 
 
 pub fn draw_context_path_wasm(
@@ -145,6 +146,8 @@ pub fn vec_to_def_and_use_string(
                 pattern.set_attribute("y", &y).unwrap();
                 pattern.set_attribute("width", &width).unwrap();
                 pattern.set_attribute("height", &height).unwrap();
+                pattern.set_attribute("patternUnits", "userSpaceOnUse").unwrap();
+                pattern.set_attribute("viewBox", format!("{} {} {} {}", top_left_corner.0, top_left_corner.1, bottom_right_corner.0 - top_left_corner.0, bottom_right_corner.1 - top_left_corner.1).as_str()).unwrap();
                 let img_element = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "image").unwrap();
                 img_element.set_attribute("x", &x).unwrap();
                 img_element.set_attribute("y", &y).unwrap();
@@ -152,6 +155,7 @@ pub fn vec_to_def_and_use_string(
                 img_element.set_attribute("height", &height).unwrap();
                 img_element.set_attribute("href", &img.src()).unwrap();
                 img_element.set_attribute("opacity", &alpha.to_string()).unwrap();
+                img_element.set_attribute("preserveAspectRatio", "none").unwrap();
                 pattern.append_child(&img_element).unwrap();
                 def_string.push_str((pattern.outer_html() + "\n").as_str());
                 fill = format!("url(#{})", pattern_id);
@@ -227,6 +231,8 @@ pub fn vec_to_def_and_use_string(
                 pattern.set_attribute("y", &y).unwrap();
                 pattern.set_attribute("width", &width).unwrap();
                 pattern.set_attribute("height", &height).unwrap();
+                pattern.set_attribute("patternUnits", "userSpaceOnUse").unwrap();
+                pattern.set_attribute("viewBox", format!("{} {} {} {}", top_left_corner.0, top_left_corner.1, bottom_right_corner.0 - top_left_corner.0, bottom_right_corner.1 - top_left_corner.1).as_str()).unwrap();
                 let img_element = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "image").unwrap();
                 img_element.set_attribute("x", &x).unwrap();
                 img_element.set_attribute("y", &y).unwrap();
@@ -234,6 +240,7 @@ pub fn vec_to_def_and_use_string(
                 img_element.set_attribute("height", &height).unwrap();
                 img_element.set_attribute("href", &img.src()).unwrap();
                 img_element.set_attribute("opacity", &alpha.to_string()).unwrap();
+                img_element.set_attribute("preserveAspectRatio", "none").unwrap();
                 pattern.append_child(&img_element).unwrap();
                 def_string.push_str((pattern.outer_html() + "\n").as_str());
                 stroke = format!("url(#{})", pattern_id);
@@ -353,6 +360,8 @@ pub fn render_all_vectors_svg(
             pattern.set_attribute("y", &y).unwrap();
             pattern.set_attribute("width", &width).unwrap();
             pattern.set_attribute("height", &height).unwrap();
+            pattern.set_attribute("patternUnits", "userSpaceOnUse").unwrap();
+            pattern.set_attribute("viewBox", format!("{} {} {} {}", top_left_corner.0, top_left_corner.1, bottom_right_corner.0 - top_left_corner.0, bottom_right_corner.1 - top_left_corner.1).as_str()).unwrap();
             let img_element = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "image").unwrap();
             img_element.set_attribute("x", &x).unwrap();
             img_element.set_attribute("y", &y).unwrap();
@@ -360,6 +369,8 @@ pub fn render_all_vectors_svg(
             img_element.set_attribute("height", &height).unwrap();
             img_element.set_attribute("href", &img.src()).unwrap();
             img_element.set_attribute("opacity", &alpha.to_string()).unwrap();
+            img_element.set_attribute("preserveAspectRatio", "none").unwrap();
+            img_element.set_attribute("preserveAspectRatio", "none").unwrap();
             pattern.append_child(&img_element).unwrap();
             defs.push_str((pattern.outer_html() + "\n").as_str());
             rec_fill = format!("url(#{})", pattern_id);
@@ -380,7 +391,7 @@ pub fn render_all_vectors_svg(
 
 
 pub fn apply_fill_wasm(
-    context: &web_sys::CanvasRenderingContext2d,
+    context: web_sys::CanvasRenderingContext2d,
     fill: GradientImageOrColor,
     points: Vec<(f64, f64)>,
     width: u32,
@@ -428,34 +439,38 @@ pub fn apply_fill_wasm(
             context.fill();
         },
         GradientImageOrColor::Image(image) => {
-            let img = HtmlImageElement::new().unwrap();
-            img.set_src(format!("data:{};base64,{}", image.mime_type, image.image_base64).as_str());
-            let tl_corner = image.top_left_corner;
-            let br_corner = image.bottom_right_corner;
-            let w = br_corner.0 - tl_corner.0;
-            let h= br_corner.1 - tl_corner.1;
+            let top_left_corner = image.top_left_corner;
+            let bottom_right_corner = image.bottom_right_corner;
+            let x = top_left_corner.0;
+            let y = top_left_corner.1;
+            let w = bottom_right_corner.0 - top_left_corner.0;
+            let h = bottom_right_corner.1 - top_left_corner.1;
             let alpha = image.alpha;
-            let document = web_sys::window().unwrap().document().unwrap();
-            let canvas2 = document.create_element("canvas").unwrap().dyn_into::<HtmlCanvasElement>().unwrap();
-            canvas2.set_width(width as u32);
-            canvas2.set_height(height as u32);
-            let context2 = canvas2.get_context("2d").unwrap().unwrap().dyn_into::<web_sys::CanvasRenderingContext2d>().unwrap();
-            context2.set_global_alpha(alpha);
-            context2.draw_image_with_html_image_element_and_dw_and_dh(&img, tl_corner.0, tl_corner.1, w, h).unwrap();
-            let pattern = context.create_pattern_with_html_canvas_element(&canvas2, "repeat").unwrap().unwrap();
-            context.set_fill_style(&pattern);
-            context.fill();
+            let img = HtmlImageElement::new_with_width_and_height(w as u32, h as u32).unwrap();
+            let onload = Closure::wrap(Box::new(move |event: Event| {
+                let canvas2 = window().unwrap().document().unwrap().create_element("canvas").unwrap().dyn_into::<web_sys::HtmlCanvasElement>().unwrap();
+                canvas2.set_width(width);
+                canvas2.set_height(height);
+                let context2 = canvas2.get_context("2d").unwrap().unwrap().dyn_into::<web_sys::CanvasRenderingContext2d>().unwrap();
+                context2.set_global_alpha(alpha);
+                context2.draw_image_with_html_image_element_and_dw_and_dh(&event.target().unwrap().dyn_into().unwrap(), x, y, w, h).unwrap();
+                let pattern = context.create_pattern_with_html_canvas_element(&canvas2, "no-repeat").unwrap().unwrap();
+                context.set_fill_style(&pattern);
+                context.fill();
+            }) as Box<dyn Fn(_)>);
+            img.set_onload(Some(&onload.into_js_value().dyn_into().unwrap()));
+            img.set_src(format!("data:{};base64,{}", image.mime_type, image.image_base64).as_str());
         }
     }
 }
 
 
 pub fn apply_stroke_wasm(
-    context: &web_sys::CanvasRenderingContext2d,
+    context: web_sys::CanvasRenderingContext2d,
     stroke: GradientImageOrColor,
     stroke_width: f64,
-    line_cap: &str,
-    line_join: &str,
+    line_cap: String,
+    line_join: String,
     points: Vec<(f64, f64)>,
     width: u32,
     height: u32
@@ -475,34 +490,6 @@ pub fn apply_stroke_wasm(
             let stroke_color = js_sys::JsString::from(format!("rgba({}, {}, {}, {})", r_string, g_string, b_string, a_string));
             context.set_stroke_style(&stroke_color);
             context.set_line_width(stroke_width);
-            match line_cap {
-                "butt" => {
-                    context.set_line_cap("butt");
-                },
-                "square" => {
-                    context.set_line_cap("square");
-                },
-                "round" => {
-                    context.set_line_cap("round");
-                },
-                _ => {
-                    panic!("Unknown line cap");
-                }
-            }
-            match line_join {
-                "miter" => {
-                    context.set_line_join("miter");
-                },
-                "bevel" => {
-                    context.set_line_join("bevel");
-                },
-                "round" => {
-                    context.set_line_join("round");
-                },
-                _ => {
-                    panic!("Unknown line join");
-                }
-            }
             context.stroke();
         },
         GradientImageOrColor::LinearGradient(gradient) => {
@@ -529,34 +516,6 @@ pub fn apply_stroke_wasm(
                 context.set_stroke_style(&grd);
             }
             context.set_line_width(stroke_width);
-            match line_cap {
-                "butt" => {
-                    context.set_line_cap("butt");
-                },
-                "square" => {
-                    context.set_line_cap("square");
-                },
-                "round" => {
-                    context.set_line_cap("round");
-                },
-                _ => {
-                    panic!("Unknown line cap");
-                }
-            }
-            match line_join {
-                "miter" => {
-                    context.set_line_join("miter");
-                },
-                "bevel" => {
-                    context.set_line_join("bevel");
-                },
-                "round" => {
-                    context.set_line_join("round");
-                },
-                _ => {
-                    panic!("Unknown line join");
-                }
-            }
             context.stroke();
         },
         GradientImageOrColor::RadialGradient(gradient) => {
@@ -572,83 +531,33 @@ pub fn apply_stroke_wasm(
             }
             context.set_stroke_style(&grd);
             context.set_line_width(stroke_width);
-            match line_cap {
-                "butt" => {
-                    context.set_line_cap("butt");
-                },
-                "square" => {
-                    context.set_line_cap("square");
-                },
-                "round" => {
-                    context.set_line_cap("round");
-                },
-                _ => {
-                    panic!("Unknown line cap");
-                }
-            }
-            match line_join {
-                "miter" => {
-                    context.set_line_join("miter");
-                },
-                "bevel" => {
-                    context.set_line_join("bevel");
-                },
-                "round" => {
-                    context.set_line_join("round");
-                },
-                _ => {
-                    panic!("Unknown line join");
-                }
-            }
             context.stroke();
         },
         GradientImageOrColor::Image(image) => {
-            let img = HtmlImageElement::new().unwrap();
-            img.set_src(format!("data:{};base64,{}", image.mime_type, image.image_base64).as_str());
-            let tl_corner = image.top_left_corner;
-            let br_corner = image.bottom_right_corner;
-            let w = br_corner.0 - tl_corner.0;
-            let h = br_corner.1 - tl_corner.1;
+            let top_left_corner = image.top_left_corner;
+            let bottom_right_corner = image.bottom_right_corner;
+            let x = top_left_corner.0;
+            let y = top_left_corner.1;
+            let w = bottom_right_corner.0 - top_left_corner.0;
+            let h = bottom_right_corner.1 - top_left_corner.1;
             let alpha = image.alpha;
-            let document = web_sys::window().unwrap().document().unwrap();
-            let canvas2 = document.create_element("canvas").unwrap().dyn_into::<HtmlCanvasElement>().unwrap();
-            canvas2.set_width(width as u32);
-            canvas2.set_height(height as u32);
-            let context2 = canvas2.get_context("2d").unwrap().unwrap().dyn_into::<web_sys::CanvasRenderingContext2d>().unwrap();
-            context2.set_global_alpha(alpha);
-            context2.draw_image_with_html_image_element_and_dw_and_dh(&img, tl_corner.0, tl_corner.1, w, h).unwrap();
-            let pattern = context.create_pattern_with_html_canvas_element(&canvas2, "repeat").unwrap().unwrap();
-            context.set_stroke_style(&pattern);
-            context.set_line_width(stroke_width);
-            match line_cap {
-                "butt" => {
-                    context.set_line_cap("butt");
-                },
-                "square" => {
-                    context.set_line_cap("square");
-                },
-                "round" => {
-                    context.set_line_cap("round");
-                },
-                _ => {
-                    panic!("Unknown line cap");
-                }
-            }
-            match line_join {
-                "miter" => {
-                    context.set_line_join("miter");
-                },
-                "bevel" => {
-                    context.set_line_join("bevel");
-                },
-                "round" => {
-                    context.set_line_join("round");
-                },
-                _ => {
-                    panic!("Unknown line join");
-                }
-            }
-            context.stroke();
+            let img = HtmlImageElement::new_with_width_and_height(w as u32, h as u32).unwrap();
+            let onload = Closure::wrap(Box::new(move |event: Event| {
+                let canvas2 = window().unwrap().document().unwrap().create_element("canvas").unwrap().dyn_into::<web_sys::HtmlCanvasElement>().unwrap();
+                canvas2.set_width(width);
+                canvas2.set_height(height);
+                let context2 = canvas2.get_context("2d").unwrap().unwrap().dyn_into::<web_sys::CanvasRenderingContext2d>().unwrap();
+                context2.set_global_alpha(alpha);
+                context2.draw_image_with_html_image_element_and_dw_and_dh(&event.target().unwrap().dyn_into().unwrap(), x, y, w, h).unwrap();
+                let pattern = context.create_pattern_with_html_canvas_element(&canvas2, "no-repeat").unwrap().unwrap();
+                context.set_stroke_style(&pattern);
+                context.set_line_width(stroke_width);
+                context.set_line_cap(&line_cap);
+                context.set_line_join(&line_join);
+                context.stroke();
+            }) as Box<dyn Fn(_)>);
+            img.set_onload(Some(&onload.into_js_value().dyn_into().unwrap()));
+            img.set_src(format!("data:{};base64,{}", image.mime_type, image.image_base64).as_str());
         }
     }
 }
@@ -658,7 +567,7 @@ pub fn render_vector_wasm(
     vec: &VectorFeatures,
     width: u32,
     height: u32,
-    context: &web_sys::CanvasRenderingContext2d
+    context: web_sys::CanvasRenderingContext2d
 ) {
     let points = vec.points.clone();
     let fill = vec.fill.clone();
@@ -667,10 +576,10 @@ pub fn render_vector_wasm(
     let line_cap = vec.line_cap;
     let line_join = vec.line_join;
     draw_context_path_wasm(&context, points.clone());
-    apply_fill_wasm(&context, fill, points.clone(), width, height);
-    apply_stroke_wasm(&context, stroke, stroke_width, &line_cap, &line_join, points.clone(), width, height);
+    apply_fill_wasm(context.clone(), fill, points.clone(), width, height);
+    apply_stroke_wasm(context.clone(), stroke, stroke_width, line_cap.to_string(), line_join.to_string(), points.clone(), width, height);
     for subvec in &vec.subobjects {
-        render_vector_wasm(&subvec, width, height, context);
+        render_vector_wasm(&subvec, width, height, context.clone());
     }
 }
 
@@ -694,6 +603,7 @@ pub fn render_all_vectors(
         GradientImageOrColor::Color(color) => {
             let fill_style = format!("rgba({}, {}, {}, {})", (color.red * 255.0) as u8, (color.green * 255.0) as u8, (color.blue * 255.0) as u8, color.alpha);
             context.set_fill_style(&fill_style.into());
+            context.fill_rect(top_left_corner.0, top_left_corner.1, bottom_right_corner.0 - top_left_corner.0, bottom_right_corner.1 - top_left_corner.1);
         }
         GradientImageOrColor::LinearGradient(gradient) => {
             let grd = context.create_linear_gradient(gradient.x1, gradient.y1, gradient.x2, gradient.y2);
@@ -706,6 +616,7 @@ pub fn render_all_vectors(
                 grd.add_color_stop(stop.offset as f32, &color).unwrap();
             }
             context.set_fill_style(&grd);
+            context.fill_rect(top_left_corner.0, top_left_corner.1, bottom_right_corner.0 - top_left_corner.0, bottom_right_corner.1 - top_left_corner.1);
         },
         GradientImageOrColor::RadialGradient(gradient) => {
             let grd = context.create_radial_gradient(gradient.fx, gradient.fy, 0.0, gradient.cx, gradient.cy, gradient.r).unwrap();
@@ -718,28 +629,34 @@ pub fn render_all_vectors(
                 grd.add_color_stop(stop.offset as f32, &color).unwrap();
             }
             context.set_fill_style(&grd);
+            context.fill_rect(top_left_corner.0, top_left_corner.1, bottom_right_corner.0 - top_left_corner.0, bottom_right_corner.1 - top_left_corner.1);
         },
         GradientImageOrColor::Image(image) => {
             let img = HtmlImageElement::new().unwrap();
-            img.set_src(format!("data:{};base64,{}", image.mime_type, image.image_base64).as_str());
-            let tl_corner = image.top_left_corner;
-            let br_corner = image.bottom_right_corner;
-            let w = br_corner.0 - tl_corner.0;
-            let h = br_corner.1 - tl_corner.1;
+            let top_left_corner = image.top_left_corner;
+            let bottom_right_corner = image.bottom_right_corner;
+            let x = top_left_corner.0;
+            let y = top_left_corner.1;
+            let w = bottom_right_corner.0 - top_left_corner.0;
+            let h = bottom_right_corner.1 - top_left_corner.1;
             let alpha = image.alpha;
-            let document = web_sys::window().unwrap().document().unwrap();
-            let canvas2 = document.create_element("canvas").unwrap().dyn_into::<HtmlCanvasElement>().unwrap();
-            canvas2.set_width(w as u32);
-            canvas2.set_height(h as u32);
-            let context2 = canvas2.get_context("2d").unwrap().unwrap().dyn_into::<web_sys::CanvasRenderingContext2d>().unwrap();
-            context2.set_global_alpha(alpha);
-            context2.draw_image_with_html_image_element_and_dw_and_dh(&img, tl_corner.0, tl_corner.1, w, h).unwrap();
-            let pattern = context.create_pattern_with_html_canvas_element(&canvas2, "repeat").unwrap().unwrap();
-            context.set_fill_style(&pattern);
+            let ctx = context.clone();
+            let onload = Closure::wrap(Box::new(move |event: Event| {
+                let canvas2 = window().unwrap().document().unwrap().create_element("canvas").unwrap().dyn_into::<web_sys::HtmlCanvasElement>().unwrap();
+                canvas2.set_width(width);
+                canvas2.set_height(height);
+                let context2 = canvas2.get_context("2d").unwrap().unwrap().dyn_into::<web_sys::CanvasRenderingContext2d>().unwrap();
+                context2.set_global_alpha(alpha);
+                context2.draw_image_with_html_image_element_and_dw_and_dh(&event.target().unwrap().dyn_into().unwrap(), x, y, w, h).unwrap();
+                let pattern = ctx.create_pattern_with_html_canvas_element(&canvas2, "no-repeat").unwrap().unwrap();
+                ctx.set_fill_style(&pattern);
+                ctx.fill_rect(top_left_corner.0, top_left_corner.1, bottom_right_corner.0 - top_left_corner.0, bottom_right_corner.1 - top_left_corner.1);
+            }) as Box<dyn Fn(_)>);
+            img.set_onload(Some(&onload.into_js_value().dyn_into().unwrap()));
+            img.set_src(format!("data:{};base64,{}", image.mime_type, image.image_base64).as_str());
         }
-    };
-    context.fill_rect(top_left_corner.0, top_left_corner.1, bottom_right_corner.0 - top_left_corner.0, bottom_right_corner.1 - top_left_corner.1);
+    }
     for vec in vecs {
-        render_vector_wasm(&vec, width, height, &context);
+        render_vector_wasm(&vec, width, height, context.clone());
     }
 }

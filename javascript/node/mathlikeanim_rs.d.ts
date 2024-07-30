@@ -1274,13 +1274,6 @@ export function showTemporaily(vec_obj: WasmVectorObject, t: number): WasmVector
 */
 export function spinningGrow(vec_obj: WasmVectorObject, angle: number, t: number): WasmVectorObject;
 /**
-* @param {string} expression
-* @param {string | undefined} [default_font_family]
-* @param {number | undefined} [default_font_size]
-* @returns {Promise<WasmVectorObject>}
-*/
-export function mathjax(expression: string, default_font_family?: string, default_font_size?: number): Promise<WasmVectorObject>;
-/**
 * @param {string} text
 * @param {string} font_family
 * @param {number} x
@@ -1289,6 +1282,13 @@ export function mathjax(expression: string, default_font_family?: string, defaul
 * @returns {Promise<WasmVectorObject>}
 */
 export function textToVector(text: string, font_family: string, x: number, y: number, font_size: number): Promise<WasmVectorObject>;
+/**
+* @param {string} expression
+* @param {string | undefined} [default_font_family]
+* @param {number | undefined} [default_font_size]
+* @returns {Promise<WasmVectorObject>}
+*/
+export function mathjax(expression: string, default_font_family?: string, default_font_size?: number): Promise<WasmVectorObject>;
 /**
 */
 export enum TokenType {
