@@ -43,7 +43,7 @@ web-sys = { version="0.3.69", features=[
     'HtmlDivElement'
 ], optional=true }
 wasm-bindgen-futures = "0.4.42"
-uuid = { version="1.8.0", features=["v4", "js"], optional=true }
+uuid = { version="1.10.0", features=["v4", "js"], optional=true }
 contour-isobands = "0.4.3"
 regex = "1.10.5"
 
