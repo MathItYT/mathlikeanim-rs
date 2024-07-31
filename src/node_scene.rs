@@ -67,21 +67,6 @@ impl SceneAPI for NodeScene {
             svg: None
         };
     }
-    async fn on_rendered(&mut self) {
-        if self.save_frames && self.current_ffmpeg.is_some() {
-            let canvas = self.context.as_ref().unwrap().canvas();
-            let ffmpeg = self.current_ffmpeg.as_ref().unwrap();
-            let options = Map::new();
-            options.set(&JsValue::from_str("compressionLevel"), &JsValue::from_f64(0.0));
-            let buffer = canvas.to_buffer_with_mime_type("raw");
-            let ok = ffmpeg.stdin().write(&buffer);
-            if !ok {
-                log("Frame is too big");
-            }
-        }
-        let promise = self.callback.call0(&JsValue::NULL).unwrap().dyn_into::<Promise>().unwrap();
-        wasm_bindgen_futures::JsFuture::from(promise).await.unwrap();
-    }
     fn get_fps(&self) -> &u32 {
         return &self.fps;
     }
@@ -118,8 +103,8 @@ impl SceneAPI for NodeScene {
     fn clear(&mut self) {
         self.objects.clear();
     }
-    fn render_frame(&mut self) {
-        render_all_vectors(&self.objects, self.width, self.height, self.context.as_ref().unwrap(), self.background.clone(), self.top_left_corner, self.bottom_right_corner);
+    async fn render_frame(&mut self) {
+        render_all_vectors(&self.objects, self.width, self.height, self.context.as_ref().unwrap(), &self.background, self.top_left_corner, self.bottom_right_corner, &self.callback).await;
     }
     fn restore(&mut self, n: usize) {
         let (objects, background, top_left_corner, bottom_right_corner) = self.states.get(&n).unwrap().clone();
@@ -227,8 +212,8 @@ impl NodeScene {
         return self.width;
     }
     #[wasm_bindgen(js_name = renderFrame)]
-    pub fn render_frame_js(&mut self) {
-        self.render_frame();
+    pub async fn render_frame_js(&mut self) {
+        self.render_frame().await;
     }
     #[wasm_bindgen(js_name = clear)]
     pub fn clear_js(&mut self) {
@@ -369,12 +354,24 @@ impl NodeScene {
     pub async fn wait_js(&mut self, duration_in_frames: u32) {
         self.wait(duration_in_frames).await;
     }
-    #[wasm_bindgen(js_name = setCallback)]
-    pub fn set_callback_js(&mut self, callback: js_sys::Function) {
+    #[wasm_bindgen(js_name = setOnRendered)]
+    pub fn set_on_rendered_js(&mut self, callback: js_sys::Function) {
         self.callback = callback;
     }
-    #[wasm_bindgen(js_name = callCallback)]
-    pub async fn call_callback_js(&mut self) {
-        self.on_rendered().await;
+    #[wasm_bindgen(js_name = onRendered)]
+    pub async fn on_rendered_js(&mut self) {
+        if self.save_frames && self.current_ffmpeg.is_some() {
+            let canvas = self.context.as_ref().unwrap().canvas();
+            let ffmpeg = self.current_ffmpeg.as_ref().unwrap();
+            let options = Map::new();
+            options.set(&JsValue::from_str("compressionLevel"), &JsValue::from_f64(0.0));
+            let buffer = canvas.to_buffer_with_mime_type("raw");
+            let ok = ffmpeg.stdin().write(&buffer);
+            if !ok {
+                log("Frame is too big");
+            }
+        }
+        let promise = self.callback.call0(&JsValue::NULL).unwrap().dyn_into::<Promise>().unwrap();
+        wasm_bindgen_futures::JsFuture::from(promise).await.unwrap();
     }
 }

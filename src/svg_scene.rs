@@ -57,10 +57,6 @@ impl SceneAPI for SVGScene {
     fn clear(&mut self) {
         self.objects = Vec::new();
     }
-    async fn on_rendered(&mut self) {
-        let promise = self.callback.call0(&JsValue::NULL).unwrap().dyn_into::<Promise>().unwrap();
-        JsFuture::from(promise).await.unwrap();
-    }
     fn restore(&mut self, n: usize) {
         let (objects, background, top_left_corner, bottom_right_corner) = self.states.get(&n).unwrap().clone();
         self.objects = objects;
@@ -100,8 +96,8 @@ impl SceneAPI for SVGScene {
     fn get_width(&self) -> &u32 {
         return &self.width;
     }
-    fn render_frame(&mut self) {
-        render_all_vectors_svg(&self);
+    async fn render_frame(&mut self) {
+        render_all_vectors_svg(self).await;
     }
     fn get_objects_from_indices(&self, object_indices: Vec<usize>) -> HashMap<usize, VectorFeatures> {
         let mut objects = HashMap::new();
@@ -139,8 +135,8 @@ impl SVGScene {
         return self.width;
     }
     #[wasm_bindgen(js_name = renderFrame)]
-    pub fn render_frame_js(&mut self) {
-        self.render_frame();
+    pub async fn render_frame_js(&mut self) {
+        self.render_frame().await;
     }
     #[wasm_bindgen(js_name = clear)]
     pub fn clear_js(&mut self) {
@@ -253,13 +249,14 @@ impl SVGScene {
     pub async fn wait_js(&mut self, duration_in_frames: u32) {
         self.wait(duration_in_frames).await;
     }
-    #[wasm_bindgen(js_name = setCallback)]
-    pub fn set_callback_js(&mut self, callback: js_sys::Function) {
+    #[wasm_bindgen(js_name = setOnRendered)]
+    pub fn set_on_rendered_js(&mut self, callback: js_sys::Function) {
         self.callback = callback;
     }
-    #[wasm_bindgen(js_name = callCallback)]
-    pub async fn call_callback_js(&mut self) {
-        self.on_rendered().await;
+    #[wasm_bindgen(js_name = onRendered)]
+    pub async fn on_rendered_js(&mut self) {
+        let promise = self.callback.call0(&JsValue::NULL).unwrap().dyn_into::<Promise>().unwrap();
+        JsFuture::from(promise).await.unwrap();
     }
     #[wasm_bindgen(js_name = setClass)]
     pub fn set_class_js(&mut self, index: usize, id: String) {

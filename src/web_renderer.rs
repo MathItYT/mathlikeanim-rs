@@ -1,4 +1,7 @@
-use crate::colors::GradientImageOrColor;
+use std::future::Future;
+use std::pin::Pin;
+
+use crate::colors::{Color, GradientImageOrColor};
 use crate::objects::vector_object::{
     generate_cubic_bezier_tuples, VectorFeatures
 };
@@ -6,14 +9,16 @@ use crate::objects::vector_object::generate_subpaths;
 
 use crate::svg_scene::SVGScene;
 use crate::utils::consider_points_equals;
+use js_sys::{Function, Map, Promise};
 use wasm_bindgen::prelude::Closure;
-use wasm_bindgen::JsCast;
-use web_sys::{window, Event, HtmlImageElement};
+use wasm_bindgen::{JsCast, JsValue};
+use wasm_bindgen_futures::JsFuture;
+use web_sys::{window, HtmlImageElement};
 
 
 pub fn draw_context_path_wasm(
     context: &web_sys::CanvasRenderingContext2d,
-    points: Vec<(f64, f64)>
+    points: &Vec<(f64, f64)>
 ) {
     if points.len() == 0 {
         return;
@@ -90,7 +95,7 @@ pub fn vec_to_def_and_use_string(
                 grd.set_attribute("x2", &gradient.x2.to_string()).unwrap();
                 grd.set_attribute("y2", &gradient.y2.to_string()).unwrap();
                 grd.set_attribute("gradientUnits", "userSpaceOnUse").unwrap();
-                for stop in gradient.stops.clone() {
+                for stop in &gradient.stops {
                     let stop_element = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "stop").unwrap();
                     stop_element.set_attribute("offset", &stop.offset.to_string()).unwrap();
                     let r_string = format!("{}", (stop.color.red * 255.0) as u8);
@@ -115,7 +120,7 @@ pub fn vec_to_def_and_use_string(
                 grd.set_attribute("fx", &gradient.fx.to_string()).unwrap();
                 grd.set_attribute("fy", &gradient.fy.to_string()).unwrap();
                 grd.set_attribute("gradientUnits", "userSpaceOnUse").unwrap();
-                for stop in gradient.stops.clone() {
+                for stop in &gradient.stops {
                     let stop_element = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "stop").unwrap();
                     stop_element.set_attribute("offset", &stop.offset.to_string()).unwrap();
                     let r_string = format!("{}", (stop.color.red * 255.0) as u8);
@@ -175,7 +180,7 @@ pub fn vec_to_def_and_use_string(
                 grd.set_attribute("x2", &gradient.x2.to_string()).unwrap();
                 grd.set_attribute("y2", &gradient.y2.to_string()).unwrap();
                 grd.set_attribute("gradientUnits", "userSpaceOnUse").unwrap();
-                for stop in gradient.stops.clone() {
+                for stop in &gradient.stops {
                     let stop_element = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "stop").unwrap();
                     stop_element.set_attribute("offset", &stop.offset.to_string()).unwrap();
                     let r_string = format!("{}", (stop.color.red * 255.0) as u8);
@@ -200,7 +205,7 @@ pub fn vec_to_def_and_use_string(
                 grd.set_attribute("fx", &gradient.fx.to_string()).unwrap();
                 grd.set_attribute("fy", &gradient.fy.to_string()).unwrap();
                 grd.set_attribute("gradientUnits", "userSpaceOnUse").unwrap();
-                for stop in gradient.stops.clone() {
+                for stop in &gradient.stops {
                     let stop_element = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "stop").unwrap();
                     stop_element.set_attribute("offset", &stop.offset.to_string()).unwrap();
                     let r_string = format!("{}", (stop.color.red * 255.0) as u8);
@@ -272,17 +277,14 @@ pub fn vec_to_def_and_use_string(
 }
 
 
-pub fn render_all_vectors_svg(
-    svg_scene: &SVGScene
+pub async fn render_all_vectors_svg(
+    svg_scene: &mut SVGScene
 ) {
-    let classes = svg_scene.classes.clone();
-    let vecs = svg_scene.objects.clone();
     let width = svg_scene.width;
     let height = svg_scene.height;
-    let background = svg_scene.background.clone();
     let top_left_corner = svg_scene.top_left_corner;
     let bottom_right_corner = svg_scene.bottom_right_corner;
-    let div = svg_scene.div_container.clone().unwrap();
+    let div = svg_scene.div_container.as_ref().unwrap();
     let document = web_sys::window().unwrap().document().unwrap();
     div.set_inner_html("");
     let mut svg = format!("<svg width=\"{}\" height=\"{}\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"{} {} {} {}\">", width, height, top_left_corner.0, top_left_corner.1, bottom_right_corner.0 - top_left_corner.0, bottom_right_corner.1 - top_left_corner.1);
@@ -290,7 +292,7 @@ pub fn render_all_vectors_svg(
     let mut use_strings = "".to_string();
     #[allow(unused_assignments)]
     let mut rec_fill = "".to_string();
-    match background {
+    match &svg_scene.background {
         GradientImageOrColor::Color(color) => {
             rec_fill = format!("rgba({}, {}, {}, {})", (color.red * 255.0) as u8, (color.green * 255.0) as u8, (color.blue * 255.0) as u8, color.alpha);
         },
@@ -304,7 +306,7 @@ pub fn render_all_vectors_svg(
             grd.set_attribute("x2", &gradient.x2.to_string()).unwrap();
             grd.set_attribute("y2", &gradient.y2.to_string()).unwrap();
             grd.set_attribute("gradientUnits", "userSpaceOnUse").unwrap();
-            for stop in gradient.stops.clone() {
+            for stop in &gradient.stops {
                 let stop_element = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "stop").unwrap();
                 stop_element.set_attribute("offset", &stop.offset.to_string()).unwrap();
                 let r_string = format!("{}", (stop.color.red * 255.0) as u8);
@@ -329,7 +331,7 @@ pub fn render_all_vectors_svg(
             grd.set_attribute("fx", &gradient.fx.to_string()).unwrap();
             grd.set_attribute("fy", &gradient.fy.to_string()).unwrap();
             grd.set_attribute("gradientUnits", "userSpaceOnUse").unwrap();
-            for stop in gradient.stops.clone() {
+            for stop in &gradient.stops {
                 let stop_element = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "stop").unwrap();
                 stop_element.set_attribute("offset", &stop.offset.to_string()).unwrap();
                 let r_string = format!("{}", (stop.color.red * 255.0) as u8);
@@ -377,8 +379,8 @@ pub fn render_all_vectors_svg(
         },
     }
     svg.push_str(format!("<rect x=\"{}\" y=\"{}\" width=\"{}\" height=\"{}\" fill=\"{}\"/>\n", top_left_corner.0, top_left_corner.1, bottom_right_corner.0 - top_left_corner.0, bottom_right_corner.1 - top_left_corner.1, rec_fill).as_str());
-    for vec in vecs {
-        let (def_string, use_string) = vec_to_def_and_use_string(&vec, classes.get(&vec.index), &document);
+    for vec in &svg_scene.objects {
+        let (def_string, use_string) = vec_to_def_and_use_string(&vec, svg_scene.classes.get(&vec.index), &document);
         defs.push_str(&def_string);
         use_strings.push_str(&use_string);
     }
@@ -387,15 +389,17 @@ pub fn render_all_vectors_svg(
     svg.push_str(&use_strings);
     svg.push_str("</svg>");
     div.set_inner_html(&svg);
+    svg_scene.on_rendered_js().await;
 }
 
 
 pub fn apply_fill_wasm(
-    context: web_sys::CanvasRenderingContext2d,
-    fill: GradientImageOrColor,
-    points: Vec<(f64, f64)>,
+    context: &'static web_sys::CanvasRenderingContext2d,
+    fill: &GradientImageOrColor,
+    points: &Vec<(f64, f64)>,
     width: u32,
-    height: u32
+    height: u32,
+    loaded_images: &Map
 ) {
     if points.len() == 0 {
         return;
@@ -413,7 +417,7 @@ pub fn apply_fill_wasm(
         GradientImageOrColor::LinearGradient(gradient) => {
             let alpha = gradient.alpha;
             let grd = context.create_linear_gradient(gradient.x1, gradient.y1, gradient.x2, gradient.y2);
-            for stop in gradient.stops.clone() {
+            for stop in &gradient.stops {
                 let r_string = format!("{}", (stop.color.red * 255.0) as u8);
                 let g_string = format!("{}", (stop.color.green * 255.0) as u8);
                 let b_string = format!("{}", (stop.color.blue * 255.0) as u8);
@@ -427,7 +431,7 @@ pub fn apply_fill_wasm(
         GradientImageOrColor::RadialGradient(gradient) => {
             let alpha = gradient.alpha;
             let grd = context.create_radial_gradient(gradient.fx, gradient.fy, 0.0, gradient.cx, gradient.cy, gradient.r).unwrap();
-            for stop in gradient.stops.clone() {
+            for stop in &gradient.stops {
                 let r_string = format!("{}", (stop.color.red * 255.0) as u8);
                 let g_string = format!("{}", (stop.color.green * 255.0) as u8);
                 let b_string = format!("{}", (stop.color.blue * 255.0) as u8);
@@ -446,34 +450,32 @@ pub fn apply_fill_wasm(
             let w = bottom_right_corner.0 - top_left_corner.0;
             let h = bottom_right_corner.1 - top_left_corner.1;
             let alpha = image.alpha;
-            let img = HtmlImageElement::new_with_width_and_height(w as u32, h as u32).unwrap();
-            let onload = Closure::wrap(Box::new(move |event: Event| {
-                let canvas2 = window().unwrap().document().unwrap().create_element("canvas").unwrap().dyn_into::<web_sys::HtmlCanvasElement>().unwrap();
-                canvas2.set_width(width);
-                canvas2.set_height(height);
-                let context2 = canvas2.get_context("2d").unwrap().unwrap().dyn_into::<web_sys::CanvasRenderingContext2d>().unwrap();
-                context2.set_global_alpha(alpha);
-                context2.draw_image_with_html_image_element_and_dw_and_dh(&event.target().unwrap().dyn_into().unwrap(), x, y, w, h).unwrap();
-                let pattern = context.create_pattern_with_html_canvas_element(&canvas2, "no-repeat").unwrap().unwrap();
-                context.set_fill_style(&pattern);
-                context.fill();
-            }) as Box<dyn Fn(_)>);
-            img.set_onload(Some(&onload.into_js_value().dyn_into().unwrap()));
-            img.set_src(format!("data:{};base64,{}", image.mime_type, image.image_base64).as_str());
+            let src = format!("data:{};base64,{}", image.mime_type, image.image_base64);
+            let img = loaded_images.get(&JsValue::from_str(src.as_str())).dyn_into::<web_sys::HtmlImageElement>().unwrap();
+            let canvas2 = window().unwrap().document().unwrap().create_element("canvas").unwrap().dyn_into::<web_sys::HtmlCanvasElement>().unwrap();
+            canvas2.set_width(width);
+            canvas2.set_height(height);
+            let context2 = canvas2.get_context("2d").unwrap().unwrap().dyn_into::<web_sys::CanvasRenderingContext2d>().unwrap();
+            context2.set_global_alpha(alpha);
+            context2.draw_image_with_html_image_element_and_dw_and_dh(&img, x, y, w, h).unwrap();
+            let pattern = context.create_pattern_with_html_canvas_element(&canvas2, "no-repeat").unwrap().unwrap();
+            context.set_fill_style(&pattern);
+            context.fill();
         }
     }
 }
 
 
 pub fn apply_stroke_wasm(
-    context: web_sys::CanvasRenderingContext2d,
-    stroke: GradientImageOrColor,
+    context: &'static web_sys::CanvasRenderingContext2d,
+    stroke: &GradientImageOrColor,
     stroke_width: f64,
-    line_cap: String,
-    line_join: String,
-    points: Vec<(f64, f64)>,
+    line_cap: &'static str,
+    line_join: &'static str,
+    points: &Vec<(f64, f64)>,
     width: u32,
-    height: u32
+    height: u32,
+    loaded_images: &Map
 ) {
     if points.len() == 0 {
         return;
@@ -490,12 +492,14 @@ pub fn apply_stroke_wasm(
             let stroke_color = js_sys::JsString::from(format!("rgba({}, {}, {}, {})", r_string, g_string, b_string, a_string));
             context.set_stroke_style(&stroke_color);
             context.set_line_width(stroke_width);
+            context.set_line_cap(line_cap);
+            context.set_line_join(line_join);
             context.stroke();
         },
         GradientImageOrColor::LinearGradient(gradient) => {
             let alpha = gradient.alpha;
             let grd = context.create_linear_gradient(gradient.x1, gradient.y1, gradient.x2, gradient.y2);
-            for stop in gradient.stops.clone() {
+            for stop in &gradient.stops {
                 let r_string = format!("{}", (stop.color.red * 255.0) as u8);
                 let g_string = format!("{}", (stop.color.green * 255.0) as u8);
                 let b_string = format!("{}", (stop.color.blue * 255.0) as u8);
@@ -516,12 +520,14 @@ pub fn apply_stroke_wasm(
                 context.set_stroke_style(&grd);
             }
             context.set_line_width(stroke_width);
+            context.set_line_cap(line_cap);
+            context.set_line_join(line_join);
             context.stroke();
         },
         GradientImageOrColor::RadialGradient(gradient) => {
             let alpha = gradient.alpha;
             let grd = context.create_radial_gradient(gradient.fx, gradient.fy, 0.0, gradient.cx, gradient.cy, gradient.r).unwrap();
-            for stop in gradient.stops.clone() {
+            for stop in &gradient.stops {
                 let r_string = format!("{}", (stop.color.red * 255.0) as u8);
                 let g_string = format!("{}", (stop.color.green * 255.0) as u8);
                 let b_string = format!("{}", (stop.color.blue * 255.0) as u8);
@@ -531,6 +537,8 @@ pub fn apply_stroke_wasm(
             }
             context.set_stroke_style(&grd);
             context.set_line_width(stroke_width);
+            context.set_line_cap(line_cap);
+            context.set_line_join(line_join);
             context.stroke();
         },
         GradientImageOrColor::Image(image) => {
@@ -541,23 +549,20 @@ pub fn apply_stroke_wasm(
             let w = bottom_right_corner.0 - top_left_corner.0;
             let h = bottom_right_corner.1 - top_left_corner.1;
             let alpha = image.alpha;
-            let img = HtmlImageElement::new_with_width_and_height(w as u32, h as u32).unwrap();
-            let onload = Closure::wrap(Box::new(move |event: Event| {
-                let canvas2 = window().unwrap().document().unwrap().create_element("canvas").unwrap().dyn_into::<web_sys::HtmlCanvasElement>().unwrap();
-                canvas2.set_width(width);
-                canvas2.set_height(height);
-                let context2 = canvas2.get_context("2d").unwrap().unwrap().dyn_into::<web_sys::CanvasRenderingContext2d>().unwrap();
-                context2.set_global_alpha(alpha);
-                context2.draw_image_with_html_image_element_and_dw_and_dh(&event.target().unwrap().dyn_into().unwrap(), x, y, w, h).unwrap();
-                let pattern = context.create_pattern_with_html_canvas_element(&canvas2, "no-repeat").unwrap().unwrap();
-                context.set_stroke_style(&pattern);
-                context.set_line_width(stroke_width);
-                context.set_line_cap(&line_cap);
-                context.set_line_join(&line_join);
-                context.stroke();
-            }) as Box<dyn Fn(_)>);
-            img.set_onload(Some(&onload.into_js_value().dyn_into().unwrap()));
-            img.set_src(format!("data:{};base64,{}", image.mime_type, image.image_base64).as_str());
+            let src = format!("data:{};base64,{}", image.mime_type, image.image_base64);
+            let img = loaded_images.get(&JsValue::from_str(src.as_str())).dyn_into::<web_sys::HtmlImageElement>().unwrap();
+            let canvas2 = window().unwrap().document().unwrap().create_element("canvas").unwrap().dyn_into::<web_sys::HtmlCanvasElement>().unwrap();
+            canvas2.set_width(width);
+            canvas2.set_height(height);
+            let context2 = canvas2.get_context("2d").unwrap().unwrap().dyn_into::<web_sys::CanvasRenderingContext2d>().unwrap();
+            context2.set_global_alpha(alpha);
+            context2.draw_image_with_html_image_element_and_dw_and_dh(&img, x, y, w, h).unwrap();
+            let pattern = context.create_pattern_with_html_canvas_element(&canvas2, "no-repeat").unwrap().unwrap();
+            context.set_stroke_style(&pattern);
+            context.set_line_width(stroke_width);
+            context.set_line_cap(line_cap);
+            context.set_line_join(line_join);
+            context.stroke();
         }
     }
 }
@@ -567,32 +572,85 @@ pub fn render_vector_wasm(
     vec: &VectorFeatures,
     width: u32,
     height: u32,
-    context: web_sys::CanvasRenderingContext2d
+    context: &'static web_sys::CanvasRenderingContext2d,
+    loaded_images: &Map
 ) {
-    let points = vec.points.clone();
-    let fill = vec.fill.clone();
-    let stroke = vec.stroke.clone();
     let stroke_width = vec.stroke_width;
     let line_cap = vec.line_cap;
     let line_join = vec.line_join;
-    draw_context_path_wasm(&context, points.clone());
-    apply_fill_wasm(context.clone(), fill, points.clone(), width, height);
-    apply_stroke_wasm(context.clone(), stroke, stroke_width, line_cap.to_string(), line_join.to_string(), points.clone(), width, height);
+    draw_context_path_wasm(&context, &vec.points);
+    apply_fill_wasm(context, &vec.fill, &vec.points, width, height, loaded_images);
+    apply_stroke_wasm(context, &vec.stroke, stroke_width, line_cap, line_join, &vec.points, width, height, loaded_images);
     for subvec in &vec.subobjects {
-        render_vector_wasm(&subvec, width, height, context.clone());
+        render_vector_wasm(subvec, width, height, &context, loaded_images);
     }
 }
 
 
-pub fn render_all_vectors(
+pub fn load_images<'a>(
+    objects: &'a Vec<VectorFeatures>,
+    background: &'a GradientImageOrColor,
+    loaded_images: &'a Map
+) -> Pin<Box<dyn Future<Output = ()> + 'a>> {
+    Box::pin(async move {
+        let mut images_to_load = Vec::new();
+        match background {
+            GradientImageOrColor::Image(image) => {
+                images_to_load.push(image);
+            },
+            _ => {},
+        }
+        for vec in objects {
+            match &vec.fill {
+                GradientImageOrColor::Image(image) => {
+                    images_to_load.push(image);
+                },
+                _ => {},
+            }
+            match &vec.stroke {
+                GradientImageOrColor::Image(image) => {
+                    images_to_load.push(image);
+                },
+                _ => {},
+            }
+            load_images(&vec.subobjects, &GradientImageOrColor::Color(Color { red: 0.0, green: 0.0, blue: 0.0, alpha: 0.0 }), loaded_images).await;
+        }
+        for image in images_to_load {
+            let src = format!("data:{};base64,{}", image.mime_type, image.image_base64);
+            if loaded_images.has(&JsValue::from_str(src.as_str())) {
+                continue;
+            } else if loaded_images.get(&JsValue::from_str(src.as_str())) == JsValue::NULL {
+                continue;
+            } else {
+                let img = HtmlImageElement::new().unwrap();
+                loaded_images.set(&JsValue::from_str(src.as_str()), &JsValue::NULL);
+                let promise = Promise::new(&mut |resolve, _| {
+                    let closure = Closure::wrap(Box::new(move || {
+                        resolve.call1(&JsValue::NULL, &JsValue::NULL).unwrap();
+                    }) as Box<dyn Fn()>);
+                    img.set_onload(Some(&closure.into_js_value().dyn_into().unwrap()));
+                    img.set_src(src.as_str());
+                });
+                JsFuture::from(promise).await.unwrap();
+                loaded_images.set(&JsValue::from_str(src.as_str()), &img);
+            }
+        }
+    })
+}
+
+
+pub async fn render_all_vectors(
     vecs: &Vec<VectorFeatures>,
     width: u32,
     height: u32,
-    context: Option<web_sys::CanvasRenderingContext2d>,
-    background: GradientImageOrColor,
+    context: Option<&'static web_sys::CanvasRenderingContext2d>,
+    background: &GradientImageOrColor,
     top_left_corner: (f64, f64),
-    bottom_right_corner: (f64, f64)
+    bottom_right_corner: (f64, f64),
+    loaded_images: &Map,
+    on_rendered: &Function
 ) {
+    load_images(vecs, background, loaded_images).await;
     let context = context.unwrap();
     context.reset_transform().unwrap();
     let scale_xy = (width as f64 / (bottom_right_corner.0 - top_left_corner.0), height as f64 / (bottom_right_corner.1 - top_left_corner.1));
@@ -607,7 +665,7 @@ pub fn render_all_vectors(
         }
         GradientImageOrColor::LinearGradient(gradient) => {
             let grd = context.create_linear_gradient(gradient.x1, gradient.y1, gradient.x2, gradient.y2);
-            for stop in gradient.stops.clone() {
+            for stop in &gradient.stops {
                 let r_string = format!("{}", (stop.color.red * 255.0) as u8);
                 let g_string = format!("{}", (stop.color.green * 255.0) as u8);
                 let b_string = format!("{}", (stop.color.blue * 255.0) as u8);
@@ -620,7 +678,7 @@ pub fn render_all_vectors(
         },
         GradientImageOrColor::RadialGradient(gradient) => {
             let grd = context.create_radial_gradient(gradient.fx, gradient.fy, 0.0, gradient.cx, gradient.cy, gradient.r).unwrap();
-            for stop in gradient.stops.clone() {
+            for stop in &gradient.stops {
                 let r_string = format!("{}", (stop.color.red * 255.0) as u8);
                 let g_string = format!("{}", (stop.color.green * 255.0) as u8);
                 let b_string = format!("{}", (stop.color.blue * 255.0) as u8);
@@ -632,7 +690,6 @@ pub fn render_all_vectors(
             context.fill_rect(top_left_corner.0, top_left_corner.1, bottom_right_corner.0 - top_left_corner.0, bottom_right_corner.1 - top_left_corner.1);
         },
         GradientImageOrColor::Image(image) => {
-            let img = HtmlImageElement::new().unwrap();
             let top_left_corner = image.top_left_corner;
             let bottom_right_corner = image.bottom_right_corner;
             let x = top_left_corner.0;
@@ -640,23 +697,21 @@ pub fn render_all_vectors(
             let w = bottom_right_corner.0 - top_left_corner.0;
             let h = bottom_right_corner.1 - top_left_corner.1;
             let alpha = image.alpha;
-            let ctx = context.clone();
-            let onload = Closure::wrap(Box::new(move |event: Event| {
-                let canvas2 = window().unwrap().document().unwrap().create_element("canvas").unwrap().dyn_into::<web_sys::HtmlCanvasElement>().unwrap();
-                canvas2.set_width(width);
-                canvas2.set_height(height);
-                let context2 = canvas2.get_context("2d").unwrap().unwrap().dyn_into::<web_sys::CanvasRenderingContext2d>().unwrap();
-                context2.set_global_alpha(alpha);
-                context2.draw_image_with_html_image_element_and_dw_and_dh(&event.target().unwrap().dyn_into().unwrap(), x, y, w, h).unwrap();
-                let pattern = ctx.create_pattern_with_html_canvas_element(&canvas2, "no-repeat").unwrap().unwrap();
-                ctx.set_fill_style(&pattern);
-                ctx.fill_rect(top_left_corner.0, top_left_corner.1, bottom_right_corner.0 - top_left_corner.0, bottom_right_corner.1 - top_left_corner.1);
-            }) as Box<dyn Fn(_)>);
-            img.set_onload(Some(&onload.into_js_value().dyn_into().unwrap()));
-            img.set_src(format!("data:{};base64,{}", image.mime_type, image.image_base64).as_str());
+            let src = format!("data:{};base64,{}", image.mime_type, image.image_base64);
+            let img = loaded_images.get(&JsValue::from_str(src.as_str())).dyn_into::<web_sys::HtmlImageElement>().unwrap();
+            let canvas2 = window().unwrap().document().unwrap().create_element("canvas").unwrap().dyn_into::<web_sys::HtmlCanvasElement>().unwrap();
+            canvas2.set_width(width);
+            canvas2.set_height(height);
+            let context2 = canvas2.get_context("2d").unwrap().unwrap().dyn_into::<web_sys::CanvasRenderingContext2d>().unwrap();
+            context2.set_global_alpha(alpha);
+            context2.draw_image_with_html_image_element_and_dw_and_dh(&img, x, y, w, h).unwrap();
+            let pattern = context.create_pattern_with_html_canvas_element(&canvas2, "no-repeat").unwrap().unwrap();
+            context.set_fill_style(&pattern);
+            context.fill_rect(top_left_corner.0, top_left_corner.1, bottom_right_corner.0 - top_left_corner.0, bottom_right_corner.1 - top_left_corner.1);
         }
     }
     for vec in vecs {
-        render_vector_wasm(&vec, width, height, context.clone());
+        render_vector_wasm(&vec, width, height, &context, &loaded_images);
     }
+    on_rendered.call0(&JsValue::NULL).unwrap();
 }

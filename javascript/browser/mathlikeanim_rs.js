@@ -217,13 +217,13 @@ function makeClosure(arg0, arg1, dtor, f) {
     CLOSURE_DTORS.register(real, state, state);
     return real;
 }
-function __wbg_adapter_34(arg0, arg1, arg2) {
-    wasm._dyn_core__ops__function__Fn__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h63ccd221823ee7d0(arg0, arg1, addHeapObject(arg2));
+function __wbg_adapter_36(arg0, arg1) {
+    const ret = wasm._dyn_core__ops__function__Fn_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__hdbf1c3e0adec1aa3(arg0, arg1);
+    return takeObject(ret);
 }
 
-function __wbg_adapter_37(arg0, arg1) {
-    const ret = wasm._dyn_core__ops__function__Fn_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__hb8c8bc89fb0a42ee(arg0, arg1);
-    return takeObject(ret);
+function __wbg_adapter_39(arg0, arg1) {
+    wasm._dyn_core__ops__function__Fn_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h966e5cb346ce164d(arg0, arg1);
 }
 
 function makeMutClosure(arg0, arg1, dtor, f) {
@@ -250,7 +250,7 @@ function makeMutClosure(arg0, arg1, dtor, f) {
     CLOSURE_DTORS.register(real, state, state);
     return real;
 }
-function __wbg_adapter_40(arg0, arg1, arg2) {
+function __wbg_adapter_42(arg0, arg1, arg2) {
     wasm._dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h36f54c9e7475dd01(arg0, arg1, addHeapObject(arg2));
 }
 
@@ -1580,6 +1580,291 @@ export function parametricLinePlotInAxes3D(axes, f, u_min, u_max, u_segments, x_
     return WasmThreeDObject.__wrap(ret);
 }
 
+function getArrayF64FromWasm0(ptr, len) {
+    ptr = ptr >>> 0;
+    return getFloat64Memory0().subarray(ptr / 8, ptr / 8 + len);
+}
+/**
+* @param {number} num_anim_funcs
+* @param {number} lag_ratio
+* @returns {Float64Array}
+*/
+export function makeTimings(num_anim_funcs, lag_ratio) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        wasm.makeTimings(retptr, num_anim_funcs, lag_ratio);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        var v1 = getArrayF64FromWasm0(r0, r1).slice();
+        wasm.__wbindgen_free(r0, r1 * 8, 8);
+        return v1;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+}
+
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {(Function)[]} anim_funcs
+* @param {number} lag_ratio
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+export function animationGroup(vec_obj, anim_funcs, lag_ratio, t) {
+    _assertClass(vec_obj, WasmVectorObject);
+    var ptr0 = vec_obj.__destroy_into_raw();
+    const ptr1 = passArrayJsValueToWasm0(anim_funcs, wasm.__wbindgen_malloc);
+    const len1 = WASM_VECTOR_LEN;
+    const ret = wasm.animationGroup(ptr0, ptr1, len1, lag_ratio, t);
+    return WasmVectorObject.__wrap(ret);
+}
+
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+export function create(vec_obj, t) {
+    _assertClass(vec_obj, WasmVectorObject);
+    var ptr0 = vec_obj.__destroy_into_raw();
+    const ret = wasm.create(ptr0, t);
+    return WasmVectorObject.__wrap(ret);
+}
+
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {number} t
+* @param {number | undefined} [default_stroke_width]
+* @returns {WasmVectorObject}
+*/
+export function drawStrokeThenFill(vec_obj, t, default_stroke_width) {
+    _assertClass(vec_obj, WasmVectorObject);
+    var ptr0 = vec_obj.__destroy_into_raw();
+    const ret = wasm.drawStrokeThenFill(ptr0, t, !isLikeNone(default_stroke_width), isLikeNone(default_stroke_width) ? 0 : default_stroke_width);
+    return WasmVectorObject.__wrap(ret);
+}
+
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {number} lag_ratio
+* @param {number} t
+* @param {number | undefined} [default_stroke_width]
+* @returns {WasmVectorObject}
+*/
+export function write(vec_obj, lag_ratio, t, default_stroke_width) {
+    _assertClass(vec_obj, WasmVectorObject);
+    var ptr0 = vec_obj.__destroy_into_raw();
+    const ret = wasm.write(ptr0, lag_ratio, t, !isLikeNone(default_stroke_width), isLikeNone(default_stroke_width) ? 0 : default_stroke_width);
+    return WasmVectorObject.__wrap(ret);
+}
+
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {number} scale_factor
+* @param {Array<any>} shift
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+export function fadeIn(vec_obj, scale_factor, shift, t) {
+    _assertClass(vec_obj, WasmVectorObject);
+    var ptr0 = vec_obj.__destroy_into_raw();
+    const ret = wasm.fadeIn(ptr0, scale_factor, addHeapObject(shift), t);
+    return WasmVectorObject.__wrap(ret);
+}
+
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {number} scale_factor
+* @param {Array<any>} shift
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+export function fadeOut(vec_obj, scale_factor, shift, t) {
+    _assertClass(vec_obj, WasmVectorObject);
+    var ptr0 = vec_obj.__destroy_into_raw();
+    const ret = wasm.fadeOut(ptr0, scale_factor, addHeapObject(shift), t);
+    return WasmVectorObject.__wrap(ret);
+}
+
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+export function growArrowWithFinalTip(vec_obj, t) {
+    _assertClass(vec_obj, WasmVectorObject);
+    var ptr0 = vec_obj.__destroy_into_raw();
+    const ret = wasm.growArrowWithFinalTip(ptr0, t);
+    return WasmVectorObject.__wrap(ret);
+}
+
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+export function growArrowWithInitialTip(vec_obj, t) {
+    _assertClass(vec_obj, WasmVectorObject);
+    var ptr0 = vec_obj.__destroy_into_raw();
+    const ret = wasm.growArrowWithInitialTip(ptr0, t);
+    return WasmVectorObject.__wrap(ret);
+}
+
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+export function growArrowWithTipsAtBothEnds(vec_obj, t) {
+    _assertClass(vec_obj, WasmVectorObject);
+    var ptr0 = vec_obj.__destroy_into_raw();
+    const ret = wasm.growArrowWithTipsAtBothEnds(ptr0, t);
+    return WasmVectorObject.__wrap(ret);
+}
+
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+export function growFromCenter(vec_obj, t) {
+    _assertClass(vec_obj, WasmVectorObject);
+    var ptr0 = vec_obj.__destroy_into_raw();
+    const ret = wasm.growFromCenter(ptr0, t);
+    return WasmVectorObject.__wrap(ret);
+}
+
+/**
+* @param {WasmVectorObject} original
+* @param {WasmVectorObject} target
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+export function morphShape(original, target, t) {
+    _assertClass(original, WasmVectorObject);
+    var ptr0 = original.__destroy_into_raw();
+    _assertClass(target, WasmVectorObject);
+    var ptr1 = target.__destroy_into_raw();
+    const ret = wasm.morphShape(ptr0, ptr1, t);
+    return WasmVectorObject.__wrap(ret);
+}
+
+/**
+* @param {Array<any>} top_left_corner
+* @param {Array<any>} bottom_right_corner
+* @param {SVGScene} scene
+* @param {number} t
+*/
+export function moveCameraSVG(top_left_corner, bottom_right_corner, scene, t) {
+    _assertClass(scene, SVGScene);
+    wasm.moveCameraSVG(addHeapObject(top_left_corner), addHeapObject(bottom_right_corner), scene.__wbg_ptr, t);
+}
+
+/**
+* @param {Array<any>} top_left_corner
+* @param {Array<any>} bottom_right_corner
+* @param {Scene} scene
+* @param {number} t
+*/
+export function moveCamera(top_left_corner, bottom_right_corner, scene, t) {
+    _assertClass(scene, Scene);
+    wasm.moveCamera(addHeapObject(top_left_corner), addHeapObject(bottom_right_corner), scene.__wbg_ptr, t);
+}
+
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {number} angle
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+export function rotateAnimation(vec_obj, angle, t) {
+    _assertClass(vec_obj, WasmVectorObject);
+    var ptr0 = vec_obj.__destroy_into_raw();
+    const ret = wasm.rotateAnimation(ptr0, angle, t);
+    return WasmVectorObject.__wrap(ret);
+}
+
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {number} scale_factor
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+export function scaleInPlace(vec_obj, scale_factor, t) {
+    _assertClass(vec_obj, WasmVectorObject);
+    var ptr0 = vec_obj.__destroy_into_raw();
+    const ret = wasm.scaleInPlace(ptr0, scale_factor, t);
+    return WasmVectorObject.__wrap(ret);
+}
+
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {WasmColor} target_fill
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+export function setFillAnimation(vec_obj, target_fill, t) {
+    _assertClass(vec_obj, WasmVectorObject);
+    var ptr0 = vec_obj.__destroy_into_raw();
+    _assertClass(target_fill, WasmColor);
+    var ptr1 = target_fill.__destroy_into_raw();
+    const ret = wasm.setFillAnimation(ptr0, ptr1, t);
+    return WasmVectorObject.__wrap(ret);
+}
+
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {WasmColor} target_stroke
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+export function setStrokeAnimation(vec_obj, target_stroke, t) {
+    _assertClass(vec_obj, WasmVectorObject);
+    var ptr0 = vec_obj.__destroy_into_raw();
+    _assertClass(target_stroke, WasmColor);
+    var ptr1 = target_stroke.__destroy_into_raw();
+    const ret = wasm.setStrokeAnimation(ptr0, ptr1, t);
+    return WasmVectorObject.__wrap(ret);
+}
+
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {Array<any>} shift
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+export function shiftAnimation(vec_obj, shift, t) {
+    _assertClass(vec_obj, WasmVectorObject);
+    var ptr0 = vec_obj.__destroy_into_raw();
+    const ret = wasm.shiftAnimation(ptr0, addHeapObject(shift), t);
+    return WasmVectorObject.__wrap(ret);
+}
+
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+export function showTemporaily(vec_obj, t) {
+    _assertClass(vec_obj, WasmVectorObject);
+    var ptr0 = vec_obj.__destroy_into_raw();
+    const ret = wasm.showTemporaily(ptr0, t);
+    return WasmVectorObject.__wrap(ret);
+}
+
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {number} angle
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+export function spinningGrow(vec_obj, angle, t) {
+    _assertClass(vec_obj, WasmVectorObject);
+    var ptr0 = vec_obj.__destroy_into_raw();
+    const ret = wasm.spinningGrow(ptr0, angle, t);
+    return WasmVectorObject.__wrap(ret);
+}
+
 function passArray32ToWasm0(arg, malloc) {
     const ptr = malloc(arg.length * 4, 4) >>> 0;
     getUint32Memory0().set(arg, ptr / 4);
@@ -2378,21 +2663,19 @@ export function easeInOutBounce(t) {
 }
 
 /**
-* @param {string} code
-* @param {Lexer} lexer
-* @param {Theme} theme
-* @param {string} font_family
-* @returns {Promise<WasmVectorObject>}
+* @returns {Theme}
 */
-export function codeObject(code, lexer, theme, font_family) {
-    const ptr0 = passStringToWasm0(code, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-    const len0 = WASM_VECTOR_LEN;
-    _assertClass(lexer, Lexer);
-    _assertClass(theme, Theme);
-    const ptr1 = passStringToWasm0(font_family, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-    const len1 = WASM_VECTOR_LEN;
-    const ret = wasm.codeObject(ptr0, len0, lexer.__wbg_ptr, theme.__wbg_ptr, ptr1, len1);
-    return takeObject(ret);
+export function getGithubDark() {
+    const ret = wasm.getGithubDark();
+    return Theme.__wrap(ret);
+}
+
+/**
+* @returns {Lexer}
+*/
+export function getPythonLexer() {
+    const ret = wasm.getPythonLexer();
+    return Lexer.__wrap(ret);
 }
 
 /**
@@ -2411,304 +2694,21 @@ export function mathjax(expression, default_font_family, default_font_size) {
 }
 
 /**
-* @returns {Theme}
+* @param {string} code
+* @param {Lexer} lexer
+* @param {Theme} theme
+* @param {string} font_family
+* @returns {Promise<WasmVectorObject>}
 */
-export function getGithubDark() {
-    const ret = wasm.getGithubDark();
-    return Theme.__wrap(ret);
-}
-
-/**
-* @returns {Lexer}
-*/
-export function getPythonLexer() {
-    const ret = wasm.getPythonLexer();
-    return Lexer.__wrap(ret);
-}
-
-function getArrayF64FromWasm0(ptr, len) {
-    ptr = ptr >>> 0;
-    return getFloat64Memory0().subarray(ptr / 8, ptr / 8 + len);
-}
-/**
-* @param {number} num_anim_funcs
-* @param {number} lag_ratio
-* @returns {Float64Array}
-*/
-export function makeTimings(num_anim_funcs, lag_ratio) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        wasm.makeTimings(retptr, num_anim_funcs, lag_ratio);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var v1 = getArrayF64FromWasm0(r0, r1).slice();
-        wasm.__wbindgen_free(r0, r1 * 8, 8);
-        return v1;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-}
-
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {(Function)[]} anim_funcs
-* @param {number} lag_ratio
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function animationGroup(vec_obj, anim_funcs, lag_ratio, t) {
-    _assertClass(vec_obj, WasmVectorObject);
-    var ptr0 = vec_obj.__destroy_into_raw();
-    const ptr1 = passArrayJsValueToWasm0(anim_funcs, wasm.__wbindgen_malloc);
+export function codeObject(code, lexer, theme, font_family) {
+    const ptr0 = passStringToWasm0(code, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    const len0 = WASM_VECTOR_LEN;
+    _assertClass(lexer, Lexer);
+    _assertClass(theme, Theme);
+    const ptr1 = passStringToWasm0(font_family, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
     const len1 = WASM_VECTOR_LEN;
-    const ret = wasm.animationGroup(ptr0, ptr1, len1, lag_ratio, t);
-    return WasmVectorObject.__wrap(ret);
-}
-
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function create(vec_obj, t) {
-    _assertClass(vec_obj, WasmVectorObject);
-    var ptr0 = vec_obj.__destroy_into_raw();
-    const ret = wasm.create(ptr0, t);
-    return WasmVectorObject.__wrap(ret);
-}
-
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} t
-* @param {number | undefined} [default_stroke_width]
-* @returns {WasmVectorObject}
-*/
-export function drawStrokeThenFill(vec_obj, t, default_stroke_width) {
-    _assertClass(vec_obj, WasmVectorObject);
-    var ptr0 = vec_obj.__destroy_into_raw();
-    const ret = wasm.drawStrokeThenFill(ptr0, t, !isLikeNone(default_stroke_width), isLikeNone(default_stroke_width) ? 0 : default_stroke_width);
-    return WasmVectorObject.__wrap(ret);
-}
-
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} lag_ratio
-* @param {number} t
-* @param {number | undefined} [default_stroke_width]
-* @returns {WasmVectorObject}
-*/
-export function write(vec_obj, lag_ratio, t, default_stroke_width) {
-    _assertClass(vec_obj, WasmVectorObject);
-    var ptr0 = vec_obj.__destroy_into_raw();
-    const ret = wasm.write(ptr0, lag_ratio, t, !isLikeNone(default_stroke_width), isLikeNone(default_stroke_width) ? 0 : default_stroke_width);
-    return WasmVectorObject.__wrap(ret);
-}
-
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} scale_factor
-* @param {Array<any>} shift
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function fadeIn(vec_obj, scale_factor, shift, t) {
-    _assertClass(vec_obj, WasmVectorObject);
-    var ptr0 = vec_obj.__destroy_into_raw();
-    const ret = wasm.fadeIn(ptr0, scale_factor, addHeapObject(shift), t);
-    return WasmVectorObject.__wrap(ret);
-}
-
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} scale_factor
-* @param {Array<any>} shift
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function fadeOut(vec_obj, scale_factor, shift, t) {
-    _assertClass(vec_obj, WasmVectorObject);
-    var ptr0 = vec_obj.__destroy_into_raw();
-    const ret = wasm.fadeOut(ptr0, scale_factor, addHeapObject(shift), t);
-    return WasmVectorObject.__wrap(ret);
-}
-
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function growArrowWithFinalTip(vec_obj, t) {
-    _assertClass(vec_obj, WasmVectorObject);
-    var ptr0 = vec_obj.__destroy_into_raw();
-    const ret = wasm.growArrowWithFinalTip(ptr0, t);
-    return WasmVectorObject.__wrap(ret);
-}
-
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function growArrowWithInitialTip(vec_obj, t) {
-    _assertClass(vec_obj, WasmVectorObject);
-    var ptr0 = vec_obj.__destroy_into_raw();
-    const ret = wasm.growArrowWithInitialTip(ptr0, t);
-    return WasmVectorObject.__wrap(ret);
-}
-
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function growArrowWithTipsAtBothEnds(vec_obj, t) {
-    _assertClass(vec_obj, WasmVectorObject);
-    var ptr0 = vec_obj.__destroy_into_raw();
-    const ret = wasm.growArrowWithTipsAtBothEnds(ptr0, t);
-    return WasmVectorObject.__wrap(ret);
-}
-
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function growFromCenter(vec_obj, t) {
-    _assertClass(vec_obj, WasmVectorObject);
-    var ptr0 = vec_obj.__destroy_into_raw();
-    const ret = wasm.growFromCenter(ptr0, t);
-    return WasmVectorObject.__wrap(ret);
-}
-
-/**
-* @param {WasmVectorObject} original
-* @param {WasmVectorObject} target
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function morphShape(original, target, t) {
-    _assertClass(original, WasmVectorObject);
-    var ptr0 = original.__destroy_into_raw();
-    _assertClass(target, WasmVectorObject);
-    var ptr1 = target.__destroy_into_raw();
-    const ret = wasm.morphShape(ptr0, ptr1, t);
-    return WasmVectorObject.__wrap(ret);
-}
-
-/**
-* @param {Array<any>} top_left_corner
-* @param {Array<any>} bottom_right_corner
-* @param {SVGScene} scene
-* @param {number} t
-*/
-export function moveCameraSVG(top_left_corner, bottom_right_corner, scene, t) {
-    _assertClass(scene, SVGScene);
-    wasm.moveCameraSVG(addHeapObject(top_left_corner), addHeapObject(bottom_right_corner), scene.__wbg_ptr, t);
-}
-
-/**
-* @param {Array<any>} top_left_corner
-* @param {Array<any>} bottom_right_corner
-* @param {Scene} scene
-* @param {number} t
-*/
-export function moveCamera(top_left_corner, bottom_right_corner, scene, t) {
-    _assertClass(scene, Scene);
-    wasm.moveCamera(addHeapObject(top_left_corner), addHeapObject(bottom_right_corner), scene.__wbg_ptr, t);
-}
-
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} angle
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function rotateAnimation(vec_obj, angle, t) {
-    _assertClass(vec_obj, WasmVectorObject);
-    var ptr0 = vec_obj.__destroy_into_raw();
-    const ret = wasm.rotateAnimation(ptr0, angle, t);
-    return WasmVectorObject.__wrap(ret);
-}
-
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} scale_factor
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function scaleInPlace(vec_obj, scale_factor, t) {
-    _assertClass(vec_obj, WasmVectorObject);
-    var ptr0 = vec_obj.__destroy_into_raw();
-    const ret = wasm.scaleInPlace(ptr0, scale_factor, t);
-    return WasmVectorObject.__wrap(ret);
-}
-
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {WasmColor} target_fill
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function setFillAnimation(vec_obj, target_fill, t) {
-    _assertClass(vec_obj, WasmVectorObject);
-    var ptr0 = vec_obj.__destroy_into_raw();
-    _assertClass(target_fill, WasmColor);
-    var ptr1 = target_fill.__destroy_into_raw();
-    const ret = wasm.setFillAnimation(ptr0, ptr1, t);
-    return WasmVectorObject.__wrap(ret);
-}
-
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {WasmColor} target_stroke
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function setStrokeAnimation(vec_obj, target_stroke, t) {
-    _assertClass(vec_obj, WasmVectorObject);
-    var ptr0 = vec_obj.__destroy_into_raw();
-    _assertClass(target_stroke, WasmColor);
-    var ptr1 = target_stroke.__destroy_into_raw();
-    const ret = wasm.setStrokeAnimation(ptr0, ptr1, t);
-    return WasmVectorObject.__wrap(ret);
-}
-
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {Array<any>} shift
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function shiftAnimation(vec_obj, shift, t) {
-    _assertClass(vec_obj, WasmVectorObject);
-    var ptr0 = vec_obj.__destroy_into_raw();
-    const ret = wasm.shiftAnimation(ptr0, addHeapObject(shift), t);
-    return WasmVectorObject.__wrap(ret);
-}
-
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function showTemporaily(vec_obj, t) {
-    _assertClass(vec_obj, WasmVectorObject);
-    var ptr0 = vec_obj.__destroy_into_raw();
-    const ret = wasm.showTemporaily(ptr0, t);
-    return WasmVectorObject.__wrap(ret);
-}
-
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} angle
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function spinningGrow(vec_obj, angle, t) {
-    _assertClass(vec_obj, WasmVectorObject);
-    var ptr0 = vec_obj.__destroy_into_raw();
-    const ret = wasm.spinningGrow(ptr0, angle, t);
-    return WasmVectorObject.__wrap(ret);
+    const ret = wasm.codeObject(ptr0, len0, lexer.__wbg_ptr, theme.__wbg_ptr, ptr1, len1);
+    return takeObject(ret);
 }
 
 /**
@@ -2735,284 +2735,13 @@ function handleError(f, args) {
         wasm.__wbindgen_exn_store(addHeapObject(e));
     }
 }
-function __wbg_adapter_677(arg0, arg1, arg2, arg3) {
+function __wbg_adapter_646(arg0, arg1, arg2, arg3) {
     wasm.wasm_bindgen__convert__closures__invoke2_mut__h271b87efd55193df(arg0, arg1, addHeapObject(arg2), addHeapObject(arg3));
 }
 
 /**
 */
 export const TokenType = Object.freeze({ Illegal:0,"0":"Illegal",Declaration:1,"1":"Declaration",Comment:2,"2":"Comment",MethodDeclaration:3,"3":"MethodDeclaration",MethodIdentifier:4,"4":"MethodIdentifier",FormattedString:5,"5":"FormattedString",FormatOpen:6,"6":"FormatOpen",FormatClose:7,"7":"FormatClose",Newline:8,"8":"Newline",Identifier:9,"9":"Identifier",ClassIdentifier:10,"10":"ClassIdentifier",Separator:11,"11":"Separator",Number:12,"12":"Number",String:13,"13":"String",Assign:14,"14":"Assign",Operator:15,"15":"Operator",Whitespace:16,"16":"Whitespace",Constant:17,"17":"Constant",Keyword:18,"18":"Keyword",Special:19,"19":"Special",LParen:20,"20":"LParen",RParen:21,"21":"RParen", });
-
-const GenericSceneFinalization = (typeof FinalizationRegistry === 'undefined')
-    ? { register: () => {}, unregister: () => {} }
-    : new FinalizationRegistry(ptr => wasm.__wbg_genericscene_free(ptr >>> 0));
-/**
-*/
-export class GenericScene {
-
-    static __wrap(ptr) {
-        ptr = ptr >>> 0;
-        const obj = Object.create(GenericScene.prototype);
-        obj.__wbg_ptr = ptr;
-        GenericSceneFinalization.register(obj, obj.__wbg_ptr, obj);
-        return obj;
-    }
-
-    __destroy_into_raw() {
-        const ptr = this.__wbg_ptr;
-        this.__wbg_ptr = 0;
-        GenericSceneFinalization.unregister(this);
-        return ptr;
-    }
-
-    free() {
-        const ptr = this.__destroy_into_raw();
-        wasm.__wbg_genericscene_free(ptr);
-    }
-    /**
-    * @param {Scene} scene
-    * @returns {GenericScene}
-    */
-    static fromScene(scene) {
-        _assertClass(scene, Scene);
-        var ptr0 = scene.__destroy_into_raw();
-        const ret = wasm.genericscene_fromScene(ptr0);
-        return GenericScene.__wrap(ret);
-    }
-    /**
-    * @param {SVGScene} scene
-    * @returns {GenericScene}
-    */
-    static fromSVGScene(scene) {
-        _assertClass(scene, SVGScene);
-        var ptr0 = scene.__destroy_into_raw();
-        const ret = wasm.genericscene_fromSVGScene(ptr0);
-        return GenericScene.__wrap(ret);
-    }
-    /**
-    * @returns {boolean}
-    */
-    isScene() {
-        const ret = wasm.genericscene_isScene(this.__wbg_ptr);
-        return ret !== 0;
-    }
-    /**
-    * @returns {boolean}
-    */
-    isSVGScene() {
-        const ret = wasm.genericscene_isSVGScene(this.__wbg_ptr);
-        return ret !== 0;
-    }
-    /**
-    * @returns {boolean}
-    */
-    isNodeScene() {
-        const ret = wasm.genericscene_isNodeScene(this.__wbg_ptr);
-        return ret !== 0;
-    }
-    /**
-    * @returns {number}
-    */
-    getFps() {
-        const ret = wasm.genericscene_getFps(this.__wbg_ptr);
-        return ret >>> 0;
-    }
-    /**
-    * @returns {number}
-    */
-    getHeight() {
-        const ret = wasm.genericscene_getHeight(this.__wbg_ptr);
-        return ret >>> 0;
-    }
-    /**
-    * @returns {number}
-    */
-    getWidth() {
-        const ret = wasm.genericscene_getWidth(this.__wbg_ptr);
-        return ret >>> 0;
-    }
-    /**
-    */
-    renderFrame() {
-        wasm.genericscene_renderFrame(this.__wbg_ptr);
-    }
-    /**
-    */
-    clear() {
-        wasm.genericscene_clear(this.__wbg_ptr);
-    }
-    /**
-    * @param {number} n
-    */
-    restore(n) {
-        wasm.genericscene_restore(this.__wbg_ptr, n);
-    }
-    /**
-    * @param {number} n
-    */
-    saveState(n) {
-        wasm.genericscene_saveState(this.__wbg_ptr, n);
-    }
-    /**
-    * @param {number} x
-    * @param {number} y
-    */
-    setTopLeftCorner(x, y) {
-        wasm.genericscene_setTopLeftCorner(this.__wbg_ptr, x, y);
-    }
-    /**
-    * @param {number} x
-    * @param {number} y
-    */
-    setBottomRightCorner(x, y) {
-        wasm.genericscene_setBottomRightCorner(this.__wbg_ptr, x, y);
-    }
-    /**
-    * @returns {Array<any>}
-    */
-    getTopLeftCorner() {
-        const ret = wasm.genericscene_getTopLeftCorner(this.__wbg_ptr);
-        return takeObject(ret);
-    }
-    /**
-    * @returns {Array<any>}
-    */
-    getBottomRightCorner() {
-        const ret = wasm.genericscene_getBottomRightCorner(this.__wbg_ptr);
-        return takeObject(ret);
-    }
-    /**
-    * @param {WasmGradientImageOrColor} color
-    */
-    setBackground(color) {
-        _assertClass(color, WasmGradientImageOrColor);
-        var ptr0 = color.__destroy_into_raw();
-        wasm.genericscene_setBackground(this.__wbg_ptr, ptr0);
-    }
-    /**
-    * @param {WasmVectorObject} object
-    */
-    add(object) {
-        _assertClass(object, WasmVectorObject);
-        var ptr0 = object.__destroy_into_raw();
-        wasm.genericscene_add(this.__wbg_ptr, ptr0);
-    }
-    /**
-    * @param {number} index
-    * @param {WasmVectorObject} object
-    */
-    insert(index, object) {
-        _assertClass(object, WasmVectorObject);
-        var ptr0 = object.__destroy_into_raw();
-        wasm.genericscene_insert(this.__wbg_ptr, index, ptr0);
-    }
-    /**
-    * @param {number} index
-    */
-    remove(index) {
-        wasm.genericscene_remove(this.__wbg_ptr, index);
-    }
-    /**
-    * @returns {Array<any>}
-    */
-    getObjects() {
-        const ret = wasm.genericscene_getObjects(this.__wbg_ptr);
-        return takeObject(ret);
-    }
-    /**
-    * @param {Array<any>} object_indices
-    * @returns {Map<any, any>}
-    */
-    getObjectsFromIndices(object_indices) {
-        const ret = wasm.genericscene_getObjectsFromIndices(this.__wbg_ptr, addHeapObject(object_indices));
-        return takeObject(ret);
-    }
-    /**
-    * @param {any} context
-    */
-    setCanvasContext(context) {
-        wasm.genericscene_setCanvasContext(this.__wbg_ptr, addHeapObject(context));
-    }
-    /**
-    * @param {HTMLDivElement} div_container
-    */
-    setDivContainer(div_container) {
-        wasm.genericscene_setDivContainer(this.__wbg_ptr, addHeapObject(div_container));
-    }
-    /**
-    * @param {number} duration_in_ms
-    * @returns {Promise<void>}
-    */
-    sleep(duration_in_ms) {
-        const ret = wasm.genericscene_sleep(this.__wbg_ptr, duration_in_ms);
-        return takeObject(ret);
-    }
-    /**
-    * @param {Array<any>} objects
-    */
-    setObjects(objects) {
-        wasm.genericscene_setObjects(this.__wbg_ptr, addHeapObject(objects));
-    }
-    /**
-    * @param {Function} animation_func
-    * @param {Uint32Array} object_indices
-    * @param {number} duration_in_frames
-    * @param {Function} rate_func
-    * @returns {Promise<void>}
-    */
-    play(animation_func, object_indices, duration_in_frames, rate_func) {
-        const ptr0 = passArray32ToWasm0(object_indices, wasm.__wbindgen_malloc);
-        const len0 = WASM_VECTOR_LEN;
-        const ret = wasm.genericscene_play(this.__wbg_ptr, addHeapObject(animation_func), ptr0, len0, duration_in_frames, addHeapObject(rate_func));
-        return takeObject(ret);
-    }
-    /**
-    * @param {Function} animation_func
-    * @param {Array<any>} objects
-    * @param {number} t
-    * @returns {Promise<void>}
-    */
-    makeFrame(animation_func, objects, t) {
-        const ret = wasm.genericscene_makeFrame(this.__wbg_ptr, addHeapObject(animation_func), addHeapObject(objects), t);
-        return takeObject(ret);
-    }
-    /**
-    * @param {number} duration_in_frames
-    * @returns {Promise<void>}
-    */
-    wait(duration_in_frames) {
-        const ret = wasm.genericscene_wait(this.__wbg_ptr, duration_in_frames);
-        return takeObject(ret);
-    }
-    /**
-    * @param {Function} callback
-    */
-    setCallback(callback) {
-        wasm.genericscene_setCallback(this.__wbg_ptr, addHeapObject(callback));
-    }
-    /**
-    * @returns {Promise<void>}
-    */
-    callCallback() {
-        const ret = wasm.genericscene_callCallback(this.__wbg_ptr);
-        return takeObject(ret);
-    }
-    /**
-    * @param {number} index
-    * @param {string} _class
-    */
-    setClass(index, _class) {
-        const ptr0 = passStringToWasm0(_class, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-        const len0 = WASM_VECTOR_LEN;
-        wasm.genericscene_setClass(this.__wbg_ptr, index, ptr0, len0);
-    }
-    /**
-    * @param {number} index
-    */
-    setStyle(index) {
-        wasm.genericscene_setStyle(this.__wbg_ptr, index);
-    }
-}
 
 const LexerFinalization = (typeof FinalizationRegistry === 'undefined')
     ? { register: () => {}, unregister: () => {} }
@@ -4103,9 +3832,11 @@ export class SVGScene {
         return ret >>> 0;
     }
     /**
+    * @returns {Promise<void>}
     */
     renderFrame() {
-        wasm.svgscene_renderFrame(this.__wbg_ptr);
+        const ret = wasm.svgscene_renderFrame(this.__wbg_ptr);
+        return takeObject(ret);
     }
     /**
     */
@@ -4252,14 +3983,14 @@ export class SVGScene {
     /**
     * @param {Function} callback
     */
-    setCallback(callback) {
-        wasm.svgscene_setCallback(this.__wbg_ptr, addHeapObject(callback));
+    setOnRendered(callback) {
+        wasm.svgscene_setOnRendered(this.__wbg_ptr, addHeapObject(callback));
     }
     /**
     * @returns {Promise<void>}
     */
-    callCallback() {
-        const ret = wasm.svgscene_callCallback(this.__wbg_ptr);
+    onRendered() {
+        const ret = wasm.svgscene_onRendered(this.__wbg_ptr);
         return takeObject(ret);
     }
     /**
@@ -4329,9 +4060,11 @@ export class Scene {
         return ret >>> 0;
     }
     /**
+    * @returns {Promise<void>}
     */
     renderFrame() {
-        wasm.scene_renderFrame(this.__wbg_ptr);
+        const ret = wasm.scene_renderFrame(this.__wbg_ptr);
+        return takeObject(ret);
     }
     /**
     */
@@ -4478,14 +4211,14 @@ export class Scene {
     /**
     * @param {Function} callback
     */
-    setCallback(callback) {
-        wasm.scene_setCallback(this.__wbg_ptr, addHeapObject(callback));
+    setOnRendered(callback) {
+        wasm.scene_setOnRendered(this.__wbg_ptr, addHeapObject(callback));
     }
     /**
     * @returns {Promise<void>}
     */
-    callCallback() {
-        const ret = wasm.scene_callCallback(this.__wbg_ptr);
+    onRendered() {
+        const ret = wasm.scene_onRendered(this.__wbg_ptr);
         return takeObject(ret);
     }
 }
@@ -5002,7 +4735,7 @@ export class Token {
         let deferred1_1;
         try {
             const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-            wasm.token_getLiteral(retptr, this.__wbg_ptr);
+            wasm.theme_getKeywordColor(retptr, this.__wbg_ptr);
             var r0 = getInt32Memory0()[retptr / 4 + 0];
             var r1 = getInt32Memory0()[retptr / 4 + 1];
             deferred1_0 = r0;
@@ -6544,6 +6277,10 @@ async function __wbg_load(module, imports) {
 function __wbg_get_imports() {
     const imports = {};
     imports.wbg = {};
+    imports.wbg.__wbg_wasmvectorobject_new = function(arg0) {
+        const ret = WasmVectorObject.__wrap(arg0);
+        return addHeapObject(ret);
+    };
     imports.wbg.__wbindgen_number_new = function(arg0) {
         const ret = arg0;
         return addHeapObject(ret);
@@ -6554,10 +6291,6 @@ function __wbg_get_imports() {
     };
     imports.wbg.__wbg_wasmgradientstop_new = function(arg0) {
         const ret = WasmGradientStop.__wrap(arg0);
-        return addHeapObject(ret);
-    };
-    imports.wbg.__wbg_wasmvectorobject_new = function(arg0) {
-        const ret = WasmVectorObject.__wrap(arg0);
         return addHeapObject(ret);
     };
     imports.wbg.__wbindgen_object_drop_ref = function(arg0) {
@@ -6585,7 +6318,7 @@ function __wbg_get_imports() {
         getInt32Memory0()[arg0 / 4 + 1] = len1;
         getInt32Memory0()[arg0 / 4 + 0] = ptr1;
     };
-    imports.wbg.__wbg_log_5d54d4522c42633d = function(arg0, arg1) {
+    imports.wbg.__wbg_log_aa5342fc34de5976 = function(arg0, arg1) {
         console.log(getStringFromWasm0(arg0, arg1));
     };
     imports.wbg.__wbindgen_object_clone_ref = function(arg0) {
@@ -6613,16 +6346,13 @@ function __wbg_get_imports() {
         const ret = WasmVectorObject.__unwrap(takeObject(arg0));
         return ret;
     };
+    imports.wbg.__wbindgen_jsval_eq = function(arg0, arg1) {
+        const ret = getObject(arg0) === getObject(arg1);
+        return ret;
+    };
     imports.wbg.__wbg_wasmthreedobject_unwrap = function(arg0) {
         const ret = WasmThreeDObject.__unwrap(takeObject(arg0));
         return ret;
-    };
-    imports.wbg.__wbindgen_error_new = function(arg0, arg1) {
-        const ret = new Error(getStringFromWasm0(arg0, arg1));
-        return addHeapObject(ret);
-    };
-    imports.wbg.__wbg_error_c2bc22584625e7cf = function(arg0) {
-        console.error(takeObject(arg0));
     };
     imports.wbg.__wbindgen_cb_drop = function(arg0) {
         const obj = takeObject(arg0).original;
@@ -6632,6 +6362,13 @@ function __wbg_get_imports() {
         }
         const ret = false;
         return ret;
+    };
+    imports.wbg.__wbindgen_error_new = function(arg0, arg1) {
+        const ret = new Error(getStringFromWasm0(arg0, arg1));
+        return addHeapObject(ret);
+    };
+    imports.wbg.__wbg_error_c9e54ec312fcc49d = function(arg0) {
+        console.error(takeObject(arg0));
     };
     imports.wbg.__wbg_instanceof_Window_f401953a2cf86220 = function(arg0) {
         let result;
@@ -6754,10 +6491,10 @@ function __wbg_get_imports() {
     imports.wbg.__wbg_addColorStop_9269a253957ed919 = function() { return handleError(function (arg0, arg1, arg2, arg3) {
         getObject(arg0).addColorStop(arg1, getStringFromWasm0(arg2, arg3));
     }, arguments) };
-    imports.wbg.__wbg_target_2fc177e386c8b7b0 = function(arg0) {
-        const ret = getObject(arg0).target;
-        return isLikeNone(ret) ? 0 : addHeapObject(ret);
-    };
+    imports.wbg.__wbg_appendChild_580ccb11a660db68 = function() { return handleError(function (arg0, arg1) {
+        const ret = getObject(arg0).appendChild(getObject(arg1));
+        return addHeapObject(ret);
+    }, arguments) };
     imports.wbg.__wbg_instanceof_HtmlCanvasElement_46bdbf323b0b18d1 = function(arg0) {
         let result;
         try {
@@ -6800,14 +6537,6 @@ function __wbg_get_imports() {
     };
     imports.wbg.__wbg_new_e6ce9457ca710f38 = function() { return handleError(function () {
         const ret = new Image();
-        return addHeapObject(ret);
-    }, arguments) };
-    imports.wbg.__wbg_newwithwidthandheight_875dbc1c01379d77 = function() { return handleError(function (arg0, arg1) {
-        const ret = new Image(arg0 >>> 0, arg1 >>> 0);
-        return addHeapObject(ret);
-    }, arguments) };
-    imports.wbg.__wbg_appendChild_580ccb11a660db68 = function() { return handleError(function (arg0, arg1) {
-        const ret = getObject(arg0).appendChild(getObject(arg1));
         return addHeapObject(ret);
     }, arguments) };
     imports.wbg.__wbg_queueMicrotask_481971b0d87f3dd4 = function(arg0) {
@@ -6944,6 +6673,14 @@ function __wbg_get_imports() {
         const ret = getObject(arg0).call(getObject(arg1), getObject(arg2), getObject(arg3));
         return addHeapObject(ret);
     }, arguments) };
+    imports.wbg.__wbg_get_596396f84e7b37c4 = function(arg0, arg1) {
+        const ret = getObject(arg0).get(getObject(arg1));
+        return addHeapObject(ret);
+    };
+    imports.wbg.__wbg_has_3d3a13c742474383 = function(arg0, arg1) {
+        const ret = getObject(arg0).has(getObject(arg1));
+        return ret;
+    };
     imports.wbg.__wbg_set_8417257aaedc936b = function(arg0, arg1, arg2) {
         const ret = getObject(arg0).set(getObject(arg1), getObject(arg2));
         return addHeapObject(ret);
@@ -6965,7 +6702,7 @@ function __wbg_get_imports() {
                 const a = state0.a;
                 state0.a = 0;
                 try {
-                    return __wbg_adapter_677(a, state0.b, arg0, arg1);
+                    return __wbg_adapter_646(a, state0.b, arg0, arg1);
                 } finally {
                     state0.a = a;
                 }
@@ -7025,16 +6762,16 @@ function __wbg_get_imports() {
         const ret = wasm.memory;
         return addHeapObject(ret);
     };
-    imports.wbg.__wbindgen_closure_wrapper1493 = function(arg0, arg1, arg2) {
-        const ret = makeClosure(arg0, arg1, 204, __wbg_adapter_34);
+    imports.wbg.__wbindgen_closure_wrapper914 = function(arg0, arg1, arg2) {
+        const ret = makeClosure(arg0, arg1, 149, __wbg_adapter_36);
         return addHeapObject(ret);
     };
-    imports.wbg.__wbindgen_closure_wrapper1495 = function(arg0, arg1, arg2) {
-        const ret = makeClosure(arg0, arg1, 204, __wbg_adapter_37);
+    imports.wbg.__wbindgen_closure_wrapper916 = function(arg0, arg1, arg2) {
+        const ret = makeClosure(arg0, arg1, 149, __wbg_adapter_39);
         return addHeapObject(ret);
     };
-    imports.wbg.__wbindgen_closure_wrapper3261 = function(arg0, arg1, arg2) {
-        const ret = makeMutClosure(arg0, arg1, 972, __wbg_adapter_40);
+    imports.wbg.__wbindgen_closure_wrapper3165 = function(arg0, arg1, arg2) {
+        const ret = makeMutClosure(arg0, arg1, 965, __wbg_adapter_42);
         return addHeapObject(ret);
     };
 

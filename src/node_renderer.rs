@@ -1,5 +1,6 @@
-use js_sys::Number;
+use js_sys::{Number, Promise};
 use wasm_bindgen::prelude::*;
+use wasm_bindgen_futures::JsFuture;
 
 use crate::{colors::GradientImageOrColor, objects::vector_object::{generate_cubic_bezier_tuples, generate_subpaths, VectorFeatures}, utils::consider_points_equals};
 
@@ -341,14 +342,15 @@ pub fn render_vector_wasm(
 }
 
 
-pub fn render_all_vectors(
+pub async fn render_all_vectors(
     vecs: &Vec<VectorFeatures>,
     width: u32,
     height: u32,
     context: &CanvasRenderingContext2D,
-    background: GradientImageOrColor,
+    background: &GradientImageOrColor,
     top_left_corner: (f64, f64),
-    bottom_right_corner: (f64, f64)
+    bottom_right_corner: (f64, f64),
+    callback: &js_sys::Function
 ) {
     context.reset_transform();
     let scale_xy = (width as f64 / (bottom_right_corner.0 - top_left_corner.0), height as f64 / (bottom_right_corner.1 - top_left_corner.1));
@@ -406,4 +408,6 @@ pub fn render_all_vectors(
     for vec in vecs {
         render_vector_wasm(&vec, width, height, &context);
     }
+    let promise = callback.call0(&JsValue::NULL).unwrap().dyn_into::<Promise>().unwrap();
+    JsFuture::from(promise).await.unwrap();
 }

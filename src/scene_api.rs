@@ -42,8 +42,7 @@ pub trait SceneAPI {
                     &objects,
                     rate_func(frame as f64 / duration_in_frames as f64)
                 ).await;
-                self.render_frame();
-                self.on_rendered().await;
+                self.render_frame().await;
                 self.sleep((1000 / fps) as i32).await;
             }
             self.make_frame(
@@ -78,14 +77,12 @@ pub trait SceneAPI {
     fn wait(&mut self, duration_in_frames: u32) -> impl Future<Output = ()> {
         async move {
             for _ in 0..duration_in_frames {
-                self.render_frame();
-                self.on_rendered().await;
+                self.render_frame().await;
                 self.sleep((1000 / self.get_fps()) as i32).await;
             }
         }
     }
     fn sleep(&mut self, duration_in_ms: i32) -> impl Future<Output = ()>;
-    fn render_frame(&mut self);
-    fn on_rendered(&mut self) -> impl Future<Output = ()>;
+    fn render_frame(&mut self) -> impl Future<Output = ()>;
     fn get_objects_from_indices(&self, object_indices: Vec<usize>) -> HashMap<usize, VectorFeatures>;
 }

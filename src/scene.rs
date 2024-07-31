@@ -1,9 +1,9 @@
 use std::collections::HashMap;
-use js_sys::{Array, Function, Promise};
+use js_sys::{Array, Function, Map, Promise};
 use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::JsFuture;
 
-use crate::{colors::{Color, GradientImageOrColor}, objects::{vector_object::VectorFeatures, wasm_interface::{WasmGradientImageOrColor, WasmVectorObject}}, web_renderer::render_all_vectors, scene_api::SceneAPI, utils::sleep};
+use crate::{colors::{Color, GradientImageOrColor}, objects::{vector_object::VectorFeatures, wasm_interface::{WasmGradientImageOrColor, WasmVectorObject}}, scene_api::SceneAPI, utils::sleep, web_renderer::render_all_vectors};
 
 #[wasm_bindgen]
 #[derive(Clone)]
@@ -23,9 +23,11 @@ pub struct Scene {
     #[wasm_bindgen(skip)]
     pub bottom_right_corner: (f64, f64),
     #[wasm_bindgen(skip)]
-    pub context: Option<web_sys::CanvasRenderingContext2d>,
+    pub context: Option<&'static web_sys::CanvasRenderingContext2d>,
     #[wasm_bindgen(skip)]
     pub states: HashMap<usize, (Vec<VectorFeatures>, GradientImageOrColor, (f64, f64), (f64, f64))>,
+    #[wasm_bindgen(skip)]
+    pub loaded_images: Map,
     #[wasm_bindgen(skip)]
     pub callback: Function
 }
@@ -48,12 +50,9 @@ impl SceneAPI for Scene {
             top_left_corner: (0.0, 0.0),
             bottom_right_corner: (width as f64, height as f64),
             states: HashMap::new(),
+            loaded_images: Map::new(),
             callback: Closure::wrap(Box::new(|| Promise::resolve(&JsValue::NULL)) as Box<dyn Fn() -> Promise>).into_js_value().dyn_into().unwrap()
         };
-    }
-    async fn on_rendered(&mut self) {
-        let promise = self.callback.call0(&JsValue::NULL).unwrap().dyn_into::<Promise>().unwrap();
-        JsFuture::from(promise).await.unwrap();
     }
     fn get_fps(&self) -> &u32 {
         return &self.fps;
@@ -64,8 +63,8 @@ impl SceneAPI for Scene {
     fn get_width(&self) -> &u32 {
         return &self.width;
     }
-    fn render_frame(&mut self) {
-        render_all_vectors(&self.objects.clone(), self.width, self.height, self.context.clone(), self.background.clone(), self.top_left_corner, self.bottom_right_corner);
+    async fn render_frame(&mut self) {
+        render_all_vectors(&self.objects, self.width, self.height, self.context, &self.background, self.top_left_corner, self.bottom_right_corner, &self.loaded_images, &self.callback).await;
     }
     fn clear(&mut self) {
         self.objects = Vec::new();
@@ -136,8 +135,8 @@ impl Scene {
         return self.width;
     }
     #[wasm_bindgen(js_name = renderFrame)]
-    pub fn render_frame_js(&mut self) {
-        self.render_frame();
+    pub async fn render_frame_js(&mut self) {
+        self.render_frame().await;
     }
     #[wasm_bindgen(js_name = clear)]
     pub fn clear_js(&mut self) {
@@ -214,6 +213,7 @@ impl Scene {
     }
     #[wasm_bindgen(js_name = setCanvasContext)]
     pub fn set_canvas_context_js(&mut self, context: web_sys::CanvasRenderingContext2d) {
+        let context: &'static web_sys::CanvasRenderingContext2d = Box::leak(Box::new(context));
         self.context = Some(context);
     }
     #[wasm_bindgen(js_name = sleep)]
@@ -250,12 +250,13 @@ impl Scene {
     pub async fn wait_js(&mut self, duration_in_frames: u32) {
         self.wait(duration_in_frames).await;
     }
-    #[wasm_bindgen(js_name = setCallback)]
-    pub fn set_callback_js(&mut self, callback: js_sys::Function) {
+    #[wasm_bindgen(js_name = setOnRendered)]
+    pub fn set_on_rendered_js(&mut self, callback: js_sys::Function) {
         self.callback = callback;
     }
-    #[wasm_bindgen(js_name = callCallback)]
-    pub async fn call_callback_js(&mut self) {
-        self.on_rendered().await;
+    #[wasm_bindgen(js_name = onRendered)]
+    pub async fn on_rendered_js(&mut self) {
+        let promise = self.callback.call0(&JsValue::NULL).unwrap().dyn_into::<Promise>().unwrap();
+        JsFuture::from(promise).await.unwrap();
     }
 }
