@@ -1,4 +1,4 @@
-use crate::objects::vector_object::{VectorFeatures, VectorObject};
+use crate::objects::vector_object::VectorFeatures;
 
 pub fn create(vec_obj: VectorFeatures, t: f64) -> VectorFeatures {
     let new_vec_obj = vec_obj.clone()

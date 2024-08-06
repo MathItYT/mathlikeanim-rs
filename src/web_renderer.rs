@@ -72,7 +72,8 @@ pub fn get_d_string_from_points(
 pub fn vec_to_def_and_use_string(
     vec: &VectorFeatures,
     class: Option<&String>,
-    document: &web_sys::Document
+    document: &web_sys::Document,
+    id_prefix: &String
 ) -> (String, String) {
     let mut def_string = "".to_string();
     let mut use_string = "".to_string();
@@ -88,7 +89,7 @@ pub fn vec_to_def_and_use_string(
             GradientImageOrColor::LinearGradient(gradient) => {
                 let alpha = gradient.alpha;
                 let grd = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "linearGradient").unwrap();
-                let id = format!("gradient_{}", uuid::Uuid::new_v4());
+                let id = format!("lgradient_{}", format!("{}_{}", id_prefix, vec.index));
                 grd.set_attribute("id", &id).unwrap();
                 grd.set_attribute("x1", &gradient.x1.to_string()).unwrap();
                 grd.set_attribute("y1", &gradient.y1.to_string()).unwrap();
@@ -112,7 +113,7 @@ pub fn vec_to_def_and_use_string(
             GradientImageOrColor::RadialGradient(gradient) => {
                 let alpha = gradient.alpha;
                 let grd = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "radialGradient").unwrap();
-                let id = format!("gradient_{}", uuid::Uuid::new_v4());
+                let id = format!("rgradient_{}", format!("{}_{}", id_prefix, vec.index));
                 grd.set_attribute("id", &id).unwrap();
                 grd.set_attribute("cx", &gradient.cx.to_string()).unwrap();
                 grd.set_attribute("cy", &gradient.cy.to_string()).unwrap();
@@ -144,7 +145,7 @@ pub fn vec_to_def_and_use_string(
                 let y = top_left_corner.1.to_string();
                 let width = (bottom_right_corner.0 - top_left_corner.0).to_string();
                 let height = (bottom_right_corner.1 - top_left_corner.1).to_string();
-                let pattern_id = format!("pattern_{}", uuid::Uuid::new_v4());
+                let pattern_id = format!("image_{}", format!("{}_{}", id_prefix, vec.index));
                 let pattern = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "pattern").unwrap();
                 pattern.set_attribute("id", &pattern_id).unwrap();
                 pattern.set_attribute("x", &x).unwrap();
@@ -173,7 +174,7 @@ pub fn vec_to_def_and_use_string(
             GradientImageOrColor::LinearGradient(gradient) => {
                 let alpha = gradient.alpha;
                 let grd = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "linearGradient").unwrap();
-                let id = format!("gradient_{}", uuid::Uuid::new_v4());
+                let id = format!("lgradient_{}", format!("{}_{}", id_prefix, vec.index));
                 grd.set_attribute("id", &id).unwrap();
                 grd.set_attribute("x1", &gradient.x1.to_string()).unwrap();
                 grd.set_attribute("y1", &gradient.y1.to_string()).unwrap();
@@ -197,7 +198,7 @@ pub fn vec_to_def_and_use_string(
             GradientImageOrColor::RadialGradient(gradient) => {
                 let alpha = gradient.alpha;
                 let grd = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "radialGradient").unwrap();
-                let id = format!("gradient_{}", uuid::Uuid::new_v4());
+                let id = format!("rgradient_{}", format!("{}_{}", id_prefix, vec.index));
                 grd.set_attribute("id", &id).unwrap();
                 grd.set_attribute("cx", &gradient.cx.to_string()).unwrap();
                 grd.set_attribute("cy", &gradient.cy.to_string()).unwrap();
@@ -229,7 +230,7 @@ pub fn vec_to_def_and_use_string(
                 let y = top_left_corner.1.to_string();
                 let width = (bottom_right_corner.0 - top_left_corner.0).to_string();
                 let height = (bottom_right_corner.1 - top_left_corner.1).to_string();
-                let pattern_id = format!("pattern_{}", uuid::Uuid::new_v4());
+                let pattern_id = format!("image_{}", format!("{}_{}", id_prefix, vec.index));
                 let pattern = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "pattern").unwrap();
                 pattern.set_attribute("id", &pattern_id).unwrap();
                 pattern.set_attribute("x", &x).unwrap();
@@ -251,7 +252,7 @@ pub fn vec_to_def_and_use_string(
                 stroke = format!("url(#{})", pattern_id);
             },
         }
-        let path_id = format!("path_{}", uuid::Uuid::new_v4());
+        let path_id = format!("path_{}", format!("{}_{}", id_prefix, vec.index));
         let d = get_d_string_from_points(&vec.points);
         let path = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "path").unwrap();
         path.set_attribute("id", &path_id).unwrap();
@@ -269,7 +270,8 @@ pub fn vec_to_def_and_use_string(
         }
     }
     for subvec in &vec.subobjects {
-        let (subdef_string, subuse_string) = vec_to_def_and_use_string(subvec, class, document);
+        let new_index_prefix = format!("{}_{}", id_prefix, vec.index);
+        let (subdef_string, subuse_string) = vec_to_def_and_use_string(subvec, class, document, &new_index_prefix);
         def_string.push_str(&subdef_string);
         use_string.push_str(&subuse_string);
     }
@@ -299,7 +301,7 @@ pub async fn render_all_vectors_svg(
         GradientImageOrColor::LinearGradient(gradient) => {
             let alpha = gradient.alpha;
             let grd = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "linearGradient").unwrap();
-            let id = format!("gradient_{}", uuid::Uuid::new_v4());
+            let id = format!("lgradient_{}", "_background");
             grd.set_attribute("id", &id).unwrap();
             grd.set_attribute("x1", &gradient.x1.to_string()).unwrap();
             grd.set_attribute("y1", &gradient.y1.to_string()).unwrap();
@@ -323,7 +325,7 @@ pub async fn render_all_vectors_svg(
         GradientImageOrColor::RadialGradient(gradient) => {
             let alpha = gradient.alpha;
             let grd = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "radialGradient").unwrap();
-            let id = format!("gradient_{}", uuid::Uuid::new_v4());
+            let id = format!("rgradient_{}", "_background");
             grd.set_attribute("id", &id).unwrap();
             grd.set_attribute("cx", &gradient.cx.to_string()).unwrap();
             grd.set_attribute("cy", &gradient.cy.to_string()).unwrap();
@@ -355,7 +357,7 @@ pub async fn render_all_vectors_svg(
             let y = top_left_corner.1.to_string();
             let width = (bottom_right_corner.0 - top_left_corner.0).to_string();
             let height = (bottom_right_corner.1 - top_left_corner.1).to_string();
-            let pattern_id = format!("pattern_{}", uuid::Uuid::new_v4());
+            let pattern_id = format!("image_{}", "_background");
             let pattern = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "pattern").unwrap();
             pattern.set_attribute("id", &pattern_id).unwrap();
             pattern.set_attribute("x", &x).unwrap();
@@ -380,7 +382,7 @@ pub async fn render_all_vectors_svg(
     }
     svg.push_str(format!("<rect x=\"{}\" y=\"{}\" width=\"{}\" height=\"{}\" fill=\"{}\"/>\n", top_left_corner.0, top_left_corner.1, bottom_right_corner.0 - top_left_corner.0, bottom_right_corner.1 - top_left_corner.1, rec_fill).as_str());
     for vec in &svg_scene.objects {
-        let (def_string, use_string) = vec_to_def_and_use_string(&vec, svg_scene.classes.get(&vec.index), &document);
+        let (def_string, use_string) = vec_to_def_and_use_string(&vec, svg_scene.classes.get(&vec.index), &document, &"".to_string());
         defs.push_str(&def_string);
         use_strings.push_str(&use_string);
     }

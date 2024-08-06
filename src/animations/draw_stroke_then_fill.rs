@@ -1,4 +1,4 @@
-use crate::objects::vector_object::{VectorFeatures, VectorObject};
+use crate::objects::vector_object::VectorFeatures;
 use crate::utils::{integer_interpolate, interpolate};
 
 use crate::animations::animation_group::animation_group;

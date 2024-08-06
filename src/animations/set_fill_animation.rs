@@ -1,4 +1,4 @@
-use crate::{colors::{Color, GradientImageOrColor}, objects::vector_object::{VectorFeatures, VectorObject}, utils::interpolate_color};
+use crate::{colors::{Color, GradientImageOrColor}, objects::vector_object::VectorFeatures, utils::interpolate_color};
 
 pub fn set_fill_animation(vec_obj: VectorFeatures, target_fill: (f64, f64, f64, f64), t: f64) -> VectorFeatures {
     let mut vec_obj = vec_obj;

@@ -1,6 +1,6 @@
 use std::f64::consts::PI;
 
-use crate::{colors::{Color, GradientImageOrColor}, objects::vector_object::{VectorFeatures, VectorObject}, utils::{line_as_cubic_bezier, points_from_anchors_and_handles}};
+use crate::{colors::{Color, GradientImageOrColor}, objects::vector_object::VectorFeatures, utils::{line_as_cubic_bezier, points_from_anchors_and_handles}};
 
 
 pub fn arc(

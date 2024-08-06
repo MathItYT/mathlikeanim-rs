@@ -3,7 +3,7 @@ use std::f64::consts::PI;
 use crate::colors::{Color, GradientImageOrColor};
 use crate::objects::geometry::line::line;
 use crate::objects::geometry::poly::rectangle;
-use crate::objects::vector_object::{VectorFeatures, VectorObject};
+use crate::objects::vector_object::VectorFeatures;
 
 use crate::objects::plotting::number_line::{number_line, number_to_point};
 use crate::utils::{distance_squared, line_as_cubic_bezier};

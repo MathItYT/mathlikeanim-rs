@@ -1,4 +1,4 @@
-use crate::{utils::{interpolate, interpolate_tuple}, objects::vector_object::{VectorFeatures, VectorObject}};
+use crate::{utils::{interpolate, interpolate_tuple}, objects::vector_object::VectorFeatures};
 
 
 pub fn fade_in(vec_obj: VectorFeatures, scale_factor: f64, shift: (f64, f64), t: f64) -> VectorFeatures {

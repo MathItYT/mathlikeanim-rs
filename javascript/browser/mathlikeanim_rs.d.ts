@@ -445,6 +445,13 @@ export function getNumbersTex(number_line: WasmVectorObject, numbers: Array<any>
 */
 export function svgToVector(svg: string, default_font_family?: string, default_font_size?: number): Promise<WasmVectorObject>;
 /**
+* @param {string} expression
+* @param {string | undefined} [default_font_family]
+* @param {number | undefined} [default_font_size]
+* @returns {Promise<WasmVectorObject>}
+*/
+export function mathjax(expression: string, default_font_family?: string, default_font_size?: number): Promise<WasmVectorObject>;
+/**
 * @param {number} angle
 * @param {number} axis
 * @returns {Array<any>}
@@ -667,149 +674,24 @@ export function plotInAxes3D(axes: WasmThreeDObject, f: Function, x_min: number,
 */
 export function parametricLinePlotInAxes3D(axes: WasmThreeDObject, f: Function, u_min: number, u_max: number, u_segments: number, x_min: number, x_max: number, y_min: number, y_max: number, z_min: number, z_max: number, color: WasmColor, stroke_width: number): WasmThreeDObject;
 /**
-* @param {number} num_anim_funcs
-* @param {number} lag_ratio
-* @returns {Float64Array}
+* @param {Array<any>} center
+* @param {number} radius
+* @param {number} u_segments
+* @param {number} v_segments
+* @param {(WasmColor)[]} fill_colors
+* @param {(WasmColor)[]} stroke_colors
+* @param {number} stroke_width
+* @returns {WasmThreeDObject}
 */
-export function makeTimings(num_anim_funcs: number, lag_ratio: number): Float64Array;
+export function sphere(center: Array<any>, radius: number, u_segments: number, v_segments: number, fill_colors: (WasmColor)[], stroke_colors: (WasmColor)[], stroke_width: number): WasmThreeDObject;
 /**
-* @param {WasmVectorObject} vec_obj
-* @param {(Function)[]} anim_funcs
-* @param {number} lag_ratio
-* @param {number} t
-* @returns {WasmVectorObject}
+* @returns {Theme}
 */
-export function animationGroup(vec_obj: WasmVectorObject, anim_funcs: (Function)[], lag_ratio: number, t: number): WasmVectorObject;
+export function getGithubDark(): Theme;
 /**
-* @param {WasmVectorObject} vec_obj
-* @param {number} t
-* @returns {WasmVectorObject}
+* @returns {Lexer}
 */
-export function create(vec_obj: WasmVectorObject, t: number): WasmVectorObject;
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} t
-* @param {number | undefined} [default_stroke_width]
-* @returns {WasmVectorObject}
-*/
-export function drawStrokeThenFill(vec_obj: WasmVectorObject, t: number, default_stroke_width?: number): WasmVectorObject;
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} lag_ratio
-* @param {number} t
-* @param {number | undefined} [default_stroke_width]
-* @returns {WasmVectorObject}
-*/
-export function write(vec_obj: WasmVectorObject, lag_ratio: number, t: number, default_stroke_width?: number): WasmVectorObject;
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} scale_factor
-* @param {Array<any>} shift
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function fadeIn(vec_obj: WasmVectorObject, scale_factor: number, shift: Array<any>, t: number): WasmVectorObject;
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} scale_factor
-* @param {Array<any>} shift
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function fadeOut(vec_obj: WasmVectorObject, scale_factor: number, shift: Array<any>, t: number): WasmVectorObject;
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function growArrowWithFinalTip(vec_obj: WasmVectorObject, t: number): WasmVectorObject;
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function growArrowWithInitialTip(vec_obj: WasmVectorObject, t: number): WasmVectorObject;
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function growArrowWithTipsAtBothEnds(vec_obj: WasmVectorObject, t: number): WasmVectorObject;
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function growFromCenter(vec_obj: WasmVectorObject, t: number): WasmVectorObject;
-/**
-* @param {WasmVectorObject} original
-* @param {WasmVectorObject} target
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function morphShape(original: WasmVectorObject, target: WasmVectorObject, t: number): WasmVectorObject;
-/**
-* @param {Array<any>} top_left_corner
-* @param {Array<any>} bottom_right_corner
-* @param {SVGScene} scene
-* @param {number} t
-*/
-export function moveCameraSVG(top_left_corner: Array<any>, bottom_right_corner: Array<any>, scene: SVGScene, t: number): void;
-/**
-* @param {Array<any>} top_left_corner
-* @param {Array<any>} bottom_right_corner
-* @param {Scene} scene
-* @param {number} t
-*/
-export function moveCamera(top_left_corner: Array<any>, bottom_right_corner: Array<any>, scene: Scene, t: number): void;
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} angle
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function rotateAnimation(vec_obj: WasmVectorObject, angle: number, t: number): WasmVectorObject;
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} scale_factor
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function scaleInPlace(vec_obj: WasmVectorObject, scale_factor: number, t: number): WasmVectorObject;
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {WasmColor} target_fill
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function setFillAnimation(vec_obj: WasmVectorObject, target_fill: WasmColor, t: number): WasmVectorObject;
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {WasmColor} target_stroke
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function setStrokeAnimation(vec_obj: WasmVectorObject, target_stroke: WasmColor, t: number): WasmVectorObject;
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {Array<any>} shift
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function shiftAnimation(vec_obj: WasmVectorObject, shift: Array<any>, t: number): WasmVectorObject;
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function showTemporaily(vec_obj: WasmVectorObject, t: number): WasmVectorObject;
-/**
-* @param {WasmVectorObject} vec_obj
-* @param {number} angle
-* @param {number} t
-* @returns {WasmVectorObject}
-*/
-export function spinningGrow(vec_obj: WasmVectorObject, angle: number, t: number): WasmVectorObject;
+export function getPythonLexer(): Lexer;
 /**
 * @param {number} ux
 * @param {number} uy
@@ -1265,29 +1147,6 @@ export function easeInBounce(t: number): number;
 */
 export function easeInOutBounce(t: number): number;
 /**
-* @returns {Theme}
-*/
-export function getGithubDark(): Theme;
-/**
-* @returns {Lexer}
-*/
-export function getPythonLexer(): Lexer;
-/**
-* @param {string} expression
-* @param {string | undefined} [default_font_family]
-* @param {number | undefined} [default_font_size]
-* @returns {Promise<WasmVectorObject>}
-*/
-export function mathjax(expression: string, default_font_family?: string, default_font_size?: number): Promise<WasmVectorObject>;
-/**
-* @param {string} code
-* @param {Lexer} lexer
-* @param {Theme} theme
-* @param {string} font_family
-* @returns {Promise<WasmVectorObject>}
-*/
-export function codeObject(code: string, lexer: Lexer, theme: Theme, font_family: string): Promise<WasmVectorObject>;
-/**
 * @param {string} text
 * @param {string} font_family
 * @param {number} x
@@ -1296,6 +1155,158 @@ export function codeObject(code: string, lexer: Lexer, theme: Theme, font_family
 * @returns {Promise<WasmVectorObject>}
 */
 export function textToVector(text: string, font_family: string, x: number, y: number, font_size: number): Promise<WasmVectorObject>;
+/**
+* @param {number} num_anim_funcs
+* @param {number} lag_ratio
+* @returns {Float64Array}
+*/
+export function makeTimings(num_anim_funcs: number, lag_ratio: number): Float64Array;
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {(Function)[]} anim_funcs
+* @param {number} lag_ratio
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+export function animationGroup(vec_obj: WasmVectorObject, anim_funcs: (Function)[], lag_ratio: number, t: number): WasmVectorObject;
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+export function create(vec_obj: WasmVectorObject, t: number): WasmVectorObject;
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {number} t
+* @param {number | undefined} [default_stroke_width]
+* @returns {WasmVectorObject}
+*/
+export function drawStrokeThenFill(vec_obj: WasmVectorObject, t: number, default_stroke_width?: number): WasmVectorObject;
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {number} lag_ratio
+* @param {number} t
+* @param {number | undefined} [default_stroke_width]
+* @returns {WasmVectorObject}
+*/
+export function write(vec_obj: WasmVectorObject, lag_ratio: number, t: number, default_stroke_width?: number): WasmVectorObject;
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {number} scale_factor
+* @param {Array<any>} shift
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+export function fadeIn(vec_obj: WasmVectorObject, scale_factor: number, shift: Array<any>, t: number): WasmVectorObject;
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {number} scale_factor
+* @param {Array<any>} shift
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+export function fadeOut(vec_obj: WasmVectorObject, scale_factor: number, shift: Array<any>, t: number): WasmVectorObject;
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+export function growArrowWithFinalTip(vec_obj: WasmVectorObject, t: number): WasmVectorObject;
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+export function growArrowWithInitialTip(vec_obj: WasmVectorObject, t: number): WasmVectorObject;
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+export function growArrowWithTipsAtBothEnds(vec_obj: WasmVectorObject, t: number): WasmVectorObject;
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+export function growFromCenter(vec_obj: WasmVectorObject, t: number): WasmVectorObject;
+/**
+* @param {WasmVectorObject} original
+* @param {WasmVectorObject} target
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+export function morphShape(original: WasmVectorObject, target: WasmVectorObject, t: number): WasmVectorObject;
+/**
+* @param {Array<any>} top_left_corner
+* @param {Array<any>} bottom_right_corner
+* @param {SVGScene} scene
+* @param {number} t
+*/
+export function moveCameraSVG(top_left_corner: Array<any>, bottom_right_corner: Array<any>, scene: SVGScene, t: number): void;
+/**
+* @param {Array<any>} top_left_corner
+* @param {Array<any>} bottom_right_corner
+* @param {Scene} scene
+* @param {number} t
+*/
+export function moveCamera(top_left_corner: Array<any>, bottom_right_corner: Array<any>, scene: Scene, t: number): void;
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {number} angle
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+export function rotateAnimation(vec_obj: WasmVectorObject, angle: number, t: number): WasmVectorObject;
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {number} scale_factor
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+export function scaleInPlace(vec_obj: WasmVectorObject, scale_factor: number, t: number): WasmVectorObject;
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {WasmColor} target_fill
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+export function setFillAnimation(vec_obj: WasmVectorObject, target_fill: WasmColor, t: number): WasmVectorObject;
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {WasmColor} target_stroke
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+export function setStrokeAnimation(vec_obj: WasmVectorObject, target_stroke: WasmColor, t: number): WasmVectorObject;
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {Array<any>} shift
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+export function shiftAnimation(vec_obj: WasmVectorObject, shift: Array<any>, t: number): WasmVectorObject;
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+export function showTemporaily(vec_obj: WasmVectorObject, t: number): WasmVectorObject;
+/**
+* @param {WasmVectorObject} vec_obj
+* @param {number} angle
+* @param {number} t
+* @returns {WasmVectorObject}
+*/
+export function spinningGrow(vec_obj: WasmVectorObject, angle: number, t: number): WasmVectorObject;
+/**
+* @param {string} code
+* @param {Lexer} lexer
+* @param {Theme} theme
+* @param {string} font_family
+* @returns {Promise<WasmVectorObject>}
+*/
+export function codeObject(code: string, lexer: Lexer, theme: Theme, font_family: string): Promise<WasmVectorObject>;
 /**
 */
 export enum TokenType {
@@ -2454,6 +2465,12 @@ export class WasmThreeDObject {
 */
   projectAndShade(camera: WasmCamera, light_source: WasmLightSource): WasmVectorObject;
 /**
+* @param {Function} f
+* @param {boolean} recursive
+* @returns {WasmThreeDObject}
+*/
+  applyFunction(f: Function, recursive: boolean): WasmThreeDObject;
+/**
 * @param {Function} uv_function
 * @param {Array<any>} u_range
 * @param {Array<any>} v_range
@@ -2579,6 +2596,14 @@ export class WasmVectorObject {
 * @returns {Array<any>}
 */
   getSubpaths(): Array<any>;
+/**
+* @param {Function} _function
+* @param {boolean} recursive
+* @param {Array<any> | undefined} [about_point]
+* @param {Array<any> | undefined} [about_edge]
+* @returns {WasmVectorObject}
+*/
+  applyFunction(_function: Function, recursive: boolean, about_point?: Array<any>, about_edge?: Array<any>): WasmVectorObject;
 /**
 * @param {number} n_pieces
 * @returns {WasmVectorObject}
@@ -2809,6 +2834,7 @@ export interface InitOutput {
   readonly wasmvectorobject_getLineJoin: (a: number, b: number) => void;
   readonly wasmvectorobject_getPartialCopy: (a: number, b: number, c: number, d: number) => number;
   readonly wasmvectorobject_getSubpaths: (a: number) => number;
+  readonly wasmvectorobject_applyFunction: (a: number, b: number, c: number, d: number, e: number) => number;
   readonly wasmvectorobject_getPieces: (a: number, b: number) => number;
   readonly wasmvectorobject_getCubicBezierTuples: (a: number) => number;
   readonly wasmvectorobject_getSubobjects: (a: number, b: number) => void;
@@ -2961,6 +2987,7 @@ export interface InitOutput {
   readonly lexer_getTokens: (a: number, b: number, c: number, d: number) => void;
   readonly lexer_isStringOpenDelimiter: (a: number, b: number, c: number) => number;
   readonly lexer_removeStringCloseDelimiterIndex: (a: number, b: number, c: number, d: number) => void;
+  readonly mathjax: (a: number, b: number, c: number, d: number, e: number, f: number) => number;
   readonly rotMatrix: (a: number, b: number) => number;
   readonly matrixProduct: (a: number, b: number) => number;
   readonly rotMatrixEuler: (a: number, b: number, c: number) => number;
@@ -3014,6 +3041,7 @@ export interface InitOutput {
   readonly wasmthreedobject_rotateY: (a: number, b: number, c: number) => number;
   readonly wasmthreedobject_rotateZ: (a: number, b: number, c: number) => number;
   readonly wasmthreedobject_projectAndShade: (a: number, b: number, c: number) => number;
+  readonly wasmthreedobject_applyFunction: (a: number, b: number, c: number) => number;
   readonly wasmthreedobject_fromUvFunction: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, j: number) => number;
   readonly wasmthreedobject_getBoundingBox: (a: number) => number;
   readonly wasmthreedobject_getCenter: (a: number) => number;
@@ -3027,27 +3055,9 @@ export interface InitOutput {
   readonly parametricPlotInAxes3D: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, j: number, k: number, l: number, m: number) => number;
   readonly plotInAxes3D: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, j: number, k: number, l: number, m: number) => number;
   readonly parametricLinePlotInAxes3D: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, j: number, k: number, l: number, m: number) => number;
-  readonly makeTimings: (a: number, b: number, c: number) => void;
-  readonly animationGroup: (a: number, b: number, c: number, d: number, e: number) => number;
-  readonly create: (a: number, b: number) => number;
-  readonly drawStrokeThenFill: (a: number, b: number, c: number, d: number) => number;
-  readonly write: (a: number, b: number, c: number, d: number, e: number) => number;
-  readonly fadeIn: (a: number, b: number, c: number, d: number) => number;
-  readonly fadeOut: (a: number, b: number, c: number, d: number) => number;
-  readonly growArrowWithFinalTip: (a: number, b: number) => number;
-  readonly growArrowWithInitialTip: (a: number, b: number) => number;
-  readonly growArrowWithTipsAtBothEnds: (a: number, b: number) => number;
-  readonly growFromCenter: (a: number, b: number) => number;
-  readonly morphShape: (a: number, b: number, c: number) => number;
-  readonly moveCameraSVG: (a: number, b: number, c: number, d: number) => void;
-  readonly moveCamera: (a: number, b: number, c: number, d: number) => void;
-  readonly rotateAnimation: (a: number, b: number, c: number) => number;
-  readonly scaleInPlace: (a: number, b: number, c: number) => number;
-  readonly setFillAnimation: (a: number, b: number, c: number) => number;
-  readonly setStrokeAnimation: (a: number, b: number, c: number) => number;
-  readonly shiftAnimation: (a: number, b: number, c: number) => number;
-  readonly showTemporaily: (a: number, b: number) => number;
-  readonly spinningGrow: (a: number, b: number, c: number) => number;
+  readonly sphere: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number) => number;
+  readonly getGithubDark: () => number;
+  readonly getPythonLexer: () => number;
   readonly __wbg_svgscene_free: (a: number) => void;
   readonly svgscene_new_js: (a: number, b: number, c: number) => number;
   readonly svgscene_getFps: (a: number) => number;
@@ -3154,36 +3164,6 @@ export interface InitOutput {
   readonly slowInto: (a: number) => number;
   readonly easeOutBounce: (a: number) => number;
   readonly easeOutBack: (a: number) => number;
-  readonly __wbg_token_free: (a: number) => void;
-  readonly token_new: (a: number, b: number, c: number) => number;
-  readonly token_getType: (a: number) => number;
-  readonly __wbg_theme_free: (a: number) => void;
-  readonly theme_new: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, j: number, k: number, l: number, m: number, n: number, o: number, p: number, q: number, r: number, s: number, t: number, u: number, v: number, w: number, x: number, y: number, z: number, a1: number, b1: number, c1: number, d1: number, e1: number, f1: number, g1: number, h1: number, i1: number, j1: number, k1: number, l1: number) => number;
-  readonly theme_getKeywordColor: (a: number, b: number) => void;
-  readonly theme_getSpecialColor: (a: number, b: number) => void;
-  readonly theme_getIllegalColor: (a: number, b: number) => void;
-  readonly theme_getDeclarationColor: (a: number, b: number) => void;
-  readonly theme_getOperatorColor: (a: number, b: number) => void;
-  readonly theme_getParenColor: (a: number, b: number) => void;
-  readonly theme_getConstantColor: (a: number, b: number) => void;
-  readonly theme_getNumberColor: (a: number, b: number) => void;
-  readonly theme_getStringColor: (a: number, b: number) => void;
-  readonly theme_getIdentifierColor: (a: number, b: number) => void;
-  readonly theme_getAssignColor: (a: number, b: number) => void;
-  readonly theme_getClassIdentifierColor: (a: number, b: number) => void;
-  readonly theme_getSeparatorColor: (a: number, b: number) => void;
-  readonly theme_getMethodDeclarationColor: (a: number, b: number) => void;
-  readonly theme_getMethodIdentifierColor: (a: number, b: number) => void;
-  readonly theme_getFormattedStringColor: (a: number, b: number) => void;
-  readonly theme_getFormatOpenColor: (a: number, b: number) => void;
-  readonly theme_getFormatCloseColor: (a: number, b: number) => void;
-  readonly theme_clone: (a: number) => number;
-  readonly theme_getCommentColor: (a: number, b: number) => void;
-  readonly getGithubDark: () => number;
-  readonly getPythonLexer: () => number;
-  readonly mathjax: (a: number, b: number, c: number, d: number, e: number, f: number) => number;
-  readonly token_getLiteral: (a: number, b: number) => void;
-  readonly codeObject: (a: number, b: number, c: number, d: number, e: number, f: number) => number;
   readonly __wbg_scene_free: (a: number) => void;
   readonly scene_new_js: (a: number, b: number, c: number) => number;
   readonly scene_getFps: (a: number) => number;
@@ -3212,11 +3192,59 @@ export interface InitOutput {
   readonly scene_setOnRendered: (a: number, b: number) => void;
   readonly scene_onRendered: (a: number) => number;
   readonly textToVector: (a: number, b: number, c: number, d: number, e: number, f: number, g: number) => number;
+  readonly __wbg_token_free: (a: number) => void;
+  readonly token_new: (a: number, b: number, c: number) => number;
+  readonly token_getType: (a: number) => number;
+  readonly __wbg_theme_free: (a: number) => void;
+  readonly theme_new: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, j: number, k: number, l: number, m: number, n: number, o: number, p: number, q: number, r: number, s: number, t: number, u: number, v: number, w: number, x: number, y: number, z: number, a1: number, b1: number, c1: number, d1: number, e1: number, f1: number, g1: number, h1: number, i1: number, j1: number, k1: number, l1: number) => number;
+  readonly theme_getKeywordColor: (a: number, b: number) => void;
+  readonly theme_getSpecialColor: (a: number, b: number) => void;
+  readonly theme_getIllegalColor: (a: number, b: number) => void;
+  readonly theme_getDeclarationColor: (a: number, b: number) => void;
+  readonly theme_getOperatorColor: (a: number, b: number) => void;
+  readonly theme_getParenColor: (a: number, b: number) => void;
+  readonly theme_getConstantColor: (a: number, b: number) => void;
+  readonly theme_getNumberColor: (a: number, b: number) => void;
+  readonly theme_getStringColor: (a: number, b: number) => void;
+  readonly theme_getIdentifierColor: (a: number, b: number) => void;
+  readonly theme_getAssignColor: (a: number, b: number) => void;
+  readonly theme_getClassIdentifierColor: (a: number, b: number) => void;
+  readonly theme_getSeparatorColor: (a: number, b: number) => void;
+  readonly theme_getMethodDeclarationColor: (a: number, b: number) => void;
+  readonly theme_getMethodIdentifierColor: (a: number, b: number) => void;
+  readonly theme_getFormattedStringColor: (a: number, b: number) => void;
+  readonly theme_getFormatOpenColor: (a: number, b: number) => void;
+  readonly theme_getFormatCloseColor: (a: number, b: number) => void;
+  readonly theme_clone: (a: number) => number;
+  readonly theme_getCommentColor: (a: number, b: number) => void;
+  readonly makeTimings: (a: number, b: number, c: number) => void;
+  readonly animationGroup: (a: number, b: number, c: number, d: number, e: number) => number;
+  readonly create: (a: number, b: number) => number;
+  readonly drawStrokeThenFill: (a: number, b: number, c: number, d: number) => number;
+  readonly write: (a: number, b: number, c: number, d: number, e: number) => number;
+  readonly fadeIn: (a: number, b: number, c: number, d: number) => number;
+  readonly fadeOut: (a: number, b: number, c: number, d: number) => number;
+  readonly growArrowWithFinalTip: (a: number, b: number) => number;
+  readonly growArrowWithInitialTip: (a: number, b: number) => number;
+  readonly growArrowWithTipsAtBothEnds: (a: number, b: number) => number;
+  readonly growFromCenter: (a: number, b: number) => number;
+  readonly morphShape: (a: number, b: number, c: number) => number;
+  readonly moveCameraSVG: (a: number, b: number, c: number, d: number) => void;
+  readonly moveCamera: (a: number, b: number, c: number, d: number) => void;
+  readonly rotateAnimation: (a: number, b: number, c: number) => number;
+  readonly scaleInPlace: (a: number, b: number, c: number) => number;
+  readonly setFillAnimation: (a: number, b: number, c: number) => number;
+  readonly setStrokeAnimation: (a: number, b: number, c: number) => number;
+  readonly shiftAnimation: (a: number, b: number, c: number) => number;
+  readonly showTemporaily: (a: number, b: number) => number;
+  readonly spinningGrow: (a: number, b: number, c: number) => number;
+  readonly token_getLiteral: (a: number, b: number) => void;
+  readonly codeObject: (a: number, b: number, c: number, d: number, e: number, f: number) => number;
   readonly __wbindgen_malloc: (a: number, b: number) => number;
   readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
   readonly __wbindgen_export_2: WebAssembly.Table;
-  readonly _dyn_core__ops__function__Fn_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__hdbf1c3e0adec1aa3: (a: number, b: number) => number;
-  readonly _dyn_core__ops__function__Fn_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h966e5cb346ce164d: (a: number, b: number) => void;
+  readonly _dyn_core__ops__function__Fn_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h3bfb1ce01a17aec4: (a: number, b: number) => void;
+  readonly _dyn_core__ops__function__Fn_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__hb46d05dbb5e54b7d: (a: number, b: number) => number;
   readonly _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h36f54c9e7475dd01: (a: number, b: number, c: number) => void;
   readonly __wbindgen_add_to_stack_pointer: (a: number) => number;
   readonly __wbindgen_free: (a: number, b: number, c: number) => void;

@@ -15,7 +15,7 @@ use crate::objects::geometry::poly::rectangle;
 use crate::utils::{consider_points_equals, elliptical_arc_path, line_as_cubic_bezier, quadratic_bezier_as_cubic_bezier};
 #[cfg(target_arch = "wasm32")]
 use crate::utils::log;
-use crate::objects::vector_object::{VectorFeatures, VectorObject};
+use crate::objects::vector_object::VectorFeatures;
 #[cfg(feature = "browser")]
 use crate::text_to_vector::text_to_vector_browser;
 #[cfg(feature = "node")]

@@ -1,4 +1,4 @@
-use crate::{utils::interpolate, objects::vector_object::{VectorFeatures, VectorObject}};
+use crate::{utils::interpolate, objects::vector_object::VectorFeatures};
 
 
 pub fn scale_in_place(vec_obj: VectorFeatures, scale_factor: f64, t: f64) -> VectorFeatures {

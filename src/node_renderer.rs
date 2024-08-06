@@ -1,8 +1,10 @@
-use js_sys::{Number, Promise};
+use std::{future::Future, pin::Pin};
+
+use js_sys::{Map, Number, Promise};
 use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::JsFuture;
 
-use crate::{colors::GradientImageOrColor, objects::vector_object::{generate_cubic_bezier_tuples, generate_subpaths, VectorFeatures}, utils::consider_points_equals};
+use crate::{colors::{Color, GradientImageOrColor}, objects::vector_object::{generate_cubic_bezier_tuples, generate_subpaths, VectorFeatures}, utils::{consider_points_equals, log}};
 
 
 #[wasm_bindgen(module = "buf")]
@@ -39,6 +41,8 @@ extern "C" {
     pub fn get_context(this: &Canvas, context: &str) -> CanvasRenderingContext2D;
     #[wasm_bindgen(method, js_name = "fillRect")]
     fn fill_rect(this: &CanvasRenderingContext2D, x: f64, y: f64, width: f64, height: f64);
+    #[wasm_bindgen(js_name = "loadImage")]
+    pub async fn load_image(src: &str) -> JsValue;
     #[wasm_bindgen(method, js_name = "clearRect")]
     fn clear_rect(this: &CanvasRenderingContext2D, x: f64, y: f64, width: f64, height: f64);
     #[wasm_bindgen(method, js_name = "beginPath")]
@@ -172,7 +176,8 @@ pub fn apply_fill_wasm(
     fill: GradientImageOrColor,
     points: Vec<(f64, f64)>,
     width: u32,
-    height: u32
+    height: u32,
+    loaded_images: &Map
 ) {
     if points.len() == 0 {
         return;
@@ -216,8 +221,8 @@ pub fn apply_fill_wasm(
             context.fill();
         },
         GradientImageOrColor::Image(image) => {
-            let img = Image::new();
-            img.set_src(format!("data:{};base64,{}", image.mime_type, image.image_base64));
+            let src = format!("data:{};base64,{}", image.mime_type, image.image_base64);
+            let img = loaded_images.get(&JsValue::from_str(src.as_str())).dyn_into::<Image>().unwrap();
             let tl_corner = image.top_left_corner;
             let br_corner = image.bottom_right_corner;
             let w = br_corner.0 - tl_corner.0;
@@ -243,7 +248,8 @@ pub fn apply_stroke_wasm(
     line_join: String,
     points: Vec<(f64, f64)>,
     width: u32,
-    height: u32
+    height: u32,
+    loaded_images: &Map
 ) {
     if points.len() == 0 {
         return;
@@ -299,8 +305,8 @@ pub fn apply_stroke_wasm(
             context.stroke();
         },
         GradientImageOrColor::Image(image) => {
-            let img = Image::new();
-            img.set_src(format!("data:{};base64,{}", image.mime_type, image.image_base64));
+            let src = format!("data:{};base64,{}", image.mime_type, image.image_base64);
+            let img = loaded_images.get(&JsValue::from_str(src.as_str())).dyn_into::<Image>().unwrap();
             let tl_corner = image.top_left_corner;
             let br_corner = image.bottom_right_corner;
             let w = br_corner.0 - tl_corner.0;
@@ -325,7 +331,8 @@ pub fn render_vector_wasm(
     vec: &VectorFeatures,
     width: u32,
     height: u32,
-    context: &CanvasRenderingContext2D
+    context: &CanvasRenderingContext2D,
+    loaded_images: &Map
 ) {
     let points = vec.points.clone();
     let fill = vec.fill.clone();
@@ -334,11 +341,54 @@ pub fn render_vector_wasm(
     let line_cap = vec.line_cap;
     let line_join = vec.line_join;
     draw_context_path_wasm(&context, points.clone());
-    apply_fill_wasm(&context, fill, points.clone(), width, height);
-    apply_stroke_wasm(&context, stroke, stroke_width, line_cap.to_string(), line_join.to_string(), points.clone(), width, height);
+    apply_fill_wasm(&context, fill, points.clone(), width, height, loaded_images);
+    apply_stroke_wasm(&context, stroke, stroke_width, line_cap.to_string(), line_join.to_string(), points.clone(), width, height, loaded_images);
     for subvec in &vec.subobjects {
-        render_vector_wasm(&subvec, width, height, &context);
+        render_vector_wasm(&subvec, width, height, &context, loaded_images);
     }
+}
+
+
+pub fn load_images<'a>(
+    objects: &'a Vec<VectorFeatures>,
+    background: &'a GradientImageOrColor,
+    loaded_images: &'a Map
+) -> Pin<Box<dyn Future<Output = ()> + 'a>> {
+    Box::pin(async move {
+        let mut images_to_load = Vec::new();
+        match background {
+            GradientImageOrColor::Image(image) => {
+                images_to_load.push(image);
+            },
+            _ => {},
+        }
+        for vec in objects {
+            match &vec.fill {
+                GradientImageOrColor::Image(image) => {
+                    images_to_load.push(image);
+                },
+                _ => {},
+            }
+            match &vec.stroke {
+                GradientImageOrColor::Image(image) => {
+                    images_to_load.push(image);
+                },
+                _ => {},
+            }
+            load_images(&vec.subobjects, &GradientImageOrColor::Color(Color { red: 0.0, green: 0.0, blue: 0.0, alpha: 0.0 }), loaded_images).await;
+        }
+        for image in images_to_load {
+            let src = format!("data:{};base64,{}", image.mime_type, image.image_base64);
+            if loaded_images.has(&JsValue::from_str(src.as_str())) {
+                continue;
+            } else if loaded_images.get(&JsValue::from_str(src.as_str())) == JsValue::NULL {
+                continue;
+            } else {
+                let img = load_image(src.as_str()).await;
+                loaded_images.set(&JsValue::from_str(src.as_str()), &img);
+            }
+        }
+    })
 }
 
 
@@ -350,8 +400,12 @@ pub async fn render_all_vectors(
     background: &GradientImageOrColor,
     top_left_corner: (f64, f64),
     bottom_right_corner: (f64, f64),
-    callback: &js_sys::Function
+    callback: &js_sys::Function,
+    loaded_images: &js_sys::Map,
+    save_frames: bool,
+    current_ffmpeg: Option<&ChildProcess>
 ) {
+    load_images(&vecs, background, loaded_images).await;
     context.reset_transform();
     let scale_xy = (width as f64 / (bottom_right_corner.0 - top_left_corner.0), height as f64 / (bottom_right_corner.1 - top_left_corner.1));
     context.scale(scale_xy.0, scale_xy.1);
@@ -387,8 +441,7 @@ pub async fn render_all_vectors(
             context.set_fill_style_gradient(grd);
         },
         GradientImageOrColor::Image(image) => {
-            let img = Image::new();
-            img.set_src(format!("data:{};base64,{}", image.mime_type, image.image_base64));
+            let img = loaded_images.get(&JsValue::from_str(format!("data:{};base64,{}", image.mime_type, image.image_base64).as_str())).dyn_into::<Image>().unwrap();
             let tl_corner = image.top_left_corner;
             let br_corner = image.bottom_right_corner;
             let w = br_corner.0 - tl_corner.0;
@@ -406,7 +459,18 @@ pub async fn render_all_vectors(
     };
     context.fill_rect(top_left_corner.0, top_left_corner.1, bottom_right_corner.0 - top_left_corner.0, bottom_right_corner.1 - top_left_corner.1);
     for vec in vecs {
-        render_vector_wasm(&vec, width, height, &context);
+        render_vector_wasm(&vec, width, height, &context, loaded_images);
+    }
+    if save_frames && current_ffmpeg.is_some() {
+        let canvas = context.canvas();
+        let ffmpeg = current_ffmpeg.as_ref().unwrap();
+        let options = Map::new();
+        options.set(&JsValue::from_str("compressionLevel"), &JsValue::from_f64(0.0));
+        let buffer = canvas.to_buffer_with_mime_type("raw");
+        let ok = ffmpeg.stdin().write(&buffer);
+        if !ok {
+            log("Frame is too big");
+        }
     }
     let promise = callback.call0(&JsValue::NULL).unwrap().dyn_into::<Promise>().unwrap();
     JsFuture::from(promise).await.unwrap();

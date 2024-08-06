@@ -2,7 +2,7 @@ use js_sys::{Function, Promise};
 use wasm_bindgen::{JsCast, JsValue};
 use wasm_bindgen_futures::JsFuture;
 
-use crate::{colors::{Color, GradientImageOrColor}, objects::{geometry::{add_tip::add_final_tip, line::line}, vector_object::{VectorFeatures, VectorObject}, wasm_interface::WasmVectorObject}, utils::{interpolate, interpolate_tuple}};
+use crate::{colors::{Color, GradientImageOrColor}, objects::{geometry::{add_tip::add_final_tip, line::line}, vector_object::VectorFeatures, wasm_interface::WasmVectorObject}, utils::{interpolate, interpolate_tuple}};
 
 pub fn number_line(
     x_min: f64,

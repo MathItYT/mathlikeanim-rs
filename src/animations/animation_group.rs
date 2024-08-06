@@ -1,4 +1,4 @@
-use crate::objects::vector_object::{VectorFeatures, VectorObject};
+use crate::objects::vector_object::VectorFeatures;
 
 
 pub fn make_timings(

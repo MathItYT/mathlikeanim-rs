@@ -3,7 +3,7 @@ use wasm_bindgen::prelude::*;
 
 use crate::{colors::Color, objects::wasm_interface::{WasmColor, WasmGradientImageOrColor, WasmVectorObject}};
 
-use super::{three_d_axes::{coords_to_point_3d, parametric_line_plot_in_axes_3d, parametric_plot_in_axes_3d, plot_in_axes_3d, point_to_coords_3d, three_d_axes}, three_d_object::{apply_matrix, cross_product, ensure_valid_three_d_color, get_anchors, get_corner_unit_normal, get_end_anchors, get_end_corner, get_end_corner_unit_normal, get_shaded_color, get_shaded_rgb, get_start_anchors, get_start_corner, get_start_corner_unit_normal, line_as_cubic_bezier_3d, matrix_product, project_points, rot_matrix, rot_matrix_euler, shift_points_3d, transpose_matrix, Camera, LightSource, ThreeDObject}};
+use super::{sphere::sphere, three_d_axes::{coords_to_point_3d, parametric_line_plot_in_axes_3d, parametric_plot_in_axes_3d, plot_in_axes_3d, point_to_coords_3d, three_d_axes}, three_d_object::{points_times_t_matrix, cross_product, ensure_valid_three_d_color, get_anchors, get_corner_unit_normal, get_end_anchors, get_end_corner, get_end_corner_unit_normal, get_shaded_color, get_shaded_rgb, get_start_anchors, get_start_corner, get_start_corner_unit_normal, line_as_cubic_bezier_3d, matrix_product, project_points, rot_matrix, rot_matrix_euler, shift_points_3d, transpose_matrix, Camera, LightSource, ThreeDObject}};
 
 
 #[wasm_bindgen(js_name = rotMatrix)]
@@ -161,7 +161,7 @@ pub fn apply_matrix_js(
             )
         }
     ).collect::<Vec<(f64, f64, f64)>>();
-    let result = apply_matrix(matrix, points);
+    let result = points_times_t_matrix(matrix, points);
     let result_js = Array::new();
     for i in 0..result.len() {
         let point = Array::new();
@@ -194,7 +194,7 @@ pub fn shift_points_3d_js(
         shift.get(1).as_f64().unwrap(),
         shift.get(2).as_f64().unwrap()
     );
-    let result = shift_points_3d(points, shift);
+    let result = shift_points_3d(&points, shift);
     let result_js = result.iter().map(
         |point| {
             let point_js = Array::new();
@@ -669,7 +669,7 @@ pub fn project_points_js(
         }
     ).collect::<Vec<(f64, f64, f64)>>();
     let camera = &camera.camera;
-    let result = project_points(points, camera);
+    let result = project_points(&points, camera);
     let result_js = result.iter().map(
         |point| {
             let point_js = Array::new();
@@ -895,6 +895,20 @@ impl WasmThreeDObject {
         let camera = &camera.camera;
         return WasmVectorObject {
             native_vec_features: self.three_d_object.project_and_shade(camera, light_source)
+        }
+    }
+    #[wasm_bindgen(js_name = applyFunction)]
+    pub fn apply_function(&self, f: Function, recursive: bool) -> WasmThreeDObject {
+        return WasmThreeDObject {
+            three_d_object: self.three_d_object.apply_function(&|x: f64, y: f64, z: f64| -> (f64, f64, f64) {
+                let result = f.call3(&JsValue::NULL, &JsValue::from(x), &JsValue::from(y), &JsValue::from(z)).unwrap();
+                let result = result.dyn_into::<Array>().unwrap();
+                (
+                    result.get(0).as_f64().unwrap(),
+                    result.get(1).as_f64().unwrap(),
+                    result.get(2).as_f64().unwrap()
+                )
+            }, recursive)
         }
     }
     #[wasm_bindgen(js_name = fromUvFunction)]
@@ -1255,6 +1269,34 @@ pub fn parametric_line_plot_in_axes_3d_js(
             z_min,
             z_max,
             color.color,
+            stroke_width
+        )
+    }
+}
+
+
+#[wasm_bindgen(js_name = sphere)]
+pub fn sphere_js(
+    center: Array,
+    radius: f64,
+    u_segments: usize,
+    v_segments: usize,
+    fill_colors: Vec<WasmColor>,
+    stroke_colors: Vec<WasmColor>,
+    stroke_width: f64
+) -> WasmThreeDObject {
+    return WasmThreeDObject {
+        three_d_object: sphere(
+            (
+                center.get(0).as_f64().unwrap(),
+                center.get(1).as_f64().unwrap(),
+                center.get(2).as_f64().unwrap()
+            ),
+            radius,
+            u_segments,
+            v_segments,
+            fill_colors.iter().map(|fill| fill.color.clone()).collect::<Vec<Color>>(),
+            stroke_colors.iter().map(|stroke| stroke.color.clone()).collect::<Vec<Color>>(),
             stroke_width
         )
     }

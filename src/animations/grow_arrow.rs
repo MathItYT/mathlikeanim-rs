@@ -1,4 +1,4 @@
-use crate::objects::vector_object::{VectorFeatures, VectorObject};
+use crate::objects::vector_object::VectorFeatures;
 
 
 pub fn grow_arrow_with_final_tip(vec_obj: VectorFeatures, t: f64) -> VectorFeatures {

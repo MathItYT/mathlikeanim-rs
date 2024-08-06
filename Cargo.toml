@@ -1,6 +1,6 @@
 [package]
 name = "mathlikeanim-rs"
-version = "0.9.0"
+version = "0.9.1"
 edition = "2021"
 readme = "README.md"
 description = "A Rust library for creating mathematical animations"
@@ -43,13 +43,12 @@ web-sys = { version="0.3.69", features=[
     'HtmlDivElement'
 ], optional=true }
 wasm-bindgen-futures = "0.4.42"
-uuid = { version="1.8.0", features=["v4", "js"], optional=true }
 contour-isobands = "0.4.3"
 regex = "1.10.5"
 
 [features]
 default = ["browser", "node"]
-browser = ["dep:web-sys", "dep:uuid"]
+browser = ["dep:web-sys"]
 node = []
 
 [lib]

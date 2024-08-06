@@ -30,7 +30,7 @@ pub fn partial_bezier_points(
 }
 
 
-fn get_partial_points(
+pub fn get_partial_points(
     vector_features: &VectorFeatures,
     start: f64,
     end: f64,
@@ -240,88 +240,43 @@ pub fn shift_points(points: &Vec<(f64, f64)>, shift: (f64, f64)) -> Vec<(f64, f6
 }
 
 
-pub trait VectorObject {
-    fn new() -> Self;
-    fn get_index(&self) -> usize;
-    fn increment_index(&self, increment: usize, recursive: bool) -> Self;
-    fn get_points(&self) -> &Vec<(f64, f64)>;
-    fn get_fill(&self) -> GradientImageOrColor;
-    fn get_stroke(&self) -> GradientImageOrColor;
-    fn get_stroke_width(&self) -> f64;
-    fn get_line_cap(&self) -> &'static str;
-    fn get_line_join(&self) -> &'static str;
-    fn get_partial_copy(&self, start: f64, end: f64, recursive: bool) -> Self;
-    fn get_subpaths(&self) -> Vec<Vec<(f64, f64)>> {
-        return generate_subpaths(self.get_points());
+#[derive(Clone, Debug)]
+pub struct VectorFeatures {
+    pub points: Vec<(f64, f64)>,
+    pub fill: GradientImageOrColor,
+    pub stroke: GradientImageOrColor,
+    pub stroke_width: f64,
+    pub line_cap: &'static str,
+    pub line_join: &'static str,
+    pub subobjects: Vec<VectorFeatures>,
+    pub index: usize
+}
+
+
+impl VectorFeatures {
+    pub fn new() -> VectorFeatures {
+        return VectorFeatures {
+            points: Vec::new(),
+            fill: GradientImageOrColor::Color(Color {
+                red: 0.0,
+                green: 0.0,
+                blue: 0.0,
+                alpha: 0.0
+            }),
+            stroke: GradientImageOrColor::Color(Color {
+                red: 0.0,
+                green: 0.0,
+                blue: 0.0,
+                alpha: 0.0
+            }),
+            stroke_width: 1.0,
+            line_cap: "butt",
+            line_join: "miter",
+            subobjects: Vec::new(),
+            index: 0,
+        };
     }
-    fn get_cubic_bezier_tuples(&self) -> Vec<((f64, f64), (f64, f64), (f64, f64), (f64, f64))> {
-        return generate_cubic_bezier_tuples(self.get_points());
-    }
-    fn get_subobjects(&self) -> Vec<VectorFeatures>;
-    fn scale(&self, scale_factor: f64, recursive: bool) -> Self;
-    fn stretch(&self, stretch: (f64, f64), recursive: bool) -> Self;
-    fn shift(&self, shift: (f64, f64), recursive: bool) -> Self;
-    fn merged_points(&self) -> Vec<(f64, f64)> {
-        let mut merged_points = self.get_points().clone();
-        merged_points.extend(self.get_subobjects().iter().map(|subobject| subobject.merged_points()).flatten());
-        return merged_points;
-    }
-    fn get_bounding_box(&self) -> ((f64, f64), (f64, f64)) {
-        let mut min_x = std::f64::INFINITY;
-        let mut min_y = std::f64::INFINITY;
-        let mut max_x = std::f64::NEG_INFINITY;
-        let mut max_y = std::f64::NEG_INFINITY;
-        for point in self.merged_points() {
-            if point.0 < min_x {
-                min_x = point.0;
-            }
-            if point.0 > max_x {
-                max_x = point.0;
-            }
-            if point.1 < min_y {
-                min_y = point.1;
-            }
-            if point.1 > max_y {
-                max_y = point.1;
-            }
-        }
-        return ((min_x, min_y), (max_x, max_y));
-    }
-    fn get_center(&self) -> (f64, f64) {
-        let ((min_x, min_y), (max_x, max_y)) = self.get_bounding_box();
-        return ((min_x + max_x) / 2.0, (min_y + max_y) / 2.0);
-    }
-    fn get_center_of_mass(&self) -> (f64, f64) {
-        let points = self.get_points();
-        let mut x_sum = 0.0;
-        let mut y_sum = 0.0;
-        for point in points {
-            x_sum += point.0;
-            y_sum += point.1;
-        }
-        return (x_sum / points.len() as f64, y_sum / points.len() as f64);
-    }
-    fn get_height(&self) -> f64 {
-        let ((_, min_y), (_, max_y)) = self.get_bounding_box();
-        return max_y - min_y;
-    }
-    fn get_width(&self) -> f64 {
-        let ((min_x, _), (max_x, _)) = self.get_bounding_box();
-        return max_x - min_x;
-    }
-    fn set_index(&self, index: usize) -> Self;
-    fn set_fill(&self, fill: GradientImageOrColor, recursive: bool) -> Self;
-    fn set_fill_opacity(&self, opacity: f64, recursive: bool) -> Self;
-    fn move_to(&self, position: (f64, f64), recursive: bool) -> Self;
-    fn set_stroke(&self, stroke_: GradientImageOrColor, recursive: bool) -> Self;
-    fn set_stroke_opacity(&self, opacity: f64, recursive: bool) -> Self;
-    fn set_stroke_width(&self, stroke_width: f64, recursive: bool) -> Self;
-    fn set_line_cap(&self, line_cap: &'static str, recursive: bool) -> Self;
-    fn set_line_join(&self, line_join: &'static str, recursive: bool) -> Self;
-    fn set_points(&self, points: Vec<(f64, f64)>) -> Self;
-    fn set_subobjects(&self, subobjects: Vec<VectorFeatures>) -> Self;
-    fn rotate(&self, angle: f64, recursive: bool) -> Self;
-    fn get_critical_point(&self, key: (f64, f64)) -> (f64, f64) {
+    pub fn get_critical_point(&self, key: (f64, f64)) -> (f64, f64) {
         let bounding_box = self.get_bounding_box();
         let center_x = (bounding_box.0.0 + bounding_box.1.0) / 2.0;
         let center_y = (bounding_box.0.1 + bounding_box.1.1) / 2.0;
@@ -347,7 +302,7 @@ pub trait VectorObject {
         };
         return (x_coord, y_coord);
     }
-    fn get_fill_opacity(&self) -> f64 {
+    pub fn get_fill_opacity(&self) -> f64 {
         match &self.get_fill() {
             GradientImageOrColor::Color(color) => return color.alpha,
             GradientImageOrColor::LinearGradient(gradient) => return gradient.alpha,
@@ -355,7 +310,7 @@ pub trait VectorObject {
             GradientImageOrColor::Image(image) => return image.alpha,
         }
     }
-    fn get_stroke_opacity(&self) -> f64 {
+    pub fn get_stroke_opacity(&self) -> f64 {
         match &self.get_stroke() {
             GradientImageOrColor::Color(color) => return color.alpha,
             GradientImageOrColor::LinearGradient(gradient) => return gradient.alpha,
@@ -363,104 +318,59 @@ pub trait VectorObject {
             GradientImageOrColor::Image(image) => return image.alpha,
         }
     }
-    fn next_to_other(
-        &self,
-        other: &VectorFeatures,
-        direction: (f64, f64),
-        buff: f64,
-        aligned_edge: (f64, f64),
-        recursive: bool
-    ) -> Self;
-    fn arrange_subobjects(
-        &self,
-        direction: (f64, f64),
-        buff: f64,
-        aligned_edge: (f64, f64),
-        recursive: bool
-    ) -> Self;
-    fn next_to_point(
-        &self,
-        point: (f64, f64),
-        direction: (f64, f64),
-        buff: f64,
-        aligned_edge: (f64, f64),
-        recursive: bool
-    ) -> Self;
-    fn add(
-        &self,
-        other: &VectorFeatures
-    ) -> Self;
-    fn remove(
-        &self,
-        index: usize,
-    ) -> Self;
-    fn get_subobject(
-        &self,
-        index: usize
-    ) -> VectorFeatures;
-    fn slice_subobjects(
-        &self,
-        start: usize,
-        end: usize
-    ) -> Vec<VectorFeatures>;
-    fn get_pieces(&self, n_pieces: usize) -> VectorFeatures;
-    fn set_subobject(
-        &self,
-        index: usize,
-        subobject: VectorFeatures
-    ) -> Self;
-    fn set_slice_subobjects(
-        &self,
-        start: usize,
-        end: usize,
-        subobjects: Vec<VectorFeatures>
-    ) -> Self;
-    fn set_background_image(&self, image_base64: String, mime_type: String, width: usize, height: usize, recursive: bool) -> Self;
-    fn set_fill_image_corners(&self, top_left_corner: (f64, f64), bottom_right_corner: (f64, f64), recursive: bool) -> Self;
-    fn set_stroke_image_corners(&self, top_left_corner: (f64, f64), bottom_right_corner: (f64, f64), recursive: bool) -> Self;
-    fn get_fill_image_corners(&self) -> ((f64, f64), (f64, f64));
-    fn get_stroke_image_corners(&self) -> ((f64, f64), (f64, f64));
-}
-
-#[derive(Clone, Debug)]
-pub struct VectorFeatures {
-    pub points: Vec<(f64, f64)>,
-    pub fill: GradientImageOrColor,
-    pub stroke: GradientImageOrColor,
-    pub stroke_width: f64,
-    pub line_cap: &'static str,
-    pub line_join: &'static str,
-    pub subobjects: Vec<VectorFeatures>,
-    pub index: usize
-}
-
-impl VectorObject for VectorFeatures {
-    fn new() -> VectorFeatures {
-        return VectorFeatures {
-            points: Vec::new(),
-            fill: GradientImageOrColor::Color(Color {
-                red: 0.0,
-                green: 0.0,
-                blue: 0.0,
-                alpha: 0.0
-            }),
-            stroke: GradientImageOrColor::Color(Color {
-                red: 0.0,
-                green: 0.0,
-                blue: 0.0,
-                alpha: 0.0
-            }),
-            stroke_width: 1.0,
-            line_cap: "butt",
-            line_join: "miter",
-            subobjects: Vec::new(),
-            index: 0,
-        };
+    pub fn get_subpaths(&self) -> Vec<Vec<(f64, f64)>> {
+        return generate_subpaths(self.get_points());
     }
-    fn get_index(&self) -> usize {
+    pub fn get_bounding_box(&self) -> ((f64, f64), (f64, f64)) {
+        let mut min_x = std::f64::INFINITY;
+        let mut min_y = std::f64::INFINITY;
+        let mut max_x = std::f64::NEG_INFINITY;
+        let mut max_y = std::f64::NEG_INFINITY;
+        for point in self.merged_points() {
+            if point.0 < min_x {
+                min_x = point.0;
+            }
+            if point.0 > max_x {
+                max_x = point.0;
+            }
+            if point.1 < min_y {
+                min_y = point.1;
+            }
+            if point.1 > max_y {
+                max_y = point.1;
+            }
+        }
+        return ((min_x, min_y), (max_x, max_y));
+    }
+    pub fn get_center(&self) -> (f64, f64) {
+        let ((min_x, min_y), (max_x, max_y)) = self.get_bounding_box();
+        return ((min_x + max_x) / 2.0, (min_y + max_y) / 2.0);
+    }
+    pub fn get_center_of_mass(&self) -> (f64, f64) {
+        let points = self.get_points();
+        let mut x_sum = 0.0;
+        let mut y_sum = 0.0;
+        for point in points {
+            x_sum += point.0;
+            y_sum += point.1;
+        }
+        return (x_sum / points.len() as f64, y_sum / points.len() as f64);
+    }
+    pub fn get_height(&self) -> f64 {
+        let ((_, min_y), (_, max_y)) = self.get_bounding_box();
+        return max_y - min_y;
+    }
+    pub fn get_width(&self) -> f64 {
+        let ((min_x, _), (max_x, _)) = self.get_bounding_box();
+        return max_x - min_x;
+    }
+    pub fn get_cubic_bezier_tuples(&self) -> Vec<((f64, f64), (f64, f64), (f64, f64), (f64, f64))> {
+        return generate_cubic_bezier_tuples(self.get_points());
+    }
+    pub fn get_index(&self) -> usize {
         return self.index;
     }
-    fn set_index(&self, index: usize) -> Self {
+    pub fn set_index(&self, index: usize) -> Self {
         return VectorFeatures {
             points: self.points.clone(),
             fill: self.fill.clone(),
@@ -472,7 +382,12 @@ impl VectorObject for VectorFeatures {
             index: index,
         };
     }
-    fn increment_index(&self, increment: usize, recursive: bool) -> Self {
+    pub fn merged_points(&self) -> Vec<(f64, f64)> {
+        let mut merged_points = self.points.clone();
+        merged_points.extend(self.get_subobjects().iter().map(|subobject| subobject.merged_points()).flatten());
+        return merged_points;
+    }
+    pub fn increment_index(&self, increment: usize, recursive: bool) -> Self {
         if recursive {
             return VectorFeatures {
                 points: self.points.clone(),
@@ -496,31 +411,52 @@ impl VectorObject for VectorFeatures {
             index: self.index + increment,
         };
     }
-    fn get_points(&self) -> &Vec<(f64, f64)> {
+    pub fn apply_function(&self, f: &impl Fn(f64, f64) -> (f64, f64), recursive: bool, about_point: Option<(f64, f64)>, about_edge: Option<(f64, f64)>) -> Self {
+        let edge = match about_edge {
+            Some(edge) => edge,
+            None => self.get_critical_point((0.0, 0.0)),
+        };
+        let point = match about_point {
+            Some(point) => point,
+            None => edge,
+        };
+        let points = self.points.iter().map(|(x, y)| {
+            let (x, y) = f(*x - point.0, *y - point.1);
+            return (x + point.0, y + point.1);
+        }).collect::<Vec<(f64, f64)>>();
+        let result = self.set_points(points);
+        if recursive {
+            return result.set_subobjects(
+                self.get_subobjects().iter().map(|subobject| subobject.apply_function(f, true, about_point, about_edge)).collect()
+            );
+        }
+        return result;
+    }
+    pub fn get_points(&self) -> &Vec<(f64, f64)> {
         return &self.points;
     }
-    fn get_partial_copy(&self, start: f64, end: f64, recursive: bool) -> VectorFeatures {
+    pub fn get_partial_copy(&self, start: f64, end: f64, recursive: bool) -> VectorFeatures {
         return get_partial_points(self, start, end, recursive);
     }
-    fn get_fill(&self) -> GradientImageOrColor {
+    pub fn get_fill(&self) -> GradientImageOrColor {
         return self.fill.clone();
     }
-    fn get_stroke(&self) -> GradientImageOrColor {
+    pub fn get_stroke(&self) -> GradientImageOrColor {
         return self.stroke.clone();
     }
-    fn get_stroke_width(&self) -> f64 {
+    pub fn get_stroke_width(&self) -> f64 {
         return self.stroke_width;
     }
-    fn get_line_cap(&self) -> &'static str {
+    pub fn get_line_cap(&self) -> &'static str {
         return &self.line_cap;
     }
-    fn get_line_join(&self) -> &'static str {
+    pub fn get_line_join(&self) -> &'static str {
         return &self.line_join;
     }
-    fn get_subobjects(&self) -> Vec<VectorFeatures> {
+    pub fn get_subobjects(&self) -> Vec<VectorFeatures> {
         return self.subobjects.clone();
     }
-    fn scale(&self, scale_factor: f64, recursive: bool) -> VectorFeatures {
+    pub fn scale(&self, scale_factor: f64, recursive: bool) -> VectorFeatures {
         if !recursive {
             return VectorFeatures {
                 points: scale_points(&self.points, scale_factor),
@@ -544,7 +480,7 @@ impl VectorObject for VectorFeatures {
             index: self.index,
         };
     }
-    fn set_subobject(
+    pub fn set_subobject(
         &self,
         index: usize,
         subobject: VectorFeatures
@@ -562,7 +498,7 @@ impl VectorObject for VectorFeatures {
             index: self.index,
         };
     }
-    fn set_slice_subobjects(
+    pub fn set_slice_subobjects(
         &self,
         start: usize,
         end: usize,
@@ -581,7 +517,7 @@ impl VectorObject for VectorFeatures {
             index: self.index,
         };
     }
-    fn stretch(&self, stretch: (f64, f64), recursive: bool) -> Self {
+    pub fn stretch(&self, stretch: (f64, f64), recursive: bool) -> Self {
         let center = self.get_center();
         if !recursive {
             return VectorFeatures {
@@ -606,20 +542,20 @@ impl VectorObject for VectorFeatures {
             index: self.index,
         };
     }
-    fn get_subobject(
+    pub fn get_subobject(
         &self,
         index: usize
     ) -> VectorFeatures {
         return self.subobjects[index].clone();
     }
-    fn slice_subobjects(
+    pub fn slice_subobjects(
         &self,
         start: usize,
         end: usize
     ) -> Vec<Self> {
         return self.subobjects[start..end].to_vec();
     }
-    fn shift(&self, shift: (f64, f64), recursive: bool) -> VectorFeatures {
+    pub fn shift(&self, shift: (f64, f64), recursive: bool) -> VectorFeatures {
         if !recursive {
             return VectorFeatures {
                 points: shift_points(&self.points, shift),
@@ -643,12 +579,12 @@ impl VectorObject for VectorFeatures {
             index: self.index,
         };
     }
-    fn move_to(&self, position: (f64, f64), recursive: bool) -> VectorFeatures {
+    pub fn move_to(&self, position: (f64, f64), recursive: bool) -> VectorFeatures {
         let center = self.get_center();
         let shift = (position.0 - center.0, position.1 - center.1);
         return self.shift(shift, recursive);
     }
-    fn set_fill(&self, fill: GradientImageOrColor, recursive: bool) -> VectorFeatures {
+    pub fn set_fill(&self, fill: GradientImageOrColor, recursive: bool) -> VectorFeatures {
         if recursive {
             return VectorFeatures {
                 points: self.points.clone(),
@@ -672,7 +608,7 @@ impl VectorObject for VectorFeatures {
             index: self.index,
         };
     }
-    fn set_fill_opacity(&self, opacity: f64, recursive: bool) -> VectorFeatures {
+    pub fn set_fill_opacity(&self, opacity: f64, recursive: bool) -> VectorFeatures {
         let new_fill = match &self.fill {
             GradientImageOrColor::Color(color) => GradientImageOrColor::Color(Color {
                 red: color.red,
@@ -728,7 +664,7 @@ impl VectorObject for VectorFeatures {
             index: self.index,
         };
     }
-    fn set_stroke(&self, stroke: GradientImageOrColor, recursive: bool) -> VectorFeatures {
+    pub fn set_stroke(&self, stroke: GradientImageOrColor, recursive: bool) -> VectorFeatures {
         if recursive {
             return VectorFeatures {
                 points: self.points.clone(),
@@ -752,17 +688,17 @@ impl VectorObject for VectorFeatures {
             index: self.index,
         };
     }
-    fn add(&self, other: &VectorFeatures) -> Self {
+    pub fn add(&self, other: &VectorFeatures) -> Self {
         let mut new_subobjects = self.subobjects.clone();
         new_subobjects.push(other.clone());
         return self.set_subobjects(new_subobjects);
     }
-    fn remove(&self, index: usize) -> Self {
+    pub fn remove(&self, index: usize) -> Self {
         let mut new_subobjects = self.subobjects.clone();
         new_subobjects.remove(index);
         return self.set_subobjects(new_subobjects);
     }
-    fn set_stroke_opacity(&self, opacity: f64, recursive: bool) -> VectorFeatures {
+    pub fn set_stroke_opacity(&self, opacity: f64, recursive: bool) -> VectorFeatures {
         let new_stroke = match &self.stroke {
             GradientImageOrColor::Color(color) => GradientImageOrColor::Color(Color {
                 red: color.red,
@@ -826,7 +762,7 @@ impl VectorObject for VectorFeatures {
             index: self.index,
         };
     }
-    fn set_stroke_width(&self, stroke_width: f64, recursive: bool) -> VectorFeatures {
+    pub fn set_stroke_width(&self, stroke_width: f64, recursive: bool) -> VectorFeatures {
         if recursive {
             return VectorFeatures {
                 points: self.points.clone(),
@@ -850,7 +786,7 @@ impl VectorObject for VectorFeatures {
             index: self.index,
         };
     }
-    fn set_line_cap(&self, line_cap: &'static str, recursive: bool) -> VectorFeatures {
+    pub fn set_line_cap(&self, line_cap: &'static str, recursive: bool) -> VectorFeatures {
         if recursive {
             return VectorFeatures {
                 points: self.points.clone(),
@@ -874,7 +810,7 @@ impl VectorObject for VectorFeatures {
             index: self.index,
         };
     }
-    fn set_line_join(&self, line_join: &'static str, recursive: bool) -> Self {
+    pub fn set_line_join(&self, line_join: &'static str, recursive: bool) -> Self {
         if recursive {
             return VectorFeatures {
                 points: self.points.clone(),
@@ -898,7 +834,7 @@ impl VectorObject for VectorFeatures {
             index: self.index,
         };
     }
-    fn set_points(&self, points: Vec<(f64, f64)>) -> Self {
+    pub fn set_points(&self, points: Vec<(f64, f64)>) -> Self {
         return VectorFeatures {
             points: points,
             fill: self.fill.clone(),
@@ -910,7 +846,7 @@ impl VectorObject for VectorFeatures {
             index: self.index,
         };
     }
-    fn set_subobjects(&self, subobjects: Vec<VectorFeatures>) -> Self {
+    pub fn set_subobjects(&self, subobjects: Vec<VectorFeatures>) -> Self {
         return VectorFeatures {
             points: self.points.clone(),
             fill: self.fill.clone(),
@@ -922,7 +858,7 @@ impl VectorObject for VectorFeatures {
             index: self.index,
         };
     }
-    fn rotate(&self, angle: f64, recursive: bool) -> Self {
+    pub fn rotate(&self, angle: f64, recursive: bool) -> Self {
         let cos = angle.cos();
         let sin = angle.sin();
         let new_points = self.get_points().iter().map(|point| {
@@ -953,7 +889,7 @@ impl VectorObject for VectorFeatures {
             index: self.index,
         };
     }
-    fn next_to_other(
+    pub fn next_to_other(
         &self,
         other: &VectorFeatures,
         direction: (f64, f64),
@@ -969,7 +905,7 @@ impl VectorObject for VectorFeatures {
         let result = self.shift(shift, recursive);
         return result;
     }
-    fn next_to_point(
+    pub fn next_to_point(
         &self,
         point: (f64, f64),
         direction: (f64, f64),
@@ -983,7 +919,7 @@ impl VectorObject for VectorFeatures {
         let result = self.shift(shift, recursive);
         return result;
     }
-    fn arrange_subobjects(
+    pub fn arrange_subobjects(
         &self,
         direction: (f64, f64),
         buff: f64,
@@ -1005,7 +941,7 @@ impl VectorObject for VectorFeatures {
         result.subobjects = new_subobjects;
         return result;
     }
-    fn set_background_image(
+    pub fn set_background_image(
         &self,
         image_base64: String,
         mime_type: String,
@@ -1060,7 +996,7 @@ impl VectorObject for VectorFeatures {
             index: self.index,
         };
     }
-    fn set_fill_image_corners(&self, top_left_corner: (f64, f64), bottom_right_corner: (f64, f64), recursive: bool) -> Self {
+    pub fn set_fill_image_corners(&self, top_left_corner: (f64, f64), bottom_right_corner: (f64, f64), recursive: bool) -> Self {
         let new_stroke = match &self.stroke {
             GradientImageOrColor::Image(image) => GradientImageOrColor::Image(Image {
                 image_base64: image.image_base64.clone(),
@@ -1094,7 +1030,7 @@ impl VectorObject for VectorFeatures {
             index: self.index,
         };
     }
-    fn set_stroke_image_corners(&self, top_left_corner: (f64, f64), bottom_right_corner: (f64, f64), recursive: bool) -> Self {
+    pub fn set_stroke_image_corners(&self, top_left_corner: (f64, f64), bottom_right_corner: (f64, f64), recursive: bool) -> Self {
         let new_fill = match &self.fill {
             GradientImageOrColor::Image(image) => GradientImageOrColor::Image(Image {
                 image_base64: image.image_base64.clone(),
@@ -1128,19 +1064,19 @@ impl VectorObject for VectorFeatures {
             index: self.index,
         };
     }
-    fn get_fill_image_corners(&self) -> ((f64, f64), (f64, f64)) {
+    pub fn get_fill_image_corners(&self) -> ((f64, f64), (f64, f64)) {
         match &self.fill {
             GradientImageOrColor::Image(image) => return (image.top_left_corner, image.bottom_right_corner),
             _ => return ((0.0, 0.0), (0.0, 0.0))
         }
     }
-    fn get_stroke_image_corners(&self) -> ((f64, f64), (f64, f64)) {
+    pub fn get_stroke_image_corners(&self) -> ((f64, f64), (f64, f64)) {
         match &self.stroke {
             GradientImageOrColor::Image(image) => return (image.top_left_corner, image.bottom_right_corner),
             _ => return ((0.0, 0.0), (0.0, 0.0))
         }
     }
-    fn get_pieces(&self, n_pieces: usize) -> VectorFeatures {
+    pub fn get_pieces(&self, n_pieces: usize) -> VectorFeatures {
         let template = self.set_subobjects(Vec::new());
         let alphas = (0..n_pieces + 1).map(|i| i as f64 / n_pieces as f64).collect::<Vec<f64>>();
         let mut pieces = Vec::new();

@@ -38,7 +38,9 @@ pub struct NodeScene {
     #[wasm_bindgen(skip)]
     pub current_ffmpeg: Option<ChildProcess>,
     #[wasm_bindgen(skip)]
-    pub svg: Option<bool>
+    pub svg: Option<bool>,
+    #[wasm_bindgen(skip)]
+    pub loaded_images: Map
 }
 
 
@@ -64,7 +66,8 @@ impl SceneAPI for NodeScene {
             callback: Closure::wrap(Box::new(|| Promise::resolve(&JsValue::NULL)) as Box<dyn Fn() -> Promise>).into_js_value().dyn_into().unwrap(),
             animation_number: 0,
             current_ffmpeg: None,
-            svg: None
+            svg: None,
+            loaded_images: Map::new()
         };
     }
     fn get_fps(&self) -> &u32 {
@@ -104,7 +107,7 @@ impl SceneAPI for NodeScene {
         self.objects.clear();
     }
     async fn render_frame(&mut self) {
-        render_all_vectors(&self.objects, self.width, self.height, self.context.as_ref().unwrap(), &self.background, self.top_left_corner, self.bottom_right_corner, &self.callback).await;
+        render_all_vectors(&self.objects, self.width, self.height, self.context.as_ref().unwrap(), &self.background, self.top_left_corner, self.bottom_right_corner, &self.callback, &self.loaded_images, self.save_frames, self.current_ffmpeg.as_ref()).await;
     }
     fn restore(&mut self, n: usize) {
         let (objects, background, top_left_corner, bottom_right_corner) = self.states.get(&n).unwrap().clone();
@@ -161,7 +164,7 @@ impl NodeScene {
         self.save_frames = !self.save_frames;
     }
     #[wasm_bindgen(js_name = initFFmpegPartialMovie)]
-    pub fn init_ffmpeg_partial_movie_js(&mut self, codec: Option<String>, pix_fmt: Option<String>, qp: Option<String>) {
+    pub fn init_ffmpeg_partial_movie_js(&mut self, codec: Option<String>, pix_fmt: Option<String>, crf: Option<String>, preset: Option<String>) {
         let command = "ffmpeg";
         let args = vec![
             "-y".to_string(),
@@ -176,14 +179,17 @@ impl NodeScene {
             "-i".to_string(),
             "-".to_string(),
             "-an".to_string(),
-            "-vcodec".to_string(),
+            "-c:v".to_string(),
             codec.unwrap_or("libx264".to_string()).to_string(),
             "-pix_fmt".to_string(),
             pix_fmt.unwrap_or("yuv420p".to_string()).to_string(),
-            "-qp".to_string(),
-            qp.unwrap_or("0".to_string()).to_string(),
+            "-preset".to_string(),
+            preset.unwrap_or("veryslow".to_string()).to_string(),
+            "-crf".to_string(),
+            crf.unwrap_or("17".to_string()).to_string(),
             "-r".to_string(),
             format!("{}", self.fps),
+            format!("-vsync"), "cfr".to_string(),
             format!("{}-{}.mp4", self.file_name_prefix, self.animation_number)
         ];
         self.current_ffmpeg = Some(spawn(command, args));
@@ -360,17 +366,6 @@ impl NodeScene {
     }
     #[wasm_bindgen(js_name = onRendered)]
     pub async fn on_rendered_js(&mut self) {
-        if self.save_frames && self.current_ffmpeg.is_some() {
-            let canvas = self.context.as_ref().unwrap().canvas();
-            let ffmpeg = self.current_ffmpeg.as_ref().unwrap();
-            let options = Map::new();
-            options.set(&JsValue::from_str("compressionLevel"), &JsValue::from_f64(0.0));
-            let buffer = canvas.to_buffer_with_mime_type("raw");
-            let ok = ffmpeg.stdin().write(&buffer);
-            if !ok {
-                log("Frame is too big");
-            }
-        }
         let promise = self.callback.call0(&JsValue::NULL).unwrap().dyn_into::<Promise>().unwrap();
         wasm_bindgen_futures::JsFuture::from(promise).await.unwrap();
     }

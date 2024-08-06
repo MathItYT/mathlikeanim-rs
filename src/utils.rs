@@ -6,7 +6,7 @@
 
 use std::{f64::consts::PI, vec};
 
-use crate::{colors::{Color, GradientImageOrColor}, objects::{geometry::arc::elliptical_arc, vector_object::{generate_cubic_bezier_tuples, generate_subpaths, partial_bezier_points, VectorFeatures, VectorObject}}};
+use crate::{colors::{Color, GradientImageOrColor}, objects::{geometry::arc::elliptical_arc, vector_object::{generate_cubic_bezier_tuples, generate_subpaths, partial_bezier_points, VectorFeatures}}};
 use wasm_bindgen::prelude::*;
 
 /// Log utilities for console when using WebAssembly

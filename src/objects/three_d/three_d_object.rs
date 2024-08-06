@@ -1,6 +1,6 @@
 use std::{f64::consts::PI, vec};
 
-use crate::{colors::{Color, GradientImageOrColor, GradientStop, LinearGradient}, objects::vector_object::{VectorFeatures, VectorObject}, utils::interpolate_tuple_3d};
+use crate::{colors::{Color, GradientImageOrColor, GradientStop, LinearGradient}, objects::vector_object::VectorFeatures, utils::{interpolate, interpolate_tuple_3d}};
 
 pub fn rot_matrix(angle: f64, axis: usize) -> [[f64; 3]; 3] {
     let mut matrix = [[0.0; 3]; 3];
@@ -62,7 +62,7 @@ pub fn transpose_matrix(matrix: [[f64; 3]; 3]) -> [[f64; 3]; 3] {
     new_matrix
 }
 
-pub fn apply_matrix(matrix: [[f64; 3]; 3], points: Vec<(f64, f64, f64)>) -> Vec<(f64, f64, f64)> {
+pub fn points_times_t_matrix(matrix: [[f64; 3]; 3], points: Vec<(f64, f64, f64)>) -> Vec<(f64, f64, f64)> {
     let matrix = transpose_matrix(matrix);
     points.iter().map(|point| {
         (
@@ -73,7 +73,8 @@ pub fn apply_matrix(matrix: [[f64; 3]; 3], points: Vec<(f64, f64, f64)>) -> Vec<
     }).collect()
 }
 
-pub fn shift_points_3d(points: Vec<(f64, f64, f64)>, shift: (f64, f64, f64)) -> Vec<(f64, f64, f64)> {
+
+pub fn shift_points_3d(points: &Vec<(f64, f64, f64)>, shift: (f64, f64, f64)) -> Vec<(f64, f64, f64)> {
     points.iter().map(|point| {
         (point.0 + shift.0, point.1 + shift.1, point.2 + shift.2)
     }).collect()
@@ -83,6 +84,13 @@ pub fn ensure_valid_three_d_color(color: GradientImageOrColor) -> GradientImageO
     match color {
         GradientImageOrColor::Color(c) => GradientImageOrColor::Color(c),
         GradientImageOrColor::LinearGradient(g) => {
+            if g.stops.len() == 0 {
+                return GradientImageOrColor::Color(Color { red: 0.0, green: 0.0, blue: 0.0, alpha: 0.0 });
+            }
+            if g.stops.len() == 1 {
+                let stop = g.stops[0].clone();
+                return GradientImageOrColor::Color(stop.color);
+            }
             let new_stops = g.stops[0..2].to_vec();
             GradientImageOrColor::LinearGradient(LinearGradient {
                 stops: new_stops,
@@ -224,9 +232,11 @@ pub fn get_shaded_color(
     let normal1 = get_start_corner_unit_normal(points);
     let point2 = get_end_corner(points);
     let normal2 = get_end_corner_unit_normal(points);
-    let projected = project_points(vec![point1, point2], camera);
-    let point1_projected = projected[0];
-    let point2_projected = projected[1];
+    let projected = project_points(&vec![point1, point2], camera);
+    let mut point1_projected = projected[0];
+    let mut point2_projected = projected[1];
+    point1_projected = (point1_projected.0 + camera.width / 2.0, point1_projected.1 + camera.height / 2.0);
+    point2_projected = (point2_projected.0 + camera.width / 2.0, point2_projected.1 + camera.height / 2.0);
     match color {
         GradientImageOrColor::Color(color) => {
             let color1 = get_shaded_rgb(color, point1, normal1, light_source);
@@ -329,19 +339,15 @@ pub struct LightSource {
     pub position: (f64, f64, f64)
 }
 
-pub fn project_points(points: Vec<(f64, f64, f64)>, camera: &Camera) -> Vec<(f64, f64)> {
+pub fn project_points(points: &Vec<(f64, f64, f64)>, camera: &Camera) -> Vec<(f64, f64)> {
     let points = shift_points_3d(points, (-camera.position.0, -camera.position.1, -camera.position.2));
     let rot_matrix = rot_matrix_euler(camera.rotation.0, camera.rotation.1, camera.rotation.2);
-    let points = apply_matrix(rot_matrix, points);
+    let points = points_times_t_matrix(rot_matrix, points);
     let points = points.iter().map(|point| {
         let z = point.2;
-        let factor = if camera.focal_distance < z {
-            1000000.0
-        } else {
-            camera.focal_distance / (camera.focal_distance - z)
-        };
-        let x = point.0 * factor * camera.zoom + camera.width / 2.0;
-        let y = point.1 * factor * camera.zoom + camera.height / 2.0;
+        let factor = camera.focal_distance / (camera.focal_distance - z);
+        let x = point.0 * factor * camera.zoom;
+        let y = point.1 * factor * camera.zoom;
         (x, y)
     }).collect::<Vec<(f64, f64)>>();
     points
@@ -476,7 +482,7 @@ impl ThreeDObject {
         }
     }
     pub fn shift(&self, shift: (f64, f64, f64), recursive: bool) -> ThreeDObject {
-        let new_points = shift_points_3d(self.points.clone(), shift);
+        let new_points = shift_points_3d(&self.points, shift);
         let new_subobjects = if recursive {
             self.subobjects.iter().map(|subobject| {
                 subobject.shift(shift, true)
@@ -573,50 +579,80 @@ impl ThreeDObject {
     }
     pub fn project_and_shade(&self, camera: &Camera, light_source: &LightSource) -> VectorFeatures {
         let mut subobjects_3d = self.get_subobjects_recursively();
+        subobjects_3d.push(self.clone());
         let rot_matrix = rot_matrix_euler(camera.rotation.0, camera.rotation.1, camera.rotation.2);
+        subobjects_3d.retain(|subobject| {
+            let center = subobject.set_subobjects(vec![]).get_center();
+            let z_rotated = points_times_t_matrix(rot_matrix, vec![center]).pop().unwrap().2;
+            z_rotated < camera.position.2
+        });
         subobjects_3d.sort_by(
             |a, b| {
-                let a_center = a.get_center();
-                let b_center = b.get_center();
-                let a_z_rotated = apply_matrix(rot_matrix, vec![a_center]).pop().unwrap().2;
-                let b_z_rotated = apply_matrix(rot_matrix, vec![b_center]).pop().unwrap().2;
+                let a_center = a.set_subobjects(vec![]).get_center();
+                let b_center = b.set_subobjects(vec![]).get_center();
+                let a_z_rotated = points_times_t_matrix(rot_matrix, vec![a_center]).pop().unwrap().2;
+                let b_z_rotated = points_times_t_matrix(rot_matrix, vec![b_center]).pop().unwrap().2;
                 a_z_rotated.partial_cmp(&b_z_rotated).unwrap()
             }
         );
         let mut vec_obj = VectorFeatures::new();
-        vec_obj.points = project_points(self.points.clone(), camera);
-        vec_obj.fill = get_shaded_color(&self.fill, &self.points, light_source, camera);
-        vec_obj.stroke = get_shaded_color(&self.stroke, &self.points, light_source, camera);
-        vec_obj.stroke_width = self.stroke_width;
         for subobject in subobjects_3d.iter() {
-            vec_obj.subobjects.push(subobject.project_and_shade(camera, light_source));
+            let mut subobject_2d = VectorFeatures::new();
+            subobject_2d.points = project_points(&subobject.points, camera); 
+            subobject_2d.fill = get_shaded_color(&subobject.fill, &subobject.points, light_source, camera);
+            subobject_2d.stroke = get_shaded_color(&subobject.stroke, &subobject.points, light_source, camera);
+            subobject_2d.stroke_width = subobject.stroke_width;
+            vec_obj.subobjects.push(subobject_2d.shift((camera.width / 2.0, camera.height / 2.0), false));
         }
         return vec_obj;
+    }
+    pub fn apply_function(
+        &self,
+        function: &dyn Fn(f64, f64, f64) -> (f64, f64, f64),
+        recursive: bool
+    ) -> ThreeDObject {
+        let new_points = self.points.iter().map(|point| {
+            function(point.0, point.1, point.2)
+        }).collect();
+        let new_subobjects = if recursive {
+            self.subobjects.iter().map(|subobject| {
+                subobject.apply_function(function, true)
+            }).collect()
+        } else {
+            self.subobjects.clone()
+        };
+        ThreeDObject {
+            points: new_points,
+            subobjects: new_subobjects,
+            fill: self.fill.clone(),
+            stroke: self.stroke.clone(),
+            stroke_width: self.stroke_width
+        }
     }
     pub fn from_uv_function(
         uv_function: &dyn Fn(f64, f64) -> (f64, f64, f64),
         u_range: (f64, f64),
         v_range: (f64, f64),
-        u_steps: usize,
-        v_steps: usize,
+        u_samples: usize,
+        v_samples: usize,
         fills: Vec<Color>,
         strokes: Vec<Color>,
         stroke_width: f64
     ) -> Self {
         let mut faces = Vec::new();
-        let u_step = (u_range.1 - u_range.0) / (u_steps as f64);
-        let v_step = (v_range.1 - v_range.0) / (v_steps as f64);
-        for i in 0..u_steps {
-            for j in 0..v_steps {
-                let u1 = u_range.0 + (i as f64) * u_step;
-                let u2 = u_range.0 + ((i + 1) as f64) * u_step;
-                let v1 = v_range.0 + (j as f64) * v_step;
-                let v2 = v_range.0 + ((j + 1) as f64) * v_step;
-                let p1 = uv_function(u1, v1);
-                let p2 = uv_function(u2, v1);
-                let p3 = uv_function(u2, v2);
-                let p4 = uv_function(u1, v2);
-                let vertices = vec![p1, p2, p3, p4, p1];
+        for i in 0..u_samples {
+            for j in 0..v_samples {
+                let u1 = interpolate(u_range.0, u_range.1, i as f64 / u_samples as f64);
+                let u2 = interpolate(u_range.0, u_range.1, (i + 1) as f64 / u_samples as f64);
+                let v1 = interpolate(v_range.0, v_range.1, j as f64 / v_samples as f64);
+                let v2 = interpolate(v_range.0, v_range.1, (j + 1) as f64 / v_samples as f64);
+                let vertices = vec![
+                    (u1, v1, 0.0),
+                    (u2, v1, 0.0),
+                    (u2, v2, 0.0),
+                    (u1, v2, 0.0),
+                    (u1, v1, 0.0)
+                ];
                 let mut points = Vec::new();
                 for (v1, v2) in vertices[0..4].iter().zip(vertices[1..5].iter()) {
                     points.extend(line_as_cubic_bezier_3d(*v1, *v2));
@@ -637,17 +673,17 @@ impl ThreeDObject {
             GradientImageOrColor::Color(Color { red: 0.0, green: 0.0, blue: 0.0, alpha: 0.0 }),
             GradientImageOrColor::Color(Color { red: 0.0, green: 0.0, blue: 0.0, alpha: 0.0 }),
             0.0
-        );
+        ).apply_function(&|x, y, _| uv_function(x, y), true);
     }
     pub fn get_bounding_box(
         &self
     ) -> ((f64, f64, f64), (f64, f64, f64)) {
-        let mut min_x = std::f64::INFINITY;
-        let mut min_y = std::f64::INFINITY;
-        let mut min_z = std::f64::INFINITY;
-        let mut max_x = std::f64::NEG_INFINITY;
-        let mut max_y = std::f64::NEG_INFINITY;
-        let mut max_z = std::f64::NEG_INFINITY;
+        let mut min_x = self.points.first().map(|point| point.0).unwrap_or(0.0);
+        let mut min_y = self.points.first().map(|point| point.1).unwrap_or(0.0);
+        let mut min_z = self.points.first().map(|point| point.2).unwrap_or(0.0);
+        let mut max_x = self.points.first().map(|point| point.0).unwrap_or(0.0);
+        let mut max_y = self.points.first().map(|point| point.1).unwrap_or(0.0);
+        let mut max_z = self.points.first().map(|point| point.2).unwrap_or(0.0);
         for point in self.points.iter() {
             if point.0 < min_x {
                 min_x = point.0;

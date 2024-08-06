@@ -1,6 +1,6 @@
 use std::f64::consts::PI;
 
-use crate::objects::{geometry::poly::equilateral_triangle, vector_object::{VectorFeatures, VectorObject}};
+use crate::objects::{geometry::poly::equilateral_triangle, vector_object::VectorFeatures};
 
 pub fn add_final_tip(
     shape: VectorFeatures,

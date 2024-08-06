@@ -4,7 +4,6 @@ use crate::colors::{Color, GradientImageOrColor};
 use crate::objects::three_d::three_d_object::ThreeDObject;
 
 use crate::objects::plotting::number_line::number_line;
-use crate::objects::vector_object::VectorObject;
 use crate::utils::{interpolate, interpolate_tuple_3d};
 
 use super::three_d_object::line_as_cubic_bezier_3d;
