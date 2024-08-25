@@ -93,6 +93,7 @@ pub fn axes(
         stroke_width: 0.0,
         line_cap: "butt",
         line_join: "miter",
+        fill_rule: "nonzero",
         index: index.unwrap_or(0),
     };
     let axes_current_center = axes.get_center();
@@ -291,6 +292,7 @@ pub fn area_under_curve(
                 alpha
             }
         ),
+        fill_rule: "nonzero",
         stroke: GradientImageOrColor::Color(
             Color {
                 red: 0.0,
@@ -376,6 +378,7 @@ pub fn riemann_rectangles_for_plot(
                     alpha: 0.0
                 }
             ),
+            fill_rule: "nonzero",
             stroke: GradientImageOrColor::Color(
                 Color {
                     red: 0.0,
@@ -445,6 +448,7 @@ pub fn riemann_rectangles_for_plot(
                     alpha: 0.0
                 }
             ),
+            fill_rule: "nonzero",
             stroke_width: 0.0,
             line_cap: "butt",
             line_join: "miter",
@@ -506,6 +510,7 @@ pub fn riemann_rectangles_for_plot(
                 alpha: 0.0
             }
         ),
+        fill_rule: "nonzero",
         stroke_width: 0.0,
         line_cap: "butt",
         line_join: "miter",

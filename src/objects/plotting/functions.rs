@@ -33,6 +33,7 @@ pub fn parametric_function(
             blue: 0.0,
             alpha: 0.0
         }),
+        fill_rule: "nonzero",
         stroke: GradientImageOrColor::Color(Color {
             red,
             green,
@@ -126,6 +127,7 @@ pub fn contour_plot(
                 }
                 result.subobjects.push(VectorFeatures {
                     points,
+                    fill_rule: "nonzero",
                     stroke: color.clone(),
                     fill: GradientImageOrColor::Color(Color {
                         red: 0.0,

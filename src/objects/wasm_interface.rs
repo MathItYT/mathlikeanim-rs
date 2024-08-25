@@ -748,11 +748,29 @@ impl WasmVectorObject {
             native_vec_features: self.native_vec_features.set_fill_opacity(opacity, recursive)
         }
     }
+    #[wasm_bindgen(js_name = setFillRule)]
+    pub fn set_fill_rule(&self, fill_rule: String, recursive: bool) -> Self {
+        match fill_rule.as_str() {
+            "nonzero" => WasmVectorObject {
+                native_vec_features: self.native_vec_features.set_fill_rule("nonzero", recursive)
+            },
+            "evenodd" => WasmVectorObject {
+                native_vec_features: self.native_vec_features.set_fill_rule("evenodd", recursive)
+            },
+            _ => WasmVectorObject {
+                native_vec_features: self.native_vec_features.set_fill_rule("nonzero", recursive)
+            }
+        }
+    }
     #[wasm_bindgen(js_name = moveTo)]
     pub fn move_to(&self, x: f64, y: f64, recursive: bool) -> Self {
         WasmVectorObject {
             native_vec_features: self.native_vec_features.move_to((x, y), recursive)
         }
+    }
+    #[wasm_bindgen(js_name = getFillRule)]
+    pub fn get_fill_rule(&self) -> String {
+        self.native_vec_features.get_fill_rule().to_string()
     }
     #[wasm_bindgen(js_name = setStroke)]
     pub fn set_stroke(&self, stroke: WasmGradientImageOrColor, recursive: bool) -> Self {
@@ -906,7 +924,8 @@ impl JsCast for WasmVectorObject {
         Reflect::get(&val, &JsValue::from_str("getLineCap")).is_ok() &&
         Reflect::get(&val, &JsValue::from_str("getLineJoin")).is_ok() &&
         Reflect::get(&val, &JsValue::from_str("getSubobjects")).is_ok() &&
-        Reflect::get(&val, &JsValue::from_str("getIndex")).is_ok()
+        Reflect::get(&val, &JsValue::from_str("getIndex")).is_ok() &&
+        Reflect::get(&val, &JsValue::from_str("getFillRule")).is_ok()
     }
     fn unchecked_from_js(val: JsValue) -> Self {
         let get_points = Reflect::get(&val, &JsValue::from_str("getPoints")).unwrap();
@@ -917,6 +936,7 @@ impl JsCast for WasmVectorObject {
         let get_line_join = Reflect::get(&val, &JsValue::from_str("getLineJoin")).unwrap();
         let get_subobjects = Reflect::get(&val, &JsValue::from_str("getSubobjects")).unwrap();
         let get_index = Reflect::get(&val, &JsValue::from_str("getIndex")).unwrap();
+        let get_fill_rule = Reflect::get(&val, &JsValue::from_str("getFillRule")).unwrap();
         let points = get_points.dyn_into::<js_sys::Function>().unwrap().call0(&val).unwrap();
         let fill = get_fill.dyn_into::<js_sys::Function>().unwrap().call0(&val).unwrap();
         let stroke = get_stroke.dyn_into::<js_sys::Function>().unwrap().call0(&val).unwrap();
@@ -934,6 +954,7 @@ impl JsCast for WasmVectorObject {
         let subobjects = subobjects.dyn_into::<Array>().unwrap();
         let index = index.as_f64().unwrap() as usize;
         let subobjects = subobjects.iter().map(|object| object.dyn_into::<WasmVectorObject>().unwrap()).collect::<Vec<WasmVectorObject>>();
+        let fill_rule = get_fill_rule.dyn_into::<js_sys::Function>().unwrap().call0(&val).unwrap();
         return WasmVectorObject::new()
             .set_points(points)
             .set_fill(fill, false)
@@ -942,7 +963,8 @@ impl JsCast for WasmVectorObject {
             .set_line_cap(line_cap, false)
             .set_line_join(line_join, false)
             .set_subobjects(subobjects)
-            .set_index(index);
+            .set_index(index)
+            .set_fill_rule(fill_rule.as_string().unwrap(), false);
     }
     fn unchecked_from_js_ref(val: &JsValue) -> &Self {
         val.unchecked_ref::<WasmVectorObject>()

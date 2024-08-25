@@ -12,6 +12,7 @@ pub fn line(
     let new_points = line_as_cubic_bezier(point1, point2);
     return VectorFeatures {
         points: new_points,
+        fill_rule: "nonzero",
         subobjects: vec![],
         index: match index {
             Some(i) => i,

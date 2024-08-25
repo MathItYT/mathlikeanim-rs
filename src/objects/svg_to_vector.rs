@@ -260,6 +260,9 @@ fn parse_path(attributes: &std::collections::HashMap<String, Value>, index: usiz
             _ => (0.0, 0.0, 0.0, 1.0),
         }
     }).unwrap_or(fill.clone());
+    let fill_rule = attributes.get("fill-rule").map(|rule| {
+        rule.to_string()
+    }).unwrap_or("nonzero".to_string());
     let stroke_color = attributes.get("stroke").map(|stroke| {
         if stroke.to_string().as_str() == "none" {
             return (0.0, 0.0, 0.0, 0.0);
@@ -349,6 +352,10 @@ fn parse_path(attributes: &std::collections::HashMap<String, Value>, index: usiz
         line_cap: line_cap,
         line_join: line_join,
         subobjects: vec![],
+        fill_rule: match fill_rule.as_str() {
+            "evenodd" => "evenodd",
+            _ => "nonzero",
+        },
         index: index,
     };
     return vec_obj;
@@ -1423,6 +1430,7 @@ pub fn svg_to_vector_pin<'a>(svg: &'a str, font_family: Option<String>, font_siz
             line_cap: "butt",
             line_join: "miter",
             subobjects: subobjects,
+            fill_rule: "nonzero",
             index: 0,
         };
     })

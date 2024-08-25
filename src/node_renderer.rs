@@ -66,7 +66,7 @@ extern "C" {
     #[wasm_bindgen(method, setter, js_name = "strokeStyle")]
     fn set_stroke_style_pattern(this: &CanvasRenderingContext2D, pattern: CanvasPattern);
     #[wasm_bindgen(method, js_name = "fill")]
-    fn fill(this: &CanvasRenderingContext2D);
+    fn fill(this: &CanvasRenderingContext2D, fill_rule: &str);
     #[wasm_bindgen(method, js_name = "stroke")]
     fn stroke(this: &CanvasRenderingContext2D);
     #[wasm_bindgen(method, setter, js_name = "lineWidth")]
@@ -174,6 +174,7 @@ pub fn draw_context_path_wasm(
 pub fn apply_fill_wasm(
     context: &CanvasRenderingContext2D,
     fill: GradientImageOrColor,
+    fill_rule: &str,
     points: Vec<(f64, f64)>,
     width: u32,
     height: u32,
@@ -190,7 +191,7 @@ pub fn apply_fill_wasm(
             let a_string = format!("{}", color.alpha);
             let fill_color = format!("rgba({}, {}, {}, {})", r_string, g_string, b_string, a_string);
             context.set_fill_style(fill_color);
-            context.fill();
+            context.fill(fill_rule);
         },
         GradientImageOrColor::LinearGradient(gradient) => {
             let alpha = gradient.alpha;
@@ -204,7 +205,7 @@ pub fn apply_fill_wasm(
                 grd.add_color_stop(stop.offset as f32, color);
             }
             context.set_fill_style_gradient(grd);
-            context.fill();
+            context.fill(fill_rule);
         },
         GradientImageOrColor::RadialGradient(gradient) => {
             let alpha = gradient.alpha;
@@ -218,7 +219,7 @@ pub fn apply_fill_wasm(
                 grd.add_color_stop(stop.offset as f32, color);
             }
             context.set_fill_style_gradient(grd);
-            context.fill();
+            context.fill(fill_rule);
         },
         GradientImageOrColor::Image(image) => {
             let src = format!("data:{};base64,{}", image.mime_type, image.image_base64);
@@ -234,7 +235,7 @@ pub fn apply_fill_wasm(
             context2.draw_image_with_html_image_element_and_dw_and_dh(&img, tl_corner.0, tl_corner.1, w, h);
             let pattern = context.create_pattern_with_html_canvas_element(&canvas2, "repeat");
             context.set_fill_style_pattern(pattern);
-            context.fill();
+            context.fill(fill_rule);
         }
     }
 }
@@ -341,7 +342,7 @@ pub fn render_vector_wasm(
     let line_cap = vec.line_cap;
     let line_join = vec.line_join;
     draw_context_path_wasm(&context, points.clone());
-    apply_fill_wasm(&context, fill, points.clone(), width, height, loaded_images);
+    apply_fill_wasm(&context, fill, &vec.fill_rule, points.clone(), width, height, loaded_images);
     apply_stroke_wasm(&context, stroke, stroke_width, line_cap.to_string(), line_join.to_string(), points.clone(), width, height, loaded_images);
     for subvec in &vec.subobjects {
         render_vector_wasm(&subvec, width, height, &context, loaded_images);

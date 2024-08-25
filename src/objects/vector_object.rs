@@ -46,6 +46,7 @@ pub fn get_partial_points(
     if start <= 0.0 && end >= 1.0 {
         return VectorFeatures {
             points: points.clone(),
+            fill_rule: vector_features.fill_rule,
             fill: fill,
             stroke: stroke,
             stroke_width: stroke_width,
@@ -60,6 +61,7 @@ pub fn get_partial_points(
         return VectorFeatures {
             points: points.clone(),
             fill: fill,
+            fill_rule: vector_features.fill_rule,
             stroke: stroke,
             stroke_width: stroke_width,
             line_cap: line_cap,
@@ -82,6 +84,7 @@ pub fn get_partial_points(
                 lower_residue,
                 upper_residue
             ),
+            fill_rule: vector_features.fill_rule,
             fill: fill,
             stroke: stroke,
             stroke_width: stroke_width,
@@ -121,6 +124,7 @@ pub fn get_partial_points(
     return VectorFeatures {
         points: new_points,
         fill: fill,
+        fill_rule: vector_features.fill_rule,
         stroke: stroke,
         stroke_width: stroke_width,
         line_cap: line_cap,
@@ -244,6 +248,7 @@ pub fn shift_points(points: &Vec<(f64, f64)>, shift: (f64, f64)) -> Vec<(f64, f6
 pub struct VectorFeatures {
     pub points: Vec<(f64, f64)>,
     pub fill: GradientImageOrColor,
+    pub fill_rule: &'static str,
     pub stroke: GradientImageOrColor,
     pub stroke_width: f64,
     pub line_cap: &'static str,
@@ -263,6 +268,7 @@ impl VectorFeatures {
                 blue: 0.0,
                 alpha: 0.0
             }),
+            fill_rule: "nonzero",
             stroke: GradientImageOrColor::Color(Color {
                 red: 0.0,
                 green: 0.0,
@@ -373,6 +379,7 @@ impl VectorFeatures {
     pub fn set_index(&self, index: usize) -> Self {
         return VectorFeatures {
             points: self.points.clone(),
+            fill_rule: self.fill_rule,
             fill: self.fill.clone(),
             stroke: self.stroke.clone(),
             stroke_width: self.stroke_width,
@@ -391,6 +398,7 @@ impl VectorFeatures {
         if recursive {
             return VectorFeatures {
                 points: self.points.clone(),
+                fill_rule: self.fill_rule,
                 fill: self.fill.clone(),
                 stroke: self.stroke.clone(),
                 stroke_width: self.stroke_width,
@@ -402,6 +410,7 @@ impl VectorFeatures {
         }
         return VectorFeatures {
             points: self.points.clone(),
+            fill_rule: self.fill_rule,
             fill: self.fill.clone(),
             stroke: self.stroke.clone(),
             stroke_width: self.stroke_width,
@@ -460,6 +469,7 @@ impl VectorFeatures {
         if !recursive {
             return VectorFeatures {
                 points: scale_points(&self.points, scale_factor),
+                fill_rule: self.fill_rule,
                 fill: self.fill.clone(),
                 stroke: self.stroke.clone(),
                 stroke_width: self.stroke_width,
@@ -471,6 +481,7 @@ impl VectorFeatures {
         }
         return VectorFeatures {
             points: scale_points(&self.points, scale_factor),
+            fill_rule: self.fill_rule,
             fill: self.fill.clone(),
             stroke: self.stroke.clone(),
             stroke_width: self.stroke_width,
@@ -489,6 +500,7 @@ impl VectorFeatures {
         new_subobjects[index] = subobject;
         return VectorFeatures {
             points: self.points.clone(),
+            fill_rule: self.fill_rule,
             fill: self.fill.clone(),
             stroke: self.stroke.clone(),
             stroke_width: self.stroke_width,
@@ -508,6 +520,7 @@ impl VectorFeatures {
         new_subobjects.splice(start..end, subobjects.iter().cloned());
         return VectorFeatures {
             points: self.points.clone(),
+            fill_rule: self.fill_rule,
             fill: self.fill.clone(),
             stroke: self.stroke.clone(),
             stroke_width: self.stroke_width,
@@ -523,6 +536,7 @@ impl VectorFeatures {
             return VectorFeatures {
                 points: shift_points(&stretch_points(&self.points, stretch), (center.0 - self.get_center().0, center.1 - self.get_center().1)),
                 fill: self.fill.clone(),
+                fill_rule: self.fill_rule,
                 stroke: self.stroke.clone(),
                 stroke_width: self.stroke_width,
                 line_cap: self.line_cap,
@@ -534,6 +548,7 @@ impl VectorFeatures {
         return VectorFeatures {
             points: shift_points(&stretch_points(&self.points, stretch), (center.0 - self.get_center().0, center.1 - self.get_center().1)),
             fill: self.fill.clone(),
+            fill_rule: self.fill_rule,
             stroke: self.stroke.clone(),
             stroke_width: self.stroke_width,
             line_cap: self.line_cap,
@@ -559,6 +574,7 @@ impl VectorFeatures {
         if !recursive {
             return VectorFeatures {
                 points: shift_points(&self.points, shift),
+                fill_rule: self.fill_rule,
                 fill: self.fill.clone(),
                 stroke: self.stroke.clone(),
                 stroke_width: self.stroke_width,
@@ -570,6 +586,7 @@ impl VectorFeatures {
         }
         return VectorFeatures {
             points: shift_points(&self.points, shift),
+            fill_rule: self.fill_rule,
             fill: self.fill.clone(),
             stroke: self.stroke.clone(),
             stroke_width: self.stroke_width,
@@ -588,6 +605,7 @@ impl VectorFeatures {
         if recursive {
             return VectorFeatures {
                 points: self.points.clone(),
+                fill_rule: self.fill_rule,
                 fill: fill.clone(),
                 stroke: self.stroke.clone(),
                 stroke_width: self.stroke_width,
@@ -599,6 +617,7 @@ impl VectorFeatures {
         }
         return VectorFeatures {
             points: self.points.clone(),
+            fill_rule: self.fill_rule,
             fill: fill,
             stroke: self.stroke.clone(),
             stroke_width: self.stroke_width,
@@ -644,6 +663,7 @@ impl VectorFeatures {
         if recursive {
             return VectorFeatures {
                 points: self.points.clone(),
+                fill_rule: self.fill_rule,
                 fill: new_fill,
                 stroke: self.stroke.clone(),
                 stroke_width: self.stroke_width,
@@ -655,6 +675,7 @@ impl VectorFeatures {
         }
         return VectorFeatures {
             points: self.points.clone(),
+            fill_rule: self.fill_rule,
             fill: new_fill,
             stroke: self.stroke.clone(),
             stroke_width: self.stroke_width,
@@ -668,6 +689,7 @@ impl VectorFeatures {
         if recursive {
             return VectorFeatures {
                 points: self.points.clone(),
+                fill_rule: self.fill_rule,
                 fill: self.fill.clone(),
                 stroke: stroke.clone(),
                 stroke_width: self.stroke_width,
@@ -680,6 +702,7 @@ impl VectorFeatures {
         return VectorFeatures {
             points: self.points.clone(),
             fill: self.fill.clone(),
+            fill_rule: self.fill_rule,
             stroke: stroke,
             stroke_width: self.stroke_width,
             line_cap: self.line_cap,
@@ -742,6 +765,7 @@ impl VectorFeatures {
         if recursive {
             return VectorFeatures {
                 points: self.points.clone(),
+                fill_rule: self.fill_rule,
                 fill: self.fill.clone(),
                 stroke: new_stroke,
                 stroke_width: self.stroke_width,
@@ -754,6 +778,7 @@ impl VectorFeatures {
         return VectorFeatures {
             points: self.points.clone(),
             fill: self.fill.clone(),
+            fill_rule: self.fill_rule,
             stroke: new_stroke,
             stroke_width: self.stroke_width,
             line_cap: self.line_cap,
@@ -766,6 +791,7 @@ impl VectorFeatures {
         if recursive {
             return VectorFeatures {
                 points: self.points.clone(),
+                fill_rule: self.fill_rule,
                 fill: self.fill.clone(),
                 stroke: self.stroke.clone(),
                 stroke_width: stroke_width,
@@ -777,6 +803,7 @@ impl VectorFeatures {
         }
         return VectorFeatures {
             points: self.points.clone(),
+            fill_rule: self.fill_rule,
             fill: self.fill.clone(),
             stroke: self.stroke.clone(),
             stroke_width: stroke_width,
@@ -790,6 +817,7 @@ impl VectorFeatures {
         if recursive {
             return VectorFeatures {
                 points: self.points.clone(),
+                fill_rule: self.fill_rule,
                 fill: self.fill.clone(),
                 stroke: self.stroke.clone(),
                 stroke_width: self.stroke_width,
@@ -801,6 +829,7 @@ impl VectorFeatures {
         }
         return VectorFeatures {
             points: self.points.clone(),
+            fill_rule: self.fill_rule,
             fill: self.fill.clone(),
             stroke: self.stroke.clone(),
             stroke_width: self.stroke_width,
@@ -813,6 +842,7 @@ impl VectorFeatures {
     pub fn set_line_join(&self, line_join: &'static str, recursive: bool) -> Self {
         if recursive {
             return VectorFeatures {
+                fill_rule: self.fill_rule,
                 points: self.points.clone(),
                 fill: self.fill.clone(),
                 stroke: self.stroke.clone(),
@@ -825,6 +855,7 @@ impl VectorFeatures {
         }
         return VectorFeatures {
             points: self.points.clone(),
+            fill_rule: self.fill_rule,
             fill: self.fill.clone(),
             stroke: self.stroke.clone(),
             stroke_width: self.stroke_width,
@@ -837,6 +868,7 @@ impl VectorFeatures {
     pub fn set_points(&self, points: Vec<(f64, f64)>) -> Self {
         return VectorFeatures {
             points: points,
+            fill_rule: self.fill_rule,
             fill: self.fill.clone(),
             stroke: self.stroke.clone(),
             stroke_width: self.stroke_width,
@@ -849,6 +881,7 @@ impl VectorFeatures {
     pub fn set_subobjects(&self, subobjects: Vec<VectorFeatures>) -> Self {
         return VectorFeatures {
             points: self.points.clone(),
+            fill_rule: self.fill_rule,
             fill: self.fill.clone(),
             stroke: self.stroke.clone(),
             stroke_width: self.stroke_width,
@@ -869,6 +902,7 @@ impl VectorFeatures {
         if !recursive {
             return VectorFeatures {
                 points: new_points,
+                fill_rule: self.fill_rule,
                 fill: self.fill.clone(),
                 stroke: self.stroke.clone(),
                 stroke_width: self.stroke_width,
@@ -880,6 +914,7 @@ impl VectorFeatures {
         }
         return VectorFeatures {
             points: new_points,
+            fill_rule: self.fill_rule,
             fill: self.fill.clone(),
             stroke: self.stroke.clone(),
             stroke_width: self.stroke_width,
@@ -952,6 +987,7 @@ impl VectorFeatures {
         if recursive {
             return VectorFeatures {
                 points: self.points.clone(),
+                fill_rule: self.fill_rule,
                 fill: GradientImageOrColor::Image(Image {
                     image_base64: image_base64.clone(),
                     mime_type: mime_type.clone(),
@@ -975,6 +1011,7 @@ impl VectorFeatures {
         }
         return VectorFeatures {
             points: self.points.clone(),
+            fill_rule: self.fill_rule,
             fill: GradientImageOrColor::Image(Image {
                 image_base64: image_base64.clone(),
                 mime_type: mime_type.clone(),
@@ -1011,6 +1048,7 @@ impl VectorFeatures {
             return VectorFeatures {
                 points: self.points.clone(),
                 fill: self.fill.clone(),
+                fill_rule: self.fill_rule,
                 stroke: new_stroke,
                 stroke_width: self.stroke_width,
                 line_cap: self.line_cap,
@@ -1022,6 +1060,7 @@ impl VectorFeatures {
         return VectorFeatures {
             points: self.points.clone(),
             fill: self.fill.clone(),
+            fill_rule: self.fill_rule,
             stroke: new_stroke,
             stroke_width: self.stroke_width,
             line_cap: self.line_cap,
@@ -1029,6 +1068,35 @@ impl VectorFeatures {
             subobjects: self.subobjects.clone(),
             index: self.index,
         };
+    }
+    pub fn set_fill_rule(&self, fill_rule: &'static str, recursive: bool) -> Self {
+        if recursive {
+            return VectorFeatures {
+                points: self.points.clone(),
+                fill_rule: fill_rule,
+                fill: self.fill.clone(),
+                stroke: self.stroke.clone(),
+                stroke_width: self.stroke_width,
+                line_cap: self.line_cap,
+                line_join: self.line_join,
+                subobjects: self.subobjects.iter().map(|subobject| subobject.set_fill_rule(fill_rule, true)).collect(),
+                index: self.index,
+            };
+        }
+        return VectorFeatures {
+            points: self.points.clone(),
+            fill_rule: fill_rule,
+            fill: self.fill.clone(),
+            stroke: self.stroke.clone(),
+            stroke_width: self.stroke_width,
+            line_cap: self.line_cap,
+            line_join: self.line_join,
+            subobjects: self.subobjects.clone(),
+            index: self.index,
+        };
+    }
+    pub fn get_fill_rule(&self) -> &'static str {
+        return self.fill_rule;
     }
     pub fn set_stroke_image_corners(&self, top_left_corner: (f64, f64), bottom_right_corner: (f64, f64), recursive: bool) -> Self {
         let new_fill = match &self.fill {
@@ -1045,6 +1113,7 @@ impl VectorFeatures {
             return VectorFeatures {
                 points: self.points.clone(),
                 fill: new_fill,
+                fill_rule: self.fill_rule,
                 stroke: self.stroke.clone(),
                 stroke_width: self.stroke_width,
                 line_cap: self.line_cap,
@@ -1056,6 +1125,7 @@ impl VectorFeatures {
         return VectorFeatures {
             points: self.points.clone(),
             fill: new_fill,
+            fill_rule: self.fill_rule,
             stroke: self.stroke.clone(),
             stroke_width: self.stroke_width,
             line_cap: self.line_cap,

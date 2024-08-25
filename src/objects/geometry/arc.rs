@@ -46,6 +46,7 @@ pub fn arc(
     let points = points_from_anchors_and_handles(anchors[..anchors.len()-1].to_vec(), handles1, handles2, anchors[1..].to_vec());
     return VectorFeatures {
         points,
+        fill_rule: "nonzero",
         subobjects: vec![],
         index: match index {
             Some(i) => i,
@@ -237,6 +238,7 @@ pub fn annular_sector(
     ));
     return VectorFeatures {
         points,
+        fill_rule: "nonzero",
         subobjects: vec![],
         index: match index {
             Some(i) => i,

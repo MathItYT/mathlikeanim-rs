@@ -492,6 +492,7 @@ pub fn add_n_more_subobjects(
             points: vec![center(&vec_obj.points, center_if_no_points)],
             subobjects: vec![],
             index: 0,
+            fill_rule: "nonzero",
             fill: GradientImageOrColor::Color(Color {
                 red: 0.0,
                 green: 0.0,

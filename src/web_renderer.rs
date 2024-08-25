@@ -262,6 +262,7 @@ pub fn vec_to_def_and_use_string(
         path.set_attribute("stroke-width", &vec.stroke_width.to_string()).unwrap();
         path.set_attribute("stroke-linecap", &vec.line_cap).unwrap();
         path.set_attribute("stroke-linejoin", &vec.line_join).unwrap();
+        path.set_attribute("fill-rule", &vec.fill_rule).unwrap();
         def_string.push_str((path.outer_html() + "\n").as_str());
         if class.is_some() {
             use_string.push_str(format!("<use href=\"#{}\" class=\"{}\"/>\n", path_id, class.unwrap()).as_str());
@@ -398,6 +399,7 @@ pub async fn render_all_vectors_svg(
 pub fn apply_fill_wasm(
     context: &'static web_sys::CanvasRenderingContext2d,
     fill: &GradientImageOrColor,
+    fill_rule: &'static str,
     points: &Vec<(f64, f64)>,
     width: u32,
     height: u32,
@@ -414,7 +416,17 @@ pub fn apply_fill_wasm(
             let a_string = format!("{}", color.alpha);
             let fill_color = js_sys::JsString::from(format!("rgba({}, {}, {}, {})", r_string, g_string, b_string, a_string));
             context.set_fill_style(&fill_color);
-            context.fill();
+            match fill_rule {
+                "nonzero" => {
+                    context.fill_with_canvas_winding_rule(web_sys::CanvasWindingRule::Nonzero);
+                }
+                "evenodd" => {
+                    context.fill_with_canvas_winding_rule(web_sys::CanvasWindingRule::Evenodd);
+                }
+                _ => {
+                    context.fill_with_canvas_winding_rule(web_sys::CanvasWindingRule::Nonzero);
+                }
+            }
         },
         GradientImageOrColor::LinearGradient(gradient) => {
             let alpha = gradient.alpha;
@@ -428,7 +440,17 @@ pub fn apply_fill_wasm(
                 grd.add_color_stop(stop.offset as f32, &color).unwrap();
             }
             context.set_fill_style(&grd);
-            context.fill();
+            match fill_rule {
+                "nonzero" => {
+                    context.fill_with_canvas_winding_rule(web_sys::CanvasWindingRule::Nonzero);
+                }
+                "evenodd" => {
+                    context.fill_with_canvas_winding_rule(web_sys::CanvasWindingRule::Evenodd);
+                }
+                _ => {
+                    context.fill_with_canvas_winding_rule(web_sys::CanvasWindingRule::Nonzero);
+                }
+            }
         },
         GradientImageOrColor::RadialGradient(gradient) => {
             let alpha = gradient.alpha;
@@ -442,7 +464,17 @@ pub fn apply_fill_wasm(
                 grd.add_color_stop(stop.offset as f32, &color).unwrap();
             }
             context.set_fill_style(&grd);
-            context.fill();
+            match fill_rule {
+                "nonzero" => {
+                    context.fill_with_canvas_winding_rule(web_sys::CanvasWindingRule::Nonzero);
+                }
+                "evenodd" => {
+                    context.fill_with_canvas_winding_rule(web_sys::CanvasWindingRule::Evenodd);
+                }
+                _ => {
+                    context.fill_with_canvas_winding_rule(web_sys::CanvasWindingRule::Nonzero);
+                }
+            }
         },
         GradientImageOrColor::Image(image) => {
             let top_left_corner = image.top_left_corner;
@@ -462,7 +494,17 @@ pub fn apply_fill_wasm(
             context2.draw_image_with_html_image_element_and_dw_and_dh(&img, x, y, w, h).unwrap();
             let pattern = context.create_pattern_with_html_canvas_element(&canvas2, "no-repeat").unwrap().unwrap();
             context.set_fill_style(&pattern);
-            context.fill();
+            match fill_rule {
+                "nonzero" => {
+                    context.fill_with_canvas_winding_rule(web_sys::CanvasWindingRule::Nonzero);
+                }
+                "evenodd" => {
+                    context.fill_with_canvas_winding_rule(web_sys::CanvasWindingRule::Evenodd);
+                }
+                _ => {
+                    context.fill_with_canvas_winding_rule(web_sys::CanvasWindingRule::Nonzero);
+                }
+            }
         }
     }
 }
@@ -581,7 +623,7 @@ pub fn render_vector_wasm(
     let line_cap = vec.line_cap;
     let line_join = vec.line_join;
     draw_context_path_wasm(&context, &vec.points);
-    apply_fill_wasm(context, &vec.fill, &vec.points, width, height, loaded_images);
+    apply_fill_wasm(context, &vec.fill, &vec.fill_rule, &vec.points, width, height, loaded_images);
     apply_stroke_wasm(context, &vec.stroke, stroke_width, line_cap, line_join, &vec.points, width, height, loaded_images);
     for subvec in &vec.subobjects {
         render_vector_wasm(subvec, width, height, &context, loaded_images);

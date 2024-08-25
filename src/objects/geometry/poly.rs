@@ -43,6 +43,7 @@ pub fn polygon(
                 alpha: 1.0
             })
         },
+        fill_rule: "nonzero",
         fill: match fill_color {
             Some(color) => GradientImageOrColor::Color(Color {
                 red: color.0,

@@ -110,6 +110,7 @@ pub async fn get_numbers_tex(
         index: index.unwrap_or(0),
         subobjects: result_subobjects,
         stroke_width: 0.0,
+        fill_rule: "nonzero",
         fill: GradientImageOrColor::Color(
             Color {
                 red: 1.0,
