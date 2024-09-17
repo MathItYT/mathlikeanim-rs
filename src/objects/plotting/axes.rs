@@ -3,7 +3,7 @@ use std::f64::consts::PI;
 use crate::colors::{Color, GradientImageOrColor};
 use crate::objects::geometry::line::line;
 use crate::objects::geometry::poly::rectangle;
-use crate::objects::vector_object::VectorFeatures;
+use crate::objects::vector_object::VectorObject;
 
 use crate::objects::plotting::number_line::{number_line, number_to_point};
 use crate::utils::{distance_squared, line_as_cubic_bezier};
@@ -32,7 +32,7 @@ pub fn axes(
     y_tick_size: Option<f64>,
     add_x_tip: Option<bool>,
     add_y_tip: Option<bool>,
-) -> VectorFeatures {
+) -> VectorObject {
     let mut subobjects = Vec::new();
     let mut x_axis = number_line(
         x_min,
@@ -71,7 +71,7 @@ pub fn axes(
     x_axis = x_axis.shift((origin_y.0 - origin_x.0, origin_y.1 - origin_x.1), true);
     subobjects.push(x_axis);
     subobjects.push(y_axis);
-    let mut axes = VectorFeatures {
+    let mut axes = VectorObject {
         subobjects,
         points: Vec::new(),
         fill: GradientImageOrColor::Color(
@@ -103,7 +103,7 @@ pub fn axes(
 
 
 pub fn coords_to_point(
-    axes: &VectorFeatures,
+    axes: &VectorObject,
     x: f64,
     y: f64,
     x_min: f64,
@@ -118,7 +118,7 @@ pub fn coords_to_point(
 
 
 pub fn point_to_coords(
-    axes: &VectorFeatures,
+    axes: &VectorObject,
     point: (f64, f64),
     x_min: f64,
     x_max: f64,
@@ -136,7 +136,7 @@ pub fn parametric_plot_in_axes(
     t_min: f64,
     t_max: f64,
     t_step: f64,
-    axes: &VectorFeatures,
+    axes: &VectorObject,
     x_min: f64,
     x_max: f64,
     y_min: f64,
@@ -146,7 +146,7 @@ pub fn parametric_plot_in_axes(
     line_cap: Option<&'static str>,
     line_join: Option<&'static str>,
     index: Option<usize>,
-) -> VectorFeatures {
+) -> VectorObject {
     let new_f = |t: f64| {
         let (x, y) = f(t);
         let point = coords_to_point(axes, x, y, x_min, x_max, y_min, y_max);
@@ -175,13 +175,13 @@ pub fn plot_in_axes(
     x_1: f64,
     x_2: f64,
     x_step: f64,
-    axes: &VectorFeatures,
+    axes: &VectorObject,
     color: Option<(f64, f64, f64, f64)>,
     stroke_width: Option<f64>,
     line_cap: Option<&'static str>,
     line_join: Option<&'static str>,
     index: Option<usize>,
-) -> VectorFeatures {
+) -> VectorObject {
     let new_f = |t: f64| {
         let x = t;
         let y = f(t);
@@ -214,14 +214,14 @@ pub fn contour_plot_in_axes(
     y_1: f64,
     y_2: f64,
     y_step: f64,
-    axes: &VectorFeatures,
+    axes: &VectorObject,
     color: Option<(f64, f64, f64, f64)>,
     stroke_width: Option<f64>,
     line_cap: Option<&'static str>,
     line_join: Option<&'static str>,
     index: Option<usize>,
     intervals: &[f64],
-) -> VectorFeatures {
+) -> VectorObject {
     let mut func = contour_plot(
         f,
         x_1,
@@ -246,8 +246,8 @@ pub fn contour_plot_in_axes(
 
 
 pub fn area_under_curve(
-    axes: &VectorFeatures,
-    plot: &VectorFeatures,
+    axes: &VectorObject,
+    plot: &VectorObject,
     x_min: f64,
     x_max: f64,
     y_min: f64,
@@ -256,7 +256,7 @@ pub fn area_under_curve(
     x2: f64,
     color: Option<(f64, f64, f64, f64)>,
     index: Option<usize>,
-) -> VectorFeatures {
+) -> VectorObject {
     let mut x1_index = 0;
     let mut x2_index = 0;
     for i in 0..plot.points.len() {
@@ -282,7 +282,7 @@ pub fn area_under_curve(
     area_points.extend(line_as_cubic_bezier(area_points[area_points.len() - 1], (area_points[0].0, number_to_point(&axes.subobjects[axes.subobjects.len() - 1], 0.0, y_min, y_max).1)));
     area_points.extend(line_as_cubic_bezier(area_points[area_points.len() - 1], area_points[0]));
     let (red, green, blue, alpha) = color.unwrap_or((1.0, 1.0, 1.0, 1.0));
-    let area = VectorFeatures {
+    let area = VectorObject {
         points: area_points,
         fill: GradientImageOrColor::Color(
             Color {
@@ -321,14 +321,14 @@ pub fn riemann_rectangles_for_plot(
     x_1: f64,
     x_2: f64,
     n_rects: usize,
-    axes: &VectorFeatures,
+    axes: &VectorObject,
     stroke_color: Option<(f64, f64, f64, f64)>,
     fill_color: Option<(f64, f64, f64, f64)>,
     stroke_width: Option<f64>,
     line_cap: Option<&'static str>,
     line_join: Option<&'static str>,
     index: Option<usize>,
-) -> VectorFeatures {
+) -> VectorObject {
     let mut subobjects = Vec::new();
     let dx = (x_2 - x_1) / n_rects as f64;
     if direction < 0.0 {
@@ -368,7 +368,7 @@ pub fn riemann_rectangles_for_plot(
             }
             subobjects.push(rect);
         }
-        return VectorFeatures {
+        return VectorObject {
             points: Vec::new(),
             fill: GradientImageOrColor::Color(
                 Color {
@@ -430,7 +430,7 @@ pub fn riemann_rectangles_for_plot(
             }
             subobjects.push(rect);
         }
-        return VectorFeatures {
+        return VectorObject {
             points: Vec::new(),
             fill: GradientImageOrColor::Color(
                 Color {
@@ -492,7 +492,7 @@ pub fn riemann_rectangles_for_plot(
         }
         subobjects.push(rect);
     }
-    return VectorFeatures {
+    return VectorObject {
         points: Vec::new(),
         fill: GradientImageOrColor::Color(
             Color {
@@ -525,7 +525,7 @@ pub fn secant_line_for_plot(
     x_1: f64,
     x_2: f64,
     length: f64,
-    axes: &VectorFeatures,
+    axes: &VectorObject,
     x_min: f64,
     x_max: f64,
     y_min: f64,
@@ -535,7 +535,7 @@ pub fn secant_line_for_plot(
     line_cap: Option<&'static str>,
     line_join: Option<&'static str>,
     index: Option<usize>,
-) -> VectorFeatures {
+) -> VectorObject {
     let y_1 = f(x_1);
     let y_2 = f(x_2);
     let point_1 = coords_to_point(axes, x_1, y_1, x_min, x_max, y_min, y_max);

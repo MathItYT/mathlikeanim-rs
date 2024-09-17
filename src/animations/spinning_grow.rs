@@ -1,6 +1,6 @@
-use crate::{objects::vector_object::VectorFeatures, utils::interpolate};
+use crate::{objects::vector_object::VectorObject, utils::interpolate};
 
-pub fn spinning_grow(vec_obj: VectorFeatures, angle: f64, t: f64) -> VectorFeatures {
+pub fn spinning_grow(vec_obj: VectorObject, angle: f64, t: f64) -> VectorObject {
     let mut new_vec_obj = vec_obj.rotate(interpolate(angle, 0.0, t), true)
         .scale(interpolate(0.0, 1.0, t), true);
     let new_vec_obj_center = new_vec_obj.get_center();

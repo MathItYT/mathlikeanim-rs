@@ -6,7 +6,7 @@
 
 use std::{f64::consts::PI, vec};
 
-use crate::{colors::{Color, GradientImageOrColor}, objects::{geometry::arc::elliptical_arc, vector_object::{generate_cubic_bezier_tuples, generate_subpaths, partial_bezier_points, VectorFeatures}}};
+use crate::{colors::{Color, GradientImageOrColor}, objects::{geometry::arc::elliptical_arc, vector_object::{generate_cubic_bezier_tuples, generate_subpaths, partial_bezier_points, VectorObject}}};
 use wasm_bindgen::prelude::*;
 
 /// Log utilities for console when using WebAssembly
@@ -19,7 +19,7 @@ extern "C" {
     pub fn error(err: JsError);
 }
 
-#[cfg(feature = "browser")]
+
 /// An asynchronous sleep function for WebAssembly
 pub async fn sleep(delay: i32) {
     let mut cb = |resolve: js_sys::Function, _reject: js_sys::Function| -> () {
@@ -400,9 +400,9 @@ pub fn insert_n_curves_to_point_list(
 
 
 pub fn null_point_align(
-    vec_obj1: VectorFeatures,
-    vec_obj2: VectorFeatures
-) -> (VectorFeatures, VectorFeatures) {
+    vec_obj1: VectorObject,
+    vec_obj2: VectorObject
+) -> (VectorObject, VectorObject) {
     let mut vec_obj1 = vec_obj1;
     let mut vec_obj2 = vec_obj2;
     if vec_obj1.points.len() == 0 && vec_obj2.points.len() > 0 {
@@ -479,16 +479,16 @@ pub fn align_points(points1: &Vec<(f64, f64)>, points2: &Vec<(f64, f64)>, center
 
 
 pub fn add_n_more_subobjects(
-    vec_obj: VectorFeatures,
+    vec_obj: VectorObject,
     n: usize,
     center_if_no_points: (f64, f64)
-) -> VectorFeatures {
+) -> VectorObject {
     let subobjects = vec_obj.subobjects.clone();
     if n == 0 {
         return vec_obj;
     }
     if subobjects.len() == 0 {
-        let subobjects = vec![VectorFeatures {
+        let subobjects = vec![VectorObject {
             points: vec![center(&vec_obj.points, center_if_no_points)],
             subobjects: vec![],
             index: 0,
@@ -539,10 +539,10 @@ pub fn add_n_more_subobjects(
 
 
 pub fn align_subobjects(
-    vec_obj1: VectorFeatures,
-    vec_obj2: VectorFeatures,
+    vec_obj1: VectorObject,
+    vec_obj2: VectorObject,
     center_if_no_points: (f64, f64)
-) -> (VectorFeatures, VectorFeatures) {
+) -> (VectorObject, VectorObject) {
     return (
         add_n_more_subobjects(vec_obj1.clone(), (vec_obj2.subobjects.len() as i32 - vec_obj1.subobjects.len() as i32).max(0) as usize, center_if_no_points),
         add_n_more_subobjects(vec_obj2.clone(), (vec_obj1.subobjects.len() as i32 - vec_obj2.subobjects.len() as i32).max(0) as usize, center_if_no_points)
@@ -551,11 +551,11 @@ pub fn align_subobjects(
 
 
 pub fn align_data(
-    vec_obj1: VectorFeatures,
-    vec_obj2: VectorFeatures,
+    vec_obj1: VectorObject,
+    vec_obj2: VectorObject,
     skip_point_align: bool,
     center_if_no_points: (f64, f64)
-) -> (VectorFeatures, VectorFeatures) {
+) -> (VectorObject, VectorObject) {
     let (
         mut vec_obj1,
         mut vec_obj2

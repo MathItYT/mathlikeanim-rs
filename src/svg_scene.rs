@@ -3,13 +3,13 @@ use js_sys::{Array, Function, Promise};
 use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::JsFuture;
 
-use crate::{colors::{Color, GradientImageOrColor}, objects::{vector_object::VectorFeatures, wasm_interface::{WasmGradientImageOrColor, WasmVectorObject}}, web_renderer::render_all_vectors_svg, scene_api::SceneAPI, utils::sleep};
+use crate::{colors::{Color, GradientImageOrColor}, objects::{vector_object::VectorObject, wasm_interface::{WasmGradientImageOrColor, WasmVectorObject}}, web_renderer::render_all_vectors_svg, scene_api::SceneAPI, utils::sleep};
 
 #[wasm_bindgen]
 #[derive(Clone)]
 pub struct SVGScene {
     #[wasm_bindgen(skip)]
-    pub objects: Vec<VectorFeatures>,
+    pub objects: Vec<VectorObject>,
     #[wasm_bindgen(skip)]
     pub width: u32,
     #[wasm_bindgen(skip)]
@@ -25,7 +25,7 @@ pub struct SVGScene {
     #[wasm_bindgen(skip)]
     pub bottom_right_corner: (f64, f64),
     #[wasm_bindgen(skip)]
-    pub states: HashMap<usize, (Vec<VectorFeatures>, GradientImageOrColor, (f64, f64), (f64, f64))>,
+    pub states: HashMap<usize, (Vec<VectorObject>, GradientImageOrColor, (f64, f64), (f64, f64))>,
     #[wasm_bindgen(skip)]
     pub callback: Function,
     #[wasm_bindgen(skip)]
@@ -80,7 +80,7 @@ impl SceneAPI for SVGScene {
     fn set_background(&mut self, background: GradientImageOrColor) {
         self.background = background;
     }
-    fn add(&mut self, vec_obj: VectorFeatures) {
+    fn add(&mut self, vec_obj: VectorObject) {
         self.remove(vec_obj.index);
         self.objects.push(vec_obj);
     }
@@ -99,7 +99,7 @@ impl SceneAPI for SVGScene {
     async fn render_frame(&mut self) {
         render_all_vectors_svg(self).await;
     }
-    fn get_objects_from_indices(&self, object_indices: Vec<usize>) -> HashMap<usize, VectorFeatures> {
+    fn get_objects_from_indices(&self, object_indices: Vec<usize>) -> HashMap<usize, VectorObject> {
         let mut objects = HashMap::new();
         for index in object_indices {
             for obj in &self.objects {
@@ -265,5 +265,9 @@ impl SVGScene {
     #[wasm_bindgen(js_name = removeClass)]
     pub fn remove_class_js(&mut self, index: usize) {
         self.classes.remove(&index);
+    }
+    #[wasm_bindgen(js_name = getClass)]
+    pub fn get_class_js(&self, index: usize) -> Option<String> {
+        return self.classes.get(&index).cloned();
     }
 }

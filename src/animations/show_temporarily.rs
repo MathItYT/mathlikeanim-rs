@@ -1,6 +1,6 @@
-use crate::{objects::vector_object::VectorFeatures, utils::interpolate};
+use crate::{objects::vector_object::VectorObject, utils::interpolate};
 
-pub fn show_temporarily(vec_obj: VectorFeatures, t: f64) -> VectorFeatures {
+pub fn show_temporarily(vec_obj: VectorObject, t: f64) -> VectorObject {
     let upper = interpolate(0.0, 1.1, t);
     let lower = upper - 0.1;
     let upper = if upper > 1.0 { 1.0 } else { upper };

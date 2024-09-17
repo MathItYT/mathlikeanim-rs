@@ -1,6 +1,6 @@
 use std::f64::consts::PI;
 
-use crate::{colors::{Color, GradientImageOrColor}, objects::vector_object::VectorFeatures, utils::{line_as_cubic_bezier, points_from_anchors_and_handles}};
+use crate::{colors::{Color, GradientImageOrColor}, objects::vector_object::VectorObject, utils::{line_as_cubic_bezier, points_from_anchors_and_handles}};
 
 
 pub fn arc(
@@ -15,7 +15,7 @@ pub fn arc(
     line_cap: Option<&'static str>,
     line_join: Option<&'static str>,
     index: Option<usize>,
-) -> VectorFeatures {
+) -> VectorObject {
     let mut anchors = Vec::new();
     let n_samples = match n_samples {
         Some(n) => n,
@@ -44,7 +44,7 @@ pub fn arc(
         return (x, y);
     }).collect::<Vec<(f64, f64)>>();
     let points = points_from_anchors_and_handles(anchors[..anchors.len()-1].to_vec(), handles1, handles2, anchors[1..].to_vec());
-    return VectorFeatures {
+    return VectorObject {
         points,
         fill_rule: "nonzero",
         subobjects: vec![],
@@ -106,7 +106,7 @@ pub fn circle(
     line_cap: Option<&'static str>,
     line_join: Option<&'static str>,
     index: Option<usize>,
-) -> VectorFeatures {
+) -> VectorObject {
     return arc(
         center,
         radius,
@@ -136,7 +136,7 @@ pub fn elliptical_arc(
     line_cap: Option<&'static str>,
     line_join: Option<&'static str>,
     index: Option<usize>,
-) -> VectorFeatures {
+) -> VectorObject {
     return arc(
         center,
         x_radius,
@@ -164,7 +164,7 @@ pub fn ellipse(
     line_cap: Option<&'static str>,
     line_join: Option<&'static str>,
     index: Option<usize>,
-) -> VectorFeatures {
+) -> VectorObject {
     return elliptical_arc(
         center,
         x_radius,
@@ -195,7 +195,7 @@ pub fn annular_sector(
     line_cap: Option<&'static str>,
     line_join: Option<&'static str>,
     index: Option<usize>,
-) -> VectorFeatures {
+) -> VectorObject {
     let mut points = Vec::new();
     let inner_arc = arc(
         center,
@@ -236,7 +236,7 @@ pub fn annular_sector(
         outer_arc_points.clone()[outer_arc_points.len() - 1],
         inner_arc_points[0]
     ));
-    return VectorFeatures {
+    return VectorObject {
         points,
         fill_rule: "nonzero",
         subobjects: vec![],

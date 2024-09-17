@@ -2,7 +2,7 @@ use js_sys::{Function, Promise};
 use wasm_bindgen::{JsCast, JsValue};
 use wasm_bindgen_futures::JsFuture;
 
-use crate::{colors::{Color, GradientImageOrColor}, objects::{geometry::{add_tip::add_final_tip, line::line}, vector_object::VectorFeatures, wasm_interface::WasmVectorObject}, utils::{interpolate, interpolate_tuple}};
+use crate::{colors::{Color, GradientImageOrColor}, objects::{geometry::{add_tip::add_final_tip, line::line}, vector_object::VectorObject, wasm_interface::WasmVectorObject}, utils::{interpolate, interpolate_tuple}};
 
 pub fn number_line(
     x_min: f64,
@@ -19,7 +19,7 @@ pub fn number_line(
     add_ticks: Option<bool>,
     tick_size: Option<f64>,
     angle: Option<f64>,
-) -> VectorFeatures {
+) -> VectorObject {
     let mut result = line(
         (center.unwrap().0 - length.unwrap_or(1000.0) / 2.0, center.unwrap().1),
         (center.unwrap().0 + length.unwrap_or(1000.0) / 2.0, center.unwrap().1),
@@ -54,7 +54,7 @@ pub fn number_line(
 
 
 pub fn number_to_point(
-    number_line: &VectorFeatures,
+    number_line: &VectorObject,
     number: f64,
     x_min: f64,
     x_max: f64
@@ -70,7 +70,7 @@ pub fn number_to_point(
 
 
 pub fn point_to_number(
-    number_line: &VectorFeatures,
+    number_line: &VectorObject,
     point: (f64, f64),
     x_min: f64,
     x_max: f64
@@ -82,7 +82,7 @@ pub fn point_to_number(
 
 
 pub async fn get_numbers_tex(
-    number_line: VectorFeatures,
+    number_line: VectorObject,
     numbers: Vec<f64>,
     number_to_vector: Function,
     x_min: f64,
@@ -91,7 +91,7 @@ pub async fn get_numbers_tex(
     direction: Option<(f64, f64)>,
     buff: Option<f64>,
     index: Option<usize>,
-) -> VectorFeatures {
+) -> VectorObject {
     let mut vector_objects = Vec::new();
     for number in numbers.clone() {
         let promise = number_to_vector.call1(&JsValue::NULL, &JsValue::from_f64(number)).unwrap().dyn_into::<Promise>().unwrap();
@@ -106,7 +106,7 @@ pub async fn get_numbers_tex(
         vec_obj = vec_obj.next_to_point(point, direction.unwrap_or((0.0, 1.0)), buff.unwrap_or(20.0), (0.0, 0.0), true);
         result_subobjects.push(vec_obj);
     }
-    return VectorFeatures {
+    return VectorObject {
         index: index.unwrap_or(0),
         subobjects: result_subobjects,
         stroke_width: 0.0,

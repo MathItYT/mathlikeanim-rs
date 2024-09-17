@@ -1,6 +1,6 @@
 use std::{f64::consts::PI, vec};
 
-use crate::{colors::{Color, GradientImageOrColor, GradientStop, LinearGradient}, objects::vector_object::VectorFeatures, utils::{interpolate, interpolate_tuple_3d}};
+use crate::{colors::{Color, GradientImageOrColor, GradientStop, LinearGradient}, objects::vector_object::VectorObject, utils::{interpolate, interpolate_tuple_3d}};
 
 pub fn rot_matrix(angle: f64, axis: usize) -> [[f64; 3]; 3] {
     let mut matrix = [[0.0; 3]; 3];
@@ -577,7 +577,7 @@ impl ThreeDObject {
         }
         subobjects
     }
-    pub fn project_and_shade(&self, camera: &Camera, light_source: &LightSource) -> VectorFeatures {
+    pub fn project_and_shade(&self, camera: &Camera, light_source: &LightSource) -> VectorObject {
         let mut subobjects_3d = self.get_subobjects_recursively();
         subobjects_3d.push(self.clone());
         let rot_matrix = rot_matrix_euler(camera.rotation.0, camera.rotation.1, camera.rotation.2);
@@ -595,9 +595,9 @@ impl ThreeDObject {
                 a_z_rotated.partial_cmp(&b_z_rotated).unwrap()
             }
         );
-        let mut vec_obj = VectorFeatures::new();
+        let mut vec_obj = VectorObject::new();
         for subobject in subobjects_3d.iter() {
-            let mut subobject_2d = VectorFeatures::new();
+            let mut subobject_2d = VectorObject::new();
             subobject_2d.points = project_points(&subobject.points, camera); 
             subobject_2d.fill = get_shaded_color(&subobject.fill, &subobject.points, light_source, camera);
             subobject_2d.stroke = get_shaded_color(&subobject.stroke, &subobject.points, light_source, camera);
@@ -736,7 +736,7 @@ impl ThreeDObject {
         let shift = (point.0 - center.0, point.1 - center.1, point.2 - center.2);
         self.shift(shift, recursive)
     }
-    pub fn from_vector_object(vector_object: &VectorFeatures) -> ThreeDObject {
+    pub fn from_vector_object(vector_object: &VectorObject) -> ThreeDObject {
         ThreeDObject::new(
             vector_object.points.iter().map(|point| {
                 (point.0, point.1, 0.0)

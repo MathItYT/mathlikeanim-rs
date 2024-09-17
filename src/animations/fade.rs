@@ -1,7 +1,7 @@
-use crate::{utils::{interpolate, interpolate_tuple}, objects::vector_object::VectorFeatures};
+use crate::{utils::{interpolate, interpolate_tuple}, objects::vector_object::VectorObject};
 
 
-pub fn fade_in(vec_obj: VectorFeatures, scale_factor: f64, shift: (f64, f64), t: f64) -> VectorFeatures {
+pub fn fade_in(vec_obj: VectorObject, scale_factor: f64, shift: (f64, f64), t: f64) -> VectorObject {
     let mut result = vec_obj.clone()
         .set_fill_opacity(interpolate(0.0, vec_obj.get_fill_opacity(), t), false)
         .set_stroke_opacity(interpolate(0.0, vec_obj.get_stroke_opacity(), t), false);
@@ -15,7 +15,7 @@ pub fn fade_in(vec_obj: VectorFeatures, scale_factor: f64, shift: (f64, f64), t:
 }
 
 
-pub fn fade_out(vec_obj: VectorFeatures, scale_factor: f64, shift: (f64, f64), t: f64) -> VectorFeatures {
+pub fn fade_out(vec_obj: VectorObject, scale_factor: f64, shift: (f64, f64), t: f64) -> VectorObject {
     let mut result = vec_obj.clone()
         .set_fill_opacity(interpolate(vec_obj.get_fill_opacity(), 0.0, t), false)
         .set_stroke_opacity(interpolate(vec_obj.get_stroke_opacity(), 0.0, t), false);

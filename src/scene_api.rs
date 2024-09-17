@@ -4,7 +4,7 @@ use js_sys::{Array, Function, Promise};
 use wasm_bindgen::{JsCast, JsValue};
 use wasm_bindgen_futures::JsFuture;
 
-use crate::{colors::GradientImageOrColor, objects::{vector_object::VectorFeatures, wasm_interface::WasmVectorObject}};
+use crate::{colors::GradientImageOrColor, objects::{vector_object::VectorObject, wasm_interface::WasmVectorObject}};
 
 pub trait SceneAPI {
     fn new(width: u32, height: u32, fps: u32) -> Self;
@@ -15,7 +15,7 @@ pub trait SceneAPI {
     fn get_top_left_corner(&self) -> (f64, f64);
     fn get_bottom_right_corner(&self) -> (f64, f64);
     fn set_background(&mut self, background: GradientImageOrColor);
-    fn add(&mut self, vec_obj: VectorFeatures);
+    fn add(&mut self, vec_obj: VectorObject);
     fn remove(&mut self, index: usize);
     fn get_fps(&self) -> &u32;
     fn get_height(&self) -> &u32;
@@ -30,7 +30,7 @@ pub trait SceneAPI {
         async move {
             let fps = self.get_fps().clone();
             let objects = self.get_objects_from_indices(object_indices.clone());
-            let objects = objects.values().cloned().collect::<Vec<VectorFeatures>>();
+            let objects = objects.values().cloned().collect::<Vec<VectorObject>>();
             let objects = objects.iter().map(|obj| {
                 WasmVectorObject {
                     native_vec_features: obj.clone()
@@ -68,7 +68,7 @@ pub trait SceneAPI {
             let new_objects = Array::from(&result).iter().map(|obj| {
                 let obj = obj.dyn_into::<WasmVectorObject>().unwrap();
                 obj.native_vec_features
-            }).collect::<Vec<VectorFeatures>>();
+            }).collect::<Vec<VectorObject>>();
             for obj in new_objects {
                 self.add(obj);
             }
@@ -84,5 +84,5 @@ pub trait SceneAPI {
     }
     fn sleep(&mut self, duration_in_ms: i32) -> impl Future<Output = ()>;
     fn render_frame(&mut self) -> impl Future<Output = ()>;
-    fn get_objects_from_indices(&self, object_indices: Vec<usize>) -> HashMap<usize, VectorFeatures>;
+    fn get_objects_from_indices(&self, object_indices: Vec<usize>) -> HashMap<usize, VectorObject>;
 }

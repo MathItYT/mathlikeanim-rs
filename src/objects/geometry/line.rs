@@ -1,4 +1,4 @@
-use crate::{colors::{Color, GradientImageOrColor}, objects::vector_object::VectorFeatures, utils::line_as_cubic_bezier};
+use crate::{colors::{Color, GradientImageOrColor}, objects::vector_object::VectorObject, utils::line_as_cubic_bezier};
 
 pub fn line(
     point1: (f64, f64),
@@ -8,9 +8,9 @@ pub fn line(
     line_cap: Option<&'static str>,
     line_join: Option<&'static str>,
     index: Option<usize>,
-) -> VectorFeatures {
+) -> VectorObject {
     let new_points = line_as_cubic_bezier(point1, point2);
-    return VectorFeatures {
+    return VectorObject {
         points: new_points,
         fill_rule: "nonzero",
         subobjects: vec![],

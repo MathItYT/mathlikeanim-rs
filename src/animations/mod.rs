@@ -7,15 +7,11 @@ pub mod grow_arrow;
 pub mod create;
 pub mod grow_from_center;
 pub mod shift_animation;
-#[cfg(feature = "browser")]
 pub mod move_camera;
 pub mod spinning_grow;
 pub mod rotate_animation;
 pub mod show_temporarily;
 pub mod set_fill_animation;
 pub mod set_stroke_animation;
-#[cfg(feature = "browser")]
 pub mod move_camera_svg;
-#[cfg(feature = "node")]
-pub mod move_camera_node;
 pub mod wasm_interface;

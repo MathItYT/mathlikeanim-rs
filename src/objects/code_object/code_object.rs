@@ -1,8 +1,5 @@
 use crate::{objects::wasm_interface::{WasmGradientImageOrColor, WasmVectorObject}, wasm_interface::hex_to_color_js};
-#[cfg(feature = "browser")]
-use crate::text_to_vector::text_to_vector_browser;
-#[cfg(feature = "node")]
-use crate::text_to_vector::text_to_vector_node;
+use crate::objects::text_to_vector::text_to_vector;
 use wasm_bindgen::prelude::*;
 
 use super::{lexer::Lexer, theme::Theme, token_type::TokenType};
@@ -25,16 +22,7 @@ pub async fn code_object(
         if code_line.ends_with("\r") {
             code_line.pop();
         }
-        let mut line_object = WasmVectorObject::new();
-        if cfg!(feature = "browser") {
-            #[cfg(feature = "browser")] {
-                line_object = text_to_vector_browser(code_line.clone(), font_family.clone(), 0.0, 0.0, 144.0).await;
-            }
-        } else if cfg!(feature = "node") {
-            #[cfg(feature = "node")] {
-                line_object = text_to_vector_node(code_line.clone(), font_family.clone(), 0.0, 0.0, 144.0).await;
-            }
-        }
+        let line_object = text_to_vector(code_line.clone(), font_family.clone(), 0.0, 0.0, 144.0).await;
         let tokens = lexer.get_tokens(&code_line);
         let mut current_char = 0;
         for token in tokens.iter() {

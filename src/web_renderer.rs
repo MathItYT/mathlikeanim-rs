@@ -3,7 +3,7 @@ use std::pin::Pin;
 
 use crate::colors::{Color, GradientImageOrColor};
 use crate::objects::vector_object::{
-    generate_cubic_bezier_tuples, VectorFeatures
+    generate_cubic_bezier_tuples, VectorObject
 };
 use crate::objects::vector_object::generate_subpaths;
 
@@ -70,7 +70,7 @@ pub fn get_d_string_from_points(
 
 
 pub fn vec_to_def_and_use_string(
-    vec: &VectorFeatures,
+    vec: &VectorObject,
     class: Option<&String>,
     document: &web_sys::Document,
     id_prefix: &String
@@ -613,7 +613,7 @@ pub fn apply_stroke_wasm(
 
 
 pub fn render_vector_wasm(
-    vec: &VectorFeatures,
+    vec: &VectorObject,
     width: u32,
     height: u32,
     context: &'static web_sys::CanvasRenderingContext2d,
@@ -632,7 +632,7 @@ pub fn render_vector_wasm(
 
 
 pub fn load_images<'a>(
-    objects: &'a Vec<VectorFeatures>,
+    objects: &'a Vec<VectorObject>,
     background: &'a GradientImageOrColor,
     loaded_images: &'a Map
 ) -> Pin<Box<dyn Future<Output = ()> + 'a>> {
@@ -684,7 +684,7 @@ pub fn load_images<'a>(
 
 
 pub async fn render_all_vectors(
-    vecs: &Vec<VectorFeatures>,
+    vecs: &Vec<VectorObject>,
     width: u32,
     height: u32,
     context: Option<&'static web_sys::CanvasRenderingContext2d>,

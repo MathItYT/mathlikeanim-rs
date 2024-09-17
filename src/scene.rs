@@ -3,13 +3,13 @@ use js_sys::{Array, Function, Map, Promise};
 use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::JsFuture;
 
-use crate::{colors::{Color, GradientImageOrColor}, objects::{vector_object::VectorFeatures, wasm_interface::{WasmGradientImageOrColor, WasmVectorObject}}, scene_api::SceneAPI, utils::sleep, web_renderer::render_all_vectors};
+use crate::{colors::{Color, GradientImageOrColor}, objects::{vector_object::VectorObject, wasm_interface::{WasmGradientImageOrColor, WasmVectorObject}}, scene_api::SceneAPI, utils::sleep, web_renderer::render_all_vectors};
 
 #[wasm_bindgen]
 #[derive(Clone)]
 pub struct Scene {
     #[wasm_bindgen(skip)]
-    pub objects: Vec<VectorFeatures>,
+    pub objects: Vec<VectorObject>,
     #[wasm_bindgen(skip)]
     pub width: u32,
     #[wasm_bindgen(skip)]
@@ -25,7 +25,7 @@ pub struct Scene {
     #[wasm_bindgen(skip)]
     pub context: Option<&'static web_sys::CanvasRenderingContext2d>,
     #[wasm_bindgen(skip)]
-    pub states: HashMap<usize, (Vec<VectorFeatures>, GradientImageOrColor, (f64, f64), (f64, f64))>,
+    pub states: HashMap<usize, (Vec<VectorObject>, GradientImageOrColor, (f64, f64), (f64, f64))>,
     #[wasm_bindgen(skip)]
     pub loaded_images: Map,
     #[wasm_bindgen(skip)]
@@ -92,14 +92,14 @@ impl SceneAPI for Scene {
     fn set_background(&mut self, background: GradientImageOrColor) {
         self.background = background;
     }
-    fn add(&mut self, vec_obj: VectorFeatures) {
+    fn add(&mut self, vec_obj: VectorObject) {
         self.remove(vec_obj.index);
         self.objects.push(vec_obj);
     }
     fn remove(&mut self, index: usize) {
         self.objects = self.objects.clone().into_iter().filter(|obj| obj.index != index).collect();
     }
-    fn get_objects_from_indices(&self, object_indices: Vec<usize>) -> HashMap<usize, VectorFeatures> {
+    fn get_objects_from_indices(&self, object_indices: Vec<usize>) -> HashMap<usize, VectorObject> {
         let mut objects = HashMap::new();
         for index in object_indices {
             for obj in &self.objects {
@@ -258,5 +258,9 @@ impl Scene {
     pub async fn on_rendered_js(&mut self) {
         let promise = self.callback.call0(&JsValue::NULL).unwrap().dyn_into::<Promise>().unwrap();
         JsFuture::from(promise).await.unwrap();
+    }
+    #[wasm_bindgen(js_name = getLoadedImages)]
+    pub fn get_loaded_images_js(&self) -> js_sys::Map {
+        return self.loaded_images.clone();
     }
 }

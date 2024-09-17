@@ -3,7 +3,7 @@ use wasm_bindgen::prelude::*;
 
 use crate::colors::{Color, GradientImageOrColor, GradientStop, Image, LinearGradient, RadialGradient};
 
-use super::{geometry::{add_tip::{add_both_sides_tips, add_final_tip, add_initial_tip}, arc::{annular_sector, arc, circle, ellipse, elliptical_arc}, line::line, poly::{equilateral_triangle, polygon, rectangle, regular_polygon, right_triangle, square, triangle}}, plotting::{axes::{area_under_curve, axes, coords_to_point, contour_plot_in_axes, parametric_plot_in_axes, plot_in_axes, point_to_coords, riemann_rectangles_for_plot, secant_line_for_plot}, functions::{function, contour_plot, parametric_function}, number_line::{get_numbers_tex, number_line, number_to_point, point_to_number}}, svg_to_vector::svg_to_vector_pin, vector_object::VectorFeatures};
+use super::{geometry::{add_tip::{add_both_sides_tips, add_final_tip, add_initial_tip}, arc::{annular_sector, arc, circle, ellipse, elliptical_arc}, line::line, poly::{equilateral_triangle, polygon, rectangle, regular_polygon, right_triangle, square, triangle}}, plotting::{axes::{area_under_curve, axes, coords_to_point, contour_plot_in_axes, parametric_plot_in_axes, plot_in_axes, point_to_coords, riemann_rectangles_for_plot, secant_line_for_plot}, functions::{function, contour_plot, parametric_function}, number_line::{get_numbers_tex, number_line, number_to_point, point_to_number}}, svg_to_vector::svg_to_vector_pin, vector_object::VectorObject};
 
 
 #[wasm_bindgen]
@@ -532,7 +532,7 @@ impl WasmImage {
 #[derive(Clone, Debug)]
 pub struct WasmVectorObject {
     #[wasm_bindgen(skip)]
-    pub native_vec_features: VectorFeatures
+    pub native_vec_features: VectorObject
 }
 
 
@@ -541,7 +541,7 @@ impl WasmVectorObject {
     #[wasm_bindgen(constructor)]
     pub fn new() -> WasmVectorObject {
         WasmVectorObject {
-            native_vec_features: VectorFeatures::new()
+            native_vec_features: VectorObject::new()
         }
     }
     #[wasm_bindgen(js_name = getIndex)]

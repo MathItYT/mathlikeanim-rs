@@ -9,31 +9,12 @@ This is an animation library written in Rust, widely inspired by [Manim](https:/
 - [x] Interactivity.
 - [x] Basic shapes.
 - [x] Function plotting.
-- [x] Animations in HTML Canvas, SVG and videos for Node.js.
+- [x] Animations in HTML Canvas and SVG.
 - [x] Text rendering.
 - [x] LaTeX rendering.
 - [x] 3D rendering.
-- [x] Browser and Node.js support.
+- [x] Browser support.
 - [ ] Python support (coming soon).
-
-
-## How to use it in the browser?
-You can embed the library in your HTML file by adding a script tag, and don't forget to include your HTML Canvas for raster animations or DIV container for SVG animations!
-
-```html
-<script type="module">
-    import mathlikeanimRs from './node_modules/mathlikeanim-rs/browser/mathlikeanim_rs.js';
-</script>
-```
-
-## How to use it in Node.js?
-You can use the library in Node.js by importing the module and using it as a CommonJS module.
-
-**Note:** Interactivity is not supported in Node.js.
-
-```javascript
-const mathlikeanimRs = require('mathlikeanim-rs')
-```
 
 
 ## How to install it?
@@ -44,11 +25,25 @@ npm i mathlikeanim-rs
 ```
 
 
+## How to use it in the browser?
+You can embed the library in your HTML file by adding a script tag, and don't forget to include your HTML Canvas for raster animations or DIV container for SVG animations!
+
+```html
+<script type="module">
+    import initWasm from './node_modules/mathlikeanim-rs/browser/index.js';
+
+    initWasm().then((wasm) => {
+        ...
+    });
+</script>
+```
+
+
 ## Development
 If you want to contribute to this project, you can clone a fork of this repository and work with the Rust codebase, and then build the WebAssembly module by running in the main directory:
 
 ```bash
-make
+make build
 ```
 
 By the moment we don't have any tests, so your contributions are welcome!

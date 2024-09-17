@@ -1,7 +1,7 @@
-use crate::objects::vector_object::VectorFeatures;
+use crate::objects::vector_object::VectorObject;
 
 
-pub fn grow_arrow_with_final_tip(vec_obj: VectorFeatures, t: f64) -> VectorFeatures {
+pub fn grow_arrow_with_final_tip(vec_obj: VectorObject, t: f64) -> VectorObject {
     let mut result = vec_obj.clone();
     let tip = result.subobjects.pop().unwrap();
     result = result.get_partial_copy(0.0, t, true);
@@ -12,7 +12,7 @@ pub fn grow_arrow_with_final_tip(vec_obj: VectorFeatures, t: f64) -> VectorFeatu
 }
 
 
-pub fn grow_arrow_with_initial_tip(vec_obj: VectorFeatures, t: f64) -> VectorFeatures {
+pub fn grow_arrow_with_initial_tip(vec_obj: VectorObject, t: f64) -> VectorObject {
     let mut result = vec_obj.clone();
     let tip = result.subobjects.pop().unwrap();
     result = result.get_partial_copy(1.0 - t, 1.0, true);
@@ -23,7 +23,7 @@ pub fn grow_arrow_with_initial_tip(vec_obj: VectorFeatures, t: f64) -> VectorFea
 }
 
 
-pub fn grow_arrow_with_tips_at_both_ends(vec_obj: VectorFeatures, t: f64) -> VectorFeatures {
+pub fn grow_arrow_with_tips_at_both_ends(vec_obj: VectorObject, t: f64) -> VectorObject {
     let mut result = vec_obj.clone();
     let final_tip = result.subobjects.pop().unwrap();
     let initial_tip = result.subobjects.pop().unwrap();

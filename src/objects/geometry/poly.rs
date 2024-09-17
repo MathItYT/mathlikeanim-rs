@@ -1,6 +1,6 @@
 use std::f64::consts::PI;
 
-use crate::{colors::{Color, GradientImageOrColor}, objects::vector_object::VectorFeatures, utils::line_as_cubic_bezier};
+use crate::{colors::{Color, GradientImageOrColor}, objects::vector_object::VectorObject, utils::line_as_cubic_bezier};
 
 pub fn polygon(
     points: Vec<(f64, f64)>,
@@ -10,7 +10,7 @@ pub fn polygon(
     line_cap: Option<&'static str>,
     line_join: Option<&'static str>,
     index: Option<usize>,
-) -> VectorFeatures {
+) -> VectorObject {
     let mut new_points = Vec::new();
     for i in 0..points.len()-1 {
         new_points.extend(line_as_cubic_bezier(
@@ -22,7 +22,7 @@ pub fn polygon(
         points[points.len()-1],
         points[0]
     ));
-    return VectorFeatures {
+    return VectorObject {
         points: new_points,
         subobjects: vec![],
         index: match index {
@@ -84,7 +84,7 @@ pub fn regular_polygon(
     line_cap: Option<&'static str>,
     line_join: Option<&'static str>,
     index: Option<usize>,
-) -> VectorFeatures {
+) -> VectorObject {
     let mut points = Vec::new();
     for i in 0..num_sides {
         let r = side_length / (2.0 * (PI / num_sides as f64).sin());
@@ -115,7 +115,7 @@ pub fn square(
     line_cap: Option<&'static str>,
     line_join: Option<&'static str>,
     index: Option<usize>
-) -> VectorFeatures {
+) -> VectorObject {
     return regular_polygon(
         center,
         side_length,
@@ -140,7 +140,7 @@ pub fn rectangle(
     line_cap: Option<&'static str>,
     line_join: Option<&'static str>,
     index: Option<usize>,
-) -> VectorFeatures {
+) -> VectorObject {
     let half_width = width / 2.0;
     let half_height = height / 2.0;
     return polygon(
@@ -169,7 +169,7 @@ pub fn equilateral_triangle(
     line_cap: Option<&'static str>,
     line_join: Option<&'static str>,
     index: Option<usize>,
-) -> VectorFeatures {
+) -> VectorObject {
     return regular_polygon(
         center,
         side_length,
@@ -194,7 +194,7 @@ pub fn triangle(
     line_cap: Option<&'static str>,
     line_join: Option<&'static str>,
     index: Option<usize>,
-) -> VectorFeatures {
+) -> VectorObject {
     return polygon(
         vec![point1, point2, point3],
         stroke_color,
@@ -216,7 +216,7 @@ pub fn right_triangle(
     line_cap: Option<&'static str>,
     line_join: Option<&'static str>,
     index: Option<usize>,
-) -> VectorFeatures {
+) -> VectorObject {
     return polygon(
         vec![point1, point2, (point1.0, point2.1)],
         stroke_color,

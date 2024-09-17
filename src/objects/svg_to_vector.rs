@@ -13,13 +13,9 @@ use lightningcss::values::color::CssColor;
 use crate::objects::geometry::arc::circle;
 use crate::objects::geometry::poly::rectangle;
 use crate::utils::{consider_points_equals, elliptical_arc_path, line_as_cubic_bezier, quadratic_bezier_as_cubic_bezier};
-#[cfg(target_arch = "wasm32")]
 use crate::utils::log;
-use crate::objects::vector_object::VectorFeatures;
-#[cfg(feature = "browser")]
-use crate::text_to_vector::text_to_vector_browser;
-#[cfg(feature = "node")]
-use crate::text_to_vector::text_to_vector_node;
+use crate::objects::vector_object::VectorObject;
+use crate::objects::text_to_vector::text_to_vector;
 
 use crate::colors::{Color, GradientImageOrColor};
 use super::geometry::poly::polygon;
@@ -31,7 +27,7 @@ fn parse_color(color: &str) -> CssColor {
 }
 
 
-fn parse_path(attributes: &std::collections::HashMap<String, Value>, index: usize, fill: &(f64, f64, f64, f64), stroke: &(f64, f64, f64, f64), sw: &f64, lc: &&str, lj: &&str, transforms: &Vec<Vec<Matrix<f32>>>) -> VectorFeatures {
+pub fn parse_path(attributes: &std::collections::HashMap<String, Value>, index: usize, fill: &(f64, f64, f64, f64), stroke: &(f64, f64, f64, f64), sw: &f64, lc: &&str, lj: &&str, transforms: &Vec<Vec<Matrix<f32>>>) -> VectorObject {
     let mut transforms = transforms.clone();
     let data = attributes.get("d").map(|d| {
         d.to_string()
@@ -334,7 +330,7 @@ fn parse_path(attributes: &std::collections::HashMap<String, Value>, index: usiz
             points = new_points;
         }
     }
-    let vec_obj = VectorFeatures {
+    let vec_obj = VectorObject {
         points: points,
         fill: GradientImageOrColor::Color(Color {
             red: fill_color.0,
@@ -371,7 +367,7 @@ fn parse_rect(
     lc: &&str,
     lj: &&str,
     transforms: &Vec<Vec<Matrix<f32>>>
-) -> VectorFeatures {
+) -> VectorObject {
     let mut transforms = transforms.clone();
     let x = attributes.get("x").map(|x| {
         x.parse().unwrap()
@@ -498,7 +494,7 @@ fn parse_circle(
     lc: &&str,
     lj: &&str,
     transforms: &Vec<Vec<Matrix<f32>>>
-) -> VectorFeatures {
+) -> VectorObject {
     let mut transforms = transforms.clone();
     let cx = attributes.get("cx").map(|cx| {
         cx.parse().unwrap()
@@ -621,7 +617,7 @@ fn parse_polygon(
     lc: &&str,
     lj: &&str,
     transforms: &Vec<Vec<Matrix<f32>>>
-) -> VectorFeatures {
+) -> VectorObject {
     let mut transforms = transforms.clone();
     let points = attributes.get("points").map(|points| {
         let points = points.to_string();
@@ -738,7 +734,7 @@ fn parse_polygon(
 }
 
 
-pub fn svg_to_vector_pin<'a>(svg: &'a str, font_family: Option<String>, font_size: Option<f64>) -> Pin<Box<dyn Future<Output = VectorFeatures> + 'a>> {
+pub fn svg_to_vector_pin<'a>(svg: &'a str, font_family: Option<String>, font_size: Option<f64>) -> Pin<Box<dyn Future<Output = VectorObject> + 'a>> {
     Box::pin(async move {
         let mut text_fill = Vec::new();
         let mut text_stroke = Vec::new();
@@ -995,9 +991,7 @@ pub fn svg_to_vector_pin<'a>(svg: &'a str, font_family: Option<String>, font_siz
                     } else if x_link_href.is_some() {
                         id_vec_obj_map.get(&x_link_href).unwrap()
                     } else {
-                        #[cfg(target_arch = "wasm32")]
                         log(&format!("Warning: no object with id: {:?}", x_link_href.clone().unwrap_or(href.clone().unwrap())));
-                        println!("Warning: no object with id: {:?}", x_link_href.clone().unwrap_or(href.clone().unwrap()));
                         continue;
                     };
                     let mut vec_obj = vec_obj.clone();
@@ -1324,9 +1318,7 @@ pub fn svg_to_vector_pin<'a>(svg: &'a str, font_family: Option<String>, font_siz
                     text.pop();
                 },
                 Event::Tag(tag, _, _) => {
-                    #[cfg(target_arch = "wasm32")]
                     log(&format!("Warning: unsupported tag: {:?}", tag));
-                    println!("Warning: unsupported tag: {:?}", tag);
                 },
                 Event::Text(text_content) => {
                     if text.len() == 0 {
@@ -1342,16 +1334,7 @@ pub fn svg_to_vector_pin<'a>(svg: &'a str, font_family: Option<String>, font_siz
                     let y = y_text.last().unwrap();
                     let font_size = fs_text.last().unwrap();
                     let font_family = ff_text.last().unwrap();
-                    let mut vec_obj = VectorFeatures::new();
-                    if cfg!(feature = "browser") {
-                        #[cfg(feature = "browser")] {
-                            vec_obj = text_to_vector_browser(text_content.to_string(), font_family.to_string(), *x, *y, *font_size).await.native_vec_features
-                        }
-                    } else if cfg!(feature = "node") {
-                        #[cfg(feature = "node")] {
-                            vec_obj = text_to_vector_node(text_content.to_string(), font_family.to_string(), *x, *y, *font_size).await.native_vec_features
-                        }
-                    }
+                    let mut vec_obj = text_to_vector(text_content.to_string(), font_family.to_string(), *x, *y, *font_size).await.native_vec_features;
                     let fill_color = text_fill.last().unwrap();
                     let stroke_color = text_stroke.last().unwrap();
                     let stroke_width = text_stroke_width.last().unwrap();
@@ -1406,13 +1389,11 @@ pub fn svg_to_vector_pin<'a>(svg: &'a str, font_family: Option<String>, font_siz
                 Event::Instruction(..) => {},
                 Event::Declaration(..) => {},
                 Event::Error(..) => {
-                    #[cfg(target_arch = "wasm32")]
                     log("Error while parsing SVG");
-                    panic!("Error while parsing SVG");
                 },
             }
         }
-        return VectorFeatures {
+        return VectorObject {
             points: vec![],
             fill: GradientImageOrColor::Color(Color {
                 red: 0.0,

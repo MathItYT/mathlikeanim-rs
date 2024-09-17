@@ -1,4 +1,4 @@
-use crate::objects::vector_object::VectorFeatures;
+use crate::objects::vector_object::VectorObject;
 
 
 pub fn make_timings(
@@ -16,11 +16,11 @@ pub fn make_timings(
 
 // value: ((lag_ratio + 1.0) * t - timing).clamp(0.0, 1.0)
 pub fn animation_group(
-    vec_obj: VectorFeatures,
-    anim_funcs: Vec<impl Fn(VectorFeatures, f64) -> VectorFeatures>,
+    vec_obj: VectorObject,
+    anim_funcs: Vec<impl Fn(VectorObject, f64) -> VectorObject>,
     lag_ratio: f64,
     t: f64
-) -> VectorFeatures {
+) -> VectorObject {
     let timings = make_timings(anim_funcs.len(), lag_ratio);
     let new_vec_obj = vec_obj.clone();
     let mut new_subobjects = Vec::new();

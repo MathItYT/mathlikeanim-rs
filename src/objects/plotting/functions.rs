@@ -1,6 +1,6 @@
 use contour_isobands::ContourBuilder;
 
-use crate::{colors::{Color, GradientImageOrColor}, objects::vector_object::VectorFeatures, utils::line_as_cubic_bezier};
+use crate::{colors::{Color, GradientImageOrColor}, objects::vector_object::VectorObject, utils::line_as_cubic_bezier};
 
 pub fn parametric_function(
     f: impl Fn(f64) -> (f64, f64),
@@ -12,7 +12,7 @@ pub fn parametric_function(
     line_cap: Option<&'static str>,
     line_join: Option<&'static str>,
     index: Option<usize>,
-) -> VectorFeatures {
+) -> VectorObject {
     let mut func_points = Vec::new();
     let mut t = t_min;
     while t <= t_max {
@@ -25,7 +25,7 @@ pub fn parametric_function(
         points.extend(line_as_cubic_bezier(*point1, *point2));
     }
     let (red, green, blue, alpha) = color.unwrap_or((1.0, 1.0, 1.0, 1.0));
-    return VectorFeatures {
+    return VectorObject {
         points,
         fill: GradientImageOrColor::Color(Color {
             red: 0.0,
@@ -59,7 +59,7 @@ pub fn function(
     line_cap: Option<&'static str>,
     line_join: Option<&'static str>,
     index: Option<usize>,
-) -> VectorFeatures {
+) -> VectorObject {
     return parametric_function(
         |t| (t, f(t)),
         x_min,
@@ -87,7 +87,7 @@ pub fn contour_plot(
     line_join: Option<&'static str>,
     index: Option<usize>,
     intervals: &[f64],
-) -> VectorFeatures {
+) -> VectorObject {
     let color = color.unwrap_or((1.0, 1.0, 1.0, 1.0));
     let color = Color {
         red: color.0,
@@ -114,7 +114,7 @@ pub fn contour_plot(
         .use_quad_tree(true)
         .contours(&grid, intervals)
         .unwrap();
-    let mut result = VectorFeatures::new();
+    let mut result = VectorObject::new();
     for contour in res {
         for poly in contour.geometry() {
             let interiors = poly.interiors().iter().map(|interior| {
@@ -125,7 +125,7 @@ pub fn contour_plot(
                 for (point1, point2) in interior[0..interior.len()-1].iter().zip(interior[1..].iter()) {
                     points.extend(line_as_cubic_bezier(*point1, *point2));
                 }
-                result.subobjects.push(VectorFeatures {
+                result.subobjects.push(VectorObject {
                     points,
                     fill_rule: "nonzero",
                     stroke: color.clone(),

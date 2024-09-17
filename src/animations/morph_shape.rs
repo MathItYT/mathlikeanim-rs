@@ -1,8 +1,8 @@
 use wasm_bindgen::JsError;
 
-use crate::{colors::{Color, GradientImageOrColor}, objects::vector_object::VectorFeatures, utils::{error, interpolate, interpolate_color, interpolate_tuple}};
+use crate::{colors::{Color, GradientImageOrColor}, objects::vector_object::VectorObject, utils::{error, interpolate, interpolate_color, interpolate_tuple}};
 
-pub fn morph_shape(original_obj: VectorFeatures, target_obj: VectorFeatures, t: f64) -> VectorFeatures {
+pub fn morph_shape(original_obj: VectorObject, target_obj: VectorObject, t: f64) -> VectorObject {
     if t == 0.0 {
         return original_obj.clone();
     }

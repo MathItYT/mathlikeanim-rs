@@ -1,10 +1,10 @@
-use crate::objects::vector_object::VectorFeatures;
+use crate::objects::vector_object::VectorObject;
 use crate::utils::{integer_interpolate, interpolate};
 
 use crate::animations::animation_group::animation_group;
 
 
-pub fn draw_stroke_then_fill(vec_obj: VectorFeatures, t: f64, default_stroke_width: Option<f64>) -> VectorFeatures {
+pub fn draw_stroke_then_fill(vec_obj: VectorObject, t: f64, default_stroke_width: Option<f64>) -> VectorObject {
     let mut new_vec_obj = vec_obj.clone();
     let (index, subalpha) = integer_interpolate(0.0, 2.0, t);
     if index == 0 {
@@ -40,12 +40,12 @@ pub fn draw_stroke_then_fill(vec_obj: VectorFeatures, t: f64, default_stroke_wid
 }
 
 
-pub fn write(vec_obj: VectorFeatures, lag_ratio: f64, t: f64, default_stroke_width: Option<f64>) -> VectorFeatures {
+pub fn write(vec_obj: VectorObject, lag_ratio: f64, t: f64, default_stroke_width: Option<f64>) -> VectorObject {
     let mut anim_funcs = Vec::new();
     for _ in 0..vec_obj.subobjects.len() {
         anim_funcs.push(Box::new(|vec_obj, t| {
             draw_stroke_then_fill(vec_obj, t, default_stroke_width)
-        }) as Box<dyn Fn(VectorFeatures, f64) -> VectorFeatures>);
+        }) as Box<dyn Fn(VectorObject, f64) -> VectorObject>);
     }
     return animation_group(vec_obj, anim_funcs, lag_ratio, t);
 }

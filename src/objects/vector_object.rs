@@ -31,11 +31,11 @@ pub fn partial_bezier_points(
 
 
 pub fn get_partial_points(
-    vector_features: &VectorFeatures,
+    vector_features: &VectorObject,
     start: f64,
     end: f64,
     recursive: bool
-) -> VectorFeatures {
+) -> VectorObject {
     let points = vector_features.get_points();
     let fill = vector_features.fill.clone();
     let stroke = vector_features.stroke.clone();
@@ -44,7 +44,7 @@ pub fn get_partial_points(
     let line_join = vector_features.get_line_join();
     let mut subobjects = (&vector_features.subobjects).to_vec();
     if start <= 0.0 && end >= 1.0 {
-        return VectorFeatures {
+        return VectorObject {
             points: points.clone(),
             fill_rule: vector_features.fill_rule,
             fill: fill,
@@ -58,7 +58,7 @@ pub fn get_partial_points(
     }
     let bezier_quads = vector_features.get_cubic_bezier_tuples();
     if bezier_quads.len() == 0 {
-        return VectorFeatures {
+        return VectorObject {
             points: points.clone(),
             fill: fill,
             fill_rule: vector_features.fill_rule,
@@ -73,7 +73,7 @@ pub fn get_partial_points(
     let (lower_index, lower_residue) = integer_interpolate(0.0, bezier_quads.len() as f64, start);
     let (upper_index, upper_residue) = integer_interpolate(0.0, bezier_quads.len() as f64, end);
     if lower_index == upper_index {
-        return VectorFeatures {
+        return VectorObject {
             points: partial_bezier_points(
                 &vec![
                     bezier_quads[lower_index as usize].0,
@@ -121,7 +121,7 @@ pub fn get_partial_points(
     if recursive {
         subobjects = subobjects.iter().map(|subobject| get_partial_points(subobject, start, end, true)).collect();
     }
-    return VectorFeatures {
+    return VectorObject {
         points: new_points,
         fill: fill,
         fill_rule: vector_features.fill_rule,
@@ -208,7 +208,7 @@ pub fn generate_cubic_bezier_tuples(
     return tuples;
 }
 
-pub fn get_subobjects_recursively(vec_features: &VectorFeatures) -> Vec<VectorFeatures> {
+pub fn get_subobjects_recursively(vec_features: &VectorObject) -> Vec<VectorObject> {
     let mut subobjects = Vec::new();
     for subobject in &vec_features.subobjects {
         subobjects.push(subobject.clone());
@@ -245,7 +245,7 @@ pub fn shift_points(points: &Vec<(f64, f64)>, shift: (f64, f64)) -> Vec<(f64, f6
 
 
 #[derive(Clone, Debug)]
-pub struct VectorFeatures {
+pub struct VectorObject {
     pub points: Vec<(f64, f64)>,
     pub fill: GradientImageOrColor,
     pub fill_rule: &'static str,
@@ -253,14 +253,14 @@ pub struct VectorFeatures {
     pub stroke_width: f64,
     pub line_cap: &'static str,
     pub line_join: &'static str,
-    pub subobjects: Vec<VectorFeatures>,
+    pub subobjects: Vec<VectorObject>,
     pub index: usize
 }
 
 
-impl VectorFeatures {
-    pub fn new() -> VectorFeatures {
-        return VectorFeatures {
+impl VectorObject {
+    pub fn new() -> VectorObject {
+        return VectorObject {
             points: Vec::new(),
             fill: GradientImageOrColor::Color(Color {
                 red: 0.0,
@@ -377,7 +377,7 @@ impl VectorFeatures {
         return self.index;
     }
     pub fn set_index(&self, index: usize) -> Self {
-        return VectorFeatures {
+        return VectorObject {
             points: self.points.clone(),
             fill_rule: self.fill_rule,
             fill: self.fill.clone(),
@@ -396,7 +396,7 @@ impl VectorFeatures {
     }
     pub fn increment_index(&self, increment: usize, recursive: bool) -> Self {
         if recursive {
-            return VectorFeatures {
+            return VectorObject {
                 points: self.points.clone(),
                 fill_rule: self.fill_rule,
                 fill: self.fill.clone(),
@@ -408,7 +408,7 @@ impl VectorFeatures {
                 index: self.index + increment,
             };
         }
-        return VectorFeatures {
+        return VectorObject {
             points: self.points.clone(),
             fill_rule: self.fill_rule,
             fill: self.fill.clone(),
@@ -444,7 +444,7 @@ impl VectorFeatures {
     pub fn get_points(&self) -> &Vec<(f64, f64)> {
         return &self.points;
     }
-    pub fn get_partial_copy(&self, start: f64, end: f64, recursive: bool) -> VectorFeatures {
+    pub fn get_partial_copy(&self, start: f64, end: f64, recursive: bool) -> VectorObject {
         return get_partial_points(self, start, end, recursive);
     }
     pub fn get_fill(&self) -> GradientImageOrColor {
@@ -462,12 +462,12 @@ impl VectorFeatures {
     pub fn get_line_join(&self) -> &'static str {
         return &self.line_join;
     }
-    pub fn get_subobjects(&self) -> Vec<VectorFeatures> {
+    pub fn get_subobjects(&self) -> Vec<VectorObject> {
         return self.subobjects.clone();
     }
-    pub fn scale(&self, scale_factor: f64, recursive: bool) -> VectorFeatures {
+    pub fn scale(&self, scale_factor: f64, recursive: bool) -> VectorObject {
         if !recursive {
-            return VectorFeatures {
+            return VectorObject {
                 points: scale_points(&self.points, scale_factor),
                 fill_rule: self.fill_rule,
                 fill: self.fill.clone(),
@@ -479,7 +479,7 @@ impl VectorFeatures {
                 index: self.index,
             };
         }
-        return VectorFeatures {
+        return VectorObject {
             points: scale_points(&self.points, scale_factor),
             fill_rule: self.fill_rule,
             fill: self.fill.clone(),
@@ -494,11 +494,11 @@ impl VectorFeatures {
     pub fn set_subobject(
         &self,
         index: usize,
-        subobject: VectorFeatures
+        subobject: VectorObject
     ) -> Self {
         let mut new_subobjects = self.subobjects.clone();
         new_subobjects[index] = subobject;
-        return VectorFeatures {
+        return VectorObject {
             points: self.points.clone(),
             fill_rule: self.fill_rule,
             fill: self.fill.clone(),
@@ -514,11 +514,11 @@ impl VectorFeatures {
         &self,
         start: usize,
         end: usize,
-        subobjects: Vec<VectorFeatures>
+        subobjects: Vec<VectorObject>
     ) -> Self {
         let mut new_subobjects = self.subobjects.clone();
         new_subobjects.splice(start..end, subobjects.iter().cloned());
-        return VectorFeatures {
+        return VectorObject {
             points: self.points.clone(),
             fill_rule: self.fill_rule,
             fill: self.fill.clone(),
@@ -533,7 +533,7 @@ impl VectorFeatures {
     pub fn stretch(&self, stretch: (f64, f64), recursive: bool) -> Self {
         let center = self.get_center();
         if !recursive {
-            return VectorFeatures {
+            return VectorObject {
                 points: shift_points(&stretch_points(&self.points, stretch), (center.0 - self.get_center().0, center.1 - self.get_center().1)),
                 fill: self.fill.clone(),
                 fill_rule: self.fill_rule,
@@ -545,7 +545,7 @@ impl VectorFeatures {
                 index: self.index,
             };
         }
-        return VectorFeatures {
+        return VectorObject {
             points: shift_points(&stretch_points(&self.points, stretch), (center.0 - self.get_center().0, center.1 - self.get_center().1)),
             fill: self.fill.clone(),
             fill_rule: self.fill_rule,
@@ -560,7 +560,7 @@ impl VectorFeatures {
     pub fn get_subobject(
         &self,
         index: usize
-    ) -> VectorFeatures {
+    ) -> VectorObject {
         return self.subobjects[index].clone();
     }
     pub fn slice_subobjects(
@@ -570,9 +570,9 @@ impl VectorFeatures {
     ) -> Vec<Self> {
         return self.subobjects[start..end].to_vec();
     }
-    pub fn shift(&self, shift: (f64, f64), recursive: bool) -> VectorFeatures {
+    pub fn shift(&self, shift: (f64, f64), recursive: bool) -> VectorObject {
         if !recursive {
-            return VectorFeatures {
+            return VectorObject {
                 points: shift_points(&self.points, shift),
                 fill_rule: self.fill_rule,
                 fill: self.fill.clone(),
@@ -584,7 +584,7 @@ impl VectorFeatures {
                 index: self.index,
             };
         }
-        return VectorFeatures {
+        return VectorObject {
             points: shift_points(&self.points, shift),
             fill_rule: self.fill_rule,
             fill: self.fill.clone(),
@@ -596,14 +596,14 @@ impl VectorFeatures {
             index: self.index,
         };
     }
-    pub fn move_to(&self, position: (f64, f64), recursive: bool) -> VectorFeatures {
+    pub fn move_to(&self, position: (f64, f64), recursive: bool) -> VectorObject {
         let center = self.get_center();
         let shift = (position.0 - center.0, position.1 - center.1);
         return self.shift(shift, recursive);
     }
-    pub fn set_fill(&self, fill: GradientImageOrColor, recursive: bool) -> VectorFeatures {
+    pub fn set_fill(&self, fill: GradientImageOrColor, recursive: bool) -> VectorObject {
         if recursive {
-            return VectorFeatures {
+            return VectorObject {
                 points: self.points.clone(),
                 fill_rule: self.fill_rule,
                 fill: fill.clone(),
@@ -615,7 +615,7 @@ impl VectorFeatures {
                 index: self.index,
             };
         }
-        return VectorFeatures {
+        return VectorObject {
             points: self.points.clone(),
             fill_rule: self.fill_rule,
             fill: fill,
@@ -627,7 +627,7 @@ impl VectorFeatures {
             index: self.index,
         };
     }
-    pub fn set_fill_opacity(&self, opacity: f64, recursive: bool) -> VectorFeatures {
+    pub fn set_fill_opacity(&self, opacity: f64, recursive: bool) -> VectorObject {
         let new_fill = match &self.fill {
             GradientImageOrColor::Color(color) => GradientImageOrColor::Color(Color {
                 red: color.red,
@@ -661,7 +661,7 @@ impl VectorFeatures {
             }),
         };
         if recursive {
-            return VectorFeatures {
+            return VectorObject {
                 points: self.points.clone(),
                 fill_rule: self.fill_rule,
                 fill: new_fill,
@@ -673,7 +673,7 @@ impl VectorFeatures {
                 index: self.index,
             };
         }
-        return VectorFeatures {
+        return VectorObject {
             points: self.points.clone(),
             fill_rule: self.fill_rule,
             fill: new_fill,
@@ -685,9 +685,9 @@ impl VectorFeatures {
             index: self.index,
         };
     }
-    pub fn set_stroke(&self, stroke: GradientImageOrColor, recursive: bool) -> VectorFeatures {
+    pub fn set_stroke(&self, stroke: GradientImageOrColor, recursive: bool) -> VectorObject {
         if recursive {
-            return VectorFeatures {
+            return VectorObject {
                 points: self.points.clone(),
                 fill_rule: self.fill_rule,
                 fill: self.fill.clone(),
@@ -699,7 +699,7 @@ impl VectorFeatures {
                 index: self.index,
             };
         }
-        return VectorFeatures {
+        return VectorObject {
             points: self.points.clone(),
             fill: self.fill.clone(),
             fill_rule: self.fill_rule,
@@ -711,7 +711,7 @@ impl VectorFeatures {
             index: self.index,
         };
     }
-    pub fn add(&self, other: &VectorFeatures) -> Self {
+    pub fn add(&self, other: &VectorObject) -> Self {
         let mut new_subobjects = self.subobjects.clone();
         new_subobjects.push(other.clone());
         return self.set_subobjects(new_subobjects);
@@ -721,7 +721,7 @@ impl VectorFeatures {
         new_subobjects.remove(index);
         return self.set_subobjects(new_subobjects);
     }
-    pub fn set_stroke_opacity(&self, opacity: f64, recursive: bool) -> VectorFeatures {
+    pub fn set_stroke_opacity(&self, opacity: f64, recursive: bool) -> VectorObject {
         let new_stroke = match &self.stroke {
             GradientImageOrColor::Color(color) => GradientImageOrColor::Color(Color {
                 red: color.red,
@@ -763,7 +763,7 @@ impl VectorFeatures {
             }),
         };
         if recursive {
-            return VectorFeatures {
+            return VectorObject {
                 points: self.points.clone(),
                 fill_rule: self.fill_rule,
                 fill: self.fill.clone(),
@@ -775,7 +775,7 @@ impl VectorFeatures {
                 index: self.index,
             };
         }
-        return VectorFeatures {
+        return VectorObject {
             points: self.points.clone(),
             fill: self.fill.clone(),
             fill_rule: self.fill_rule,
@@ -787,9 +787,9 @@ impl VectorFeatures {
             index: self.index,
         };
     }
-    pub fn set_stroke_width(&self, stroke_width: f64, recursive: bool) -> VectorFeatures {
+    pub fn set_stroke_width(&self, stroke_width: f64, recursive: bool) -> VectorObject {
         if recursive {
-            return VectorFeatures {
+            return VectorObject {
                 points: self.points.clone(),
                 fill_rule: self.fill_rule,
                 fill: self.fill.clone(),
@@ -801,7 +801,7 @@ impl VectorFeatures {
                 index: self.index,
             };
         }
-        return VectorFeatures {
+        return VectorObject {
             points: self.points.clone(),
             fill_rule: self.fill_rule,
             fill: self.fill.clone(),
@@ -813,9 +813,9 @@ impl VectorFeatures {
             index: self.index,
         };
     }
-    pub fn set_line_cap(&self, line_cap: &'static str, recursive: bool) -> VectorFeatures {
+    pub fn set_line_cap(&self, line_cap: &'static str, recursive: bool) -> VectorObject {
         if recursive {
-            return VectorFeatures {
+            return VectorObject {
                 points: self.points.clone(),
                 fill_rule: self.fill_rule,
                 fill: self.fill.clone(),
@@ -827,7 +827,7 @@ impl VectorFeatures {
                 index: self.index,
             };
         }
-        return VectorFeatures {
+        return VectorObject {
             points: self.points.clone(),
             fill_rule: self.fill_rule,
             fill: self.fill.clone(),
@@ -841,7 +841,7 @@ impl VectorFeatures {
     }
     pub fn set_line_join(&self, line_join: &'static str, recursive: bool) -> Self {
         if recursive {
-            return VectorFeatures {
+            return VectorObject {
                 fill_rule: self.fill_rule,
                 points: self.points.clone(),
                 fill: self.fill.clone(),
@@ -853,7 +853,7 @@ impl VectorFeatures {
                 index: self.index,
             };
         }
-        return VectorFeatures {
+        return VectorObject {
             points: self.points.clone(),
             fill_rule: self.fill_rule,
             fill: self.fill.clone(),
@@ -866,7 +866,7 @@ impl VectorFeatures {
         };
     }
     pub fn set_points(&self, points: Vec<(f64, f64)>) -> Self {
-        return VectorFeatures {
+        return VectorObject {
             points: points,
             fill_rule: self.fill_rule,
             fill: self.fill.clone(),
@@ -878,8 +878,8 @@ impl VectorFeatures {
             index: self.index,
         };
     }
-    pub fn set_subobjects(&self, subobjects: Vec<VectorFeatures>) -> Self {
-        return VectorFeatures {
+    pub fn set_subobjects(&self, subobjects: Vec<VectorObject>) -> Self {
+        return VectorObject {
             points: self.points.clone(),
             fill_rule: self.fill_rule,
             fill: self.fill.clone(),
@@ -900,7 +900,7 @@ impl VectorFeatures {
             return (x * cos - y * sin, x * sin + y * cos);
         }).collect();
         if !recursive {
-            return VectorFeatures {
+            return VectorObject {
                 points: new_points,
                 fill_rule: self.fill_rule,
                 fill: self.fill.clone(),
@@ -912,7 +912,7 @@ impl VectorFeatures {
                 index: self.index,
             };
         }
-        return VectorFeatures {
+        return VectorObject {
             points: new_points,
             fill_rule: self.fill_rule,
             fill: self.fill.clone(),
@@ -926,7 +926,7 @@ impl VectorFeatures {
     }
     pub fn next_to_other(
         &self,
-        other: &VectorFeatures,
+        other: &VectorObject,
         direction: (f64, f64),
         buff: f64,
         aligned_edge: (f64, f64),
@@ -947,7 +947,7 @@ impl VectorFeatures {
         buff: f64,
         aligned_edge: (f64, f64),
         recursive: bool
-    ) -> VectorFeatures {
+    ) -> VectorObject {
         let key2 = (-direction.0 + aligned_edge.0, -direction.1 + aligned_edge.1);
         let point_to_align = self.get_critical_point(key2);
         let shift = (point.0 - point_to_align.0 + buff * direction.0, point.1 - point_to_align.1 + buff * direction.1);
@@ -966,7 +966,7 @@ impl VectorFeatures {
         }
         let mut result = self.clone();
         let first_subobject = self.subobjects[0].clone();
-        let mut new_subobjects: Vec<VectorFeatures> = vec![first_subobject.clone()];
+        let mut new_subobjects: Vec<VectorObject> = vec![first_subobject.clone()];
         for i in 1..self.subobjects.len() {
             let subobject = self.subobjects[i].clone();
             let previous_subobject = new_subobjects[i - 1].clone();
@@ -985,7 +985,7 @@ impl VectorFeatures {
         recursive: bool
     ) -> Self {
         if recursive {
-            return VectorFeatures {
+            return VectorObject {
                 points: self.points.clone(),
                 fill_rule: self.fill_rule,
                 fill: GradientImageOrColor::Image(Image {
@@ -1009,7 +1009,7 @@ impl VectorFeatures {
                 index: self.index,
             };
         }
-        return VectorFeatures {
+        return VectorObject {
             points: self.points.clone(),
             fill_rule: self.fill_rule,
             fill: GradientImageOrColor::Image(Image {
@@ -1045,7 +1045,7 @@ impl VectorFeatures {
             _ => self.stroke.clone()
         };
         if recursive {
-            return VectorFeatures {
+            return VectorObject {
                 points: self.points.clone(),
                 fill: self.fill.clone(),
                 fill_rule: self.fill_rule,
@@ -1057,7 +1057,7 @@ impl VectorFeatures {
                 index: self.index,
             };
         }
-        return VectorFeatures {
+        return VectorObject {
             points: self.points.clone(),
             fill: self.fill.clone(),
             fill_rule: self.fill_rule,
@@ -1071,7 +1071,7 @@ impl VectorFeatures {
     }
     pub fn set_fill_rule(&self, fill_rule: &'static str, recursive: bool) -> Self {
         if recursive {
-            return VectorFeatures {
+            return VectorObject {
                 points: self.points.clone(),
                 fill_rule: fill_rule,
                 fill: self.fill.clone(),
@@ -1083,7 +1083,7 @@ impl VectorFeatures {
                 index: self.index,
             };
         }
-        return VectorFeatures {
+        return VectorObject {
             points: self.points.clone(),
             fill_rule: fill_rule,
             fill: self.fill.clone(),
@@ -1110,7 +1110,7 @@ impl VectorFeatures {
             _ => self.fill.clone()
         };
         if recursive {
-            return VectorFeatures {
+            return VectorObject {
                 points: self.points.clone(),
                 fill: new_fill,
                 fill_rule: self.fill_rule,
@@ -1122,7 +1122,7 @@ impl VectorFeatures {
                 index: self.index,
             };
         }
-        return VectorFeatures {
+        return VectorObject {
             points: self.points.clone(),
             fill: new_fill,
             fill_rule: self.fill_rule,
@@ -1146,7 +1146,7 @@ impl VectorFeatures {
             _ => return ((0.0, 0.0), (0.0, 0.0))
         }
     }
-    pub fn get_pieces(&self, n_pieces: usize) -> VectorFeatures {
+    pub fn get_pieces(&self, n_pieces: usize) -> VectorObject {
         let template = self.set_subobjects(Vec::new());
         let alphas = (0..n_pieces + 1).map(|i| i as f64 / n_pieces as f64).collect::<Vec<f64>>();
         let mut pieces = Vec::new();

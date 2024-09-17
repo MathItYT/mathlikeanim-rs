@@ -1,12 +1,15 @@
 [package]
 name = "mathlikeanim-rs"
-version = "0.9.2"
+version = "0.10.0"
 edition = "2021"
 readme = "README.md"
 description = "A Rust library for creating mathematical animations"
 license = "MIT"
 repository = "https://github.com/MathItYT/mathlikeanim-rs"
 exclude = [
+    "/examples",
+    "/docs",
+    "/javascript",
     "/target",
     "*.svg",
     "*.mp4",
@@ -42,16 +45,11 @@ web-sys = { version="0.3.69", features=[
     'CanvasGradient',
     'HtmlDivElement',
     'CanvasWindingRule'
-], optional=true }
+] }
 wasm-bindgen-futures = "0.4.42"
 contour-isobands = "0.4.3"
 regex = "1.10.5"
 
-[features]
-default = ["browser", "node"]
-browser = ["dep:web-sys"]
-node = []
-
 [lib]
-name = "mathlikeanim_rs"
+name = "index"
 crate-type = ["cdylib", "rlib"]
