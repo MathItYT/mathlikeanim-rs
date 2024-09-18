@@ -3,7 +3,7 @@ use wasm_bindgen::prelude::*;
 
 use crate::{colors::Color, objects::wasm_interface::{WasmColor, WasmGradientImageOrColor, WasmVectorObject}};
 
-use super::{sphere::sphere, three_d_axes::{coords_to_point_3d, parametric_line_plot_in_axes_3d, parametric_plot_in_axes_3d, plot_in_axes_3d, point_to_coords_3d, three_d_axes}, three_d_object::{points_times_t_matrix, cross_product, ensure_valid_three_d_color, get_anchors, get_corner_unit_normal, get_end_anchors, get_end_corner, get_end_corner_unit_normal, get_shaded_color, get_shaded_rgb, get_start_anchors, get_start_corner, get_start_corner_unit_normal, line_as_cubic_bezier_3d, matrix_product, project_points, rot_matrix, rot_matrix_euler, shift_points_3d, transpose_matrix, Camera, LightSource, ThreeDObject}};
+use super::{sphere::sphere, three_d_axes::{coords_to_point_3d, parametric_line_plot_in_axes_3d, parametric_plot_in_axes_3d, plot_in_axes_3d, point_to_coords_3d, three_d_axes}, three_d_object::{matrix_times_points, cross_product, ensure_valid_three_d_color, get_anchors, get_corner_unit_normal, get_end_anchors, get_end_corner, get_end_corner_unit_normal, get_shaded_color, get_shaded_rgb, get_start_anchors, get_start_corner, get_start_corner_unit_normal, line_as_cubic_bezier_3d, matrix_product, project_points, rot_matrix, rot_matrix_euler, shift_points_3d, transpose_matrix, Camera, LightSource, ThreeDObject}};
 
 
 #[wasm_bindgen(js_name = rotMatrix)]
@@ -161,7 +161,7 @@ pub fn apply_matrix_js(
             )
         }
     ).collect::<Vec<(f64, f64, f64)>>();
-    let result = points_times_t_matrix(matrix, points);
+    let result = matrix_times_points(matrix, points);
     let result_js = Array::new();
     for i in 0..result.len() {
         let point = Array::new();

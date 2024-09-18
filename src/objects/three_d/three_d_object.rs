@@ -62,8 +62,8 @@ pub fn transpose_matrix(matrix: [[f64; 3]; 3]) -> [[f64; 3]; 3] {
     new_matrix
 }
 
-pub fn points_times_t_matrix(matrix: [[f64; 3]; 3], points: Vec<(f64, f64, f64)>) -> Vec<(f64, f64, f64)> {
-    let matrix = transpose_matrix(matrix);
+
+pub fn matrix_times_points(matrix: [[f64; 3]; 3], points: Vec<(f64, f64, f64)>) -> Vec<(f64, f64, f64)> {
     points.iter().map(|point| {
         (
             matrix[0][0] * point.0 + matrix[0][1] * point.1 + matrix[0][2] * point.2,
@@ -342,7 +342,7 @@ pub struct LightSource {
 pub fn project_points(points: &Vec<(f64, f64, f64)>, camera: &Camera) -> Vec<(f64, f64)> {
     let points = shift_points_3d(points, (-camera.position.0, -camera.position.1, -camera.position.2));
     let rot_matrix = rot_matrix_euler(camera.rotation.0, camera.rotation.1, camera.rotation.2);
-    let points = points_times_t_matrix(rot_matrix, points);
+    let points = matrix_times_points(rot_matrix, points);
     let points = points.iter().map(|point| {
         let z = point.2;
         let factor = camera.focal_distance / (camera.focal_distance - z);
@@ -581,17 +581,12 @@ impl ThreeDObject {
         let mut subobjects_3d = self.get_subobjects_recursively();
         subobjects_3d.push(self.clone());
         let rot_matrix = rot_matrix_euler(camera.rotation.0, camera.rotation.1, camera.rotation.2);
-        subobjects_3d.retain(|subobject| {
-            let center = subobject.set_subobjects(vec![]).get_center();
-            let z_rotated = points_times_t_matrix(rot_matrix, vec![center]).pop().unwrap().2;
-            z_rotated < camera.position.2
-        });
         subobjects_3d.sort_by(
             |a, b| {
                 let a_center = a.set_subobjects(vec![]).get_center();
                 let b_center = b.set_subobjects(vec![]).get_center();
-                let a_z_rotated = points_times_t_matrix(rot_matrix, vec![a_center]).pop().unwrap().2;
-                let b_z_rotated = points_times_t_matrix(rot_matrix, vec![b_center]).pop().unwrap().2;
+                let a_z_rotated = matrix_times_points(rot_matrix, vec![a_center]).pop().unwrap().2;
+                let b_z_rotated = matrix_times_points(rot_matrix, vec![b_center]).pop().unwrap().2;
                 a_z_rotated.partial_cmp(&b_z_rotated).unwrap()
             }
         );
