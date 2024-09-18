@@ -30,7 +30,7 @@ You can embed the library in your HTML file by adding a script tag, and don't fo
 
 ```html
 <script type="module">
-    import initWasm from './node_modules/mathlikeanim-rs/browser/index.js';
+    import initWasm from './node_modules/mathlikeanim-rs/index.js';
 
     initWasm().then((wasm) => {
         ...
