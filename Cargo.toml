@@ -32,7 +32,7 @@ categories = ["mathematics", "graphics", "wasm"]
 js-sys = "0.3.69"
 lightningcss = "1.0.0-alpha.57"
 svg = "0.17.0"
-wasm-bindgen = "0.2.92"
+wasm-bindgen = "0.2.93"
 web-sys = { version="0.3.69", features=[
     'CanvasRenderingContext2d',
     'Document',
