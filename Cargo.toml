@@ -29,7 +29,7 @@ keywords = ["animation", "graphics", "easing", "transitions", "WebAssembly"]
 categories = ["mathematics", "graphics", "wasm"]
 
 [dependencies]
-js-sys = "0.3.69"
+js-sys = "0.3.70"
 lightningcss = "1.0.0-alpha.57"
 svg = "0.17.0"
 wasm-bindgen = "0.2.92"
