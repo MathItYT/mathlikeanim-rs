@@ -271,8 +271,7 @@ pub fn vec_to_def_and_use_string(
         if class.is_some() {
             path.set_attribute("class", class.unwrap()).unwrap();
         }
-        def_string.push_str((path.outer_html() + "\n").as_str());
-        use_string.push_str(format!("<use href=\"#{}\"/>\n", path_id).as_str());
+        use_string.push_str((path.outer_html() + "\n").as_str());
     }
     let mut subcount = count.clone();
     let mut i = 0;
