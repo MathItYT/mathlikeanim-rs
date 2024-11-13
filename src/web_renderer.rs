@@ -268,12 +268,10 @@ pub fn vec_to_def_and_use_string(
         path.set_attribute("stroke-linecap", &vec.line_cap).unwrap();
         path.set_attribute("stroke-linejoin", &vec.line_join).unwrap();
         path.set_attribute("fill-rule", &vec.fill_rule).unwrap();
-        def_string.push_str((path.outer_html() + "\n").as_str());
         if class.is_some() {
-            use_string.push_str(format!("<use href=\"#{}\" class=\"{}\"/>\n", path_id, class.unwrap()).as_str());
-        } else {
-            use_string.push_str(format!("<use href=\"#{}\"/>\n", path_id).as_str());
+            path.set_attribute("class", class.unwrap()).unwrap();
         }
+        def_string.push_str((path.outer_html() + "\n").as_str());
     }
     let mut subcount = count.clone();
     let mut i = 0;
