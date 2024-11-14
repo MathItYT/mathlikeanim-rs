@@ -30,7 +30,7 @@ fn parse_color(color: &str) -> CssColor {
 pub fn parse_transform(transform_attr: &str) -> Matrix<f32> {
     let transfs = transform_attr.split(|c| c == ' ' || c == ',');
     let transfs = transfs.collect::<Vec<&str>>();
-    let transfs = transfs.join(" ");
+    let transfs = transfs.join(",");
     let result = Transform::parse_string(transfs.as_str()).unwrap();
     let result = result.to_matrix().unwrap().to_matrix2d().unwrap();
     return result;
