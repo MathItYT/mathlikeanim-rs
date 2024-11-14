@@ -27,6 +27,16 @@ fn parse_color(color: &str) -> CssColor {
 }
 
 
+pub fn parse_transform(transform_attr: &str) -> Matrix<f32> {
+    let transfs = transform_attr.split(|c| c == ' ' || c == ',');
+    let transfs = transfs.collect::<Vec<&str>>();
+    let transfs = transfs.join(" ");
+    let result = Transform::parse_string(transfs.as_str()).unwrap();
+    let result = result.to_matrix().unwrap().to_matrix2d().unwrap();
+    return result;
+}
+
+
 pub fn parse_path(attributes: &std::collections::HashMap<String, Value>, index: usize, fill: &(f64, f64, f64, f64), stroke: &(f64, f64, f64, f64), sw: &f64, lc: &&str, lj: &&str, transforms: &Vec<Vec<Matrix<f32>>>) -> VectorObject {
     let mut transforms = transforms.clone();
     let data = attributes.get("d").map(|d| {
@@ -302,23 +312,7 @@ pub fn parse_path(attributes: &std::collections::HashMap<String, Value>, index: 
         transform.to_string()
     });
     if transform_attr.is_some() {
-        let transfs = transform_attr.unwrap();
-        let transfs = transfs.split(" ");
-        let mut new_transfs = Vec::new();
-        for transform in transfs {
-            if !transform.starts_with("matrix") && !transform.starts_with("translate") && !transform.starts_with("scale") && !transform.starts_with("rotate") && !transform.starts_with("skewX") && !transform.starts_with("skewY") {
-                let i = new_transfs.len() - 1;
-                new_transfs[i] = format!("{},{}", new_transfs[i], transform.to_string());
-            } else {
-                new_transfs.push(transform.to_string());
-            }
-        }
-        for transf in new_transfs {
-            let transf = transf.trim();
-            let transf = Transform::parse_string(transf.replace(", ", " ").replace(" ", ",").as_str()).unwrap();
-            let matrix = transf.to_matrix().unwrap().to_matrix2d().unwrap();
-            transforms.push(vec![matrix]);
-        }
+        transforms.push(vec![parse_transform(transform_attr.unwrap().as_str())]);
     }
     for transform in transforms.iter().rev() {
         for matrix in transform.iter().rev() {
@@ -452,23 +446,7 @@ fn parse_rect(
     );
     let mut points = vec_obj.points.clone();
     if attributes.get("transform").is_some() {
-        let transform = attributes.get("transform").unwrap().to_string();
-        let transfs = transform.split(" ");
-        let mut new_transfs = Vec::new();
-        for transf in transfs {
-            if !transf.starts_with("matrix") && !transf.starts_with("translate") && !transf.starts_with("scale") && !transf.starts_with("rotate") && !transf.starts_with("skewX") && !transf.starts_with("skewY") {
-                let i = new_transfs.len() - 1;
-                new_transfs[i] = format!("{},{}", new_transfs[i], transf.to_string());
-            } else {
-                new_transfs.push(transf.to_string());
-            }
-        }
-        for transf in new_transfs {
-            let transf = transf.trim();
-            let transf = Transform::parse_string(transf.replace(", ", " ").replace(" ", ",").as_str()).unwrap();
-            let matrix = transf.to_matrix().unwrap().to_matrix2d().unwrap();
-            transforms.push(vec![matrix]);
-        }
+        transforms.push(vec![parse_transform(attributes.get("transform").unwrap().to_string().as_str())]);
     }
     for transform in transforms.iter().rev() {
         for matrix in transform.iter().rev() {
@@ -575,23 +553,7 @@ fn parse_circle(
     );
     let mut points = vec_obj.points.clone();
     if attributes.get("transform").is_some() {
-        let transform = attributes.get("transform").unwrap().to_string();
-        let transfs = transform.split(" ");
-        let mut new_transfs = Vec::new();
-        for transf in transfs {
-            if !transf.starts_with("matrix") && !transf.starts_with("translate") && !transf.starts_with("scale") && !transf.starts_with("rotate") && !transf.starts_with("skewX") && !transf.starts_with("skewY") {
-                let i = new_transfs.len() - 1;
-                new_transfs[i] = format!("{},{}", new_transfs[i], transf.to_string());
-            } else {
-                new_transfs.push(transf.to_string());
-            }
-        }
-        for transf in new_transfs {
-            let transf = transf.trim();
-            let transf = Transform::parse_string(transf.replace(", ", " ").replace(" ", ",").as_str()).unwrap();
-            let matrix = transf.to_matrix().unwrap().to_matrix2d().unwrap();
-            transforms.push(vec![matrix]);
-        }
+        transforms.push(vec![parse_transform(attributes.get("transform").unwrap().to_string().as_str())]);
     }
     for transform in transforms.iter().rev() {
         for matrix in transform.iter().rev() {
@@ -700,23 +662,7 @@ fn parse_polygon(
         Some(index)
     );
     if attributes.get("transform").is_some() {
-        let transform = attributes.get("transform").unwrap().to_string();
-        let transfs = transform.split(" ");
-        let mut new_transfs = Vec::new();
-        for transf in transfs {
-            if !transf.starts_with("matrix") && !transf.starts_with("translate") && !transf.starts_with("scale") && !transf.starts_with("rotate") && !transf.starts_with("skewX") && !transf.starts_with("skewY") {
-                let i = new_transfs.len() - 1;
-                new_transfs[i] = format!("{},{}", new_transfs[i], transf.to_string());
-            } else {
-                new_transfs.push(transf.to_string());
-            }
-        }
-        for transf in new_transfs {
-            let transf = transf.trim();
-            let transf = Transform::parse_string(transf.replace(", ", " ").replace(" ", ",").as_str()).unwrap();
-            let matrix = transf.to_matrix().unwrap().to_matrix2d().unwrap();
-            transforms.push(vec![matrix]);
-        }
+        transforms.push(vec![parse_transform(attributes.get("transform").unwrap().to_string().as_str())]);
     }
     let mut points = polygon.points.clone();
     for transform in transforms.iter().rev() {
@@ -849,24 +795,7 @@ pub fn svg_to_vector_pin<'a>(svg: &'a str, font_family: Option<String>, font_siz
                     });
                     applied_transforms.push(transform_attr.is_some());
                     if transform_attr.is_some() {
-                        let transf = transform_attr.unwrap();
-                        let transfs = transf.split(" ");
-                        let mut new_transfs = Vec::new();
-                        for transform in transfs {
-                            if !transform.starts_with("matrix") && !transform.starts_with("translate") && !transform.starts_with("scale") && !transform.starts_with("rotate") && !transform.starts_with("skewX") && !transform.starts_with("skewY") {
-                                let i = new_transfs.len() - 1;
-                                new_transfs[i] = format!("{},{}", new_transfs[i], transform.to_string());
-                            } else {
-                                new_transfs.push(transform.to_string());
-                            }
-                        }
-                        let mut new_transforms = Vec::new();
-                        for transform in new_transfs {
-                            let transform = Transform::parse_string(transform.replace(", ", " ").replace(" ", ",").as_str()).unwrap();
-                            let matrix = transform.to_matrix().unwrap().to_matrix2d().unwrap();
-                            new_transforms.push(matrix);
-                        }
-                        transforms.push(new_transforms);
+                        transforms.push(vec![parse_transform(transform_attr.unwrap().as_str())]);
                     }
                 }
                 Event::Tag("g", Type::End, _) => {
@@ -1033,29 +962,7 @@ pub fn svg_to_vector_pin<'a>(svg: &'a str, font_family: Option<String>, font_siz
                     let mut points = vec_obj.points.clone();
                     let mut new_points = Vec::new();
                     if transform.is_some() {
-                        let transfs = transform.unwrap();
-                        let transfs = transfs.split(" ");
-                        let mut new_transfs = Vec::new();
-                        for transform in transfs {
-                            if !transform.starts_with("matrix") && !transform.starts_with("translate") && !transform.starts_with("scale") && !transform.starts_with("rotate") && !transform.starts_with("skewX") && !transform.starts_with("skewY") {
-                                let i = new_transfs.len() - 1;
-                                new_transfs[i] = format!("{},{}", new_transfs[i], transform.to_string());
-                            } else {
-                                new_transfs.push(transform.to_string());
-                            }
-                        }
-                        for transf in new_transfs {
-                            let transf = transf.trim();
-                            let transf = Transform::parse_string(transf.replace(", ", " ").replace(" ", ",").as_str()).unwrap();
-                            let matrix = transf.to_matrix().unwrap().to_matrix2d().unwrap();
-                            for point in points.iter() {
-                                let new_x = matrix.a as f64 * point.0 + matrix.c as f64 * point.1 + matrix.e as f64;
-                                let new_y = matrix.b as f64 * point.0 + matrix.d as f64 * point.1 + matrix.f as f64;
-                                new_points.push((new_x, new_y));
-                            }
-                            points = new_points.clone();
-                            new_points.clear();
-                        }
+                        transforms.push(vec![parse_transform(transform.unwrap().as_str())]);
                     }
                     for transform in transforms.iter().rev() {
                         for matrix in transform.iter().rev() {
@@ -1152,28 +1059,10 @@ pub fn svg_to_vector_pin<'a>(svg: &'a str, font_family: Option<String>, font_siz
                     text_stroke_width.push(stroke_width_for_text);
                     text_line_cap.push(line_cap_for_text);
                     text_line_join.push(line_join_for_text);
-                    if transf.is_some() {
-                        let transfs = transf.clone().unwrap();
-                        let trasfs = transfs.split(" ");
-                        let mut new_transfs = Vec::new();
-                        for transf in trasfs {
-                            if !transf.starts_with("matrix") && !transf.starts_with("translate") && !transf.starts_with("scale") && !transf.starts_with("rotate") && !transf.starts_with("skewX") && !transf.starts_with("skewY") {
-                                let i = new_transfs.len() - 1;
-                                new_transfs[i] = format!("{},{}", new_transfs[i], transf.to_string());
-                            } else {
-                                new_transfs.push(transf.to_string());
-                            }
-                        }
-                        let mut new_transforms = Vec::new();
-                        for tf in new_transfs {
-                            let trf = tf.trim();
-                            let transf = Transform::parse_string(trf.replace(", ", " ").replace(" ", ",").as_str()).unwrap();
-                            let matrix = transf.to_matrix().unwrap().to_matrix2d().unwrap();
-                            new_transforms.push(matrix);
-                        }
-                        transforms.push(new_transforms);
-                    }
                     text_applied_transforms.push(transf.is_some());
+                    if transf.is_some() {
+                        transforms.push(vec![parse_transform(transf.unwrap().as_str())]);
+                    }
                 },
                 Event::Tag("text", Type::End, _) => {
                     if transforms.len() > 0 && text_applied_transforms.pop().unwrap() {
@@ -1272,28 +1161,10 @@ pub fn svg_to_vector_pin<'a>(svg: &'a str, font_family: Option<String>, font_siz
                     text_stroke_width.push(stroke_width_for_text);
                     text_line_cap.push(line_cap_for_text);
                     text_line_join.push(line_join_for_text);
-                    if transf.is_some() {
-                        let transfs = transf.clone().unwrap();
-                        let trasfs = transfs.split(" ");
-                        let mut new_transfs = Vec::new();
-                        for transf in trasfs {
-                            if !transf.starts_with("matrix") && !transf.starts_with("translate") && !transf.starts_with("scale") && !transf.starts_with("rotate") && !transf.starts_with("skewX") && !transf.starts_with("skewY") {
-                                let i = new_transfs.len() - 1;
-                                new_transfs[i] = format!("{},{}", new_transfs[i], transf.to_string());
-                            } else {
-                                new_transfs.push(transf.to_string());
-                            }
-                        }
-                        let mut new_transforms = Vec::new();
-                        for transf in new_transfs {
-                            let transf = transf.trim();
-                            let transf = Transform::parse_string(transf.replace(", ", " ").replace(" ", ",").as_str()).unwrap();
-                            let matrix = transf.to_matrix().unwrap().to_matrix2d().unwrap();
-                            new_transforms.push(matrix);
-                        }
-                        transforms.push(new_transforms);
-                    }
                     text_applied_transforms.push(transf.is_some());
+                    if transf.is_some() {
+                        transforms.push(vec![parse_transform(transf.unwrap().as_str())]);
+                    }
                 },
                 Event::Tag("tspan", Type::End, _) => {
                     if transforms.len() > 0 && text_applied_transforms.pop().unwrap() {
