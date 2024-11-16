@@ -18,6 +18,7 @@ use crate::objects::vector_object::VectorObject;
 use crate::objects::text_to_vector::text_to_vector;
 
 use crate::colors::{Color, GradientImageOrColor};
+use super::geometry::arc::ellipse;
 use super::geometry::poly::polygon;
 
 
@@ -34,6 +35,108 @@ pub fn parse_transform(transform_attr: &str) -> Matrix<f32> {
     let result = Transform::parse_string(transfs.as_str()).unwrap();
     let result = result.to_matrix().unwrap().to_matrix2d().unwrap();
     return result;
+}
+
+
+pub fn parse_ellipse(attributes: &std::collections::HashMap<String, Value>, index: usize, fill: &(f64, f64, f64, f64), stroke: &(f64, f64, f64, f64), sw: &f64, lc: &&str, lj: &&str, transforms: &Vec<Vec<Matrix<f32>>>) -> VectorObject {
+    let mut transforms = transforms.clone();
+    let cx = attributes.get("cx").map(|cx| {
+        cx.parse().unwrap()
+    }).unwrap_or(0.0);
+    let cy = attributes.get("cy").map(|cy| {
+        cy.parse().unwrap()
+    }).unwrap_or(0.0);
+    let rx = attributes.get("rx").map(|rx| {
+        rx.parse().unwrap()
+    }).unwrap_or(0.0);
+    let ry = attributes.get("ry").map(|ry| {
+        ry.parse().unwrap()
+    }).unwrap_or(0.0);
+    let fill_color = attributes.get("fill").map(|fill| {
+        if fill.to_string().as_str() == "none" {
+            return (0.0, 0.0, 0.0, 0.0);
+        }
+        if fill.to_string().as_str() == "currentColor" {
+            return (0.0, 0.0, 0.0, 1.0);
+        }
+        let color = parse_color(fill.to_string().as_str());
+        let opacity = attributes.get("fill-opacity").map(|opacity| {
+            opacity.parse().unwrap()
+        }).unwrap_or(-1.0);
+        match color {
+            CssColor::RGBA(ref rgba) => {
+                (rgba.red_f32() as f64, rgba.green_f32() as f64, rgba.blue_f32() as f64, if opacity == -1.0 { rgba.alpha_f32() as f64 } else { opacity })
+            }
+            _ => (0.0, 0.0, 0.0, 1.0),
+        }
+    }).unwrap_or(fill.clone());
+    let stroke_color = attributes.get("stroke").map(|stroke| {
+        if stroke.to_string().as_str() == "none" {
+            return (0.0, 0.0, 0.0, 0.0);
+        }
+        if stroke.to_string().as_str() == "currentColor" {
+            return (0.0, 0.0, 0.0, 0.0);
+        }
+        let color = parse_color(stroke.to_string().as_str());
+        let opacity = attributes.get("stroke-opacity").map(|opacity| {
+            opacity.parse().unwrap()
+        }).unwrap_or(-1.0);
+        match color {
+            CssColor::RGBA(ref rgba) => {
+                (rgba.red_f32() as f64, rgba.green_f32() as f64, rgba.blue_f32() as f64, if opacity == -1.0 { rgba.alpha_f32() as f64 } else { opacity })
+            }
+            _ => (0.0, 0.0, 0.0, 1.0),
+        }
+    }).unwrap_or(stroke.clone());
+    let stroke_width = attributes.get("stroke-width").map(|width| {
+        width.parse().unwrap()
+    }).unwrap_or(*sw);
+    let line_cap = attributes.get("stroke-linecap").map(|cap| {
+        cap.to_string()
+    }).unwrap_or(lc.to_string());
+    let line_join = attributes.get("stroke-linejoin").map(|join| {
+        join.to_string()
+    }).unwrap_or(lj.to_string());
+    let line_cap = match line_cap.as_str() {
+        "butt" => "butt",
+        "square" => "square",
+        "round" => "round",
+        _ => "butt",
+    };
+    let line_join = match line_join.as_str() {
+        "miter" => "miter",
+        "bevel" => "bevel",
+        "round" => "round",
+        _ => "miter",
+    };
+    let mut vec_obj = ellipse(
+        (cx, cy),
+        rx,
+        ry,
+        None,
+        Some(stroke_color),
+        Some(fill_color),
+        Some(stroke_width),
+        Some(line_cap),
+        Some(line_join),
+        Some(index)
+    );
+    let mut points = vec_obj.points.clone();
+    if attributes.get("transform").is_some() {
+        transforms.push(vec![parse_transform(attributes.get("transform").unwrap().to_string().as_str())]);
+    }
+    for transform in transforms.iter().rev() {
+        for matrix in transform.iter().rev() {
+            let new_points = points.iter().map(|point| {
+                let new_x = matrix.a as f64 * point.0 + matrix.c as f64 * point.1 + matrix.e as f64;
+                let new_y = matrix.b as f64 * point.0 + matrix.d as f64 * point.1 + matrix.f as f64;
+                (new_x, new_y)
+            }).collect::<Vec<(f64, f64)>>();
+            points = new_points;
+        }
+    }
+    vec_obj.points = points;
+    return vec_obj;
 }
 
 
@@ -709,9 +812,15 @@ pub fn svg_to_vector_pin<'a>(svg: &'a str, font_family: Option<String>, font_siz
         let mut transforms = Vec::new();
         let mut applied_transforms = Vec::new();
         let mut index = 1 as usize;
+        let mut in_defs = false;
         for event in svg::read(svg).unwrap() {
             match event {
-                Event::Tag("defs", _, _) => {},
+                Event::Tag("defs", Type::Start, _) => {
+                    in_defs = true;
+                },
+                Event::Tag("defs", Type::End, _) => {
+                    in_defs = false;
+                },
                 Event::Tag("g", Type::Start, attributes) => {
                     let fill_cur = attributes.get("fill").map(|fill| {
                         if fill.to_string().as_str() == "none" {
@@ -817,7 +926,25 @@ pub fn svg_to_vector_pin<'a>(svg: &'a str, font_family: Option<String>, font_siz
                     if transforms.len() > 0 && applied_transforms.pop().unwrap() {
                         transforms.pop();
                     }
-                }
+                },
+                Event::Tag("ellipse", _, attributes) => {
+                    let fill_color = fill.last().unwrap_or(&(0.0, 0.0, 0.0, 1.0));
+                    let stroke_color = stroke.last().unwrap_or(&(0.0, 0.0, 0.0, 0.0));
+                    let stroke_width = sw.last().unwrap_or(&0.0).clone();
+                    let line_cap = lc.last().unwrap_or(&&"butt");
+                    let line_join = lj.last().unwrap_or(&&"miter");
+                    let vec_obj = parse_ellipse(&attributes, index, fill_color, stroke_color, &stroke_width, &line_cap, &line_join, &transforms);
+                    let id = attributes.get("id").map(|id| {
+                        id.to_string()
+                    });
+                    if id.is_some() && in_defs {
+                        id_vec_obj_map.insert(id, vec_obj.clone());
+                    } else {
+                        subobjects.push(vec_obj.clone());
+                        subobjects_indices.push(index);
+                    }
+                    index += 1;
+                },
                 Event::Tag("svg", _, _) => {},
                 Event::Tag("path", _, attributes) => {
                     // Apply transforms and fill/stroke/line_cap/line_join/stroke_width
@@ -830,7 +957,7 @@ pub fn svg_to_vector_pin<'a>(svg: &'a str, font_family: Option<String>, font_siz
                     let id = attributes.get("id").map(|id| {
                         id.to_string()
                     });
-                    if id.is_some() {
+                    if id.is_some() && in_defs {
                         id_vec_obj_map.insert(id, vec_obj.clone());
                     } else {
                         subobjects.push(vec_obj.clone());
@@ -848,7 +975,7 @@ pub fn svg_to_vector_pin<'a>(svg: &'a str, font_family: Option<String>, font_siz
                     let id = attributes.get("id").map(|id| {
                         id.to_string()
                     });
-                    if id.is_some() {
+                    if id.is_some() && in_defs {
                         id_vec_obj_map.insert(id, vec_obj.clone());
                     } else {
                         subobjects.push(vec_obj.clone());
@@ -866,7 +993,7 @@ pub fn svg_to_vector_pin<'a>(svg: &'a str, font_family: Option<String>, font_siz
                     let id = attributes.get("id").map(|id| {
                         id.to_string()
                     });
-                    if id.is_some() {
+                    if id.is_some() && in_defs {
                         id_vec_obj_map.insert(id, vec_obj.clone());
                     } else {
                         subobjects.push(vec_obj.clone());
@@ -884,7 +1011,7 @@ pub fn svg_to_vector_pin<'a>(svg: &'a str, font_family: Option<String>, font_siz
                     let id = attributes.get("id").map(|id| {
                         id.to_string()
                     });
-                    if id.is_some() {
+                    if id.is_some() && in_defs {
                         id_vec_obj_map.insert(id, vec_obj.clone());
                     } else {
                         subobjects.push(vec_obj.clone());
