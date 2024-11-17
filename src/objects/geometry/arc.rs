@@ -138,7 +138,7 @@ pub fn elliptical_arc(
     index: Option<usize>,
 ) -> VectorObject {
     return arc(
-        center,
+        (0.0, 0.0),
         x_radius,
         start_angle,
         end_angle,
