@@ -1020,6 +1020,9 @@ pub fn svg_to_vector_pin<'a>(svg: &'a str, font_family: Option<String>, font_siz
                     index += 1;
                 }
                 Event::Tag("use", _, attributes) => {
+                    let id = attributes.get("id").map(|id| {
+                        id.to_string()
+                    });
                     let x_link_href = attributes.get("xlink:href").map(
                         |xlink_href| {
                             xlink_href[1..].to_string()
@@ -1103,7 +1106,11 @@ pub fn svg_to_vector_pin<'a>(svg: &'a str, font_family: Option<String>, font_siz
                         }
                     }
                     vec_obj.points = points;
-                    subobjects.push(vec_obj);
+                    if in_defs && id.is_some() {
+                        id_vec_obj_map.insert(id, vec_obj.clone());
+                    } else {
+                        subobjects.push(vec_obj.clone());
+                    }
                 }
                 Event::Tag("text", Type::Start, attributes) => {
                     let fill_for_text = attributes.get("fill").map(|fill| {
