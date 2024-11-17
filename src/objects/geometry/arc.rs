@@ -92,7 +92,7 @@ pub fn arc(
             Some(join) => join,
             None => "miter"
         },
-    }.scale(radius, true).move_to(center, true);
+    }.scale(radius, true).shift(center, true);
 }
 
 
@@ -149,7 +149,7 @@ pub fn elliptical_arc(
         line_cap,
         line_join,
         index,
-    ).stretch((1.0, y_radius / x_radius), true).move_to(center, true);
+    ).stretch((1.0, y_radius / x_radius), true).shift(center, true);
 }
 
 
