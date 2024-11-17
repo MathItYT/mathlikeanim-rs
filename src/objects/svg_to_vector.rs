@@ -1091,8 +1091,10 @@ pub fn svg_to_vector_pin<'a>(svg: &'a str, font_family: Option<String>, font_siz
                     subobjects_indices.push(vec_obj.index);
                     let mut points = vec_obj.points.clone();
                     let mut new_points = Vec::new();
+                    let mut has_transform = false;
                     if transform.is_some() {
                         transforms.push(vec![parse_transform(transform.unwrap().as_str())]);
+                        has_transform = true;
                     }
                     for transform in transforms.iter().rev() {
                         for matrix in transform.iter().rev() {
@@ -1110,6 +1112,10 @@ pub fn svg_to_vector_pin<'a>(svg: &'a str, font_family: Option<String>, font_siz
                         id_vec_obj_map.insert(id, vec_obj.clone());
                     } else {
                         subobjects.push(vec_obj.clone());
+                    }
+                    index += 1;
+                    if has_transform {
+                        transforms.pop();
                     }
                 }
                 Event::Tag("text", Type::Start, attributes) => {
