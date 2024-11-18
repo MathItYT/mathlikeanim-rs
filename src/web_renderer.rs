@@ -71,7 +71,6 @@ pub fn get_d_string_from_points(
 
 pub fn vec_to_def_and_use_string(
     vec: &VectorObject,
-    class: Option<&String>,
     document: &web_sys::Document,
     count: &Vec<usize>
 ) -> (String, String) {
@@ -268,16 +267,13 @@ pub fn vec_to_def_and_use_string(
         path.set_attribute("stroke-linecap", &vec.line_cap).unwrap();
         path.set_attribute("stroke-linejoin", &vec.line_join).unwrap();
         path.set_attribute("fill-rule", &vec.fill_rule).unwrap();
-        if class.is_some() {
-            path.set_attribute("class", class.unwrap()).unwrap();
-        }
         use_string.push_str((path.outer_html() + "\n").as_str());
     }
     let mut subcount = count.clone();
     let mut i = 0;
     for subvec in &vec.subobjects {
         subcount.push(i);
-        let (subdef_string, subuse_string) = vec_to_def_and_use_string(subvec, class, document, &subcount);
+        let (subdef_string, subuse_string) = vec_to_def_and_use_string(subvec, document, &subcount);
         def_string.push_str(&subdef_string);
         use_string.push_str(&subuse_string);
         i += 1;
@@ -390,9 +386,14 @@ pub async fn render_all_vectors_svg(
     }
     svg.push_str(format!("<rect x=\"{}\" y=\"{}\" width=\"{}\" height=\"{}\" fill=\"{}\"/>\n", top_left_corner.0, top_left_corner.1, bottom_right_corner.0 - top_left_corner.0, bottom_right_corner.1 - top_left_corner.1, rec_fill).as_str());
     for (i, vec) in svg_scene.objects.iter().enumerate() {
-        let (def_string, use_string) = vec_to_def_and_use_string(&vec, svg_scene.classes.get(&vec.index), &document, &vec![i]);
+        let (def_string, use_string) = vec_to_def_and_use_string(&vec, &document, &vec![i]);
         defs.push_str(&def_string);
-        use_strings.push_str(&use_string);
+        let class = svg_scene.classes.get(&vec.index);
+        if class.is_some() {
+            use_strings.push_str(format!("<g class=\"{}\">{}</g>\n", class.unwrap(), use_string).as_str());
+        } else {
+            use_strings.push_str(format!("<g>{}</g>\n", use_string).as_str());
+        }
     }
     defs.push_str("</defs>\n");
     svg.push_str(&defs);
