@@ -1,4 +1,5 @@
 target
+Makefile
 *.svg
 *.mp4
 *.tex

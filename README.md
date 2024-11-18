@@ -40,11 +40,7 @@ You can embed the library in your HTML file by adding a script tag, and don't fo
 
 
 ## Development
-If you want to contribute to this project, you can clone a fork of this repository and work with the Rust codebase, and then build the WebAssembly module by running in the main directory:
-
-```bash
-make build
-```
+If you want to contribute to this project, you can clone a fork of this repository and work with the Rust codebase.
 
 By the moment we don't have any tests, so your contributions are welcome!
 
