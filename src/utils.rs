@@ -105,7 +105,7 @@ pub fn elliptical_arc_path(
         end_angle = end_angle + 2.0 * PI;
     }
     let arc = elliptical_arc(
-        (cx, cy),
+        (0.0, 0.0),
         rx,
         ry,
         start_angle,
@@ -123,7 +123,7 @@ pub fn elliptical_arc_path(
         true
     );
     let translated = rotated.shift(
-        (last_move.0 - x, last_move.1 - y),
+        (cx, cy),
         true
     );
     return translated.points;
