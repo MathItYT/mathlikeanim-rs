@@ -1,6 +1,6 @@
 [package]
 name = "mathlikeanim-rs"
-version = "0.10.17"
+version = "0.10.18"
 edition = "2021"
 readme = "README.md"
 description = "A Rust library for creating mathematical animations"
@@ -48,7 +48,7 @@ wasm-bindgen-futures = "0.4.42"
 contour-isobands = "0.4.3"
 regex = "1.10.5"
 usvg = "0.43.0"
-lightningcss = "1.0.0-alpha.59"
+lightningcss = { version="1.0.0-alpha.60", features=["serde"] }
 svg = "0.17.0"
 
 [lib]
