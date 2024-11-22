@@ -590,7 +590,7 @@ pub fn quadratic_bezier_as_cubic_bezier(p1: (f64, f64), p2: (f64, f64), p3: (f64
 
 /// Checks if two points `(f64, f64)` are equal given a tolerance.
 pub fn consider_points_equals(p1: (f64, f64), p2: (f64, f64)) -> bool {
-    return distance_squared(p1, p2) < f64::EPSILON;
+    return distance_squared(p1, p2) < 0.001;
 }
 
 
