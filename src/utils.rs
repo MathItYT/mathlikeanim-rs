@@ -35,12 +35,14 @@ pub async fn sleep(delay: i32) {
 
 pub fn radian(ux: f64, uy: f64, vx: f64, vy: f64) -> f64 {
     let dot = ux * vx + uy * vy;
-    let mod_ = (ux * ux + uy * uy).sqrt();
-    let rad = (dot / mod_).acos();
-    if (ux * vy - uy * vx) < 0.0 {
-        return -rad;
+    let u_magnitude = (ux * ux + uy * uy).sqrt();
+    let v_magnitude = (vx * vx + vy * vy).sqrt();
+    let value = dot / (u_magnitude * v_magnitude);
+    let mut angle = value.clamp(-1.0, 1.0).acos();
+    if (ux * vy - uy * vx).is_sign_negative() {
+        angle = -angle;
     }
-    return rad;
+    return angle;
 }
 
 
@@ -54,79 +56,49 @@ pub fn elliptical_arc_path(
     x: f64,
     y: f64
 ) -> Vec<(f64, f64)> {
-    let phi = rotation.to_radians();
+    if last_move == (x, y) {
+        return vec![];
+    }
+    if rx == 0.0 || ry == 0.0 {
+        return line_as_cubic_bezier(last_move, (x, y));
+    }
+    let rotation = rotation * PI / 180.0;
     let mut rx = rx.abs();
     let mut ry = ry.abs();
-    let s_phi = phi.sin();
-    let c_phi = phi.cos();
-    let hd_x = (last_move.0 - x) / 2.0;
-    let hd_y = (last_move.1 - y) / 2.0;
-    let hs_x = (last_move.0 + x) / 2.0;
-    let hs_y = (last_move.1 + y) / 2.0;
-    let x1_ = c_phi * hd_x + s_phi * hd_y;
-    let y1_ = -s_phi * hd_x + c_phi * hd_y;
+    let (x1, y1) = last_move;
+    let (x2, y2) = (x, y);
+    let x1_ = (x1 - x2) / 2.0 * rotation.cos() + (y1 - y2) / 2.0 * rotation.sin();
+    let y1_ = -(x1 - x2) / 2.0 * rotation.sin() + (y1 - y2) / 2.0 * rotation.cos();
     let lambda = (x1_ * x1_) / (rx * rx) + (y1_ * y1_) / (ry * ry);
     if lambda > 1.0 {
-        rx = rx * lambda.sqrt();
-        ry = ry * lambda.sqrt();
+        rx *= lambda.sqrt();
+        ry *= lambda.sqrt();
     }
-    let rxry = rx * ry;
-    let rxy1_ = rx * y1_;
-    let ryx1_ = ry * x1_;
-    let sum_of_sq = rxy1_ * rxy1_ + ryx1_ * ryx1_;
-    let mut coe = ((rxry * rxry - sum_of_sq) / sum_of_sq).abs().sqrt();
-    if large_arc == sweep {
-        coe = -coe;
+    let mut t = ((rx * rx * ry * ry - rx * rx * y1_ * y1_ - ry * ry * x1_ * x1_) / (rx * rx * y1_ * y1_ + ry * ry * x1_ * x1_)).max(0.0).sqrt();
+    t = if large_arc == sweep { -t } else { t };
+    let cx_ = t * rx * y1_ / ry;
+    let cy_ = -t * ry * x1_ / rx;
+    let cx = cx_ * rotation.cos() - cy_ * rotation.sin() + (x1 + x2) / 2.0;
+    let cy = cx_ * rotation.sin() + cy_ * rotation.cos() + (y1 + y2) / 2.0;
+    let theta1 = radian(1.0, 0.0, (x1_ - cx_) / rx, (y1_ - cy_) / ry);
+    let mut delta_theta = radian((x1_ - cx_) / rx, (y1_ - cy_) / ry, (-x1_ - cx_) / rx, (-y1_ - cy_) / ry).rem_euclid(2.0 * PI);
+    if !sweep {
+        delta_theta = delta_theta - 2.0 * PI;
     }
-    let cx_ = coe * rxy1_ / ry;
-    let cy_ = -coe * ryx1_ / rx;
-    let cx = c_phi * cx_ - s_phi * cy_ + hs_x;
-    let cy = s_phi * cx_ + c_phi * cy_ + hs_y;
-    let xcr1 = (x1_ - cx_) / rx;
-    let xcr2 = (x1_ + cx_) / rx;
-    let ycr1 = (y1_ - cy_) / ry;
-    let ycr2 = (y1_ + cy_) / ry;
-    let start_angle = radian(1.0, 0.0, xcr1, ycr1);
-    let mut delta_angle = radian(xcr1, ycr1, -xcr2, -ycr2);
-    while delta_angle > 2.0 * PI {
-        delta_angle = delta_angle - 2.0 * PI;
-    }
-    while delta_angle < 0.0 {
-        delta_angle = delta_angle + 2.0 * PI;
-    }
-    if sweep {
-        delta_angle = delta_angle - 2.0 * PI;
-    }
-    let mut end_angle = start_angle + delta_angle;
-    while end_angle > 2.0 * PI {
-        end_angle = end_angle - 2.0 * PI;
-    }
-    while end_angle < 0.0 {
-        end_angle = end_angle + 2.0 * PI;
-    }
-    let arc = elliptical_arc(
+    return elliptical_arc(
         (0.0, 0.0),
         rx,
         ry,
-        -start_angle,
-        -end_angle,
+        theta1,
+        theta1 + delta_theta,
         None,
         None,
         None,
         None,
         None,
         None,
-        None
-    );
-    let rotated = arc.rotate(
-        rotation,
-        true
-    );
-    let translated = rotated.shift(
-        (cx, cy),
-        true
-    );
-    return translated.points;
+        None,
+    ).rotate(rotation, false).shift((cx, cy), false).points;
 }
 
 

@@ -498,10 +498,9 @@ impl VectorObject {
         };
     }
     pub fn stretch(&self, stretch: (f64, f64), recursive: bool) -> Self {
-        let center = self.get_center();
         if !recursive {
             return VectorObject {
-                points: shift_points(&stretch_points(&self.points, stretch), (center.0 - self.get_center().0, center.1 - self.get_center().1)),
+                points: stretch_points(&self.points, stretch),
                 fill: self.fill.clone(),
                 fill_rule: self.fill_rule,
                 stroke: self.stroke.clone(),
@@ -513,7 +512,7 @@ impl VectorObject {
             };
         }
         return VectorObject {
-            points: shift_points(&stretch_points(&self.points, stretch), (center.0 - self.get_center().0, center.1 - self.get_center().1)),
+            points: stretch_points(&self.points, stretch),
             fill: self.fill.clone(),
             fill_rule: self.fill_rule,
             stroke: self.stroke.clone(),
