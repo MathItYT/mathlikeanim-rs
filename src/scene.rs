@@ -99,12 +99,12 @@ impl SceneAPI for Scene {
     fn remove(&mut self, index: usize) {
         self.objects = self.objects.clone().into_iter().filter(|obj| obj.index != index).collect();
     }
-    fn get_objects_from_indices(&self, object_indices: Vec<usize>) -> HashMap<usize, VectorObject> {
+    fn get_objects_from_indices(&self, object_indices: &Vec<usize>) -> HashMap<usize, VectorObject> {
         let mut objects = HashMap::new();
         for index in object_indices {
             for obj in &self.objects {
-                if obj.index == index {
-                    objects.insert(index, obj.clone());
+                if obj.index == *index {
+                    objects.insert(*index, obj.clone());
                 }
             }
         }
@@ -202,7 +202,7 @@ impl Scene {
     }
     #[wasm_bindgen(js_name = getObjectsFromIndices)]
     pub fn get_objects_from_indices_js(&self, object_indices: js_sys::Array) -> js_sys::Map {
-        let original = self.get_objects_from_indices(object_indices.iter().map(|x| x.as_f64().unwrap() as usize).collect());
+        let original = self.get_objects_from_indices(&object_indices.iter().map(|x| x.as_f64().unwrap() as usize).collect());
         let js_map = js_sys::Map::new();
         for (key, value) in original {
             js_map.set(&JsValue::from_f64(key as f64), &JsValue::from(WasmVectorObject {

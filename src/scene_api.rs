@@ -1,6 +1,6 @@
 use std::{collections::HashMap, future::Future};
 
-use js_sys::{Array, Function, Promise};
+use js_sys::{Array, Function, Map, Promise};
 use wasm_bindgen::{JsCast, JsValue};
 use wasm_bindgen_futures::JsFuture;
 
@@ -28,28 +28,24 @@ pub trait SceneAPI {
         rate_func: impl Fn(f64) -> f64
     ) -> impl Future<Output = ()> {
         async move {
-            let fps = self.get_fps().clone();
-            let objects = self.get_objects_from_indices(object_indices.clone());
-            let objects = objects.values().cloned().collect::<Vec<VectorObject>>();
-            let objects = objects.iter().map(|obj| {
-                WasmVectorObject {
-                    native_vec_features: obj.clone()
-                }
-            }).collect::<Array>();
-            for frame in 0..duration_in_frames {
-                self.make_frame(
-                    &animation_func,
-                    &objects,
-                    rate_func(frame as f64 / duration_in_frames as f64)
-                ).await;
-                self.render_frame().await;
-                self.sleep((1000 / fps) as i32).await;
+            let objects = self.get_objects_from_indices(&object_indices);
+            let objects_map = Map::new();
+            for (index, object) in objects.iter() {
+                objects_map.set(&JsValue::from_f64(*index as f64), &JsValue::from(WasmVectorObject { native_vec_features: object.clone() }));
             }
-            self.make_frame(
-                &animation_func,
-                &objects,
-                rate_func(1.0)
-            ).await;
+            for frame in 0..=duration_in_frames {
+                let progress = rate_func(frame as f64 / duration_in_frames as f64);
+                let promise = animation_func.call2(&JsValue::NULL, &objects_map, &JsValue::from_f64(progress)).unwrap();
+                let new_objects_map = JsFuture::from(Promise::resolve(&promise)).await.unwrap().dyn_into::<Map>().unwrap();
+                for index in object_indices.iter() {
+                    let wasm_object = new_objects_map.get(&JsValue::from_f64(*index as f64)).dyn_into::<WasmVectorObject>().unwrap();
+                    self.add(wasm_object.native_vec_features);
+                }
+                if frame < duration_in_frames {
+                    self.render_frame().await;
+                    self.sleep((1000 / self.get_fps()) as i32).await;
+                }
+            }
         }
     }
     fn make_frame(
@@ -84,5 +80,5 @@ pub trait SceneAPI {
     }
     fn sleep(&mut self, duration_in_ms: i32) -> impl Future<Output = ()>;
     fn render_frame(&mut self) -> impl Future<Output = ()>;
-    fn get_objects_from_indices(&self, object_indices: Vec<usize>) -> HashMap<usize, VectorObject>;
+    fn get_objects_from_indices(&self, object_indices: &Vec<usize>) -> HashMap<usize, VectorObject>;
 }
