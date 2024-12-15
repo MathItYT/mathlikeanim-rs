@@ -20,7 +20,7 @@ pub fn add_final_tip(
         None,
         None,
     );
-    new_tip = new_tip.rotate(angle, false).move_to(last_point, false);
+    new_tip = new_tip.rotate(angle, false).shift(last_point, false);
     let mut subobjects = shape.subobjects.clone();
     subobjects.push(new_tip);
     let new_vec_obj = shape.clone().set_subobjects(subobjects);
@@ -45,7 +45,7 @@ pub fn add_initial_tip(
         None,
         None,
         None,
-    ).rotate(angle, false).move_to(first_point, false);
+    ).rotate(angle, false).shift(first_point, false);
     let mut subobjects = shape.subobjects.clone();
     subobjects.push(new_tip);
     let new_vec_obj = shape.clone().set_subobjects(subobjects);
