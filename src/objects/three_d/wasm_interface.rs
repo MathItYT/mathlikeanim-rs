@@ -728,7 +728,8 @@ impl WasmThreeDObject {
         subobjects: Vec<WasmThreeDObject>,
         fill: WasmGradientImageOrColor,
         stroke: WasmGradientImageOrColor,
-        stroke_width: f64
+        stroke_width: f64,
+        index: usize
     ) -> WasmThreeDObject {
         let points = points.iter().map(
             |point| {
@@ -751,7 +752,8 @@ impl WasmThreeDObject {
                 subobjects,
                 fill.gradient_image_or_color,
                 stroke.gradient_image_or_color,
-                stroke_width
+                stroke_width,
+                index
             )
         }
     }
@@ -920,7 +922,8 @@ impl WasmThreeDObject {
         v_segments: usize,
         fills: Vec<WasmColor>,
         strokes: Vec<WasmColor>,
-        stroke_width: f64
+        stroke_width: f64,
+        index: Option<usize>
     ) -> WasmThreeDObject {
         let u_range = (
             u_range.get(0).as_f64().unwrap(),
@@ -958,7 +961,8 @@ impl WasmThreeDObject {
                 v_segments,
                 fills,
                 strokes,
-                stroke_width
+                stroke_width,
+                index
             )
         }
     }
@@ -1004,6 +1008,16 @@ impl WasmThreeDObject {
     #[wasm_bindgen(js_name = clone)]
     pub fn clone_js(&self) -> WasmThreeDObject {
         self.clone()
+    }
+    #[wasm_bindgen(js_name = getIndex)]
+    pub fn get_index(&self) -> usize {
+        self.three_d_object.get_index()
+    }
+    #[wasm_bindgen(js_name = setIndex)]
+    pub fn set_index(&self, index: usize) -> WasmThreeDObject {
+        return WasmThreeDObject {
+            three_d_object: self.three_d_object.set_index(index)
+        }
     }
     #[wasm_bindgen(js_name = fromVectorObject)]
     pub fn from_vector_object(
@@ -1054,7 +1068,8 @@ pub fn three_d_axes_js(
     add_x_tip: Option<bool>,
     add_y_tip: Option<bool>,
     add_z_tip: Option<bool>,
-    n_pieces: Option<usize>
+    n_pieces: Option<usize>,
+    index: Option<usize>
 ) -> WasmThreeDObject {
     return WasmThreeDObject {
         three_d_object: three_d_axes(
@@ -1086,7 +1101,8 @@ pub fn three_d_axes_js(
             add_x_tip,
             add_y_tip,
             add_z_tip,
-            n_pieces
+            n_pieces,
+            index
         )
     }
 }
@@ -1156,7 +1172,8 @@ pub fn parametric_plot_in_axes_js(
     v_segments: usize,
     fills: Vec<WasmColor>,
     strokes: Vec<WasmColor>,
-    stroke_width: f64
+    stroke_width: f64,
+    index: Option<usize>
 ) -> WasmThreeDObject {
     let f = move |u: f64, v: f64| -> (f64, f64, f64) {
         let result = f.call2(&JsValue::NULL, &JsValue::from_f64(u), &JsValue::from_f64(v)).unwrap();
@@ -1189,7 +1206,8 @@ pub fn parametric_plot_in_axes_js(
             v_segments,
             fills,
             strokes,
-            stroke_width
+            stroke_width,
+            index
         )
     }
 }
@@ -1207,7 +1225,8 @@ pub fn plot_in_axes_3d_js(
     v_segments: usize,
     fills: Vec<WasmColor>,
     strokes: Vec<WasmColor>,
-    stroke_width: f64
+    stroke_width: f64,
+    index: Option<usize>
 ) -> WasmThreeDObject {
     let f = move |x: f64, y: f64| -> f64 {
         f.call2(&JsValue::NULL, &JsValue::from_f64(x), &JsValue::from_f64(y)).unwrap().as_f64().unwrap()
@@ -1224,7 +1243,8 @@ pub fn plot_in_axes_3d_js(
             v_segments,
             fills.iter().map(|fill| fill.color.clone()).collect::<Vec<Color>>(),
             strokes.iter().map(|stroke| stroke.color.clone()).collect::<Vec<Color>>(),
-            stroke_width
+            stroke_width,
+            index
         )
     }
 }
@@ -1244,7 +1264,8 @@ pub fn parametric_line_plot_in_axes_3d_js(
     z_min: f64,
     z_max: f64,
     color: WasmColor,
-    stroke_width: f64
+    stroke_width: f64,
+    index: Option<usize>
 ) -> WasmThreeDObject {
     let f = move |u: f64| -> (f64, f64, f64) {
         let result = f.call1(&JsValue::NULL, &JsValue::from_f64(u)).unwrap();
@@ -1269,7 +1290,8 @@ pub fn parametric_line_plot_in_axes_3d_js(
             z_min,
             z_max,
             color.color,
-            stroke_width
+            stroke_width,
+            index
         )
     }
 }
@@ -1283,7 +1305,8 @@ pub fn sphere_js(
     v_segments: usize,
     fill_colors: Vec<WasmColor>,
     stroke_colors: Vec<WasmColor>,
-    stroke_width: f64
+    stroke_width: f64,
+    index: Option<usize>
 ) -> WasmThreeDObject {
     return WasmThreeDObject {
         three_d_object: sphere(
@@ -1297,7 +1320,8 @@ pub fn sphere_js(
             v_segments,
             fill_colors.iter().map(|fill| fill.color.clone()).collect::<Vec<Color>>(),
             stroke_colors.iter().map(|stroke| stroke.color.clone()).collect::<Vec<Color>>(),
-            stroke_width
+            stroke_width,
+            index
         )
     }
 }

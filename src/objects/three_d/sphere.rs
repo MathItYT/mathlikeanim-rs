@@ -12,6 +12,7 @@ pub fn sphere(
     fill_colors: Vec<Color>,
     stroke_colors: Vec<Color>,
     stroke_width: f64,
+    index: Option<usize>
 ) -> ThreeDObject {
     return ThreeDObject::from_uv_function(
         &|u, v| {
@@ -26,6 +27,7 @@ pub fn sphere(
         v_segments,
         fill_colors,
         stroke_colors,
-        stroke_width
+        stroke_width,
+        index
     )
 }

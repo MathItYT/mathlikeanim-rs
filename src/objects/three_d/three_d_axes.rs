@@ -35,6 +35,7 @@ pub fn three_d_axes(
     add_y_tip: Option<bool>,
     add_z_tip: Option<bool>,
     n_pieces: Option<usize>,
+    index: Option<usize>,
 ) -> ThreeDObject {
     let mut subobjects = Vec::new();
     let mut x_axis = number_line(
@@ -120,6 +121,7 @@ pub fn three_d_axes(
             }
         ),
         stroke_width: 0.0,
+        index: index.unwrap_or(0)
     };
     axes.shift((center.0, center.1, center.2), true)
 }
@@ -188,7 +190,8 @@ pub fn parametric_plot_in_axes_3d(
     v_steps: usize,
     fills: Vec<Color>,
     strokes: Vec<Color>,
-    stroke_width: f64
+    stroke_width: f64,
+    index: Option<usize>
 ) -> ThreeDObject {
     let new_f = Box::new(|u, v| {
         let coords = f(u, v);
@@ -202,7 +205,8 @@ pub fn parametric_plot_in_axes_3d(
         v_steps,
         fills,
         strokes,
-        stroke_width
+        stroke_width,
+        index
     )
 }
 
@@ -218,7 +222,8 @@ pub fn plot_in_axes_3d(
     v_steps: usize,
     fills: Vec<Color>,
     strokes: Vec<Color>,
-    stroke_width: f64
+    stroke_width: f64,
+    index: Option<usize>
 ) -> ThreeDObject {
     let new_f = Box::new(|u, v| {
         return (u, v, f(u, v));
@@ -234,7 +239,8 @@ pub fn plot_in_axes_3d(
         v_steps,
         fills,
         strokes,
-        stroke_width
+        stroke_width,
+        index
     )
 }
 
@@ -252,7 +258,8 @@ pub fn parametric_line_plot_in_axes_3d(
     z_min: f64,
     z_max: f64,
     color: Color,
-    stroke_width: f64
+    stroke_width: f64,
+    index: Option<usize>
 ) -> ThreeDObject {
     let vertices_coords = (0..t_steps + 1).map(|i| {
         let t = interpolate(t_min, t_max, i as f64 / t_steps as f64);
@@ -291,5 +298,6 @@ pub fn parametric_line_plot_in_axes_3d(
         fill: GradientImageOrColor::Color(color.clone()),
         stroke: GradientImageOrColor::Color(color),
         stroke_width,
+        index: index.unwrap_or(0)
     }
 }

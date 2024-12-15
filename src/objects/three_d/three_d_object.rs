@@ -359,7 +359,8 @@ pub struct ThreeDObject {
     pub subobjects: Vec<ThreeDObject>,
     pub fill: GradientImageOrColor,
     pub stroke: GradientImageOrColor,
-    pub stroke_width: f64
+    pub stroke_width: f64,
+    pub index: usize,
 }
 
 pub fn line_as_cubic_bezier_3d(start: (f64, f64, f64), end: (f64, f64, f64)) -> Vec<(f64, f64, f64)> {
@@ -372,14 +373,16 @@ impl ThreeDObject {
         subobjects: Vec<ThreeDObject>,
         fill: GradientImageOrColor,
         stroke: GradientImageOrColor,
-        stroke_width: f64
+        stroke_width: f64,
+        index: usize
     ) -> ThreeDObject {
         ThreeDObject {
             points,
             subobjects,
             fill: ensure_valid_three_d_color(fill),
             stroke: ensure_valid_three_d_color(stroke),
-            stroke_width
+            stroke_width,
+            index
         }
     }
     pub fn set_points(&self, points: Vec<(f64, f64, f64)>) -> ThreeDObject {
@@ -388,7 +391,8 @@ impl ThreeDObject {
             subobjects: self.subobjects.clone(),
             fill: self.fill.clone(),
             stroke: self.stroke.clone(),
-            stroke_width: self.stroke_width
+            stroke_width: self.stroke_width,
+            index: self.index
         }
     }
     pub fn set_subobjects(&self, subobjects: Vec<ThreeDObject>) -> ThreeDObject {
@@ -397,7 +401,8 @@ impl ThreeDObject {
             subobjects,
             fill: self.fill.clone(),
             stroke: self.stroke.clone(),
-            stroke_width: self.stroke_width
+            stroke_width: self.stroke_width,
+            index: self.index
         }
     }
     pub fn set_fill(&self, color: GradientImageOrColor) -> ThreeDObject {
@@ -406,7 +411,8 @@ impl ThreeDObject {
             subobjects: self.subobjects.clone(),
             fill: ensure_valid_three_d_color(color),
             stroke: self.stroke.clone(),
-            stroke_width: self.stroke_width
+            stroke_width: self.stroke_width,
+            index: self.index
         }
     }
     pub fn set_stroke(&self, color: GradientImageOrColor) -> ThreeDObject {
@@ -415,7 +421,8 @@ impl ThreeDObject {
             subobjects: self.subobjects.clone(),
             fill: self.fill.clone(),
             stroke: ensure_valid_three_d_color(color),
-            stroke_width: self.stroke_width
+            stroke_width: self.stroke_width,
+            index: self.index
         }
     }
 
@@ -425,7 +432,8 @@ impl ThreeDObject {
             subobjects: self.subobjects.clone(),
             fill: self.fill.clone(),
             stroke: self.stroke.clone(),
-            stroke_width: width
+            stroke_width: width,
+            index: self.index
         }
     }
     pub fn get_points(&self) -> Vec<(f64, f64, f64)> {
@@ -459,7 +467,8 @@ impl ThreeDObject {
             subobjects: new_subobjects,
             fill: self.fill.clone(),
             stroke: self.stroke.clone(),
-            stroke_width: self.stroke_width
+            stroke_width: self.stroke_width,
+            index: self.index
         }
     }
     pub fn stretch(&self, factor: (f64, f64, f64), recursive: bool) -> ThreeDObject {
@@ -478,7 +487,8 @@ impl ThreeDObject {
             subobjects: new_subobjects,
             fill: self.fill.clone(),
             stroke: self.stroke.clone(),
-            stroke_width: self.stroke_width
+            stroke_width: self.stroke_width,
+            index: self.index
         }
     }
     pub fn shift(&self, shift: (f64, f64, f64), recursive: bool) -> ThreeDObject {
@@ -495,7 +505,8 @@ impl ThreeDObject {
             subobjects: new_subobjects,
             fill: self.fill.clone(),
             stroke: self.stroke.clone(),
-            stroke_width: self.stroke_width
+            stroke_width: self.stroke_width,
+            index: self.index
         }
     }
     pub fn rotate_x(&self, angle: f64, recursive: bool) -> ThreeDObject {
@@ -519,7 +530,8 @@ impl ThreeDObject {
             subobjects: new_subobjects,
             fill: self.fill.clone(),
             stroke: self.stroke.clone(),
-            stroke_width: self.stroke_width
+            stroke_width: self.stroke_width,
+            index: self.index
         }
     }
     pub fn rotate_y(&self, angle: f64, recursive: bool) -> ThreeDObject {
@@ -543,7 +555,8 @@ impl ThreeDObject {
             subobjects: new_subobjects,
             fill: self.fill.clone(),
             stroke: self.stroke.clone(),
-            stroke_width: self.stroke_width
+            stroke_width: self.stroke_width,
+            index: self.index
         }
     }
     pub fn rotate_z(&self, angle: f64, recursive: bool) -> ThreeDObject {
@@ -567,7 +580,8 @@ impl ThreeDObject {
             subobjects: new_subobjects,
             fill: self.fill.clone(),
             stroke: self.stroke.clone(),
-            stroke_width: self.stroke_width
+            stroke_width: self.stroke_width,
+            index: self.index
         }
     }
     pub fn get_subobjects_recursively(&self) -> Vec<ThreeDObject> {
@@ -597,6 +611,7 @@ impl ThreeDObject {
             subobject_2d.fill = get_shaded_color(&subobject.fill, &subobject.points, light_source, camera);
             subobject_2d.stroke = get_shaded_color(&subobject.stroke, &subobject.points, light_source, camera);
             subobject_2d.stroke_width = subobject.stroke_width;
+            subobject_2d.index = subobject.index;
             vec_obj.subobjects.push(subobject_2d.shift((camera.width / 2.0, camera.height / 2.0), false));
         }
         return vec_obj;
@@ -621,7 +636,8 @@ impl ThreeDObject {
             subobjects: new_subobjects,
             fill: self.fill.clone(),
             stroke: self.stroke.clone(),
-            stroke_width: self.stroke_width
+            stroke_width: self.stroke_width,
+            index: self.index
         }
     }
     pub fn from_uv_function(
@@ -632,7 +648,8 @@ impl ThreeDObject {
         v_samples: usize,
         fills: Vec<Color>,
         strokes: Vec<Color>,
-        stroke_width: f64
+        stroke_width: f64,
+        index: Option<usize>
     ) -> Self {
         let mut faces = Vec::new();
         for i in 0..u_samples {
@@ -657,7 +674,8 @@ impl ThreeDObject {
                     vec![],
                     GradientImageOrColor::Color(fills[(i + j) % fills.len()].clone()),
                     GradientImageOrColor::Color(strokes[(i + j) % strokes.len()].clone()),
-                    stroke_width
+                    stroke_width,
+                    i * v_samples + j
                 );
                 faces.push(face);
             }
@@ -667,7 +685,8 @@ impl ThreeDObject {
             faces,
             GradientImageOrColor::Color(Color { red: 0.0, green: 0.0, blue: 0.0, alpha: 0.0 }),
             GradientImageOrColor::Color(Color { red: 0.0, green: 0.0, blue: 0.0, alpha: 0.0 }),
-            0.0
+            0.0,
+            index.unwrap_or(0)
         ).apply_function(&|x, y, _| uv_function(x, y), true);
     }
     pub fn get_bounding_box(
@@ -741,7 +760,21 @@ impl ThreeDObject {
             }).collect(),
             ensure_valid_three_d_color(vector_object.fill.clone()),
             ensure_valid_three_d_color(vector_object.stroke.clone()),
-            vector_object.stroke_width
+            vector_object.stroke_width,
+            vector_object.index
         )
+    }
+    pub fn set_index(&self, index: usize) -> ThreeDObject {
+        ThreeDObject {
+            points: self.points.clone(),
+            subobjects: self.subobjects.clone(),
+            fill: self.fill.clone(),
+            stroke: self.stroke.clone(),
+            stroke_width: self.stroke_width,
+            index
+        }
+    }
+    pub fn get_index(&self) -> usize {
+        self.index
     }
 }
