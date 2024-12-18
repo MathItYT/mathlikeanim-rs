@@ -93,7 +93,7 @@ pub fn dashed_object(
     //                 for i in range(len(dash_starts))
     //             )
     //         )
-    let mut result = vector_object.clone();
+    let mut result = VectorObject::new();
     let r = dashed_ratio.unwrap_or(0.5);
     let n = num_dashes.unwrap_or(15);
     let dash_offset = dash_offset.unwrap_or(0.0);
