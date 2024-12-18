@@ -1,4 +1,4 @@
-use crate::utils::{integer_interpolate, consider_points_equals};
+use crate::utils::{consider_points_equals, distance_squared, integer_interpolate};
 use crate::utils::bezier;
 
 use crate::colors::{Color, GradientImageOrColor, GradientStop, Image, LinearGradient, RadialGradient};
@@ -175,11 +175,13 @@ pub fn generate_cubic_bezier_tuples(
     return tuples;
 }
 
-pub fn get_subobjects_recursively(vec_features: &VectorObject) -> Vec<VectorObject> {
+pub fn get_subobjects_recursively(vec_features: &VectorObject, with_points: Option<bool>) -> Vec<VectorObject> {
     let mut subobjects = Vec::new();
     for subobject in &vec_features.subobjects {
-        subobjects.push(subobject.clone());
-        subobjects.extend(get_subobjects_recursively(subobject));
+        if with_points.unwrap_or(false) {
+            subobjects.push(subobject.clone());
+        }
+        subobjects.extend(get_subobjects_recursively(subobject, with_points));
     }
     return subobjects;
 }
@@ -274,6 +276,27 @@ impl VectorObject {
             center_y
         };
         return (x_coord, y_coord);
+    }
+    pub fn get_subobjects_recursively(&self, with_points: Option<bool>) -> Vec<VectorObject> {
+        return get_subobjects_recursively(self, with_points);
+    }
+    pub fn match_style(&self, other: &VectorObject) -> VectorObject {
+        return self.set_fill(other.get_fill(), false)
+            .set_stroke(other.get_stroke(), false)
+            .set_stroke_width(other.get_stroke_width(), false)
+            .set_line_cap(other.get_line_cap(), false)
+            .set_line_join(other.get_line_join(), false);
+    }
+    pub fn get_num_curves(&self) -> usize {
+        return self.points.len() / 4;
+    }
+    pub fn get_subcurve(&self, start: f64, end: f64) -> VectorObject {
+        if start > end {
+            let mut result = get_partial_points(self, start, 1.0, true);
+            result.points.extend(get_partial_points(self, 0.0, end, true).points);
+            return result;
+        }
+        return get_partial_points(self, start, end, true);
     }
     pub fn get_fill_opacity(&self) -> f64 {
         match &self.get_fill() {
@@ -410,6 +433,22 @@ impl VectorObject {
     }
     pub fn get_points(&self) -> &Vec<(f64, f64)> {
         return &self.points;
+    }
+    pub fn get_nth_curve_points(&self, n: usize) -> Vec<(f64, f64)> {
+        return self.points[n * 4..(n + 1) * 4].to_vec();
+    }
+    pub fn get_nth_curve_length_pieces(&self, n: usize, sample_points: Option<usize>) -> Vec<f64> {
+        let sample_points = sample_points.unwrap_or(10);
+        let interval_numbers = Vec::from_iter((0..sample_points).map(|i| i as f64 / (sample_points as f64 - 1.0)));
+        let points = interval_numbers.iter().map(|t| bezier(&self.get_nth_curve_points(n), *t)).collect::<Vec<(f64, f64)>>();
+        let diffs = points.iter().zip(points[1..].iter()).map(|(p1, p2)| distance_squared(*p1, *p2).sqrt()).collect::<Vec<f64>>();
+        return diffs;
+
+    }
+    pub fn is_closed(&self) -> bool {
+        let first = self.points[0];
+        let last = self.points[self.points.len() - 1];
+        return consider_points_equals(first, last);
     }
     pub fn get_partial_copy(&self, start: f64, end: f64, recursive: bool) -> VectorObject {
         return get_partial_points(self, start, end, recursive);

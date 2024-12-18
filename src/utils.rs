@@ -218,6 +218,28 @@ pub fn choose(n: u64, r: u64) -> u64 {
 }
 
 
+pub fn interp(x: f64, xp: &Vec<f64>, fp: &Vec<f64>) -> f64 {
+    // Check length
+    if xp.len() != fp.len() {
+        error(JsError::new("The length of `xp` and `fp` must be the same."));
+        return 0.0;
+    }
+    if x <= xp[0] {
+        return fp[0];
+    }
+    if x >= xp[xp.len() - 1] {
+        return fp[fp.len() - 1];
+    }
+    for i in 0..xp.len() - 1 {
+        if x >= xp[i] && x <= xp[i + 1] {
+            let t = (x - xp[i]) / (xp[i + 1] - xp[i]);
+            return (1.0 - t) * fp[i] + t * fp[i + 1];
+        }
+    }
+    return 0.0;
+}
+
+
 /// A distance function that corresponds to the Euclidean distance squared, just for better performance.
 pub fn distance_squared(p1: (f64, f64), p2: (f64, f64)) -> f64 {
     let dx = p1.0 - p2.0;

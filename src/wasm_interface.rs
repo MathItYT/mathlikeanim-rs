@@ -1,10 +1,16 @@
 use js_sys::{Array, Function};
 use wasm_bindgen::prelude::*;
-use crate::{colors::Color, objects::wasm_interface::{WasmColor, WasmVectorObject}, utils::{add_n_more_subobjects, align_data, align_points, align_subobjects, bezier, bezier_f64, center, choose, consider_points_equals, distance_squared, double_smooth, ease_in_back, ease_in_circ, ease_in_cubic, ease_in_elastic, ease_in_expo, ease_in_out_back, ease_in_out_bounce, ease_in_out_circ, ease_in_out_cubic, ease_in_out_elastic, ease_in_out_expo, ease_in_out_quad, ease_in_out_quart, ease_in_out_quint, ease_in_out_sine, ease_in_quad, ease_in_quart, ease_in_quint, ease_in_sine, ease_out_bounce, ease_out_circ, ease_out_cubic, ease_out_elastic, ease_out_expo, ease_out_quad, ease_out_quart, ease_out_quint, ease_out_sine, elliptical_arc_path, exponential_decay, factorial, get_bbox, get_nth_subpath, has_new_path_begun, hex_to_color, insert_n_curves_to_point_list, integer_interpolate, interpolate, interpolate_color, interpolate_tuple, interpolate_tuple_3d, line_as_cubic_bezier, linear, lingering, not_quite_there, null_point_align, permutation, points_from_anchors_and_handles, quadratic_bezier_as_cubic_bezier, radian, running_start, rush_from, rush_into, sigmoid, sleep, slow_into, smooth, smoothererstep, smootherstep, smoothstep, squish_rate_func, start_new_path, there_and_back, there_and_back_with_pause, wiggle}};
+use crate::{colors::Color, objects::wasm_interface::{WasmColor, WasmVectorObject}, utils::{add_n_more_subobjects, align_data, align_points, align_subobjects, bezier, bezier_f64, center, choose, consider_points_equals, distance_squared, double_smooth, ease_in_back, ease_in_circ, ease_in_cubic, ease_in_elastic, ease_in_expo, ease_in_out_back, ease_in_out_bounce, ease_in_out_circ, ease_in_out_cubic, ease_in_out_elastic, ease_in_out_expo, ease_in_out_quad, ease_in_out_quart, ease_in_out_quint, ease_in_out_sine, ease_in_quad, ease_in_quart, ease_in_quint, ease_in_sine, ease_out_bounce, ease_out_circ, ease_out_cubic, ease_out_elastic, ease_out_expo, ease_out_quad, ease_out_quart, ease_out_quint, ease_out_sine, elliptical_arc_path, exponential_decay, factorial, get_bbox, get_nth_subpath, has_new_path_begun, hex_to_color, insert_n_curves_to_point_list, integer_interpolate, interp, interpolate, interpolate_color, interpolate_tuple, interpolate_tuple_3d, line_as_cubic_bezier, linear, lingering, not_quite_there, null_point_align, permutation, points_from_anchors_and_handles, quadratic_bezier_as_cubic_bezier, radian, running_start, rush_from, rush_into, sigmoid, sleep, slow_into, smooth, smoothererstep, smootherstep, smoothstep, squish_rate_func, start_new_path, there_and_back, there_and_back_with_pause, wiggle}};
 
 #[wasm_bindgen(js_name = radian)]
 pub fn radian_js(ux: f64, uy: f64, vx: f64, vy: f64) -> f64 {
     return radian(ux, uy, vx, vy);
+}
+
+
+#[wasm_bindgen(js_name = interp)]
+pub fn interp_js(x: f64, xp: &Array, fp: &Array) -> f64 {
+    return interp(x, &xp.iter().map(|x| x.as_f64().unwrap()).collect::<Vec<f64>>(), &fp.iter().map(|x| x.as_f64().unwrap()).collect::<Vec<f64>>());
 }
 
 

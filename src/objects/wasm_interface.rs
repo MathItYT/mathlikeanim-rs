@@ -3,7 +3,7 @@ use wasm_bindgen::prelude::*;
 
 use crate::colors::{Color, GradientImageOrColor, GradientStop, Image, LinearGradient, RadialGradient};
 
-use super::{geometry::{add_tip::{add_both_sides_tips, add_final_tip, add_initial_tip}, arc::{annular_sector, arc, circle, ellipse, elliptical_arc}, line::line, poly::{equilateral_triangle, polygon, rectangle, regular_polygon, right_triangle, square, triangle}}, plotting::{axes::{area_under_curve, axes, coords_to_point, contour_plot_in_axes, parametric_plot_in_axes, plot_in_axes, point_to_coords, riemann_rectangles_for_plot, secant_line_for_plot}, functions::{function, contour_plot, parametric_function}, number_line::{get_numbers_tex, number_line, number_to_point, point_to_number}}, svg_to_vector::svg_to_vector_pin, vector_object::VectorObject};
+use super::{geometry::{add_tip::{add_both_sides_tips, add_final_tip, add_initial_tip}, arc::{annular_sector, arc, circle, ellipse, elliptical_arc}, dashed_object::dashed_object, line::line, poly::{equilateral_triangle, polygon, rectangle, regular_polygon, right_triangle, square, triangle}}, plotting::{axes::{area_under_curve, axes, contour_plot_in_axes, coords_to_point, parametric_plot_in_axes, plot_in_axes, point_to_coords, riemann_rectangles_for_plot, secant_line_for_plot}, functions::{contour_plot, function, parametric_function}, number_line::{get_numbers_tex, number_line, number_to_point, point_to_number}}, svg_to_vector::svg_to_vector_pin, vector_object::VectorObject};
 
 
 #[wasm_bindgen]
@@ -605,6 +605,18 @@ impl WasmVectorObject {
     pub fn get_stroke(&self) -> WasmGradientImageOrColor {
         WasmGradientImageOrColor { gradient_image_or_color: self.native_vec_features.get_stroke() }
     }
+    #[wasm_bindgen(js_name = getSubobjectsRecursively)]
+    pub fn get_subobjects_recursively(&self, with_points: Option<bool>) -> Vec<WasmVectorObject> {
+        let subobjects = self.native_vec_features.get_subobjects_recursively(with_points);
+        let subobjects = subobjects.iter().map(|object| WasmVectorObject { native_vec_features: object.clone() }).collect();
+        subobjects
+    }
+    #[wasm_bindgen(js_name = getSubcurve)]
+    pub fn get_subcurve(&self, start: f64, end: f64) -> Self {
+        WasmVectorObject {
+            native_vec_features: self.native_vec_features.get_subcurve(start, end)
+        }
+    }
     #[wasm_bindgen(js_name = getStrokeWidth)]
     pub fn get_stroke_width(&self) -> f64 {
         self.native_vec_features.get_stroke_width()
@@ -622,6 +634,24 @@ impl WasmVectorObject {
         WasmVectorObject {
             native_vec_features: self.native_vec_features.get_partial_copy(start, end, recursive)
         }
+    }
+    #[wasm_bindgen(js_name = getNthCurvePoints)]
+    pub fn get_nth_curve_points(&self, n: usize) -> Array {
+        let points = self.native_vec_features.get_nth_curve_points(n);
+        let points = points.iter().map(|point| Array::of2(&point.0.into(), &point.1.into())).collect();
+        points
+    }
+    #[wasm_bindgen(js_name = getNthCurveLengthPieces)]
+    pub fn get_nth_curve_length_pieces(&self, n: usize, sample_points: Option<usize>) -> Vec<f64> {
+        self.native_vec_features.get_nth_curve_length_pieces(n, sample_points)
+    }
+    #[wasm_bindgen(js_name = getNumCurves)]
+    pub fn get_num_curves(&self) -> usize {
+        self.native_vec_features.get_num_curves()
+    }
+    #[wasm_bindgen(js_name = isClosed)]
+    pub fn is_closed(&self) -> bool {
+        self.native_vec_features.is_closed()
     }
     #[wasm_bindgen(js_name = getSubpaths)]
     pub fn get_subpaths(&self) -> Array {
@@ -862,6 +892,12 @@ impl WasmVectorObject {
     pub fn get_stroke_opacity(&self) -> f64 {
         self.native_vec_features.get_stroke_opacity()
     }
+    #[wasm_bindgen(js_name = matchStyle)]
+    pub fn match_style(&self, other: WasmVectorObject) -> Self {
+        WasmVectorObject {
+            native_vec_features: self.native_vec_features.match_style(&other.native_vec_features)
+        }
+    }
     #[wasm_bindgen(js_name = nextToOther)]
     pub fn next_to_other(
         &self,
@@ -975,6 +1011,20 @@ impl JsCast for WasmVectorObject {
 impl AsRef<JsValue> for WasmVectorObject {
     fn as_ref(&self) -> &JsValue {
         Box::leak(Box::new(JsValue::from(self.clone())))
+    }
+}
+
+
+#[wasm_bindgen(js_name = dashedObject)]
+pub fn dashed_object_js(
+    shape: &WasmVectorObject,
+    num_dashes: Option<usize>,
+    dashed_ratio: Option<f64>,
+    dash_offset: Option<f64>,
+    equal_lengths: Option<bool>
+) -> WasmVectorObject {
+    WasmVectorObject {
+        native_vec_features: dashed_object(&shape.native_vec_features, num_dashes, dashed_ratio, dash_offset, equal_lengths)
     }
 }
 
