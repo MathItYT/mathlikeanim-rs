@@ -7,6 +7,7 @@ pub fn dashed_object(
     dash_offset: Option<f64>,
     equal_lengths: Option<bool>,
 ) -> VectorObject {
+    // Borrowed from Manim Community (https://github.com/ManimCommunity/manim/blob/dbad8a86bc6041af78d5fb7d7a07f76d9b164072/manim/mobject/types/vectorized_mobject.py)
     // r = self.dashed_ratio
     // n = self.num_dashes
     // if n > 0:
