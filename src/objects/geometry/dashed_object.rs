@@ -146,7 +146,14 @@ pub fn dashed_object(
             for k in 0..vector_object.get_num_curves() {
                 norms.push(vector_object.get_nth_curve_length_pieces(k, None));
             }
-            let length_vals: Vec<f64> = norms.iter().flatten().cloned().collect();
+            let mut length_vals = Vec::new();
+            let mut initial = 0.0;
+            for norm in norms {
+                for val in norm {
+                    initial += val;
+                    length_vals.push(initial);
+                }
+            }
             let ref_points = (0..length_vals.len()).map(|i| i as f64 / (length_vals.len() - 1) as f64).collect::<Vec<f64>>();
             let curve_length = length_vals[length_vals.len() - 1];
             for i in 0..dash_starts.len() {
