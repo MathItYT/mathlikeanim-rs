@@ -1,6 +1,6 @@
 [package]
 name = "mathlikeanim-rs"
-version = "0.13.6"
+version = "0.13.7"
 edition = "2021"
 readme = "README.md"
 description = "A Rust library for creating mathematical animations"
@@ -29,9 +29,9 @@ keywords = ["animation", "graphics", "easing", "transitions", "WebAssembly"]
 categories = ["mathematics", "graphics", "wasm"]
 
 [dependencies]
-js-sys = "0.3.69"
-wasm-bindgen = "0.2.92"
-web-sys = { version="0.3.69", features=[
+js-sys = "0.3.76"
+wasm-bindgen = "0.2.99"
+web-sys = { version="0.3.76", features=[
     'CanvasRenderingContext2d',
     'Document',
     'Element',
@@ -44,11 +44,10 @@ web-sys = { version="0.3.69", features=[
     'HtmlDivElement',
     'CanvasWindingRule'
 ] }
-wasm-bindgen-futures = "0.4.42"
+wasm-bindgen-futures = "0.4.49"
 contour-isobands = "0.4.3"
-regex = "1.10.5"
-usvg = "0.43.0"
-lightningcss = "1.0.0-alpha.60"
+usvg = "0.44.0"
+lightningcss = "1.0.0-alpha.61"
 svg = "0.17.0"
 
 [lib]

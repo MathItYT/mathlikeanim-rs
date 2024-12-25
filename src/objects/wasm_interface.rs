@@ -1,4 +1,4 @@
-use js_sys::{Array, Function, Reflect};
+use js_sys::{Array, Function, Map, Reflect};
 use wasm_bindgen::prelude::*;
 
 use crate::colors::{Color, GradientImageOrColor, GradientStop, Image, LinearGradient, RadialGradient};
@@ -2840,11 +2840,10 @@ pub async fn get_numbers_tex_js(
 #[wasm_bindgen(js_name = svgToVector)]
 pub async fn svg_to_vector_js(
     svg: String,
-    default_font_family: Option<String>,
-    default_font_size: Option<f64>
+    font_urls_map: Option<Map>
 ) -> WasmVectorObject {
     let vec_obj = WasmVectorObject {
-        native_vec_features: svg_to_vector_pin(&svg, default_font_family, default_font_size).await
+        native_vec_features: svg_to_vector_pin(&svg, font_urls_map).await
     };
     vec_obj
 }

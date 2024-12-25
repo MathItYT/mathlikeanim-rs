@@ -1,6 +1,8 @@
+use std::collections::HashMap;
 use std::future::Future;
 use std::pin::Pin;
 
+use js_sys::Map;
 use lightningcss::properties::transform::{Matrix, Transform};
 use lightningcss::traits::Parse;
 use svg::node::element::path::{Command, Data};
@@ -29,29 +31,59 @@ fn parse_color(color: &str) -> CssColor {
 
 
 pub fn parse_transform(transform_attr: &str) -> Matrix<f32> {
-    let transfs = transform_attr.split(|c| c == ' ' || c == ',');
-    let transfs = transfs.collect::<Vec<&str>>();
-    let transfs = transfs.join(",").replace(",,", ",");
-    let result = Transform::parse_string(transfs.as_str()).unwrap();
-    let result = result.to_matrix().unwrap().to_matrix2d().unwrap();
-    return result;
+    let first_parenthesis = transform_attr.find("(").unwrap();
+    let last_parenthesis = transform_attr.rfind(")").unwrap();
+    let action = transform_attr[..first_parenthesis].replace(" ", "");
+    let numbers = transform_attr[first_parenthesis + 1..last_parenthesis].replace(", ", " ").replace(" ", ", ");
+    let transform_attr = format!("{}({})", action, numbers);
+    log(&transform_attr);
+    let transform = Transform::parse_string(transform_attr.as_str()).unwrap();
+    let matrix = transform.to_matrix().unwrap().to_matrix2d().unwrap();
+    return matrix;
+}
+
+
+pub fn parse_style_attr(style: &str) -> HashMap<String, String> {
+    let mut style_map = HashMap::new();
+    let style = style.split(";");
+    for style in style {
+        let style = style.split(":");
+        let mut style = style.map(|style| {
+            style.trim().to_string()
+        });
+        let key = style.next().unwrap();
+        let value = style.next().unwrap();
+        style_map.insert(key, value);
+    }
+    return style_map;
 }
 
 
 pub fn parse_ellipse(attributes: &std::collections::HashMap<String, Value>, index: usize, fill: &(f64, f64, f64, f64), stroke: &(f64, f64, f64, f64), sw: &f64, lc: &&str, lj: &&str, transforms: &Vec<Vec<Matrix<f32>>>) -> VectorObject {
     let mut transforms = transforms.clone();
+    let style = attributes.get("style").map(|style| {
+        parse_style_attr(style.to_string().as_str())
+    }).unwrap_or(HashMap::new());
     let cx = attributes.get("cx").map(|cx| {
         cx.parse().unwrap()
-    }).unwrap_or(0.0);
+    }).unwrap_or(style.get("cx").map(|cx| {
+        cx.parse().unwrap()
+    }).unwrap_or(0.0));
     let cy = attributes.get("cy").map(|cy| {
         cy.parse().unwrap()
-    }).unwrap_or(0.0);
+    }).unwrap_or(style.get("cy").map(|cy| {
+        cy.parse().unwrap()
+    }).unwrap_or(0.0));
     let rx = attributes.get("rx").map(|rx| {
         rx.parse().unwrap()
-    }).unwrap_or(0.0);
+    }).unwrap_or(style.get("rx").map(|rx| {
+        rx.parse().unwrap()
+    }).unwrap_or(0.0));
     let ry = attributes.get("ry").map(|ry| {
         ry.parse().unwrap()
-    }).unwrap_or(0.0);
+    }).unwrap_or(style.get("ry").map(|ry| {
+        ry.parse().unwrap()
+    }).unwrap_or(0.0));
     let fill_color = attributes.get("fill").map(|fill| {
         if fill.to_string().as_str() == "none" {
             return (0.0, 0.0, 0.0, 0.0);
@@ -69,7 +101,24 @@ pub fn parse_ellipse(attributes: &std::collections::HashMap<String, Value>, inde
             }
             _ => (0.0, 0.0, 0.0, 1.0),
         }
-    }).unwrap_or(fill.clone());
+    }).unwrap_or(style.get("fill").map(|fill| {
+        if fill.as_str() == "none" {
+            return (0.0, 0.0, 0.0, 0.0);
+        }
+        if fill.as_str() == "currentColor" {
+            return (0.0, 0.0, 0.0, 1.0);
+        }
+        let color = parse_color(fill.as_str());
+        let opacity = style.get("fill-opacity").map(|opacity| {
+            opacity.parse().unwrap()
+        }).unwrap_or(-1.0);
+        match color {
+            CssColor::RGBA(ref rgba) => {
+                (rgba.red_f32() as f64, rgba.green_f32() as f64, rgba.blue_f32() as f64, if opacity == -1.0 { rgba.alpha_f32() as f64 } else { opacity })
+            }
+            _ => (0.0, 0.0, 0.0, 1.0),
+        }
+    }).unwrap_or(fill.clone()));
     let stroke_color = attributes.get("stroke").map(|stroke| {
         if stroke.to_string().as_str() == "none" {
             return (0.0, 0.0, 0.0, 0.0);
@@ -87,16 +136,39 @@ pub fn parse_ellipse(attributes: &std::collections::HashMap<String, Value>, inde
             }
             _ => (0.0, 0.0, 0.0, 1.0),
         }
-    }).unwrap_or(stroke.clone());
+    }).unwrap_or(style.get("stroke").map(|stroke| {
+        if stroke.as_str() == "none" {
+            return (0.0, 0.0, 0.0, 0.0);
+        }
+        if stroke.as_str() == "currentColor" {
+            return (0.0, 0.0, 0.0, 0.0);
+        }
+        let color = parse_color(stroke.as_str());
+        let opacity = style.get("stroke-opacity").map(|opacity| {
+            opacity.parse().unwrap()
+        }).unwrap_or(-1.0);
+        match color {
+            CssColor::RGBA(ref rgba) => {
+                (rgba.red_f32() as f64, rgba.green_f32() as f64, rgba.blue_f32() as f64, if opacity == -1.0 { rgba.alpha_f32() as f64 } else { opacity })
+            }
+            _ => (0.0, 0.0, 0.0, 1.0),
+        }
+    }).unwrap_or(stroke.clone()));
     let stroke_width = attributes.get("stroke-width").map(|width| {
         width.parse().unwrap()
-    }).unwrap_or(*sw);
+    }).unwrap_or(style.get("stroke-width").map(|width| {
+        width.parse().unwrap()
+    }).unwrap_or(*sw));
     let line_cap = attributes.get("stroke-linecap").map(|cap| {
         cap.to_string()
-    }).unwrap_or(lc.to_string());
+    }).unwrap_or(style.get("stroke-linecap").map(|cap| {
+        cap.to_string()
+    }).unwrap_or(lc.to_string()));
     let line_join = attributes.get("stroke-linejoin").map(|join| {
         join.to_string()
-    }).unwrap_or(lj.to_string());
+    }).unwrap_or(style.get("stroke-linejoin").map(|join| {
+        join.to_string()
+    }).unwrap_or(lj.to_string()));
     let line_cap = match line_cap.as_str() {
         "butt" => "butt",
         "square" => "square",
@@ -122,8 +194,14 @@ pub fn parse_ellipse(attributes: &std::collections::HashMap<String, Value>, inde
         Some(index)
     );
     let mut points = vec_obj.points.clone();
-    if attributes.get("transform").is_some() {
-        transforms.push(vec![parse_transform(attributes.get("transform").unwrap().to_string().as_str())]);
+    let mut transform = attributes.get("transform").map(|transform| {
+        transform.to_string()
+    });
+    if transform.is_none() {
+        transform = style.get("transform").cloned();
+    }
+    if transform.is_some() {
+        transforms.push(vec![parse_transform(transform.unwrap().as_str())]);
     }
     for transform in transforms.iter().rev() {
         for matrix in transform.iter().rev() {
@@ -142,9 +220,14 @@ pub fn parse_ellipse(attributes: &std::collections::HashMap<String, Value>, inde
 
 pub fn parse_path(attributes: &std::collections::HashMap<String, Value>, index: usize, fill: &(f64, f64, f64, f64), stroke: &(f64, f64, f64, f64), sw: &f64, lc: &&str, lj: &&str, transforms: &Vec<Vec<Matrix<f32>>>) -> VectorObject {
     let mut transforms = transforms.clone();
+    let style = attributes.get("style").map(|style| {
+        parse_style_attr(style.to_string().as_str())
+    }).unwrap_or(HashMap::new());
     let data = attributes.get("d").map(|d| {
         d.to_string()
-    }).unwrap_or("".to_string());
+    }).unwrap_or(style.get("d").map(|d| {
+        d.to_string()
+    }).unwrap_or("".to_string()));
     let data = Data::parse(data.as_str()).unwrap();
     let mut points = Vec::new();
     let mut last_move: Option<(f64, f64)> = None;
@@ -368,7 +451,24 @@ pub fn parse_path(attributes: &std::collections::HashMap<String, Value>, index: 
             }
             _ => (0.0, 0.0, 0.0, 1.0),
         }
-    }).unwrap_or(fill.clone());
+    }).unwrap_or(style.get("fill").map(|fill| {
+        if fill.as_str() == "none" {
+            return (0.0, 0.0, 0.0, 0.0);
+        }
+        if fill.as_str() == "currentColor" {
+            return (0.0, 0.0, 0.0, 1.0);
+        }
+        let color = parse_color(fill.as_str());
+        let opacity = style.get("fill-opacity").map(|opacity| {
+            opacity.parse().unwrap()
+        }).unwrap_or(-1.0);
+        match color {
+            CssColor::RGBA(ref rgba) => {
+                (rgba.red_f32() as f64, rgba.green_f32() as f64, rgba.blue_f32() as f64, if opacity == -1.0 { rgba.alpha_f32() as f64 } else { opacity })
+            }
+            _ => (0.0, 0.0, 0.0, 1.0),
+        }
+    }).unwrap_or(fill.clone()));
     let fill_rule = attributes.get("fill-rule").map(|rule| {
         rule.to_string()
     }).unwrap_or("nonzero".to_string());
@@ -389,16 +489,39 @@ pub fn parse_path(attributes: &std::collections::HashMap<String, Value>, index: 
             }
             _ => (0.0, 0.0, 0.0, 1.0),
         }
-    }).unwrap_or(stroke.clone());
+    }).unwrap_or(style.get("stroke").map(|stroke| {
+        if stroke.as_str() == "none" {
+            return (0.0, 0.0, 0.0, 0.0);
+        }
+        if stroke.as_str() == "currentColor" {
+            return (0.0, 0.0, 0.0, 0.0);
+        }
+        let color = parse_color(stroke.as_str());
+        let opacity = style.get("stroke-opacity").map(|opacity| {
+            opacity.parse().unwrap()
+        }).unwrap_or(-1.0);
+        match color {
+            CssColor::RGBA(ref rgba) => {
+                (rgba.red_f32() as f64, rgba.green_f32() as f64, rgba.blue_f32() as f64, if opacity == -1.0 { rgba.alpha_f32() as f64 } else { opacity })
+            }
+            _ => (0.0, 0.0, 0.0, 1.0),
+        }
+    }).unwrap_or(stroke.clone()));
     let stroke_width = attributes.get("stroke-width").map(|width| {
         width.parse().unwrap()
-    }).unwrap_or(*sw);
+    }).unwrap_or(style.get("stroke-width").map(|width| {
+        width.parse().unwrap()
+    }).unwrap_or(*sw));
     let line_cap = attributes.get("stroke-linecap").map(|cap| {
         cap.to_string()
-    }).unwrap_or(lc.to_string());
+    }).unwrap_or(style.get("stroke-linecap").map(|cap| {
+        cap.to_string()
+    }).unwrap_or(lc.to_string()));
     let line_join = attributes.get("stroke-linejoin").map(|join| {
         join.to_string()
-    }).unwrap_or(lj.to_string());
+    }).unwrap_or(style.get("stroke-linejoin").map(|join| {
+        join.to_string()
+    }).unwrap_or(lj.to_string()));
     let line_cap = match line_cap.as_str() {
         "butt" => "butt",
         "square" => "square",
@@ -411,11 +534,14 @@ pub fn parse_path(attributes: &std::collections::HashMap<String, Value>, index: 
         "round" => "round",
         _ => "miter",
     };
-    let transform_attr = attributes.get("transform").map(|transform| {
+    let mut transform = attributes.get("transform").map(|transform| {
         transform.to_string()
     });
-    if transform_attr.is_some() {
-        transforms.push(vec![parse_transform(transform_attr.unwrap().as_str())]);
+    if transform.is_none() {
+        transform = style.get("transform").cloned();
+    }
+    if transform.is_some() {
+        transforms.push(vec![parse_transform(transform.unwrap().as_str())]);
     }
     for transform in transforms.iter().rev() {
         for matrix in transform.iter().rev() {
@@ -466,18 +592,29 @@ fn parse_rect(
     transforms: &Vec<Vec<Matrix<f32>>>
 ) -> VectorObject {
     let mut transforms = transforms.clone();
+    let style = attributes.get("style").map(|style| {
+        parse_style_attr(style.to_string().as_str())
+    }).unwrap_or(HashMap::new());
     let x = attributes.get("x").map(|x| {
         x.parse().unwrap()
-    }).unwrap_or(0.0);
+    }).unwrap_or(style.get("x").map(|x| {
+        x.parse().unwrap()
+    }).unwrap_or(0.0));
     let y = attributes.get("y").map(|y| {
         y.parse().unwrap()
-    }).unwrap_or(0.0);
+    }).unwrap_or(style.get("y").map(|y| {
+        y.parse().unwrap()
+    }).unwrap_or(0.0));
     let width = attributes.get("width").map(|width| {
         width.parse().unwrap()
-    }).unwrap_or(0.0);
+    }).unwrap_or(style.get("width").map(|width| {
+        width.parse().unwrap()
+    }).unwrap_or(0.0));
     let height = attributes.get("height").map(|height| {
         height.parse().unwrap()
-    }).unwrap_or(0.0);
+    }).unwrap_or(style.get("height").map(|height| {
+        height.parse().unwrap()
+    }).unwrap_or(0.0));
     let fill_color = attributes.get("fill").map(|fill| {
         if fill.to_string().as_str() == "none" {
             return (0.0, 0.0, 0.0, 0.0);
@@ -495,7 +632,24 @@ fn parse_rect(
             }
             _ => (0.0, 0.0, 0.0, 1.0),
         }
-    }).unwrap_or(fill.clone());
+    }).unwrap_or(style.get("fill").map(|fill| {
+        if fill.as_str() == "none" {
+            return (0.0, 0.0, 0.0, 0.0);
+        }
+        if fill.as_str() == "currentColor" {
+            return (0.0, 0.0, 0.0, 1.0);
+        }
+        let color = parse_color(fill.as_str());
+        let opacity = style.get("fill-opacity").map(|opacity| {
+            opacity.parse().unwrap()
+        }).unwrap_or(-1.0);
+        match color {
+            CssColor::RGBA(ref rgba) => {
+                (rgba.red_f32() as f64, rgba.green_f32() as f64, rgba.blue_f32() as f64, if opacity == -1.0 { rgba.alpha_f32() as f64 } else { opacity })
+            }
+            _ => (0.0, 0.0, 0.0, 1.0),
+        }
+    }).unwrap_or(fill.clone()));
     let stroke_color = attributes.get("stroke").map(|stroke| {
         if stroke.to_string().as_str() == "none" {
             return (0.0, 0.0, 0.0, 0.0);
@@ -513,16 +667,39 @@ fn parse_rect(
             }
             _ => (0.0, 0.0, 0.0, 1.0),
         }
-    }).unwrap_or(stroke.clone());
+    }).unwrap_or(style.get("stroke").map(|stroke| {
+        if stroke.as_str() == "none" {
+            return (0.0, 0.0, 0.0, 0.0);
+        }
+        if stroke.as_str() == "currentColor" {
+            return (0.0, 0.0, 0.0, 0.0);
+        }
+        let color = parse_color(stroke.as_str());
+        let opacity = style.get("stroke-opacity").map(|opacity| {
+            opacity.parse().unwrap()
+        }).unwrap_or(-1.0);
+        match color {
+            CssColor::RGBA(ref rgba) => {
+                (rgba.red_f32() as f64, rgba.green_f32() as f64, rgba.blue_f32() as f64, if opacity == -1.0 { rgba.alpha_f32() as f64 } else { opacity })
+            }
+            _ => (0.0, 0.0, 0.0, 1.0),
+        }
+    }).unwrap_or(stroke.clone()));
     let stroke_width = attributes.get("stroke-width").map(|width| {
         width.parse().unwrap()
-    }).unwrap_or(*sw);
+    }).unwrap_or(style.get("stroke-width").map(|width| {
+        width.parse().unwrap()
+    }).unwrap_or(*sw));
     let line_cap = attributes.get("stroke-linecap").map(|cap| {
         cap.to_string()
-    }).unwrap_or(lc.to_string());
+    }).unwrap_or(style.get("stroke-linecap").map(|cap| {
+        cap.to_string()
+    }).unwrap_or(lc.to_string()));
     let line_join = attributes.get("stroke-linejoin").map(|join| {
         join.to_string()
-    }).unwrap_or(lj.to_string());
+    }).unwrap_or(style.get("stroke-linejoin").map(|join| {
+        join.to_string()
+    }).unwrap_or(lj.to_string()));
     let line_cap = match line_cap.as_str() {
         "butt" => "butt",
         "square" => "square",
@@ -548,8 +725,14 @@ fn parse_rect(
         Some(index)
     );
     let mut points = vec_obj.points.clone();
-    if attributes.get("transform").is_some() {
-        transforms.push(vec![parse_transform(attributes.get("transform").unwrap().to_string().as_str())]);
+    let mut transform = attributes.get("transform").map(|transform| {
+        transform.to_string()
+    });
+    if transform.is_none() {
+        transform = style.get("transform").cloned();
+    }
+    if transform.is_some() {
+        transforms.push(vec![parse_transform(transform.unwrap().as_str())]);
     }
     for transform in transforms.iter().rev() {
         for matrix in transform.iter().rev() {
@@ -577,15 +760,24 @@ fn parse_circle(
     transforms: &Vec<Vec<Matrix<f32>>>
 ) -> VectorObject {
     let mut transforms = transforms.clone();
+    let style = attributes.get("style").map(|style| {
+        parse_style_attr(style.to_string().as_str())
+    }).unwrap_or(HashMap::new());
     let cx = attributes.get("cx").map(|cx| {
         cx.parse().unwrap()
-    }).unwrap_or(0.0);
+    }).unwrap_or(style.get("cx").map(|cx| {
+        cx.parse().unwrap()
+    }).unwrap_or(0.0));
     let cy = attributes.get("cy").map(|cy| {
         cy.parse().unwrap()
-    }).unwrap_or(0.0);
+    }).unwrap_or(style.get("cy").map(|cy| {
+        cy.parse().unwrap()
+    }).unwrap_or(0.0));
     let r = attributes.get("r").map(|r| {
         r.parse().unwrap()
-    }).unwrap_or(0.0);
+    }).unwrap_or(style.get("r").map(|r| {
+        r.parse().unwrap()
+    }).unwrap_or(0.0));
     let fill_color = attributes.get("fill").map(|fill| {
         if fill.to_string().as_str() == "none" {
             return (0.0, 0.0, 0.0, 0.0);
@@ -603,7 +795,24 @@ fn parse_circle(
             }
             _ => (0.0, 0.0, 0.0, 1.0),
         }
-    }).unwrap_or(fill.clone());
+    }).unwrap_or(style.get("fill").map(|fill| {
+        if fill.as_str() == "none" {
+            return (0.0, 0.0, 0.0, 0.0);
+        }
+        if fill.as_str() == "currentColor" {
+            return (0.0, 0.0, 0.0, 1.0);
+        }
+        let color = parse_color(fill.as_str());
+        let opacity = style.get("fill-opacity").map(|opacity| {
+            opacity.parse().unwrap()
+        }).unwrap_or(-1.0);
+        match color {
+            CssColor::RGBA(ref rgba) => {
+                (rgba.red_f32() as f64, rgba.green_f32() as f64, rgba.blue_f32() as f64, if opacity == -1.0 { rgba.alpha_f32() as f64 } else { opacity })
+            }
+            _ => (0.0, 0.0, 0.0, 1.0),
+        }
+    }).unwrap_or(fill.clone()));
     let stroke_color = attributes.get("stroke").map(|stroke| {
         if stroke.to_string().as_str() == "none" {
             return (0.0, 0.0, 0.0, 0.0);
@@ -621,16 +830,39 @@ fn parse_circle(
             }
             _ => (0.0, 0.0, 0.0, 1.0),
         }
-    }).unwrap_or(stroke.clone());
+    }).unwrap_or(style.get("stroke").map(|stroke| {
+        if stroke.as_str() == "none" {
+            return (0.0, 0.0, 0.0, 0.0);
+        }
+        if stroke.as_str() == "currentColor" {
+            return (0.0, 0.0, 0.0, 0.0);
+        }
+        let color = parse_color(stroke.as_str());
+        let opacity = style.get("stroke-opacity").map(|opacity| {
+            opacity.parse().unwrap()
+        }).unwrap_or(-1.0);
+        match color {
+            CssColor::RGBA(ref rgba) => {
+                (rgba.red_f32() as f64, rgba.green_f32() as f64, rgba.blue_f32() as f64, if opacity == -1.0 { rgba.alpha_f32() as f64 } else { opacity })
+            }
+            _ => (0.0, 0.0, 0.0, 1.0),
+        }
+    }).unwrap_or(stroke.clone()));
     let stroke_width = attributes.get("stroke-width").map(|width| {
         width.parse().unwrap()
-    }).unwrap_or(*sw);
+    }).unwrap_or(style.get("stroke-width").map(|width| {
+        width.parse().unwrap()
+    }).unwrap_or(*sw));
     let line_cap = attributes.get("stroke-linecap").map(|cap| {
         cap.to_string()
-    }).unwrap_or(lc.to_string());
+    }).unwrap_or(style.get("stroke-linecap").map(|cap| {
+        cap.to_string()
+    }).unwrap_or(lc.to_string()));
     let line_join = attributes.get("stroke-linejoin").map(|join| {
         join.to_string()
-    }).unwrap_or(lj.to_string());
+    }).unwrap_or(style.get("stroke-linejoin").map(|join| {
+        join.to_string()
+    }).unwrap_or(lj.to_string()));
     let line_cap = match line_cap.as_str() {
         "butt" => "butt",
         "square" => "square",
@@ -655,8 +887,14 @@ fn parse_circle(
         Some(index)
     );
     let mut points = vec_obj.points.clone();
-    if attributes.get("transform").is_some() {
-        transforms.push(vec![parse_transform(attributes.get("transform").unwrap().to_string().as_str())]);
+    let mut transform = attributes.get("transform").map(|transform| {
+        transform.to_string()
+    });
+    if transform.is_none() {
+        transform = style.get("transform").cloned();
+    }
+    if transform.is_some() {
+        transforms.push(vec![parse_transform(transform.unwrap().as_str())]);
     }
     for transform in transforms.iter().rev() {
         for matrix in transform.iter().rev() {
@@ -683,6 +921,9 @@ fn parse_polygon(
     lj: &&str,
     transforms: &Vec<Vec<Matrix<f32>>>
 ) -> VectorObject {
+    let style = attributes.get("style").map(|style| {
+        parse_style_attr(style.to_string().as_str())
+    }).unwrap_or(HashMap::new());
     let mut transforms = transforms.clone();
     let points = attributes.get("points").map(|points| {
         let points = points.to_string();
@@ -715,7 +956,24 @@ fn parse_polygon(
             }
             _ => (0.0, 0.0, 0.0, 1.0),
         }
-    }).unwrap_or(fill.clone());
+    }).unwrap_or(style.get("fill").map(|fill| {
+        if fill.as_str() == "none" {
+            return (0.0, 0.0, 0.0, 0.0);
+        }
+        if fill.as_str() == "currentColor" {
+            return (0.0, 0.0, 0.0, 1.0);
+        }
+        let color = parse_color(fill.as_str());
+        let opacity = style.get("fill-opacity").map(|opacity| {
+            opacity.parse().unwrap()
+        }).unwrap_or(-1.0);
+        match color {
+            CssColor::RGBA(ref rgba) => {
+                (rgba.red_f32() as f64, rgba.green_f32() as f64, rgba.blue_f32() as f64, if opacity == -1.0 { rgba.alpha_f32() as f64 } else { opacity })
+            }
+            _ => (0.0, 0.0, 0.0, 1.0),
+        }
+    }).unwrap_or(fill.clone()));
     let stroke_color = attributes.get("stroke").map(|stroke| {
         if stroke.to_string().as_str() == "none" {
             return (0.0, 0.0, 0.0, 0.0);
@@ -733,16 +991,39 @@ fn parse_polygon(
             }
             _ => (0.0, 0.0, 0.0, 1.0),
         }
-    }).unwrap_or(stroke.clone());
+    }).unwrap_or(style.get("stroke").map(|stroke| {
+        if stroke.as_str() == "none" {
+            return (0.0, 0.0, 0.0, 0.0);
+        }
+        if stroke.as_str() == "currentColor" {
+            return (0.0, 0.0, 0.0, 0.0);
+        }
+        let color = parse_color(stroke.as_str());
+        let opacity = style.get("stroke-opacity").map(|opacity| {
+            opacity.parse().unwrap()
+        }).unwrap_or(-1.0);
+        match color {
+            CssColor::RGBA(ref rgba) => {
+                (rgba.red_f32() as f64, rgba.green_f32() as f64, rgba.blue_f32() as f64, if opacity == -1.0 { rgba.alpha_f32() as f64 } else { opacity })
+            }
+            _ => (0.0, 0.0, 0.0, 1.0),
+        }
+    }).unwrap_or(stroke.clone()));
     let stroke_width = attributes.get("stroke-width").map(|width| {
         width.parse().unwrap()
-    }).unwrap_or(*sw);
+    }).unwrap_or(style.get("stroke-width").map(|width| {
+        width.parse().unwrap()
+    }).unwrap_or(*sw));
     let line_cap = attributes.get("stroke-linecap").map(|cap| {
         cap.to_string()
-    }).unwrap_or(lc.to_string());
+    }).unwrap_or(style.get("stroke-linecap").map(|cap| {
+        cap.to_string()
+    }).unwrap_or(lc.to_string()));
     let line_join = attributes.get("stroke-linejoin").map(|join| {
         join.to_string()
-    }).unwrap_or(lj.to_string());
+    }).unwrap_or(style.get("stroke-linejoin").map(|join| {
+        join.to_string()
+    }).unwrap_or(lj.to_string()));
     let line_cap = match line_cap.as_str() {
         "butt" => "butt",
         "square" => "square",
@@ -764,8 +1045,14 @@ fn parse_polygon(
         Some(line_join),
         Some(index)
     );
-    if attributes.get("transform").is_some() {
-        transforms.push(vec![parse_transform(attributes.get("transform").unwrap().to_string().as_str())]);
+    let mut transform = attributes.get("transform").map(|transform| {
+        transform.to_string()
+    });
+    if transform.is_none() {
+        transform = style.get("transform").cloned();
+    }
+    if transform.is_some() {
+        transforms.push(vec![parse_transform(transform.unwrap().as_str())]);
     }
     let mut points = polygon.points.clone();
     for transform in transforms.iter().rev() {
@@ -783,10 +1070,12 @@ fn parse_polygon(
 }
 
 
-pub fn svg_to_vector_pin<'a>(svg: &'a str, font_family: Option<String>, font_size: Option<f64>) -> Pin<Box<dyn Future<Output = VectorObject> + 'a>> {
+pub fn svg_to_vector_pin<'a>(svg: &'a str, font_array_buffers: Option<Map>) -> Pin<Box<dyn Future<Output = VectorObject> + 'a>> {
     Box::pin(async move {
         let mut text_fill = Vec::new();
         let mut text_stroke = Vec::new();
+        let mut fw = Vec::new();
+        let mut fstyle = Vec::new();
         let mut text_stroke_width = Vec::new();
         let mut text_line_cap = Vec::new();
         let mut text_line_join = Vec::new();
@@ -1119,6 +1408,9 @@ pub fn svg_to_vector_pin<'a>(svg: &'a str, font_family: Option<String>, font_siz
                     }
                 }
                 Event::Tag("text", Type::Start, attributes) => {
+                    let style = attributes.get("style").map(|style| {
+                        parse_style_attr(style.to_string().as_str())
+                    }).unwrap_or(HashMap::new());
                     let fill_for_text = attributes.get("fill").map(|fill| {
                         if fill.to_string().as_str() == "none" {
                             return (0.0, 0.0, 0.0, 0.0);
@@ -1136,7 +1428,25 @@ pub fn svg_to_vector_pin<'a>(svg: &'a str, font_family: Option<String>, font_siz
                             }
                             _ => (0.0, 0.0, 0.0, 1.0),
                         }
-                    }).unwrap_or(*fill.last().unwrap_or(&(0.0, 0.0, 0.0, 1.0))).clone();
+                    // }).unwrap_or(*fill.last().unwrap_or(&(0.0, 0.0, 0.0, 1.0))).clone();
+                    }).unwrap_or(style.get("fill").map(|fill| {
+                        if fill.as_str() == "none" {
+                            return (0.0, 0.0, 0.0, 0.0);
+                        }
+                        if fill.as_str() == "currentColor" {
+                            return (0.0, 0.0, 0.0, 1.0);
+                        }
+                        let color = parse_color(fill.as_str());
+                        let opacity = style.get("fill-opacity").map(|opacity| {
+                            opacity.parse().unwrap()
+                        }).unwrap_or(-1.0);
+                        match color {
+                            CssColor::RGBA(ref rgba) => {
+                                (rgba.red_f32() as f64, rgba.green_f32() as f64, rgba.blue_f32() as f64, if opacity == -1.0 { rgba.alpha_f32() as f64 } else { opacity })
+                            }
+                            _ => (0.0, 0.0, 0.0, 1.0),
+                        }
+                    }).unwrap_or(*fill.last().unwrap_or(&(0.0, 0.0, 0.0, 1.0))).clone());
                     let stroke_for_text = attributes.get("stroke").map(|stroke| {
                         if stroke.to_string().as_str() == "none" {
                             return (0.0, 0.0, 0.0, 0.0);
@@ -1154,45 +1464,106 @@ pub fn svg_to_vector_pin<'a>(svg: &'a str, font_family: Option<String>, font_siz
                             }
                             _ => (0.0, 0.0, 0.0, 1.0),
                         }
-                    }).unwrap_or(*stroke.last().unwrap_or(&(0.0, 0.0, 0.0, 0.0))).clone();
+                    }).unwrap_or(style.get("stroke").map(|stroke| {
+                        if stroke.as_str() == "none" {
+                            return (0.0, 0.0, 0.0, 0.0);
+                        }
+                        if stroke.as_str() == "currentColor" {
+                            return (0.0, 0.0, 0.0, 0.0);
+                        }
+                        let color = parse_color(stroke.as_str());
+                        let opacity = style.get("stroke-opacity").map(|opacity| {
+                            opacity.parse().unwrap()
+                        }).unwrap_or(-1.0);
+                        match color {
+                            CssColor::RGBA(ref rgba) => {
+                                (rgba.red_f32() as f64, rgba.green_f32() as f64, rgba.blue_f32() as f64, if opacity == -1.0 { rgba.alpha_f32() as f64 } else { opacity })
+                            }
+                            _ => (0.0, 0.0, 0.0, 1.0),
+                        }
+                    }).unwrap_or(*stroke.last().unwrap_or(&(0.0, 0.0, 0.0, 0.0))).clone());
                     let stroke_width_for_text = attributes.get("stroke-width").map(|width| {
                         width.parse().unwrap()
-                    }).unwrap_or(*sw.last().unwrap_or(&0.0)).clone();
+                    }).unwrap_or(style.get("stroke-width").map(|width| {
+                        width.parse().unwrap()
+                    }).unwrap_or(*sw.last().unwrap_or(&0.0)).clone());
                     let line_cap_for_text = attributes.get("stroke-linecap").map(|cap| {
                         cap.to_string()
-                    }).unwrap_or(lc.last().unwrap_or(&&"butt").to_string()).clone();
+                    }).unwrap_or(style.get("stroke-linecap").map(|cap| {
+                        cap.to_string()
+                    }).unwrap_or(lc.last().unwrap_or(&&"butt").to_string()).clone());
                     let line_join_for_text = attributes.get("stroke-linejoin").map(|join| {
                         join.to_string()
-                    }).unwrap_or(lj.last().unwrap_or(&&"miter").to_string()).clone();
-                    let x = attributes.get("x").map(|x| {
+                    }).unwrap_or(style.get("stroke-linejoin").map(|join| {
+                        join.to_string()
+                    }).unwrap_or(lj.last().unwrap_or(&&"miter").to_string()).clone());
+                    let mut x: Option<f64> = attributes.get("x").map(|x| {
                         x.parse().unwrap()
-                    }).unwrap_or(0.0);
-                    let y = attributes.get("y").map(|y| {
+                    });
+                    if x.is_none() {
+                        x = style.get("x").map(|x| {
+                            x.parse().unwrap()
+                        });
+                    }
+                    let mut y: Option<f64> = attributes.get("y").map(|y| {
                         y.parse().unwrap()
-                    }).unwrap_or(0.0);
+                    });
+                    if y.is_none() {
+                        y = style.get("y").map(|y| {
+                            y.parse().unwrap()
+                        });
+                    }
                     let font_weight = attributes.get("font-weight").map(|font_weight| {
                         font_weight.to_string()
-                    }).unwrap_or("normal".to_string());
-                    let font_style = attributes.get("font-style").map(|font_style| {
+                    }).unwrap_or(style.get("font-weight").map(|font_weight| {
+                        font_weight.to_string()
+                    }).unwrap_or("normal".to_string()));
+                    let mut font_style = attributes.get("font-style").map(|font_style| {
                         font_style.to_string()
-                    }).unwrap_or("normal".to_string());
-                    let font_family = attributes.get("font-family").map(|font_family| {
-                        format!("fonts/{}-{}-{}.otf", font_family.to_string(), font_weight, font_style)
-                    }).unwrap_or(font_family.clone().unwrap_or(String::new()).to_string());
-                    let font_size = attributes.get("font-size").map(|font_size| {
-                        if font_size.to_string().contains("px") {
-                            font_size.to_string().replace("px", "").parse().unwrap()
-                        } else {
-                            font_size.parse().unwrap()
+                    });
+                    if font_style.is_none() {
+                        font_style = style.get("font-style").map(|font_style| {
+                            font_style.to_string()
+                        });
+                    }
+                    let mut font_family = attributes.get("font-family").map(|font_family| {
+                        font_family.to_string()
+                    });
+                    if font_family.is_none() {
+                        font_family = style.get("font-family").map(|font_family| {
+                            font_family.to_string()
+                        });
+                    }
+                    let mut font_size: Option<f64> = attributes.get("font-size").map(|font_size| {
+                        if font_size.ends_with("px") {
+                            let font_size = font_size[..font_size.len() - 2].parse().unwrap();
+                            return font_size;
                         }
-                    }).unwrap_or(font_size.unwrap_or(0.0));
-                    let transf = attributes.get("transform").map(|transform| {
+                        let font_size = font_size.parse().unwrap();
+                        font_size
+                    });
+                    if font_size.is_none() {
+                        font_size = style.get("font-size").map(|font_size| {
+                            if font_size.ends_with("px") {
+                                let font_size = font_size[..font_size.len() - 2].parse().unwrap();
+                                return font_size;
+                            }
+                            let font_size = font_size.parse().unwrap();
+                            font_size
+                        });
+                    }
+                    let mut transf = attributes.get("transform").map(|transform| {
                         transform.to_string()
                     });
+                    if transf.is_none() {
+                        transf = style.get("transform").cloned();
+                    }
                     x_text.push(x);
                     y_text.push(y);
                     fs_text.push(font_size);
                     ff_text.push(font_family);
+                    fw.push(font_weight);
+                    fstyle.push(font_style);
                     text.push(true);
                     text_fill.push(fill_for_text);
                     text_stroke.push(stroke_for_text);
@@ -1221,6 +1592,9 @@ pub fn svg_to_vector_pin<'a>(svg: &'a str, font_family: Option<String>, font_siz
                     text_line_join.pop();
                 },
                 Event::Tag("tspan", Type::Start, attributes) => {
+                    let style = attributes.get("style").map(|style| {
+                        parse_style_attr(style.to_string().as_str())
+                    }).unwrap_or(HashMap::new());
                     let fill_for_text = attributes.get("fill").map(|fill| {
                         if fill.to_string().as_str() == "none" {
                             return (0.0, 0.0, 0.0, 0.0);
@@ -1238,7 +1612,24 @@ pub fn svg_to_vector_pin<'a>(svg: &'a str, font_family: Option<String>, font_siz
                             }
                             _ => (0.0, 0.0, 0.0, 1.0),
                         }
-                    }).unwrap_or(*fill.last().unwrap_or(&(0.0, 0.0, 0.0, 1.0))).clone();
+                    }).unwrap_or(style.get("fill").map(|fill| {
+                        if fill.as_str() == "none" {
+                            return (0.0, 0.0, 0.0, 0.0);
+                        }
+                        if fill.as_str() == "currentColor" {
+                            return (0.0, 0.0, 0.0, 1.0);
+                        }
+                        let color = parse_color(fill.as_str());
+                        let opacity = style.get("fill-opacity").map(|opacity| {
+                            opacity.parse().unwrap()
+                        }).unwrap_or(-1.0);
+                        match color {
+                            CssColor::RGBA(ref rgba) => {
+                                (rgba.red_f32() as f64, rgba.green_f32() as f64, rgba.blue_f32() as f64, if opacity == -1.0 { rgba.alpha_f32() as f64 } else { opacity })
+                            }
+                            _ => (0.0, 0.0, 0.0, 1.0),
+                        }
+                    }).unwrap_or(*fill.last().unwrap_or(&(0.0, 0.0, 0.0, 1.0))).clone());
                     let stroke_for_text = attributes.get("stroke").map(|stroke| {
                         if stroke.to_string().as_str() == "none" {
                             return (0.0, 0.0, 0.0, 0.0);
@@ -1256,45 +1647,105 @@ pub fn svg_to_vector_pin<'a>(svg: &'a str, font_family: Option<String>, font_siz
                             }
                             _ => (0.0, 0.0, 0.0, 1.0),
                         }
-                    }).unwrap_or(*stroke.last().unwrap_or(&(0.0, 0.0, 0.0, 0.0))).clone();
+                    }).unwrap_or(style.get("stroke").map(|stroke| {
+                        if stroke.as_str() == "none" {
+                            return (0.0, 0.0, 0.0, 0.0);
+                        }
+                        if stroke.as_str() == "currentColor" {
+                            return (0.0, 0.0, 0.0, 0.0);
+                        }
+                        let color = parse_color(stroke.as_str());
+                        let opacity = style.get("stroke-opacity").map(|opacity| {
+                            opacity.parse().unwrap()
+                        }).unwrap_or(-1.0);
+                        match color {
+                            CssColor::RGBA(ref rgba) => {
+                                (rgba.red_f32() as f64, rgba.green_f32() as f64, rgba.blue_f32() as f64, if opacity == -1.0 { rgba.alpha_f32() as f64 } else { opacity })
+                            }
+                            _ => (0.0, 0.0, 0.0, 1.0),
+                        }
+                    }).unwrap_or(*stroke.last().unwrap_or(&(0.0, 0.0, 0.0, 0.0))).clone());
                     let stroke_width_for_text = attributes.get("stroke-width").map(|width| {
                         width.parse().unwrap()
-                    }).unwrap_or(*text_stroke_width.last().unwrap_or(&0.0)).clone();
+                    }).unwrap_or(style.get("stroke-width").map(|width| {
+                        width.parse().unwrap()
+                    }).unwrap_or(*sw.last().unwrap_or(&0.0)).clone());
                     let line_cap_for_text = attributes.get("stroke-linecap").map(|cap| {
                         cap.to_string()
-                    }).unwrap_or(text_line_cap.last().unwrap_or(&"butt".to_string()).to_string()).clone();
+                    }).unwrap_or(style.get("stroke-linecap").map(|cap| {
+                        cap.to_string()
+                    }).unwrap_or(lc.last().unwrap_or(&&"butt").to_string()).clone());
                     let line_join_for_text = attributes.get("stroke-linejoin").map(|join| {
                         join.to_string()
-                    }).unwrap_or(text_line_join.last().unwrap_or(&"miter".to_string()).to_string()).clone();
-                    let x = attributes.get("x").map(|x| {
+                    }).unwrap_or(style.get("stroke-linejoin").map(|join| {
+                        join.to_string()
+                    }).unwrap_or(lj.last().unwrap_or(&&"miter").to_string()).clone());
+                    let mut x: Option<f64> = attributes.get("x").map(|x| {
                         x.parse().unwrap()
-                    }).unwrap_or(0.0);
-                    let y = attributes.get("y").map(|y| {
+                    });
+                    if x.is_none() {
+                        x = style.get("x").map(|x| {
+                            x.parse().unwrap()
+                        });
+                    }
+                    let mut y: Option<f64> = attributes.get("y").map(|y| {
                         y.parse().unwrap()
-                    }).unwrap_or(0.0);
+                    });
+                    if y.is_none() {
+                        y = style.get("y").map(|y| {
+                            y.parse().unwrap()
+                        });
+                    }
                     let font_weight = attributes.get("font-weight").map(|font_weight| {
                         font_weight.to_string()
-                    }).unwrap_or("normal".to_string());
-                    let font_style = attributes.get("font-style").map(|font_style| {
+                    }).unwrap_or(style.get("font-weight").map(|font_weight| {
+                        font_weight.to_string()
+                    }).unwrap_or("normal".to_string()));
+                    let mut font_style = attributes.get("font-style").map(|font_style| {
                         font_style.to_string()
-                    }).unwrap_or("normal".to_string());
-                    let font_family = attributes.get("font-family").map(|font_family| {
-                        format!("fonts/{}-{}-{}.otf", font_family.to_string(), font_weight.to_string(), font_style.to_string())
-                    }).unwrap_or(font_family.clone().unwrap_or(String::new()).to_string());
-                    let font_size = attributes.get("font-size").map(|font_size| {
-                        if font_size.to_string().contains("px") {
-                            font_size.to_string().replace("px", "").parse().unwrap()
-                        } else {
-                            font_size.parse().unwrap()
+                    });
+                    if font_style.is_none() {
+                        font_style = style.get("font-style").map(|font_style| {
+                            font_style.to_string()
+                        });
+                    }
+                    let mut font_family = attributes.get("font-family").map(|font_family| {
+                        font_family.to_string()
+                    });
+                    if font_family.is_none() {
+                        font_family = style.get("font-family").map(|font_family| {
+                            font_family.to_string()
+                        });
+                    }
+                    let mut font_size: Option<f64> = attributes.get("font-size").map(|font_size| {
+                        if font_size.ends_with("px") {
+                            let font_size = font_size[..font_size.len() - 2].parse().unwrap();
+                            return font_size;
                         }
-                    }).unwrap_or(font_size.unwrap_or(0.0));
+                        let font_size = font_size.parse().unwrap();
+                        font_size
+                    });
+                    if font_size.is_none() {
+                        font_size = style.get("font-size").map(|font_size| {
+                            if font_size.ends_with("px") {
+                                let font_size = font_size[..font_size.len() - 2].parse().unwrap();
+                                return font_size;
+                            }
+                            let font_size = font_size.parse().unwrap();
+                            font_size
+                        });
+                    }
                     let transf = attributes.get("transform").map(|transform| {
                         Some(transform.to_string())
-                    }).unwrap_or(None);
+                    }).unwrap_or(style.get("transform").map(|transform| {
+                        Some(transform.to_string())
+                    }).unwrap_or(None));
                     x_text.push(x);
                     y_text.push(y);
                     fs_text.push(font_size);
                     ff_text.push(font_family);
+                    fw.push(font_weight);
+                    fstyle.push(font_style);
                     text.push(true);
                     text_fill.push(fill_for_text);
                     text_stroke.push(stroke_for_text);
@@ -1315,6 +1766,8 @@ pub fn svg_to_vector_pin<'a>(svg: &'a str, font_family: Option<String>, font_siz
                     y_text.pop();
                     fs_text.pop();
                     ff_text.pop();
+                    fw.pop();
+                    fstyle.pop();
                     text.pop();
                     text_fill.pop();
                     text_stroke.pop();
@@ -1345,7 +1798,9 @@ pub fn svg_to_vector_pin<'a>(svg: &'a str, font_family: Option<String>, font_siz
                     let y = y_text.last().unwrap();
                     let font_size = fs_text.last().unwrap();
                     let font_family = ff_text.last().unwrap();
-                    let mut vec_obj = text_to_vector(text_content.to_string(), font_family.to_string(), *x, *y, *font_size).await.native_vec_features;
+                    let font_weight = fw.last().unwrap();
+                    let font_style = fstyle.last().unwrap();
+                    let mut vec_obj = text_to_vector(text_content.to_string(), font_array_buffers.clone().unwrap(), font_family.clone(), Some(font_weight.clone()), font_style.clone(), *x, *y, font_size.clone()).await.native_vec_features;
                     let fill_color = text_fill.last().unwrap();
                     let stroke_color = text_stroke.last().unwrap();
                     let stroke_width = text_stroke_width.last().unwrap();

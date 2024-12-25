@@ -1,13 +1,13 @@
 // Based on https://github.com/Nigecat/mathjax-rs/blob/master/src/renderer/browser.rs
 use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::JsFuture;
-use js_sys::{eval, Promise};
+use js_sys::{eval, Map, Promise};
 
 use crate::objects::wasm_interface::{svg_to_vector_js, WasmVectorObject};
 
 
 #[wasm_bindgen(js_name = mathjax)]
-pub async fn mathjax(expression: String, default_font_family: Option<String>, default_font_size: Option<f64>) -> WasmVectorObject {
+pub async fn mathjax(expression: String, font_array_buffers: Option<Map>) -> WasmVectorObject {
     let function = eval(
         &r#"(expression) => {
     return new Promise((resolve, reject) => {
@@ -42,5 +42,5 @@ pub async fn mathjax(expression: String, default_font_family: Option<String>, de
     ).unwrap().dyn_into::<Promise>().unwrap();
     let result = JsFuture::from(promise).await.unwrap();
     let svg = result.as_string().unwrap();
-    svg_to_vector_js(svg, default_font_family, default_font_size).await
+    svg_to_vector_js(svg, font_array_buffers).await
 }
