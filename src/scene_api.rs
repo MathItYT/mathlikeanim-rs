@@ -41,6 +41,9 @@ pub trait SceneAPI {
                     let wasm_object = new_objects_map.get(&JsValue::from_f64(*index as f64)).dyn_into::<WasmVectorObject>().unwrap();
                     self.add(wasm_object.native_vec_features);
                 }
+                for index in object_indices.iter() {
+                    self.update(*index).await;
+                }
                 if frame < duration_in_frames {
                     self.render_frame().await;
                     self.sleep((1000 / self.get_fps()) as i32).await;
@@ -48,6 +51,9 @@ pub trait SceneAPI {
             }
         }
     }
+    fn set_updater(&mut self, index: usize, updater: Function);
+    fn update(&mut self, index: usize) -> impl Future<Output = ()>;
+    fn remove_updater(&mut self, index: usize);
     fn make_frame(
         &mut self,
         animation_func: &Function,
@@ -70,9 +76,12 @@ pub trait SceneAPI {
             }
         }
     }
-    fn wait(&mut self, duration_in_frames: u32) -> impl Future<Output = ()> {
+    fn wait(&mut self, duration_in_frames: u32, object_indices: Vec<usize>) -> impl Future<Output = ()> {
         async move {
             for _ in 0..duration_in_frames {
+                for i in object_indices.iter() {
+                    self.update(*i).await;
+                }
                 self.render_frame().await;
                 self.sleep((1000 / self.get_fps()) as i32).await;
             }

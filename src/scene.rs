@@ -29,7 +29,11 @@ pub struct Scene {
     #[wasm_bindgen(skip)]
     pub loaded_images: Map,
     #[wasm_bindgen(skip)]
-    pub callback: Function
+    pub callback: Function,
+    #[wasm_bindgen(skip)]
+    pub updaters: Map,
+    #[wasm_bindgen(skip)]
+    pub time_in_frames: usize
 }
 
 
@@ -51,8 +55,29 @@ impl SceneAPI for Scene {
             bottom_right_corner: (width as f64, height as f64),
             states: HashMap::new(),
             loaded_images: Map::new(),
-            callback: Closure::wrap(Box::new(|| Promise::resolve(&JsValue::NULL)) as Box<dyn Fn() -> Promise>).into_js_value().dyn_into().unwrap()
+            callback: Closure::wrap(Box::new(|| Promise::resolve(&JsValue::NULL)) as Box<dyn Fn() -> Promise>).into_js_value().dyn_into().unwrap(),
+            updaters: Map::new(),
+            time_in_frames: 0
         };
+    }
+    fn set_updater(&mut self, index: usize, updater: Function) {
+        self.updaters.set(&JsValue::from_f64(index as f64), &updater);
+    }
+    fn remove_updater(&mut self, index: usize) {
+        self.updaters.delete(&JsValue::from_f64(index as f64));
+    }
+    async fn update(&mut self, index: usize) {
+        let updater = self.updaters.get(&JsValue::from_f64(index as f64));
+        if updater.is_falsy() {
+            return;
+        }
+        let object = self.objects.iter().find(|obj| obj.index == index).unwrap();
+        let updater = updater.dyn_into::<Function>().unwrap();
+        let promise = updater.call1(&JsValue::NULL, &JsValue::from(WasmVectorObject {
+            native_vec_features: object.clone()
+        })).unwrap();
+        let new_object = JsFuture::from(Promise::resolve(&promise)).await.unwrap().dyn_into::<WasmVectorObject>().unwrap().native_vec_features;
+        self.add(new_object);
     }
     fn get_fps(&self) -> &u32 {
         return &self.fps;
@@ -133,6 +158,18 @@ impl Scene {
     #[wasm_bindgen(js_name = getWidth)]
     pub fn get_width_js(&self) -> u32 {
         return self.width;
+    }
+    #[wasm_bindgen(js_name = setUpdater)]
+    pub fn set_updater_js(&mut self, index: usize, updater: Function) {
+        self.set_updater(index, updater);
+    }
+    #[wasm_bindgen(js_name = update)]
+    pub async fn update_js(&mut self, index: usize) {
+        self.update(index).await;
+    }
+    #[wasm_bindgen(js_name = removeUpdater)]
+    pub fn remove_updater_js(&mut self, index: usize) {
+        self.remove_updater(index);
     }
     #[wasm_bindgen(js_name = renderFrame)]
     pub async fn render_frame_js(&mut self) {
@@ -247,8 +284,8 @@ impl Scene {
         self.make_frame(animation_func, objects, t).await;
     }
     #[wasm_bindgen(js_name = wait)]
-    pub async fn wait_js(&mut self, duration_in_frames: u32) {
-        self.wait(duration_in_frames).await;
+    pub async fn wait_js(&mut self, duration_in_frames: u32, object_indices: Vec<usize>) {
+        self.wait(duration_in_frames, object_indices).await;
     }
     #[wasm_bindgen(js_name = setOnRendered)]
     pub fn set_on_rendered_js(&mut self, callback: js_sys::Function) {
