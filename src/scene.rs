@@ -291,6 +291,10 @@ impl Scene {
     pub fn set_on_rendered_js(&mut self, callback: js_sys::Function) {
         self.callback = callback;
     }
+    #[wasm_bindgen(js_name = waitUntil)]
+    pub async fn wait_until_js(&mut self, condition: js_sys::Function, object_indices: Vec<usize>) {
+        self.wait_until(condition, object_indices).await;
+    }
     #[wasm_bindgen(js_name = onRendered)]
     pub async fn on_rendered_js(&mut self) {
         let promise = self.callback.call0(&JsValue::NULL).unwrap().dyn_into::<Promise>().unwrap();

@@ -76,6 +76,22 @@ pub trait SceneAPI {
             }
         }
     }
+    fn wait_until(&mut self, condition: Function, object_indices: Vec<usize>) -> impl Future<Output = ()> {
+        async move {
+            loop {
+                let promise = condition.call0(&JsValue::NULL).unwrap().dyn_into::<Promise>().unwrap();
+                let result = JsFuture::from(promise).await.unwrap().as_bool().unwrap();
+                if result {
+                    break;
+                }
+                for i in object_indices.iter() {
+                    self.update(*i).await;
+                }
+                self.render_frame().await;
+                self.sleep((1000 / self.get_fps()) as i32).await;
+            }
+        }
+    }
     fn wait(&mut self, duration_in_frames: u32, object_indices: Vec<usize>) -> impl Future<Output = ()> {
         async move {
             for _ in 0..duration_in_frames {

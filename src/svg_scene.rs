@@ -296,6 +296,10 @@ impl SVGScene {
     pub fn set_class_js(&mut self, index: usize, id: String) {
         self.classes.insert(index, id);
     }
+    #[wasm_bindgen(js_name = waitUntil)]
+    pub async fn wait_until_js(&mut self, condition: Function, object_indices: Vec<usize>) {
+        self.wait_until(condition, object_indices).await;
+    }
     #[wasm_bindgen(js_name = removeClass)]
     pub fn remove_class_js(&mut self, index: usize) {
         self.classes.remove(&index);
