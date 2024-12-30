@@ -1,3 +1,4 @@
+use core::f64;
 use std::{f64::consts::PI, vec};
 
 use crate::{colors::{Color, GradientImageOrColor, GradientStop, LinearGradient}, objects::vector_object::VectorObject, utils::{interpolate, interpolate_tuple_3d}};
@@ -233,10 +234,8 @@ pub fn get_shaded_color(
     let point2 = get_end_corner(points);
     let normal2 = get_end_corner_unit_normal(points);
     let projected = project_points(&vec![point1, point2], camera);
-    let mut point1_projected = projected[0];
-    let mut point2_projected = projected[1];
-    point1_projected = (point1_projected.0 + camera.width / 2.0, point1_projected.1 + camera.height / 2.0);
-    point2_projected = (point2_projected.0 + camera.width / 2.0, point2_projected.1 + camera.height / 2.0);
+    let point1_projected = projected[0];
+    let point2_projected = projected[1];
     match color {
         GradientImageOrColor::Color(color) => {
             let color1 = get_shaded_rgb(color, point1, normal1, light_source);
@@ -330,8 +329,6 @@ pub struct Camera {
     pub rotation: (f64, f64, f64),
     pub focal_distance: f64,
     pub zoom: f64,
-    pub width: f64,
-    pub height: f64
 }
 
 #[derive(Clone, Debug)]
@@ -340,17 +337,18 @@ pub struct LightSource {
 }
 
 pub fn project_points(points: &Vec<(f64, f64, f64)>, camera: &Camera) -> Vec<(f64, f64)> {
-    let points = shift_points_3d(points, (-camera.position.0, -camera.position.1, -camera.position.2));
+    let mut points = shift_points_3d(points, (-camera.position.0, -camera.position.1, -camera.position.2));
     let rot_matrix = rot_matrix_euler(camera.rotation.0, camera.rotation.1, camera.rotation.2);
-    let points = matrix_times_points(rot_matrix, points);
-    let points = points.iter().map(|point| {
+    points = matrix_times_points(rot_matrix, points);
+    points = points.iter().map(|point| {
         let z = point.2;
         let factor = camera.focal_distance / (camera.focal_distance - z);
         let x = point.0 * factor * camera.zoom;
         let y = point.1 * factor * camera.zoom;
-        (x, y)
-    }).collect::<Vec<(f64, f64)>>();
-    points
+        (x, y, z)
+    }).collect::<Vec<(f64, f64, f64)>>();
+    points = shift_points_3d(&points, (camera.position.0, camera.position.1, camera.position.2));
+    points.iter().map(|point| (point.0, point.1)).collect()
 }
 
 #[derive(Clone, Debug)]
@@ -612,33 +610,76 @@ impl ThreeDObject {
             subobject_2d.stroke = get_shaded_color(&subobject.stroke, &subobject.points, light_source, camera);
             subobject_2d.stroke_width = subobject.stroke_width;
             subobject_2d.index = subobject.index;
-            vec_obj.subobjects.push(subobject_2d.shift((camera.width / 2.0, camera.height / 2.0), false));
+            vec_obj.subobjects.push(subobject_2d);
         }
         return vec_obj;
+    }
+    pub fn scale_handle_to_anchor_distances(&self, factor: f64, recursive: bool) -> ThreeDObject {
+        let mut result = self.clone();
+        if result.points.len() > 0 {
+            let (a1, h1, h2, a2) = result.get_anchors_and_handles();
+            let a1_to_h1 = a1.iter().zip(h1.iter()).map(|(a, h)| {
+                (h.0 - a.0, h.1 - a.1, h.2 - a.2)
+            }).collect::<Vec<(f64, f64, f64)>>();
+            let a2_to_h2 = a2.iter().zip(h2.iter()).map(|(a, h)| {
+                (h.0 - a.0, h.1 - a.1, h.2 - a.2)
+            }).collect::<Vec<(f64, f64, f64)>>();
+            let new_h1 = a1.iter().zip(a1_to_h1.iter()).map(|(a, h)| {
+                (a.0 + h.0 * factor, a.1 + h.1 * factor, a.2 + h.2 * factor)
+            }).collect::<Vec<(f64, f64, f64)>>();
+            let new_h2 = a2.iter().zip(a2_to_h2.iter()).map(|(a, h)| {
+                (a.0 + h.0 * factor, a.1 + h.1 * factor, a.2 + h.2 * factor)
+            }).collect::<Vec<(f64, f64, f64)>>();
+            result = result.set_anchors_and_handles((a1, new_h1, new_h2, a2));
+        }
+        if recursive {
+            result = result.set_subobjects(
+                result.subobjects.iter().map(|subobject| {
+                    subobject.scale_handle_to_anchor_distances(factor, true)
+                }).collect()
+            );
+        }
+        result
+    }
+    pub fn get_anchors_and_handles(&self) -> (Vec<(f64, f64, f64)>, Vec<(f64, f64, f64)>, Vec<(f64, f64, f64)>, Vec<(f64, f64, f64)>) {
+        (
+            self.points.iter().step_by(4).map(|point| *point).collect(),
+            self.points.iter().skip(1).step_by(4).map(|point| *point).collect(),
+            self.points.iter().skip(2).step_by(4).map(|point| *point).collect(),
+            self.points.iter().skip(3).step_by(4).map(|point| *point).collect()
+        )
+    }
+    pub fn set_anchors_and_handles(&self, anchors_and_handles: (Vec<(f64, f64, f64)>, Vec<(f64, f64, f64)>, Vec<(f64, f64, f64)>, Vec<(f64, f64, f64)>)) -> ThreeDObject {
+        let (anchors, start_handles, end_handles, end_anchors) = anchors_and_handles;
+        let mut new_points = Vec::new();
+        for (((a, h1), h2), b) in anchors.iter().zip(start_handles.iter()).zip(end_handles.iter()).zip(end_anchors.iter()) {
+            new_points.push(*a);
+            new_points.push(*h1);
+            new_points.push(*h2);
+            new_points.push(*b);
+        }
+        self.set_points(new_points)
     }
     pub fn apply_function(
         &self,
         function: &dyn Fn(f64, f64, f64) -> (f64, f64, f64),
         recursive: bool
     ) -> ThreeDObject {
-        let new_points = self.points.iter().map(|point| {
+        let factor = 0.00001;
+        let mut result = self.scale_handle_to_anchor_distances(factor, false);
+        let new_points = result.points.iter().map(|point| {
             function(point.0, point.1, point.2)
         }).collect();
-        let new_subobjects = if recursive {
-            self.subobjects.iter().map(|subobject| {
-                subobject.apply_function(function, true)
-            }).collect()
-        } else {
-            self.subobjects.clone()
-        };
-        ThreeDObject {
-            points: new_points,
-            subobjects: new_subobjects,
-            fill: self.fill.clone(),
-            stroke: self.stroke.clone(),
-            stroke_width: self.stroke_width,
-            index: self.index
+        result = result.set_points(new_points);
+        result = result.scale_handle_to_anchor_distances(1.0 / factor, false);
+        if recursive {
+            result = result.set_subobjects(
+                result.subobjects.iter().map(|subobject| {
+                    subobject.apply_function(function, true)
+                }).collect()
+            );
         }
+        result
     }
     pub fn from_uv_function(
         uv_function: &dyn Fn(f64, f64) -> (f64, f64, f64),

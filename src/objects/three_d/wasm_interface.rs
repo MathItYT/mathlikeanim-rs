@@ -275,8 +275,6 @@ impl WasmCamera {
         rotation: Array,
         focal_distance: f64,
         zoom: f64,
-        width: f64,
-        height: f64
     ) -> WasmCamera {
         let position = (
             position.get(0).as_f64().unwrap(),
@@ -294,8 +292,6 @@ impl WasmCamera {
                 rotation,
                 focal_distance,
                 zoom,
-                width,
-                height
             }
         }
     }
@@ -324,14 +320,6 @@ impl WasmCamera {
     #[wasm_bindgen(js_name = getZoom)]
     pub fn get_zoom_js(&self) -> f64 {
         self.camera.zoom
-    }
-    #[wasm_bindgen(js_name = getWidth)]
-    pub fn get_width_js(&self) -> f64 {
-        self.camera.width
-    }
-    #[wasm_bindgen(js_name = getHeight)]
-    pub fn get_height_js(&self) -> f64 {
-        self.camera.height
     }
     #[wasm_bindgen(js_name = clone)]
     pub fn clone_js(&self) -> WasmCamera {
@@ -800,6 +788,101 @@ impl WasmThreeDObject {
     pub fn get_stroke_width(&self) -> f64 {
         self.three_d_object.stroke_width
     }
+    #[wasm_bindgen(js_name = getAnchorsAndHandles)]
+    pub fn get_anchors_and_handles(&self) -> Array {
+        let (a1, h1, h2, a2) = self.three_d_object.get_anchors_and_handles();
+        let result = Array::of4(
+            &a1.iter().map(
+                |anchor| {
+                    Array::of3(
+                        &JsValue::from(anchor.0),
+                        &JsValue::from(anchor.1),
+                        &JsValue::from(anchor.2)
+                    )
+                }
+            ).collect::<Array>(),
+            &h1.iter().map(
+                |handle| {
+                    Array::of3(
+                        &JsValue::from(handle.0),
+                        &JsValue::from(handle.1),
+                        &JsValue::from(handle.2)
+                    )
+                }
+            ).collect::<Array>(),
+            &h2.iter().map(
+                |handle| {
+                    Array::of3(
+                        &JsValue::from(handle.0),
+                        &JsValue::from(handle.1),
+                        &JsValue::from(handle.2)
+                    )
+                }
+            ).collect::<Array>(),
+            &a2.iter().map(
+                |anchor| {
+                    Array::of3(
+                        &JsValue::from(anchor.0),
+                        &JsValue::from(anchor.1),
+                        &JsValue::from(anchor.2)
+                    )
+                }
+            ).collect::<Array>()
+        );
+        result
+    }
+    #[wasm_bindgen(js_name = setAnchorsAndHandles)]
+    pub fn set_anchors_and_handles(&self, anchors_and_handles: Array) -> WasmThreeDObject {
+        let a1 = anchors_and_handles.get(0).dyn_into::<Array>().unwrap().iter().map(
+            |anchor| {
+                let anchor = anchor.dyn_into::<Array>().unwrap();
+                (
+                    anchor.get(0).as_f64().unwrap(),
+                    anchor.get(1).as_f64().unwrap(),
+                    anchor.get(2).as_f64().unwrap()
+                )
+            }
+        ).collect::<Vec<(f64, f64, f64)>>();
+        let h1 = anchors_and_handles.get(1).dyn_into::<Array>().unwrap().iter().map(
+            |handle| {
+                let handle = handle.dyn_into::<Array>().unwrap();
+                (
+                    handle.get(0).as_f64().unwrap(),
+                    handle.get(1).as_f64().unwrap(),
+                    handle.get(2).as_f64().unwrap()
+                )
+            }
+        ).collect::<Vec<(f64, f64, f64)>>();
+        let h2 = anchors_and_handles.get(2).dyn_into::<Array>().unwrap().iter().map(
+            |handle| {
+                let handle = handle.dyn_into::<Array>().unwrap();
+                (
+                    handle.get(0).as_f64().unwrap(),
+                    handle.get(1).as_f64().unwrap(),
+                    handle.get(2).as_f64().unwrap()
+                )
+            }
+        ).collect::<Vec<(f64, f64, f64)>>();
+        let a2 = anchors_and_handles.get(3).dyn_into::<Array>().unwrap().iter().map(
+            |anchor| {
+                let anchor = anchor.dyn_into::<Array>().unwrap();
+                (
+                    anchor.get(0).as_f64().unwrap(),
+                    anchor.get(1).as_f64().unwrap(),
+                    anchor.get(2).as_f64().unwrap()
+                )
+            }
+        ).collect::<Vec<(f64, f64, f64)>>();
+        return WasmThreeDObject {
+            three_d_object: self.three_d_object.set_anchors_and_handles((a1, h1, h2, a2))
+        }
+    }
+    #[wasm_bindgen(js_name = scaleHandleToAnchorDistances)]
+    pub fn scale_handle_to_anchor_distances(&self, factor: f64, recursive: bool) -> WasmThreeDObject {
+        return WasmThreeDObject {
+            three_d_object: self.three_d_object.scale_handle_to_anchor_distances(factor, recursive)
+        }
+    } 
     #[wasm_bindgen(js_name = setPoints)]
     pub fn set_points(&self, points: Array) -> WasmThreeDObject {
         let points = points.iter().map(

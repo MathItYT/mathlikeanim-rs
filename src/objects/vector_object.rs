@@ -176,11 +176,11 @@ pub fn generate_cubic_bezier_tuples(
 }
 
 pub fn get_subobjects_recursively(vec_features: &VectorObject, with_points: Option<bool>) -> Vec<VectorObject> {
-    let mut subobjects = Vec::new();
-    for subobject in &vec_features.subobjects {
-        if with_points.unwrap_or(false) {
-            subobjects.push(subobject.clone());
-        }
+    let mut subobjects = vec_features.subobjects.clone();
+    if with_points.unwrap_or(false) {
+        subobjects = subobjects.iter().filter(|subobject| subobject.points.len() > 0).cloned().collect();
+    }
+    for subobject in vec_features.subobjects.iter() {
         subobjects.extend(get_subobjects_recursively(subobject, with_points));
     }
     return subobjects;
@@ -411,6 +411,7 @@ impl VectorObject {
         };
     }
     pub fn apply_function(&self, f: &impl Fn(f64, f64) -> (f64, f64), recursive: bool, about_point: Option<(f64, f64)>, about_edge: Option<(f64, f64)>) -> Self {
+        let factor = 0.01;
         let edge = match about_edge {
             Some(edge) => edge,
             None => self.get_critical_point((0.0, 0.0)),
@@ -419,17 +420,55 @@ impl VectorObject {
             Some(point) => point,
             None => edge,
         };
-        let points = self.points.iter().map(|(x, y)| {
+        let mut result = self.scale_handle_to_anchor_distances(factor, false);
+        let points = result.points.iter().map(|(x, y)| {
             let (x, y) = f(*x - point.0, *y - point.1);
             return (x + point.0, y + point.1);
         }).collect::<Vec<(f64, f64)>>();
-        let result = self.set_points(points);
+        result = result.set_points(points);
+        result = result.scale_handle_to_anchor_distances(1.0 / factor, false);
         if recursive {
             return result.set_subobjects(
-                self.get_subobjects().iter().map(|subobject| subobject.apply_function(f, true, about_point, about_edge)).collect()
+                result.subobjects.iter().map(|subobject| subobject.apply_function(f, true, about_point, about_edge)).collect()
             );
         }
         return result;
+    }
+    pub fn get_anchors_and_handles(&self) -> (Vec<(f64, f64)>, Vec<(f64, f64)>, Vec<(f64, f64)>, Vec<(f64, f64)>) {
+        return (
+            self.points.iter().step_by(4).map(|point| *point).collect(),
+            self.points.iter().skip(1).step_by(4).map(|point| *point).collect(),
+            self.points.iter().skip(2).step_by(4).map(|point| *point).collect(),
+            self.points.iter().skip(3).step_by(4).map(|point| *point).collect(),
+        );
+    }
+    pub fn scale_handle_to_anchor_distances(&self, factor: f64, recursive: bool) -> Self {
+        let mut result = self.clone();
+        if self.points.len() > 0 {
+            let (a1, h1, h2, a2) = self.get_anchors_and_handles();
+            let a1_to_h1 = a1.iter().zip(h1.iter()).map(|(a, h)| (h.0 - a.0, h.1 - a.1)).collect::<Vec<(f64, f64)>>();
+            let a2_to_h2 = a2.iter().zip(h2.iter()).map(|(a, h)| (h.0 - a.0, h.1 - a.1)).collect::<Vec<(f64, f64)>>();
+            let new_h1 = a1.iter().zip(a1_to_h1.iter()).map(|(a, h)| (a.0 + h.0 * factor, a.1 + h.1 * factor)).collect::<Vec<(f64, f64)>>();
+            let new_h2 = a2.iter().zip(a2_to_h2.iter()).map(|(a, h)| (a.0 + h.0 * factor, a.1 + h.1 * factor)).collect::<Vec<(f64, f64)>>();
+            result = result.set_anchors_and_handles((a1.clone(), new_h1, new_h2, a2.clone()));
+        }
+        if recursive {
+            return result.set_subobjects(
+                result.subobjects.iter().map(|subobject| subobject.scale_handle_to_anchor_distances(factor, true)).collect()
+            );
+        }
+        return result;
+    }
+    pub fn set_anchors_and_handles(&self, anchors_and_handles: (Vec<(f64, f64)>, Vec<(f64, f64)>, Vec<(f64, f64)>, Vec<(f64, f64)>)) -> Self {
+        let (anchors1, handles1, handles2, anchors2) = anchors_and_handles;
+        let mut points = Vec::new();
+        for ((a1, h1), (h2, a2)) in anchors1.iter().zip(handles1.iter()).zip(handles2.iter().zip(anchors2.iter())) {
+            points.push(*a1);
+            points.push(*h1);
+            points.push(*h2);
+            points.push(*a2);
+        }
+        return self.set_points(points);
     }
     pub fn get_points(&self) -> &Vec<(f64, f64)> {
         return &self.points;

@@ -635,6 +635,51 @@ impl WasmVectorObject {
             native_vec_features: self.native_vec_features.get_partial_copy(start, end, recursive)
         }
     }
+    #[wasm_bindgen(js_name = getAnchorsAndHandles)]
+    pub fn get_anchors_and_handles(&self) -> Array {
+        let anchors_and_handles = self.native_vec_features.get_anchors_and_handles();
+        let result = Array::of4(
+            &anchors_and_handles.0.iter().map(|point| Array::of2(&point.0.into(), &point.1.into())).collect::<Array>(),
+            &anchors_and_handles.1.iter().map(|point| Array::of2(&point.0.into(), &point.1.into())).collect::<Array>(),
+            &anchors_and_handles.2.iter().map(|point| Array::of2(&point.0.into(), &point.1.into())).collect::<Array>(),
+            &anchors_and_handles.3.iter().map(|point| Array::of2(&point.0.into(), &point.1.into())).collect::<Array>()
+        );
+       result
+    }
+    #[wasm_bindgen(js_name = scaleHandleToAnchorDistances)]
+    pub fn scale_handle_to_anchor_distances(&self, scale: f64, recursive: bool) -> Self {
+        WasmVectorObject {
+            native_vec_features: self.native_vec_features.scale_handle_to_anchor_distances(scale, recursive)
+        }
+    }
+    #[wasm_bindgen(js_name = setAnchorsAndHandles)]
+    pub fn set_anchors_and_handles(&self, anchors_and_handles: Array) -> Self {
+        let a1 = anchors_and_handles.get(0).dyn_into::<Array>().unwrap();
+        let h1 = anchors_and_handles.get(1).dyn_into::<Array>().unwrap();
+        let h2 = anchors_and_handles.get(2).dyn_into::<Array>().unwrap();
+        let a2 = anchors_and_handles.get(3).dyn_into::<Array>().unwrap();
+        let anchors_and_handles = (
+            a1.iter().map(|point| {
+                let point = point.dyn_into::<Array>().unwrap();
+                (point.get(0).as_f64().unwrap(), point.get(1).as_f64().unwrap())
+            }).collect(),
+            h1.iter().map(|point| {
+                let point = point.dyn_into::<Array>().unwrap();
+                (point.get(0).as_f64().unwrap(), point.get(1).as_f64().unwrap())
+            }).collect(),
+            h2.iter().map(|point| {
+                let point = point.dyn_into::<Array>().unwrap();
+                (point.get(0).as_f64().unwrap(), point.get(1).as_f64().unwrap())
+            }).collect(),
+            a2.iter().map(|point| {
+                let point = point.dyn_into::<Array>().unwrap();
+                (point.get(0).as_f64().unwrap(), point.get(1).as_f64().unwrap())
+            }).collect()
+        );
+        WasmVectorObject {
+            native_vec_features: self.native_vec_features.set_anchors_and_handles(anchors_and_handles)
+        }
+    }
     #[wasm_bindgen(js_name = getNthCurvePoints)]
     pub fn get_nth_curve_points(&self, n: usize) -> Array {
         let points = self.native_vec_features.get_nth_curve_points(n);

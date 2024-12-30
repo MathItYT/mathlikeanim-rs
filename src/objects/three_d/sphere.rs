@@ -16,13 +16,13 @@ pub fn sphere(
 ) -> ThreeDObject {
     return ThreeDObject::from_uv_function(
         &|u, v| {
-            let x = radius * u.cos() * v.sin() + center.0;
-            let y = radius * u.sin() * v.sin() + center.1;
-            let z = -radius * v.cos() + center.2;
+            let x = radius * v.cos() * u.sin() + center.0;
+            let y = radius * v.sin() * u.sin() + center.1;
+            let z = radius * u.cos() + center.2;
             return (x, y, z);
         },
+        (0.001, PI - 0.001),
         (0.0, 2.0 * PI),
-        (0.0, PI),
         u_segments,
         v_segments,
         fill_colors,
