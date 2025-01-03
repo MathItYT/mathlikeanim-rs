@@ -385,6 +385,7 @@ pub async fn render_all_vectors_svg(
     rect.set_attribute("width", &(bottom_right_corner.0 - top_left_corner.0).to_string()).unwrap();
     rect.set_attribute("height", &(bottom_right_corner.1 - top_left_corner.1).to_string()).unwrap();
     rect.set_attribute("fill", &rec_fill).unwrap();
+    svg.append_child(&defs).unwrap();
     svg.append_child(&rect).unwrap();
     for (i, vec) in svg_scene.objects.iter().enumerate() {
         let group = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "g").unwrap();
