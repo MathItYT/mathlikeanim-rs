@@ -689,6 +689,7 @@ impl ThreeDObject {
                 for subobject in result.subobjects.iter() {
                     new_subobjects.push(subobject.apply_function(function.clone(), true).await);
                 }
+                result = result.set_subobjects(new_subobjects);
             }
             result
         })

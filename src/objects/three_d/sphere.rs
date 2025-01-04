@@ -21,9 +21,9 @@ pub async fn sphere(
     return ThreeDObject::from_uv_function(
         Box::leak(Box::new(Closure::wrap(Box::new(move |u: f64, v: f64| {
             future_to_promise(async move {
-                let x = center.0 + radius * u.cos() * v.sin();
-                let y = center.1 + radius * u.sin() * v.sin();
-                let z = center.2 + radius * v.cos();
+                let x = center.0 + radius * v.cos() * u.sin();
+                let y = center.1 + radius * v.sin() * u.sin();
+                let z = center.2 + radius * u.cos();
                 return Ok(JsValue::from(Array::of3(&JsValue::from_f64(x), &JsValue::from_f64(y), &JsValue::from_f64(z))));
             })
         }) as Box<dyn Fn(f64, f64) -> Promise>).into_js_value().dyn_into().unwrap())),
