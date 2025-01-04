@@ -2187,7 +2187,7 @@ pub fn point_to_coords_js(
 
 
 #[wasm_bindgen(js_name = parametricPlotInAxes)]
-pub fn parametric_plot_in_axes_js(
+pub async fn parametric_plot_in_axes_js(
     f: &js_sys::Function,
     t_min: f64,
     t_max: f64,
@@ -2232,32 +2232,28 @@ pub fn parametric_plot_in_axes_js(
     };
     return WasmVectorObject {
         native_vec_features: parametric_plot_in_axes(
-            |t| {
-                let result = f.call1(&JsValue::NULL, &JsValue::from_f64(t)).unwrap();
-                let arr = js_sys::Array::from(&result);
-                (arr.get(0).as_f64().unwrap(), arr.get(1).as_f64().unwrap())
-            },
+            Box::leak(Box::new(f.clone())),
             t_min,
             t_max,
             t_step,
-            &axes.native_vec_features,
-            x_min,
-            x_max,
-            y_min,
-            y_max,
+            Box::leak(Box::new(axes.native_vec_features.clone())),
+            Box::leak(Box::new(x_min)),
+            Box::leak(Box::new(x_max)),
+            Box::leak(Box::new(y_min)),
+            Box::leak(Box::new(y_max)),
             color,
             stroke_width,
             line_cap,
             line_join,
             index
-        )
+        ).await
     }
 }
 
 
 #[wasm_bindgen(js_name = plotInAxes)]
-pub fn plot_in_axes_js(
-    f: &js_sys::Function,
+pub async fn plot_in_axes_js(
+    f: js_sys::Function,
     x_min: f64,
     x_max: f64,
     y_min: f64,
@@ -2301,28 +2297,28 @@ pub fn plot_in_axes_js(
     };
     return WasmVectorObject {
         native_vec_features: plot_in_axes(
-            |x| f.call1(&JsValue::NULL, &JsValue::from_f64(x)).unwrap().as_f64().unwrap(),
-            x_min,
-            x_max,
-            y_min,
-            y_max,
+            Box::leak(Box::new(f.clone())),
+            Box::leak(Box::new(x_min)),
+            Box::leak(Box::new(x_max)),
+            Box::leak(Box::new(y_min)),
+            Box::leak(Box::new(y_max)),
             x1,
             x2,
             x_step,
-            &axes.native_vec_features,
+            Box::leak(Box::new(axes.native_vec_features.clone())),
             color,
             stroke_width,
             line_cap,
             line_join,
             index
-        )
+        ).await
     }
 }
 
 
 #[wasm_bindgen(js_name = contourPlotInAxes)]
-pub fn contour_plot_in_axes_js(
-    f: &js_sys::Function,
+pub async fn contour_plot_in_axes_js(
+    f: js_sys::Function,
     x_min: f64,
     x_max: f64,
     y_min: f64,
@@ -2370,7 +2366,7 @@ pub fn contour_plot_in_axes_js(
     };
     return WasmVectorObject {
         native_vec_features: contour_plot_in_axes(
-            |x, y| f.call2(&JsValue::NULL, &JsValue::from_f64(x), &JsValue::from_f64(y)).unwrap().as_f64().unwrap(),
+            f,
             x_min,
             x_max,
             y_min,
@@ -2381,14 +2377,14 @@ pub fn contour_plot_in_axes_js(
             y_1,
             y_2,
             y_step,
-            &axes.native_vec_features,
+            Box::leak(Box::new(axes.native_vec_features.clone())),
             color,
             stroke_width,
             line_cap,
             line_join,
             index,
             intervals
-        )
+        ).await
     }
 }
 
@@ -2576,7 +2572,7 @@ pub fn secant_line_for_plot_js(
 
 
 #[wasm_bindgen(js_name = parametricFunction)]
-pub fn parametric_function_js(
+pub async fn parametric_function_js(
     f: &js_sys::Function,
     t_min: f64,
     t_max: f64,
@@ -2616,11 +2612,7 @@ pub fn parametric_function_js(
     };
     return WasmVectorObject {
         native_vec_features: parametric_function(
-            |t| {
-                let result = f.call1(&JsValue::NULL, &JsValue::from_f64(t)).unwrap();
-                let arr = js_sys::Array::from(&result);
-                (arr.get(0).as_f64().unwrap(), arr.get(1).as_f64().unwrap())
-            },
+            f.clone(),
             t_min,
             t_max,
             t_step,
@@ -2629,14 +2621,14 @@ pub fn parametric_function_js(
             line_cap,
             line_join,
             index
-        )
+        ).await
     }
 }
 
 
 #[wasm_bindgen(js_name = contourPlot)]
-pub fn contour_plot_js(
-    f: &js_sys::Function,
+pub async fn contour_plot_js(
+    f: js_sys::Function,
     x_min: f64,
     x_max: f64,
     y_min: f64,
@@ -2679,7 +2671,7 @@ pub fn contour_plot_js(
     };
     return WasmVectorObject {
         native_vec_features: contour_plot(
-            |x, y| f.call2(&JsValue::NULL, &JsValue::from_f64(x), &JsValue::from_f64(y)).unwrap().as_f64().unwrap(),
+            f.clone(),
             x_min,
             x_max,
             y_min,
@@ -2692,14 +2684,14 @@ pub fn contour_plot_js(
             line_join,
             index,
             intervals
-        )
+        ).await
     }
 }
 
 
 #[wasm_bindgen(js_name = realFunction)]
-pub fn real_function_js(
-    f: &js_sys::Function,
+pub async fn real_function_js(
+    f: js_sys::Function,
     x_min: f64,
     x_max: f64,
     x_step: f64,
@@ -2738,7 +2730,7 @@ pub fn real_function_js(
     };
     return WasmVectorObject {
         native_vec_features: function(
-            |x| f.call1(&JsValue::NULL, &JsValue::from_f64(x)).unwrap().as_f64().unwrap(),
+            Box::leak(Box::new(f.clone())),
             x_min,
             x_max,
             x_step,
@@ -2747,7 +2739,7 @@ pub fn real_function_js(
             line_cap,
             line_join,
             index
-        )
+        ).await
     }
 }
 

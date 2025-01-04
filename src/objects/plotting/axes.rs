@@ -1,5 +1,10 @@
 use std::f64::consts::PI;
 
+use js_sys::{Array, Function, Promise};
+use wasm_bindgen::prelude::Closure;
+use wasm_bindgen::{JsCast, JsValue};
+use wasm_bindgen_futures::{future_to_promise, JsFuture};
+
 use crate::colors::{Color, GradientImageOrColor};
 use crate::objects::geometry::line::line;
 use crate::objects::geometry::poly::rectangle;
@@ -131,29 +136,39 @@ pub fn point_to_coords(
 }
 
 
-pub fn parametric_plot_in_axes(
-    f: impl Fn(f64) -> (f64, f64),
+pub async fn parametric_plot_in_axes(
+    f: &'static Function,
     t_min: f64,
     t_max: f64,
     t_step: f64,
-    axes: &VectorObject,
-    x_min: f64,
-    x_max: f64,
-    y_min: f64,
-    y_max: f64,
+    axes: &'static VectorObject,
+    x_min: &'static f64,
+    x_max: &'static f64,
+    y_min: &'static f64,
+    y_max: &'static f64,
     color: Option<(f64, f64, f64, f64)>,
     stroke_width: Option<f64>,
     line_cap: Option<&'static str>,
     line_join: Option<&'static str>,
     index: Option<usize>,
 ) -> VectorObject {
-    let new_f = |t: f64| {
-        let (x, y) = f(t);
-        let point = coords_to_point(axes, x, y, x_min, x_max, y_min, y_max);
-        return point;
-    };
+    let new_f = Closure::wrap(Box::new(|t: f64| {
+        let promise = f.call1(&JsValue::NULL, &JsValue::from_f64(t)).unwrap().dyn_into::<Promise>().unwrap();
+        let ax = axes.clone();
+        let x_min = x_min.clone();
+        let x_max = x_max.clone();
+        let y_min = y_min.clone();
+        let y_max = y_max.clone();
+        future_to_promise(async move {
+            let result = JsFuture::from(promise).await.unwrap().dyn_into::<Array>().unwrap();
+            let x = result.get(0).as_f64().unwrap();
+            let y = result.get(1).as_f64().unwrap();
+            let point = coords_to_point(&ax, x, y, x_min, x_max, y_min, y_max);
+            return Ok(JsValue::from(Array::of2(&JsValue::from_f64(point.0), &JsValue::from_f64(point.1))));
+        })
+    }) as Box<dyn Fn(f64) -> Promise>);
     return parametric_function(
-        new_f,
+        new_f.into_js_value().dyn_into().unwrap(),
         t_min,
         t_max,
         t_step,
@@ -162,34 +177,42 @@ pub fn parametric_plot_in_axes(
         line_cap,
         line_join,
         index,
-    );
+    ).await;
 }
 
 
-pub fn plot_in_axes(
-    f: impl Fn(f64) -> f64,
-    x_min: f64,
-    x_max: f64,
-    y_min: f64,
-    y_max: f64,
+pub async fn plot_in_axes(
+    f: &'static Function,
+    x_min: &'static f64,
+    x_max: &'static f64,
+    y_min: &'static f64,
+    y_max: &'static f64,
     x_1: f64,
     x_2: f64,
     x_step: f64,
-    axes: &VectorObject,
+    axes: &'static VectorObject,
     color: Option<(f64, f64, f64, f64)>,
     stroke_width: Option<f64>,
     line_cap: Option<&'static str>,
     line_join: Option<&'static str>,
     index: Option<usize>,
 ) -> VectorObject {
-    let new_f = |t: f64| {
-        let x = t;
-        let y = f(t);
-        let point = coords_to_point(axes, x, y, x_min, x_max, y_min, y_max);
-        return point;
-    };
+    let new_f = Closure::wrap(Box::new(|t: f64| {
+        let promise = f.call1(&JsValue::NULL, &JsValue::from_f64(t)).unwrap().dyn_into::<Promise>().unwrap();
+        let axes = axes.clone();
+        let x_min = x_min.clone();
+        let x_max = x_max.clone();
+        let y_min = y_min.clone();
+        let y_max = y_max.clone();
+        future_to_promise(async move {
+            let x = t;
+            let y = JsFuture::from(promise).await.unwrap().as_f64().unwrap();
+            let point = coords_to_point(&axes, x, y, x_min, x_max, y_min, y_max);
+            return Ok(JsValue::from(Array::of2(&JsValue::from_f64(point.0), &JsValue::from_f64(point.1))));
+        })
+    }) as Box<dyn Fn(f64) -> Promise>);
     return parametric_function(
-        new_f,
+        new_f.into_js_value().dyn_into().unwrap(),
         x_1,
         x_2,
         x_step,
@@ -198,12 +221,12 @@ pub fn plot_in_axes(
         line_cap,
         line_join,
         index,
-    );
+    ).await;
 }
 
 
-pub fn contour_plot_in_axes(
-    f: impl Fn(f64, f64) -> f64,
+pub async fn contour_plot_in_axes(
+    f: Function,
     x_min: f64,
     x_max: f64,
     y_min: f64,
@@ -214,7 +237,7 @@ pub fn contour_plot_in_axes(
     y_1: f64,
     y_2: f64,
     y_step: f64,
-    axes: &VectorObject,
+    axes: &'static VectorObject,
     color: Option<(f64, f64, f64, f64)>,
     stroke_width: Option<f64>,
     line_cap: Option<&'static str>,
@@ -236,7 +259,7 @@ pub fn contour_plot_in_axes(
         line_join,
         index,
         intervals
-    );
+    ).await;
     let x_unit_size = coords_to_point(axes, 1.0, 0.0, x_min, x_max, y_min, y_max).0 - coords_to_point(axes, 0.0, 0.0, x_min, x_max, y_min, y_max).0;
     let y_unit_size = coords_to_point(axes, 0.0, 1.0, x_min, x_max, y_min, y_max).1 - coords_to_point(axes, 0.0, 0.0, x_min, x_max, y_min, y_max).1;
     func = func.stretch((x_unit_size, y_unit_size), true);

@@ -1,9 +1,12 @@
 use contour_isobands::ContourBuilder;
+use js_sys::{Array, Function, Promise};
+use wasm_bindgen::{prelude::Closure, JsCast, JsValue};
+use wasm_bindgen_futures::{future_to_promise, JsFuture};
 
 use crate::{colors::{Color, GradientImageOrColor}, objects::vector_object::VectorObject, utils::line_as_cubic_bezier};
 
-pub fn parametric_function(
-    f: impl Fn(f64) -> (f64, f64),
+pub async fn parametric_function(
+    f: Function,
     t_min: f64,
     t_max: f64,
     t_step: f64,
@@ -16,7 +19,10 @@ pub fn parametric_function(
     let mut func_points = Vec::new();
     let mut t = t_min;
     while t <= t_max {
-        let (x, y) = f(t);
+        let promise = f.call1(&JsValue::NULL, &JsValue::from_f64(t)).unwrap().dyn_into::<Promise>().unwrap();
+        let val = JsFuture::from(promise).await.unwrap().dyn_into::<Array>().unwrap();
+        let x = val.get(0).as_f64().unwrap();
+        let y = val.get(1).as_f64().unwrap();
         func_points.push((x, y));
         t += t_step;
     }
@@ -49,8 +55,8 @@ pub fn parametric_function(
 }
 
 
-pub fn function(
-    f: impl Fn(f64) -> f64,
+pub async fn function(
+    f: &'static Function,
     x_min: f64,
     x_max: f64,
     x_step: f64,
@@ -60,8 +66,15 @@ pub fn function(
     line_join: Option<&'static str>,
     index: Option<usize>,
 ) -> VectorObject {
+    let func = Closure::wrap(Box::new(|x: f64| {
+        let promise = f.call1(&JsValue::NULL, &JsValue::from_f64(x)).unwrap().dyn_into::<Promise>().unwrap();
+        future_to_promise(async move {
+            let y = JsFuture::from(promise).await.unwrap().as_f64().unwrap();
+            return Ok(JsValue::from(Array::of2(&JsValue::from_f64(x), &JsValue::from_f64(y))));
+        })
+    }) as Box<dyn Fn(f64) -> Promise>);
     return parametric_function(
-        |t| (t, f(t)),
+        func.into_js_value().dyn_into().unwrap(),
         x_min,
         x_max,
         x_step,
@@ -70,11 +83,11 @@ pub fn function(
         line_cap,
         line_join,
         index,
-    );
+    ).await;
 }
 
-pub fn contour_plot(
-    f: impl Fn(f64, f64) -> f64,
+pub async fn contour_plot(
+    f: Function,
     x_min: f64,
     x_max: f64,
     x_step: f64,
@@ -103,7 +116,9 @@ pub fn contour_plot(
         for i in 0..x_grids_number {
             let x = x_min + i as f64 * x_step;
             let y = y_min + j as f64 * y_step;
-            grid.push(f(x, y));
+            let promise = f.call2(&JsValue::NULL, &JsValue::from_f64(x), &JsValue::from_f64(y)).unwrap().dyn_into::<Promise>().unwrap();
+            let val = JsFuture::from(promise).await.unwrap().as_f64().unwrap();
+            grid.push(val);
         }
     }
     let res = ContourBuilder::new(x_grids_number, y_grids_number)
