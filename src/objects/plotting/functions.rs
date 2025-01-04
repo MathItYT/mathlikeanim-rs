@@ -94,12 +94,12 @@ pub async fn contour_plot(
     y_min: f64,
     y_max: f64,
     y_step: f64,
+    intervals: &[f64],
     color: Option<(f64, f64, f64, f64)>,
     stroke_width: Option<f64>,
     line_cap: Option<&'static str>,
     line_join: Option<&'static str>,
     index: Option<usize>,
-    intervals: &[f64],
 ) -> VectorObject {
     let color = color.unwrap_or((1.0, 1.0, 1.0, 1.0));
     let color = Color {

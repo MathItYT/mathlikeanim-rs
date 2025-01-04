@@ -238,12 +238,12 @@ pub async fn contour_plot_in_axes(
     y_2: f64,
     y_step: f64,
     axes: &'static VectorObject,
+    intervals: &[f64],
     color: Option<(f64, f64, f64, f64)>,
     stroke_width: Option<f64>,
     line_cap: Option<&'static str>,
     line_join: Option<&'static str>,
     index: Option<usize>,
-    intervals: &[f64],
 ) -> VectorObject {
     let mut func = contour_plot(
         f,
@@ -253,12 +253,12 @@ pub async fn contour_plot_in_axes(
         y_1,
         y_2,
         y_step,
+        intervals,
         color,
         stroke_width,
         line_cap,
         line_join,
         index,
-        intervals
     ).await;
     let x_unit_size = coords_to_point(axes, 1.0, 0.0, x_min, x_max, y_min, y_max).0 - coords_to_point(axes, 0.0, 0.0, x_min, x_max, y_min, y_max).0;
     let y_unit_size = coords_to_point(axes, 0.0, 1.0, x_min, x_max, y_min, y_max).1 - coords_to_point(axes, 0.0, 0.0, x_min, x_max, y_min, y_max).1;

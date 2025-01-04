@@ -2330,12 +2330,12 @@ pub async fn contour_plot_in_axes_js(
     y_2: f64,
     y_step: f64,
     axes: &WasmVectorObject,
+    intervals: &[f64],
     color: Option<WasmColor>,
     stroke_width: Option<f64>,
     line_cap: Option<String>,
     line_join: Option<String>,
     index: Option<usize>,
-    intervals: &[f64]
 ) -> WasmVectorObject {
     let color = match color {
         Some(color) => Some((
@@ -2378,12 +2378,12 @@ pub async fn contour_plot_in_axes_js(
             y_2,
             y_step,
             Box::leak(Box::new(axes.native_vec_features.clone())),
+            intervals,
             color,
             stroke_width,
             line_cap,
             line_join,
             index,
-            intervals
         ).await
     }
 }
@@ -2635,12 +2635,12 @@ pub async fn contour_plot_js(
     y_max: f64,
     x_step: f64,
     y_step: f64,
+    intervals: &[f64],
     color: Option<WasmColor>,
     stroke_width: Option<f64>,
     line_cap: Option<String>,
     line_join: Option<String>,
     index: Option<usize>,
-    intervals: &[f64]
 ) -> WasmVectorObject {
     let color = match color {
         Some(color) => Some((
@@ -2678,12 +2678,12 @@ pub async fn contour_plot_js(
             y_max,
             x_step,
             y_step,
+            intervals,
             color,
             stroke_width,
             line_cap,
             line_join,
             index,
-            intervals
         ).await
     }
 }
