@@ -2429,8 +2429,8 @@ pub fn area_under_curve_js(
 
 
 #[wasm_bindgen(js_name = riemannRectanglesForPlot)]
-pub fn riemann_rectangles_for_plot_js(
-    f: &js_sys::Function,
+pub async fn riemann_rectangles_for_plot_js(
+    f: js_sys::Function,
     x_min: f64,
     x_max: f64,
     y_min: f64,
@@ -2485,7 +2485,7 @@ pub fn riemann_rectangles_for_plot_js(
     };
     return WasmVectorObject {
         native_vec_features: riemann_rectangles_for_plot(
-            |x| f.call1(&JsValue::NULL, &JsValue::from_f64(x)).unwrap().as_f64().unwrap(),
+            f.clone(),
             x_min,
             x_max,
             y_min,
@@ -2501,14 +2501,14 @@ pub fn riemann_rectangles_for_plot_js(
             line_cap,
             line_join,
             index
-        )
+        ).await
     }
 }
 
 
 #[wasm_bindgen(js_name = secantLineForPlot)]
-pub fn secant_line_for_plot_js(
-    f: &js_sys::Function,
+pub async fn secant_line_for_plot_js(
+    f: js_sys::Function,
     x_1: f64,
     x_2: f64,
     length: f64,
@@ -2552,7 +2552,7 @@ pub fn secant_line_for_plot_js(
     };
     return WasmVectorObject {
         native_vec_features: secant_line_for_plot(
-            |x| f.call1(&JsValue::NULL, &JsValue::from_f64(x)).unwrap().as_f64().unwrap(),
+            f.clone(),
             x_1,
             x_2,
             length,
@@ -2566,7 +2566,7 @@ pub fn secant_line_for_plot_js(
             line_cap,
             line_join,
             index
-        )
+        ).await
     }
 }
 

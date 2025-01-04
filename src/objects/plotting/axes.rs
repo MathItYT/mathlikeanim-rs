@@ -334,8 +334,8 @@ pub fn area_under_curve(
 }
 
 
-pub fn riemann_rectangles_for_plot(
-    f: impl Fn(f64) -> f64,
+pub async fn riemann_rectangles_for_plot(
+    f: Function,
     x_min: f64,
     x_max: f64,
     y_min: f64,
@@ -357,7 +357,8 @@ pub fn riemann_rectangles_for_plot(
     if direction < 0.0 {
         for i in 0..n_rects {
             let x = x_1 + i as f64 * dx;
-            let y = f(x);
+            let y_promise = f.call1(&JsValue::NULL, &JsValue::from_f64(x)).unwrap().dyn_into::<Promise>().unwrap();
+            let y = JsFuture::from(y_promise).await.unwrap().as_f64().unwrap();
             let width = number_to_point(&axes.subobjects[0], x + dx, x_min, x_max).0 - number_to_point(&axes.subobjects[0], x, x_min, x_max).0;
             let y_origin = number_to_point(&axes.subobjects[1], 0.0, y_min, y_max);
             let y_point = number_to_point(&axes.subobjects[1], y, y_min, y_max);
@@ -419,7 +420,8 @@ pub fn riemann_rectangles_for_plot(
     } else if direction == 0.0 {
         for i in 0..n_rects {
             let x = x_1 + i as f64 * dx;
-            let y = f(x + dx / 2.0);
+            let y_promise = f.call1(&JsValue::NULL, &JsValue::from_f64(x + dx / 2.0)).unwrap().dyn_into::<Promise>().unwrap();
+            let y = JsFuture::from(y_promise).await.unwrap().as_f64().unwrap();
             let width = number_to_point(&axes.subobjects[0], x + dx, x_min, x_max).0 - number_to_point(&axes.subobjects[0], x, x_min, x_max).0;
             let y_origin = number_to_point(&axes.subobjects[1], 0.0, y_min, y_max);
             let y_point = number_to_point(&axes.subobjects[1], y, y_min, y_max);
@@ -481,7 +483,8 @@ pub fn riemann_rectangles_for_plot(
     }
     for i in 0..n_rects {
         let x = x_1 + i as f64 * dx;
-        let y = f(x + dx);
+        let y_promise = f.call1(&JsValue::NULL, &JsValue::from_f64(x + dx)).unwrap().dyn_into::<Promise>().unwrap();
+        let y = JsFuture::from(y_promise).await.unwrap().as_f64().unwrap();
         let width = number_to_point(&axes.subobjects[0], x + dx, x_min, x_max).0 - number_to_point(&axes.subobjects[0], x, x_min, x_max).0;
         let y_origin = number_to_point(&axes.subobjects[1], 0.0, y_min, y_max);
         let y_point = number_to_point(&axes.subobjects[1], y, y_min, y_max);
@@ -543,8 +546,8 @@ pub fn riemann_rectangles_for_plot(
 }
 
 
-pub fn secant_line_for_plot(
-    f: impl Fn(f64) -> f64,
+pub async fn secant_line_for_plot(
+    f: Function,
     x_1: f64,
     x_2: f64,
     length: f64,
@@ -559,8 +562,10 @@ pub fn secant_line_for_plot(
     line_join: Option<&'static str>,
     index: Option<usize>,
 ) -> VectorObject {
-    let y_1 = f(x_1);
-    let y_2 = f(x_2);
+    let y_1_promise = f.call1(&JsValue::NULL, &JsValue::from_f64(x_1)).unwrap().dyn_into::<Promise>().unwrap();
+    let y_2_promise = f.call1(&JsValue::NULL, &JsValue::from_f64(x_2)).unwrap().dyn_into::<Promise>().unwrap();
+    let y_1 = JsFuture::from(y_1_promise).await.unwrap().as_f64().unwrap();
+    let y_2 = JsFuture::from(y_2_promise).await.unwrap().as_f64().unwrap();
     let point_1 = coords_to_point(axes, x_1, y_1, x_min, x_max, y_min, y_max);
     let point_2 = coords_to_point(axes, x_2, y_2, x_min, x_max, y_min, y_max);
     let mut line = line(
