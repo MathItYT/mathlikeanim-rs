@@ -983,21 +983,13 @@ impl WasmThreeDObject {
         }
     }
     #[wasm_bindgen(js_name = applyFunction)]
-    pub fn apply_function(&self, f: Function, recursive: bool) -> WasmThreeDObject {
+    pub async fn apply_function(&self, f: Function, recursive: bool) -> WasmThreeDObject {
         return WasmThreeDObject {
-            three_d_object: self.three_d_object.apply_function(&|x: f64, y: f64, z: f64| -> (f64, f64, f64) {
-                let result = f.call3(&JsValue::NULL, &JsValue::from(x), &JsValue::from(y), &JsValue::from(z)).unwrap();
-                let result = result.dyn_into::<Array>().unwrap();
-                (
-                    result.get(0).as_f64().unwrap(),
-                    result.get(1).as_f64().unwrap(),
-                    result.get(2).as_f64().unwrap()
-                )
-            }, recursive)
+            three_d_object: self.three_d_object.apply_function(f, recursive).await
         }
     }
     #[wasm_bindgen(js_name = fromUvFunction)]
-    pub fn from_uv_function(
+    pub async fn from_uv_function(
         uv_function: Function,
         u_range: Array,
         v_range: Array,
@@ -1016,15 +1008,6 @@ impl WasmThreeDObject {
             v_range.get(0).as_f64().unwrap(),
             v_range.get(1).as_f64().unwrap()
         );
-        let uv_function = move |u: f64, v: f64| -> (f64, f64, f64) {
-            let result = uv_function.call2(&JsValue::NULL, &JsValue::from_f64(u), &JsValue::from_f64(v)).unwrap();
-            let result = result.dyn_into::<Array>().unwrap();
-            (
-                result.get(0).as_f64().unwrap(),
-                result.get(1).as_f64().unwrap(),
-                result.get(2).as_f64().unwrap()
-            )
-        };
         let fills = fills.iter().map(
             |fill| {
                 fill.color.clone()
@@ -1037,7 +1020,7 @@ impl WasmThreeDObject {
         ).collect::<Vec<Color>>();
         return WasmThreeDObject {
             three_d_object: ThreeDObject::from_uv_function(
-                &uv_function,
+                Box::leak(Box::new(uv_function)),
                 u_range,
                 v_range,
                 u_segments,
@@ -1046,7 +1029,7 @@ impl WasmThreeDObject {
                 strokes,
                 stroke_width,
                 index
-            )
+            ).await
         }
     }
     #[wasm_bindgen(js_name = getBoundingBox)]
@@ -1244,8 +1227,8 @@ pub fn point_to_coords_js(
 
 
 #[wasm_bindgen(js_name = parametricPlotInAxes3D)]
-pub fn parametric_plot_in_axes_js(
-    axes: &WasmThreeDObject,
+pub async fn parametric_plot_in_axes_js(
+    axes: WasmThreeDObject,
     f: Function,
     u_min: f64,
     u_max: f64,
@@ -1258,15 +1241,6 @@ pub fn parametric_plot_in_axes_js(
     stroke_width: f64,
     index: Option<usize>
 ) -> WasmThreeDObject {
-    let f = move |u: f64, v: f64| -> (f64, f64, f64) {
-        let result = f.call2(&JsValue::NULL, &JsValue::from_f64(u), &JsValue::from_f64(v)).unwrap();
-        let result = result.dyn_into::<Array>().unwrap();
-        (
-            result.get(0).as_f64().unwrap(),
-            result.get(1).as_f64().unwrap(),
-            result.get(2).as_f64().unwrap()
-        )
-    };
     let fills = fills.iter().map(
         |fill| {
             fill.color.clone()
@@ -1279,26 +1253,26 @@ pub fn parametric_plot_in_axes_js(
     ).collect::<Vec<Color>>();
     return WasmThreeDObject {
         three_d_object: parametric_plot_in_axes_3d(
-            &axes.three_d_object,
-            &f,
-            u_min,
-            u_max,
-            v_min,
-            v_max,
+            Box::leak(Box::new(axes.three_d_object.clone())),
+            Box::leak(Box::new(f)),
+            Box::leak(Box::new(u_min)),
+            Box::leak(Box::new(u_max)),
+            Box::leak(Box::new(v_min)),
+            Box::leak(Box::new(v_max)),
             u_segments,
             v_segments,
             fills,
             strokes,
             stroke_width,
             index
-        )
+        ).await
     }
 }
 
 
 #[wasm_bindgen(js_name = plotInAxes3D)]
-pub fn plot_in_axes_3d_js(
-    axes: &WasmThreeDObject,
+pub async fn plot_in_axes_3d_js(
+    axes: WasmThreeDObject,
     f: Function,
     x_min: f64,
     x_max: f64,
@@ -1311,13 +1285,10 @@ pub fn plot_in_axes_3d_js(
     stroke_width: f64,
     index: Option<usize>
 ) -> WasmThreeDObject {
-    let f = move |x: f64, y: f64| -> f64 {
-        f.call2(&JsValue::NULL, &JsValue::from_f64(x), &JsValue::from_f64(y)).unwrap().as_f64().unwrap()
-    };
     return WasmThreeDObject {
         three_d_object: plot_in_axes_3d(
-            &axes.three_d_object,
-            &f,
+            Box::leak(Box::new(axes.three_d_object.clone())),
+            Box::leak(Box::new(f)),
             x_min,
             x_max,
             y_min,
@@ -1328,14 +1299,14 @@ pub fn plot_in_axes_3d_js(
             strokes.iter().map(|stroke| stroke.color.clone()).collect::<Vec<Color>>(),
             stroke_width,
             index
-        )
+        ).await
     }
 }
 
 
 #[wasm_bindgen(js_name = parametricLinePlotInAxes3D)]
-pub fn parametric_line_plot_in_axes_3d_js(
-    axes: &WasmThreeDObject,
+pub async fn parametric_line_plot_in_axes_3d_js(
+    axes: WasmThreeDObject,
     f: Function,
     u_min: f64,
     u_max: f64,
@@ -1350,19 +1321,10 @@ pub fn parametric_line_plot_in_axes_3d_js(
     stroke_width: f64,
     index: Option<usize>
 ) -> WasmThreeDObject {
-    let f = move |u: f64| -> (f64, f64, f64) {
-        let result = f.call1(&JsValue::NULL, &JsValue::from_f64(u)).unwrap();
-        let result = result.dyn_into::<Array>().unwrap();
-        (
-            result.get(0).as_f64().unwrap(),
-            result.get(1).as_f64().unwrap(),
-            result.get(2).as_f64().unwrap()
-        )
-    };
     return WasmThreeDObject {
         three_d_object: parametric_line_plot_in_axes_3d(
-            &axes.three_d_object,
-            &f,
+            Box::leak(Box::new(axes.three_d_object.clone())),
+            Box::leak(Box::new(f)),
             u_min,
             u_max,
             u_segments,
@@ -1375,13 +1337,13 @@ pub fn parametric_line_plot_in_axes_3d_js(
             color.color,
             stroke_width,
             index
-        )
+        ).await
     }
 }
 
 
 #[wasm_bindgen(js_name = sphere)]
-pub fn sphere_js(
+pub async fn sphere_js(
     center: Array,
     radius: f64,
     u_segments: usize,
@@ -1405,6 +1367,6 @@ pub fn sphere_js(
             stroke_colors.iter().map(|stroke| stroke.color.clone()).collect::<Vec<Color>>(),
             stroke_width,
             index
-        )
+        ).await
     }
 }

@@ -1,5 +1,10 @@
 use std::f64::consts::PI;
 
+use js_sys::{Array, Function, Promise};
+use wasm_bindgen::prelude::Closure;
+use wasm_bindgen::{JsCast, JsValue};
+use wasm_bindgen_futures::{future_to_promise, JsFuture};
+
 use crate::colors::{Color, GradientImageOrColor};
 use crate::objects::three_d::three_d_object::ThreeDObject;
 
@@ -179,13 +184,13 @@ pub fn point_to_coords_3d(
 }
 
 
-pub fn parametric_plot_in_axes_3d(
-    axes: &ThreeDObject,
-    f: &dyn Fn(f64, f64) -> (f64, f64, f64),
-    u_min: f64,
-    u_max: f64,
-    v_min: f64,
-    v_max: f64,
+pub async fn parametric_plot_in_axes_3d(
+    axes: &'static ThreeDObject,
+    f: &'static Function,
+    u_min: &'static f64,
+    u_max: &'static f64,
+    v_min: &'static f64,
+    v_max: &'static f64,
     u_steps: usize,
     v_steps: usize,
     fills: Vec<Color>,
@@ -193,27 +198,37 @@ pub fn parametric_plot_in_axes_3d(
     stroke_width: f64,
     index: Option<usize>
 ) -> ThreeDObject {
-    let new_f = Box::new(|u, v| {
-        let coords = f(u, v);
-        return coords_to_point_3d(axes, coords, u_min, u_max, v_min, v_max, -1.0, 1.0);
-    }) as Box<dyn Fn(f64, f64) -> (f64, f64, f64)>;
+    let new_f = Closure::wrap(Box::new(|u, v| {
+        let coords_promise = f.call2(&JsValue::NULL, &JsValue::from_f64(u), &JsValue::from_f64(v)).unwrap().dyn_into::<Promise>().unwrap();
+        let axes = axes.clone();
+        let u_min = *u_min;
+        let u_max = *u_max;
+        let v_min = *v_min;
+        let v_max = *v_max;
+        future_to_promise(async move {
+            let coords = JsFuture::from(coords_promise).await.unwrap().dyn_into::<js_sys::Array>().unwrap();
+            let coords = (coords.get(0).as_f64().unwrap(), coords.get(1).as_f64().unwrap(), coords.get(2).as_f64().unwrap());
+            let result = coords_to_point_3d(&axes, coords, u_min, u_max, v_min, v_max, -1.0, 1.0);
+            return Ok(JsValue::from(Array::of3(&JsValue::from_f64(result.0), &JsValue::from_f64(result.1), &JsValue::from_f64(result.2))));
+        })
+    }) as Box<dyn Fn(f64, f64) -> Promise>);
     ThreeDObject::from_uv_function(
-        Box::leak(new_f),
-        (u_min, u_max),
-        (v_min, v_max),
+        Box::leak(Box::new(new_f.into_js_value().dyn_into().unwrap())),
+        (*u_min, *u_max),
+        (*v_min, *v_max),
         u_steps,
         v_steps,
         fills,
         strokes,
         stroke_width,
         index
-    )
+    ).await
 }
 
 
-pub fn plot_in_axes_3d(
-    axes: &ThreeDObject,
-    f: &dyn Fn(f64, f64) -> f64,
+pub async fn plot_in_axes_3d(
+    axes: &'static ThreeDObject,
+    f: &'static Function,
     u_min: f64,
     u_max: f64,
     v_min: f64,
@@ -225,29 +240,33 @@ pub fn plot_in_axes_3d(
     stroke_width: f64,
     index: Option<usize>
 ) -> ThreeDObject {
-    let new_f = Box::new(|u, v| {
-        return (u, v, f(u, v));
-    }) as Box<dyn Fn(f64, f64) -> (f64, f64, f64)>;
+    let new_f = Closure::wrap(Box::new(|u, v| {
+        let promise = f.call2(&JsValue::NULL, &JsValue::from_f64(u), &JsValue::from_f64(v)).unwrap().dyn_into::<Promise>().unwrap();
+        future_to_promise(async move {
+            let result = JsFuture::from(promise).await.unwrap().as_f64().unwrap();
+            return Ok(JsValue::from_f64(result));
+        })
+    }) as Box<dyn Fn(f64, f64) -> Promise>);
     parametric_plot_in_axes_3d(
         axes,
-        Box::leak(new_f),
-        u_min,
-        u_max,
-        v_min,
-        v_max,
+        Box::leak(Box::new(new_f.into_js_value().dyn_into().unwrap())),
+        Box::leak(Box::new(u_min)),
+        Box::leak(Box::new(u_max)),
+        Box::leak(Box::new(v_min)),
+        Box::leak(Box::new(v_max)),
         u_steps,
         v_steps,
         fills,
         strokes,
         stroke_width,
         index
-    )
+    ).await
 }
 
 
-pub fn parametric_line_plot_in_axes_3d(
+pub async fn parametric_line_plot_in_axes_3d(
     axes: &ThreeDObject,
-    f: &dyn Fn(f64) -> (f64, f64, f64),
+    f: &Function,
     t_min: f64,
     t_max: f64,
     t_steps: usize,
@@ -261,10 +280,14 @@ pub fn parametric_line_plot_in_axes_3d(
     stroke_width: f64,
     index: Option<usize>
 ) -> ThreeDObject {
-    let vertices_coords = (0..t_steps + 1).map(|i| {
+    let mut vertices_coords = Vec::new();
+    for i in 0..t_steps + 1 {
         let t = interpolate(t_min, t_max, i as f64 / t_steps as f64);
-        f(t)
-    }).collect::<Vec<(f64, f64, f64)>>();
+        let coords_promise = f.call1(&JsValue::NULL, &JsValue::from_f64(t)).unwrap().dyn_into::<Promise>().unwrap();
+        let value = JsFuture::from(coords_promise).await.unwrap().dyn_into::<Array>().unwrap();
+        let coords = (value.get(0).as_f64().unwrap(), value.get(1).as_f64().unwrap(), value.get(2).as_f64().unwrap());
+        vertices_coords.push(coords);
+    }
     let mut points = Vec::new();
     for i in 0..vertices_coords.len() - 1 {
         let p1 = vertices_coords[i];

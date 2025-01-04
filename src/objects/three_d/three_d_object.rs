@@ -1,5 +1,9 @@
 use core::f64;
-use std::{f64::consts::PI, vec};
+use std::{f64::consts::PI, future::Future, pin::Pin, vec};
+
+use js_sys::{Function, Promise};
+use wasm_bindgen::{prelude::Closure, JsCast, JsValue};
+use wasm_bindgen_futures::{future_to_promise, JsFuture};
 
 use crate::{colors::{Color, GradientImageOrColor, GradientStop, LinearGradient}, objects::vector_object::VectorObject, utils::{interpolate, interpolate_tuple_3d}};
 
@@ -662,27 +666,35 @@ impl ThreeDObject {
     }
     pub fn apply_function(
         &self,
-        function: &dyn Fn(f64, f64, f64) -> (f64, f64, f64),
+        function: Function,
         recursive: bool
-    ) -> ThreeDObject {
-        let factor = 0.00001;
-        let mut result = self.scale_handle_to_anchor_distances(factor, false);
-        let new_points = result.points.iter().map(|point| {
-            function(point.0, point.1, point.2)
-        }).collect();
-        result = result.set_points(new_points);
-        result = result.scale_handle_to_anchor_distances(1.0 / factor, false);
-        if recursive {
-            result = result.set_subobjects(
-                result.subobjects.iter().map(|subobject| {
-                    subobject.apply_function(function, true)
-                }).collect()
-            );
-        }
-        result
+    ) -> Pin<Box<dyn Future<Output = ThreeDObject> + '_>> {
+        Box::pin(async move {
+            let factor = 0.00001;
+            let mut result = self.scale_handle_to_anchor_distances(factor, false);
+            let mut new_points = Vec::new();
+            for point in result.points.iter() {
+                let (x, y, z) = point;
+                let promise = function.call3(&JsValue::NULL, &JsValue::from_f64(*x), &JsValue::from_f64(*y), &JsValue::from_f64(*z)).unwrap().dyn_into::<Promise>().unwrap();
+                let new_point = wasm_bindgen_futures::JsFuture::from(promise).await.unwrap().dyn_into::<js_sys::Array>().unwrap();
+                let new_x = new_point.get(0).as_f64().unwrap();
+                let new_y = new_point.get(1).as_f64().unwrap();
+                let new_z = new_point.get(2).as_f64().unwrap();
+                new_points.push((new_x, new_y, new_z));
+            }
+            result = result.set_points(new_points);
+            result = result.scale_handle_to_anchor_distances(1.0 / factor, false);
+            if recursive {
+                let mut new_subobjects = Vec::new();
+                for subobject in result.subobjects.iter() {
+                    new_subobjects.push(subobject.apply_function(function.clone(), true).await);
+                }
+            }
+            result
+        })
     }
-    pub fn from_uv_function(
-        uv_function: &dyn Fn(f64, f64) -> (f64, f64, f64),
+    pub async fn from_uv_function(
+        uv_function: &'static Function,
         u_range: (f64, f64),
         v_range: (f64, f64),
         u_samples: usize,
@@ -721,6 +733,21 @@ impl ThreeDObject {
                 faces.push(face);
             }
         }
+        let new_function = Closure::wrap(
+            Box::new(move |x: f64, y: f64, _: f64| {
+                future_to_promise(async move {
+                    let u = JsValue::from_f64(x);
+                    let v = JsValue::from_f64(y);
+                    let promise = uv_function.call2(&JsValue::NULL, &u, &v).unwrap().dyn_into::<Promise>().unwrap();
+                    JsFuture::from(promise).await.unwrap().dyn_into::<js_sys::Array>().map(|point| {
+                        let x = point.get(0).as_f64().unwrap();
+                        let y = point.get(1).as_f64().unwrap();
+                        let z = point.get(2).as_f64().unwrap();
+                        Ok(JsValue::from(js_sys::Array::of3(&JsValue::from_f64(x), &JsValue::from_f64(y), &JsValue::from_f64(z))))
+                    }).unwrap()
+                })
+            }) as Box<dyn Fn(f64, f64, f64) -> Promise>
+        );
         return ThreeDObject::new(
             vec![],
             faces,
@@ -728,7 +755,7 @@ impl ThreeDObject {
             GradientImageOrColor::Color(Color { red: 0.0, green: 0.0, blue: 0.0, alpha: 0.0 }),
             0.0,
             index.unwrap_or(0)
-        ).apply_function(&|x, y, _| uv_function(x, y), true);
+        ).apply_function(new_function.into_js_value().dyn_into().unwrap(), true).await;
     }
     pub fn get_bounding_box(
         &self
