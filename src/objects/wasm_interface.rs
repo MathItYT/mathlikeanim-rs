@@ -708,9 +708,9 @@ impl WasmVectorObject {
         subpaths
     }
     #[wasm_bindgen(js_name = applyFunction)]
-    pub fn apply_function(
+    pub async fn apply_function(
         &self,
-        function: &js_sys::Function,
+        function: js_sys::Function,
         recursive: bool,
         about_point: Option<Array>,
         about_edge: Option<Array>
@@ -719,18 +719,11 @@ impl WasmVectorObject {
         let about_edge = about_edge.map(|edge| (edge.get(0).as_f64().unwrap(), edge.get(1).as_f64().unwrap()));
         WasmVectorObject {
             native_vec_features: self.native_vec_features.apply_function(
-                &|x, y| {
-                    let x = JsValue::from_f64(x);
-                    let y = JsValue::from_f64(y);
-                    let result = function.call2(&JsValue::NULL, &x, &y).unwrap().dyn_into::<Array>().unwrap();
-                    let x = result.get(0).as_f64().unwrap();
-                    let y = result.get(1).as_f64().unwrap();
-                    (x, y)
-                },
+                function,
                 recursive,
                 about_point,
                 about_edge
-            )
+            ).await
         }
     }
     #[wasm_bindgen(js_name = getPieces)]

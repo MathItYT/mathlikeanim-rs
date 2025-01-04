@@ -1,3 +1,9 @@
+use std::pin::Pin;
+
+use js_sys::{Array, Function, Promise};
+use wasm_bindgen::{JsCast, JsValue};
+use wasm_bindgen_futures::JsFuture;
+
 use crate::utils::{consider_points_equals, distance_squared, integer_interpolate};
 use crate::utils::bezier;
 
@@ -410,29 +416,41 @@ impl VectorObject {
             index: self.index + increment,
         };
     }
-    pub fn apply_function(&self, f: &impl Fn(f64, f64) -> (f64, f64), recursive: bool, about_point: Option<(f64, f64)>, about_edge: Option<(f64, f64)>) -> Self {
-        let factor = 0.01;
-        let edge = match about_edge {
-            Some(edge) => edge,
-            None => self.get_critical_point((0.0, 0.0)),
-        };
-        let point = match about_point {
-            Some(point) => point,
-            None => edge,
-        };
-        let mut result = self.scale_handle_to_anchor_distances(factor, false);
-        let points = result.points.iter().map(|(x, y)| {
-            let (x, y) = f(*x - point.0, *y - point.1);
-            return (x + point.0, y + point.1);
-        }).collect::<Vec<(f64, f64)>>();
-        result = result.set_points(points);
-        result = result.scale_handle_to_anchor_distances(1.0 / factor, false);
-        if recursive {
-            return result.set_subobjects(
-                result.subobjects.iter().map(|subobject| subobject.apply_function(f, true, about_point, about_edge)).collect()
-            );
-        }
-        return result;
+    pub fn apply_function(&self, f: Function, recursive: bool, about_point: Option<(f64, f64)>, about_edge: Option<(f64, f64)>) -> Pin<Box<dyn std::future::Future<Output = Self> + '_>> {
+        Box::pin(async move { 
+            let factor = 0.01;
+            let edge = match about_edge {
+                Some(edge) => edge,
+                None => self.get_critical_point((0.0, 0.0)),
+            };
+            let point = match about_point {
+                Some(point) => point,
+                None => edge,
+            };
+            let mut result = self.scale_handle_to_anchor_distances(factor, false);
+            let mut points = Vec::new();
+            for point in result.points.iter() {
+                // let (x, y) = f(*x - point.0, *y - point.1);
+                // return (x + point.0, y + point.1);
+                let x = point.0;
+                let y = point.1;
+                let promise = f.call2(&JsValue::NULL, &JsValue::from_f64(x - point.0), &JsValue::from_f64(y - point.1)).unwrap().dyn_into::<Promise>().unwrap();
+                let value = JsFuture::from(promise).await.unwrap().dyn_into::<Array>().unwrap();
+                let x = value.get(0).as_f64().unwrap();
+                let y = value.get(1).as_f64().unwrap();
+                points.push((x + point.0, y + point.1));
+            }
+            result = result.set_points(points);
+            result = result.scale_handle_to_anchor_distances(1.0 / factor, false);
+            if recursive {
+                let mut new_subobjects = Vec::new();
+                for subobject in result.subobjects.iter() {
+                    new_subobjects.push(subobject.apply_function(f.clone(), true, Some(point), Some(edge)).await);
+                }
+                result = result.set_subobjects(new_subobjects);
+            }
+            return result;
+        })
     }
     pub fn get_anchors_and_handles(&self) -> (Vec<(f64, f64)>, Vec<(f64, f64)>, Vec<(f64, f64)>, Vec<(f64, f64)>) {
         return (
