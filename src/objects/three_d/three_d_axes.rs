@@ -9,6 +9,7 @@ use crate::colors::{Color, GradientImageOrColor};
 use crate::objects::three_d::three_d_object::ThreeDObject;
 
 use crate::objects::plotting::number_line::number_line;
+use crate::objects::vector_object::VectorObject;
 use crate::utils::{interpolate, interpolate_tuple_3d};
 
 use super::three_d_object::line_as_cubic_bezier_3d;
@@ -59,9 +60,8 @@ pub fn three_d_axes(
         x_tick_size,
         Some(0.0),
     );
-    let mut x_axis_pieces = x_axis.get_pieces(n_pieces.unwrap_or(20));
-    x_axis_pieces.subobjects.extend(x_axis.subobjects);
-    x_axis = x_axis_pieces;
+    let x_axis_pieces = x_axis.get_pieces(n_pieces.unwrap_or(20));
+    x_axis = VectorObject::new().set_subobjects(vec![x_axis_pieces, VectorObject::new().set_subobjects(x_axis.subobjects)]);
     let mut y_axis = number_line(
         y_min,
         y_max,
@@ -78,9 +78,8 @@ pub fn three_d_axes(
         y_tick_size,
         Some(-PI / 2.0),
     );
-    let mut y_axis_pieces = y_axis.get_pieces(n_pieces.unwrap_or(20));
-    y_axis_pieces.subobjects.extend(y_axis.subobjects);
-    y_axis = y_axis_pieces;
+    let y_axis_pieces = y_axis.get_pieces(n_pieces.unwrap_or(20));
+    y_axis = VectorObject::new().set_subobjects(vec![y_axis_pieces, VectorObject::new().set_subobjects(y_axis.subobjects)]);
     let mut z_axis = number_line(
         z_min,
         z_max,
@@ -97,9 +96,11 @@ pub fn three_d_axes(
         z_tick_size,
         Some(PI / 2.0),
     );
-    let mut z_axis_pieces = z_axis.get_pieces(n_pieces.unwrap_or(20));
-    z_axis_pieces.subobjects.extend(z_axis.subobjects);
-    z_axis = z_axis_pieces;
+    let z_axis_pieces = z_axis.get_pieces(n_pieces.unwrap_or(20));
+    z_axis = VectorObject::new().set_subobjects(vec![
+        z_axis_pieces,
+        VectorObject::new().set_subobjects(z_axis.subobjects)
+    ]);
     let x_axis_3d = ThreeDObject::from_vector_object(&x_axis);
     let y_axis_3d = ThreeDObject::from_vector_object(&y_axis);
     let z_axis_3d = ThreeDObject::from_vector_object(&z_axis).rotate_x(PI / 2.0, true);
@@ -145,22 +146,25 @@ pub fn coords_to_point_3d(
     let x_t = (coords.0 - x_min) / (x_max - x_min);
     let y_t = (coords.1 - y_min) / (y_max - y_min);
     let z_t = (coords.2 - z_min) / (z_max - z_min);
+    let x_axis_merged_points = axes.subobjects[0].subobjects[0].merged_points();
+    let y_axis_merged_points = axes.subobjects[1].subobjects[0].merged_points();
+    let z_axis_merged_points = axes.subobjects[2].subobjects[0].merged_points();
     let x_point = interpolate_tuple_3d(
-        axes.subobjects[0].points[0],
-        axes.subobjects[0].points[axes.subobjects[0].points.len() - 1],
+        x_axis_merged_points[0],
+        x_axis_merged_points[x_axis_merged_points.len() - 1],
         x_t
     );
     let y_point = interpolate_tuple_3d(
-        axes.subobjects[1].points[0],
-        axes.subobjects[1].points[axes.subobjects[1].points.len() - 1],
+        y_axis_merged_points[0],
+        y_axis_merged_points[y_axis_merged_points.len() - 1],
         y_t
     );
     let z_point = interpolate_tuple_3d(
-        axes.subobjects[2].points[0],
-        axes.subobjects[2].points[axes.subobjects[2].points.len() - 1],
+        z_axis_merged_points[0],
+        z_axis_merged_points[z_axis_merged_points.len() - 1],
         z_t
     );
-    return (x_point.0, y_point.1, z_point.1);
+    return (x_point.0, y_point.1, z_point.2);
 }
 
 
@@ -174,9 +178,12 @@ pub fn point_to_coords_3d(
     z_min: f64,
     z_max: f64,
 ) -> (f64, f64, f64) {
-    let x_t = (point.0 - axes.subobjects[0].points[0].0) / (axes.subobjects[0].points[axes.subobjects[0].points.len() - 1].0 - axes.subobjects[0].points[0].0);
-    let y_t = (point.1 - axes.subobjects[1].points[0].1) / (axes.subobjects[1].points[axes.subobjects[1].points.len() - 1].1 - axes.subobjects[1].points[0].1);
-    let z_t = (point.2 - axes.subobjects[2].points[0].1) / (axes.subobjects[2].points[axes.subobjects[2].points.len() - 1].1 - axes.subobjects[2].points[0].1);
+    let x_axis_merged_points = axes.subobjects[0].subobjects[0].merged_points();
+    let y_axis_merged_points = axes.subobjects[1].subobjects[0].merged_points();
+    let z_axis_merged_points = axes.subobjects[2].subobjects[0].merged_points();
+    let x_t = (point.0 - x_axis_merged_points[0].0) / (x_axis_merged_points[x_axis_merged_points.len() - 1].0 - x_axis_merged_points[0].0);
+    let y_t = (point.1 - y_axis_merged_points[0].1) / (y_axis_merged_points[y_axis_merged_points.len() - 1].1 - y_axis_merged_points[0].1);
+    let z_t = (point.2 - z_axis_merged_points[0].2) / (z_axis_merged_points[z_axis_merged_points.len() - 1].2 - z_axis_merged_points[0].2);
     let x = interpolate(x_min, x_max, x_t);
     let y = interpolate(y_min, y_max, y_t);
     let z = interpolate(z_min, z_max, z_t);

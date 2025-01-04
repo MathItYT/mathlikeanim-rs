@@ -1060,6 +1060,21 @@ impl WasmThreeDObject {
         );
         center_js
     }
+    #[wasm_bindgen(js_name = mergedPoints)]
+    pub fn merged_points(&self) -> Array {
+        let merged_points = self.three_d_object.merged_points();
+        let merged_points_js = merged_points.iter().map(
+            |point| {
+                let point_js = Array::of3(
+                    &JsValue::from(point.0),
+                    &JsValue::from(point.1),
+                    &JsValue::from(point.2)
+                );
+                point_js
+            }
+        ).collect::<Array>();
+        merged_points_js
+    }
     #[wasm_bindgen(js_name = moveTo)]
     pub fn move_to(&self, point: Array, recursive: bool) -> WasmThreeDObject {
         let point = (

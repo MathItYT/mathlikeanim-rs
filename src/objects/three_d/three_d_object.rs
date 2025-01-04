@@ -694,6 +694,13 @@ impl ThreeDObject {
             result
         })
     }
+    pub fn merged_points(&self) -> Vec<(f64, f64, f64)> {
+        let mut points = self.points.clone();
+        for subobject in self.subobjects.iter() {
+            points.extend(subobject.merged_points());
+        }
+        points
+    }
     pub async fn from_uv_function(
         uv_function: &'static Function,
         u_range: (f64, f64),
