@@ -88,8 +88,8 @@ impl SceneAPI for Scene {
     fn get_width(&self) -> &u32 {
         return &self.width;
     }
-    async fn render_frame(&mut self) {
-        render_all_vectors(&self.objects, self.width, self.height, self.context, &self.background, self.top_left_corner, self.bottom_right_corner, &self.loaded_images, &self.callback).await;
+    fn render_frame(&mut self) -> Promise {
+        return render_all_vectors(self);
     }
     fn clear(&mut self) {
         self.objects = Vec::new();
@@ -172,8 +172,8 @@ impl Scene {
         self.remove_updater(index);
     }
     #[wasm_bindgen(js_name = renderFrame)]
-    pub async fn render_frame_js(&mut self) {
-        self.render_frame().await;
+    pub fn render_frame_js(&mut self) -> Promise {
+        return self.render_frame();
     }
     #[wasm_bindgen(js_name = clear)]
     pub fn clear_js(&mut self) {

@@ -45,7 +45,7 @@ pub trait SceneAPI {
                     self.update(*index).await;
                 }
                 if frame < duration_in_frames {
-                    self.render_frame().await;
+                    let _ = self.render_frame();
                     self.sleep((1000 / self.get_fps()) as i32).await;
                 }
             }
@@ -87,7 +87,7 @@ pub trait SceneAPI {
                 for i in object_indices.iter() {
                     self.update(*i).await;
                 }
-                self.render_frame().await;
+                let _ = self.render_frame();
                 self.sleep((1000 / self.get_fps()) as i32).await;
             }
         }
@@ -98,12 +98,12 @@ pub trait SceneAPI {
                 for i in object_indices.iter() {
                     self.update(*i).await;
                 }
-                self.render_frame().await;
+                let _ = self.render_frame();
                 self.sleep((1000 / self.get_fps()) as i32).await;
             }
         }
     }
     fn sleep(&mut self, duration_in_ms: i32) -> impl Future<Output = ()>;
-    fn render_frame(&mut self) -> impl Future<Output = ()>;
+    fn render_frame(&mut self) -> Promise;
     fn get_objects_from_indices(&self, object_indices: &Vec<usize>) -> HashMap<usize, VectorObject>;
 }

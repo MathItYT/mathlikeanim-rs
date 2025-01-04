@@ -118,8 +118,8 @@ impl SceneAPI for SVGScene {
     fn get_width(&self) -> &u32 {
         return &self.width;
     }
-    async fn render_frame(&mut self) {
-        render_all_vectors_svg(self).await;
+    fn render_frame(&mut self) -> Promise {
+        return render_all_vectors_svg(self);
     }
     fn get_objects_from_indices(&self, object_indices: &Vec<usize>) -> HashMap<usize, VectorObject> {
         let mut objects = HashMap::new();
@@ -156,10 +156,6 @@ impl SVGScene {
     pub fn get_width_js(&self) -> u32 {
         return self.width;
     }
-    #[wasm_bindgen(js_name = renderFrame)]
-    pub async fn render_frame_js(&mut self) {
-        self.render_frame().await;
-    }
     #[wasm_bindgen(js_name = clear)]
     pub fn clear_js(&mut self) {
         self.clear();
@@ -167,6 +163,10 @@ impl SVGScene {
     #[wasm_bindgen(js_name = setUpdater)]
     pub fn set_updater_js(&mut self, index: usize, updater: Function) {
         self.set_updater(index, updater);
+    }
+    #[wasm_bindgen(js_name = renderFrame)]
+    pub fn render_frame_js(&mut self) -> Promise {
+        return self.render_frame();
     }
     #[wasm_bindgen(js_name = update)]
     pub async fn update_js(&mut self, index: usize) {
