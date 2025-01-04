@@ -8,12 +8,12 @@ pub fn number_line(
     x_min: f64,
     x_max: f64,
     x_step: f64,
+    center: (f64, f64),
     color: Option<(f64, f64, f64, f64)>,
     stroke_width: Option<f64>,
     line_cap: Option<&'static str>,
     line_join: Option<&'static str>,
     index: Option<usize>,
-    center: Option<(f64, f64)>,
     length: Option<f64>,
     add_tip: Option<bool>,
     add_ticks: Option<bool>,
@@ -21,8 +21,8 @@ pub fn number_line(
     angle: Option<f64>,
 ) -> VectorObject {
     let mut result = line(
-        (center.unwrap().0 - length.unwrap_or(1000.0) / 2.0, center.unwrap().1),
-        (center.unwrap().0 + length.unwrap_or(1000.0) / 2.0, center.unwrap().1),
+        (center.0 - length.unwrap_or(1000.0) / 2.0, center.1),
+        (center.0 + length.unwrap_or(1000.0) / 2.0, center.1),
         color,
         stroke_width,
         line_cap,
@@ -33,8 +33,8 @@ pub fn number_line(
         let mut x = x_min;
         while x <= x_max {
             let mut tick = line(
-                (number_to_point(&result, x, x_min, x_max).0, center.unwrap().1 - tick_size.unwrap_or(20.0) / 2.0),
-                (number_to_point(&result, x, x_min, x_max).0, center.unwrap().1 + tick_size.unwrap_or(20.0) / 2.0),
+                (number_to_point(&result, x, x_min, x_max).0, center.1 - tick_size.unwrap_or(20.0) / 2.0),
+                (number_to_point(&result, x, x_min, x_max).0, center.1 + tick_size.unwrap_or(20.0) / 2.0),
                 color,
                 stroke_width,
                 line_cap,

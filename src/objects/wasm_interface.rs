@@ -2749,12 +2749,12 @@ pub fn number_line_js(
     x_min: f64,
     x_max: f64,
     x_step: f64,
+    center: Array,
     color: Option<WasmColor>,
     stroke_width: Option<f64>,
     line_cap: Option<String>,
     line_join: Option<String>,
     index: Option<usize>,
-    center: Option<Array>,
     length: Option<f64>,
     add_tip: Option<bool>,
     add_ticks: Option<bool>,
@@ -2788,21 +2788,18 @@ pub fn number_line_js(
         },
         None => None
     };
-    let center = match center {
-        Some(center) => Some((center.get(0).as_f64().unwrap(), center.get(1).as_f64().unwrap())),
-        None => None
-    };
+    let center = (center.get(0).as_f64().unwrap(), center.get(1).as_f64().unwrap());
     return WasmVectorObject {
         native_vec_features: number_line(
             x_min,
             x_max,
             x_step,
+            center,
             color,
             stroke_width,
             line_cap,
             line_join,
             index,
-            center,
             length,
             add_tip,
             add_ticks,
