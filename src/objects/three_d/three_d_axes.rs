@@ -187,12 +187,18 @@ pub fn point_to_coords_3d(
 pub async fn parametric_plot_in_axes_3d(
     axes: &'static ThreeDObject,
     f: &'static Function,
-    u_min: &'static f64,
-    u_max: &'static f64,
-    v_min: &'static f64,
-    v_max: &'static f64,
+    u_min: f64,
+    u_max: f64,
+    v_min: f64,
+    v_max: f64,
     u_steps: usize,
     v_steps: usize,
+    x_min: &'static f64,
+    x_max: &'static f64,
+    y_min: &'static f64,
+    y_max: &'static f64,
+    z_min: &'static f64,
+    z_max: &'static f64,
     fills: Vec<Color>,
     strokes: Vec<Color>,
     stroke_width: f64,
@@ -201,21 +207,23 @@ pub async fn parametric_plot_in_axes_3d(
     let new_f = Closure::wrap(Box::new(|u, v| {
         let coords_promise = f.call2(&JsValue::NULL, &JsValue::from_f64(u), &JsValue::from_f64(v)).unwrap().dyn_into::<Promise>().unwrap();
         let axes = axes.clone();
-        let u_min = *u_min;
-        let u_max = *u_max;
-        let v_min = *v_min;
-        let v_max = *v_max;
+        let x_min = *x_min;
+        let x_max = *x_max;
+        let y_min = *y_min;
+        let y_max = *y_max;
+        let z_min = *z_min;
+        let z_max = *z_max;
         future_to_promise(async move {
             let coords = JsFuture::from(coords_promise).await.unwrap().dyn_into::<js_sys::Array>().unwrap();
             let coords = (coords.get(0).as_f64().unwrap(), coords.get(1).as_f64().unwrap(), coords.get(2).as_f64().unwrap());
-            let result = coords_to_point_3d(&axes, coords, u_min, u_max, v_min, v_max, -1.0, 1.0);
+            let result = coords_to_point_3d(&axes, coords, x_min, x_max, y_min, y_max, z_min, z_max);
             return Ok(JsValue::from(Array::of3(&JsValue::from_f64(result.0), &JsValue::from_f64(result.1), &JsValue::from_f64(result.2))));
         })
     }) as Box<dyn Fn(f64, f64) -> Promise>);
     ThreeDObject::from_uv_function(
         Box::leak(Box::new(new_f.into_js_value().dyn_into().unwrap())),
-        (*u_min, *u_max),
-        (*v_min, *v_max),
+        (u_min, u_max),
+        (v_min, v_max),
         u_steps,
         v_steps,
         fills,
@@ -235,6 +243,12 @@ pub async fn plot_in_axes_3d(
     v_max: f64,
     u_steps: usize,
     v_steps: usize,
+    x_min: &'static f64,
+    x_max: &'static f64,
+    y_min: &'static f64,
+    y_max: &'static f64,
+    z_min: &'static f64,
+    z_max: &'static f64,
     fills: Vec<Color>,
     strokes: Vec<Color>,
     stroke_width: f64,
@@ -250,12 +264,18 @@ pub async fn plot_in_axes_3d(
     parametric_plot_in_axes_3d(
         axes,
         Box::leak(Box::new(new_f.into_js_value().dyn_into().unwrap())),
-        Box::leak(Box::new(u_min)),
-        Box::leak(Box::new(u_max)),
-        Box::leak(Box::new(v_min)),
-        Box::leak(Box::new(v_max)),
+        u_min,
+        u_max,
+        v_min,
+        v_max,
         u_steps,
         v_steps,
+        x_min,
+        x_max,
+        y_min,
+        y_max,
+        z_min,
+        z_max,
         fills,
         strokes,
         stroke_width,
