@@ -11,6 +11,7 @@ exclude = [
     "/docs",
     "/javascript",
     "/target",
+    "/python",
     "*.svg",
     "*.mp4",
     "*.tex",
