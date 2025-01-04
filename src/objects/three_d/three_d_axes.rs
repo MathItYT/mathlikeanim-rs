@@ -243,8 +243,8 @@ pub async fn plot_in_axes_3d(
     let new_f = Closure::wrap(Box::new(|u, v| {
         let promise = f.call2(&JsValue::NULL, &JsValue::from_f64(u), &JsValue::from_f64(v)).unwrap().dyn_into::<Promise>().unwrap();
         future_to_promise(async move {
-            let result = JsFuture::from(promise).await.unwrap().as_f64().unwrap();
-            return Ok(JsValue::from_f64(result));
+            let val = JsFuture::from(promise).await.unwrap().as_f64().unwrap();
+            return Ok(JsValue::from(Array::of3(&JsValue::from_f64(u), &JsValue::from_f64(v), &JsValue::from_f64(val))));
         })
     }) as Box<dyn Fn(f64, f64) -> Promise>);
     parametric_plot_in_axes_3d(
