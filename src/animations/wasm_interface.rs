@@ -8,6 +8,7 @@ use super::create::create_3d;
 use super::create_axes_3d::create_axes_3d;
 use super::draw_stroke_then_fill::draw_stroke_then_fill_3d;
 use super::fade::{fade_in_3d, fade_out_3d};
+use super::grow_from_center::grow_from_center_3d;
 use super::morph_shape::morph_shape_3d;
 use super::rotate_animation::{rotate_x_animation_3d, rotate_y_animation_3d, rotate_z_animation_3d};
 use super::scale_in_place::scale_in_place_3d;
@@ -199,6 +200,16 @@ pub fn grow_from_center_js(
     let vec_obj = vec_obj.native_vec_features;
     let new_vec_obj = grow_from_center(vec_obj, t);
     return WasmVectorObject { native_vec_features: new_vec_obj };
+}
+
+
+#[wasm_bindgen(js_name = growFromCenter3D)]
+pub fn grow_from_center_3d_js(
+    obj_3d: WasmThreeDObject,
+    t: f64,
+) -> WasmThreeDObject {
+    let obj_3d = obj_3d.three_d_object;
+    WasmThreeDObject { three_d_object: grow_from_center_3d(obj_3d, t) }
 }
 
 
