@@ -6,7 +6,7 @@
 
 use std::{f64::consts::PI, vec};
 
-use crate::{colors::{Color, GradientImageOrColor}, objects::{geometry::arc::elliptical_arc, vector_object::{generate_cubic_bezier_tuples, generate_subpaths, partial_bezier_points, VectorObject}}};
+use crate::{colors::{Color, GradientImageOrColor}, objects::{geometry::arc::elliptical_arc, three_d::three_d_object::{generate_cubic_bezier_tuples_3d, generate_subpaths_3d, line_as_cubic_bezier_3d, partial_bezier_points_3d, ThreeDObject}, vector_object::{generate_cubic_bezier_tuples, generate_subpaths, partial_bezier_points, VectorObject}}};
 use wasm_bindgen::prelude::*;
 
 /// Log utilities for console when using WebAssembly
@@ -176,6 +176,52 @@ pub fn bezier(points: &Vec<(f64, f64)>, t: f64) -> (f64, f64) {
 }
 
 
+pub fn bezier_3d(points: &Vec<(f64, f64, f64)>, t: f64) -> (f64, f64, f64) {
+    let n = points.len() - 1;
+    if n == 0 {
+        return points[0];
+    }
+    if n == 1 {
+        let p1 = points[0];
+        let p2 = points[1];
+        let x = (1.0 - t) * p1.0 + t * p2.0;
+        let y = (1.0 - t) * p1.1 + t * p2.1;
+        let z = (1.0 - t) * p1.2 + t * p2.2;
+        return (x, y, z);
+    }
+    if n == 2 {
+        let p1 = points[0];
+        let p2 = points[1];
+        let p3 = points[2];
+        let x = (1.0 - t) * (1.0 - t) * p1.0 + 2.0 * (1.0 - t) * t * p2.0 + t * t * p3.0;
+        let y = (1.0 - t) * (1.0 - t) * p1.1 + 2.0 * (1.0 - t) * t * p2.1 + t * t * p3.1;
+        let z = (1.0 - t) * (1.0 - t) * p1.2 + 2.0 * (1.0 - t) * t * p2.2 + t * t * p3.2;
+        return (x, y, z);
+    }
+    if n == 3 {
+        let p1 = points[0];
+        let p2 = points[1];
+        let p3 = points[2];
+        let p4 = points[3];
+        let x = (1.0 - t) * (1.0 - t) * (1.0 - t) * p1.0 + 3.0 * (1.0 - t) * (1.0 - t) * t * p2.0 + 3.0 * (1.0 - t) * t * t * p3.0 + t * t * t * p4.0;
+        let y = (1.0 - t) * (1.0 - t) * (1.0 - t) * p1.1 + 3.0 * (1.0 - t) * (1.0 - t) * t * p2.1 + 3.0 * (1.0 - t) * t * t * p3.1 + t * t * t * p4.1;
+        let z = (1.0 - t) * (1.0 - t) * (1.0 - t) * p1.2 + 3.0 * (1.0 - t) * (1.0 - t) * t * p2.2 + 3.0 * (1.0 - t) * t * t * p3.2 + t * t * t * p4.2;
+        return (x, y, z);
+    }
+    let mut x = 0.0;
+    let mut y = 0.0;
+    let mut z = 0.0;
+    for i in 0..n + 1 {
+        let p = points[i];
+        let b = choose(n as u64, i as u64) as f64 * (1.0 - t).powi((n - i) as i32) * t.powi(i as i32);
+        x += b * p.0;
+        y += b * p.1;
+        z += b * p.2;
+    }
+    return (x, y, z);
+}
+
+
 /// A function that returns a `f64` representing a one-dimensional Bezier polynomial at `t`.
 pub fn bezier_f64(numbers: Vec<f64>, t: f64) -> f64 {
     let n = numbers.len() - 1;
@@ -327,6 +373,29 @@ pub fn start_new_path(points: &Vec<(f64, f64)>, point: (f64, f64)) -> Vec<(f64, 
 }
 
 
+pub fn get_start_anchors_3d(points: &Vec<(f64, f64, f64)>) -> Vec<(f64, f64, f64)> {
+    let mut start_anchors = Vec::new();
+    for i in (0..points.len()).step_by(4) {
+        start_anchors.push(points[i]);
+    }
+    return start_anchors;
+}
+
+
+pub fn start_new_path_3d(points: &Vec<(f64, f64, f64)>, point: (f64, f64, f64)) -> Vec<(f64, f64, f64)> {
+    let mut points = points.clone();
+    if points.len() % 4 != 0 {
+        let anchors = get_start_anchors_3d(&points);
+        let last_anchor = anchors[anchors.len() - 1];
+        for _ in 0..(4 - points.len() % 4) {
+            points.push(last_anchor);
+        }
+    }
+    points.push(point);
+    return points.clone();
+}
+
+
 pub fn has_new_path_begun(points: &Vec<(f64, f64)>) -> bool {
     return points.len() % 4 == 1;
 }
@@ -353,6 +422,67 @@ pub fn get_nth_subpath(subpaths: &Vec<Vec<(f64, f64)>>, n: usize) -> Vec<(f64, f
         }
     }
     return path;
+}
+
+
+pub fn get_nth_subpath_3d(subpaths: &Vec<Vec<(f64, f64, f64)>>, n: usize) -> Vec<(f64, f64, f64)> {
+    if n >= subpaths.len() {
+        let point = subpaths[subpaths.len() - 1][subpaths[subpaths.len() - 1].len() - 1];
+        return vec![point; 4];
+    }
+    let mut path = subpaths[n].clone();
+    while path.len() > 4 {
+        let mut path_equals = true;
+        for i in 0..4 {
+            if !consider_points_equals_3d(path[path.len() - 4 + i], path[path.len() - 5]) {
+                path_equals = false;
+                break;
+            }
+        }
+        if path_equals {
+            path = path[..path.len() - 4].to_vec();
+        } else {
+            break;
+        }
+    }
+    return path;
+}
+
+
+pub fn insert_n_curves_to_point_list_3d(
+    n: usize,
+    points: &Vec<(f64, f64, f64)>
+) -> Vec<(f64, f64, f64)> {
+    if points.len() == 1 {
+        return vec![points[0]; 4 * (n + 1)];
+    }
+    let bezier_quads = generate_cubic_bezier_tuples_3d(&points);
+    let target_num = bezier_quads.len() + n;
+    let mut repeat_indices = Vec::new();
+    for i in 0..target_num {
+        let index = i * bezier_quads.len() / target_num;
+        repeat_indices.push(index);
+    }
+    let mut split_factors = Vec::new();
+    for _ in 0..bezier_quads.len() {
+        let split_factor = 0;
+        split_factors.push(split_factor);
+    }
+    for val in repeat_indices {
+        split_factors[val] += 1;
+    }
+    let mut new_points = Vec::new();
+    for (bezier_quad, split_factor) in bezier_quads.iter().zip(split_factors) {
+        let mut alphas = Vec::new();
+        for i in 0..split_factor + 1 {
+            let alpha = i as f64 / (split_factor as f64);
+            alphas.push(alpha);
+        }
+        for (a1, a2) in alphas.iter().zip(alphas.iter().skip(1)) {
+            new_points.extend(partial_bezier_points_3d(&vec![bezier_quad.0, bezier_quad.1, bezier_quad.2, bezier_quad.3], *a1, *a2));
+        }
+    }
+    return new_points;
 }
 
 
@@ -390,6 +520,24 @@ pub fn insert_n_curves_to_point_list(
         }
     }
     return new_points;
+}
+
+
+pub fn null_point_align_3d(
+    obj1: ThreeDObject,
+    obj2: ThreeDObject
+) -> (ThreeDObject, ThreeDObject) {
+    let mut obj1 = obj1;
+    let mut obj2 = obj2;
+    if obj1.points.len() == 0 && obj2.points.len() > 0 {
+        obj2.subobjects.push(obj2.set_subobjects(vec![]));
+        obj2.points.clear();
+    }
+    if obj2.points.len() == 0 && obj1.points.len() > 0 {
+        obj1.subobjects.push(obj1.set_subobjects(vec![]));
+        obj1.points.clear();
+    }
+    return (obj1, obj2);
 }
 
 
@@ -435,6 +583,28 @@ pub fn center(points: &Vec<(f64, f64)>, center_if_no_points: (f64, f64)) -> (f64
 }
 
 
+pub fn center_3d(points: &Vec<(f64, f64, f64)>, center_if_no_points: (f64, f64, f64)) -> (f64, f64, f64) {
+    if points.len() == 0 {
+        return center_if_no_points;
+    }
+    let mut min_x = f64::INFINITY;
+    let mut min_y = f64::INFINITY;
+    let mut min_z = f64::INFINITY;
+    let mut max_x = f64::NEG_INFINITY;
+    let mut max_y = f64::NEG_INFINITY;
+    let mut max_z = f64::NEG_INFINITY;
+    for point in points {
+        min_x = min_x.min(point.0);
+        min_y = min_y.min(point.1);
+        min_z = min_z.min(point.2);
+        max_x = max_x.max(point.0);
+        max_y = max_y.max(point.1);
+        max_z = max_z.max(point.2);
+    }
+    return ((min_x + max_x) / 2.0, (min_y + max_y) / 2.0, (min_z + max_z) / 2.0);
+}
+
+
 pub fn align_points(points1: &Vec<(f64, f64)>, points2: &Vec<(f64, f64)>, center_if_no_points: (f64, f64)) -> (Vec<(f64, f64)>, Vec<(f64, f64)>) {
     let mut points1 = points1.clone();
     let mut points2 = points2.clone();
@@ -465,6 +635,48 @@ pub fn align_points(points1: &Vec<(f64, f64)>, points2: &Vec<(f64, f64)>, center
         let diff2 = ((path1.len() as i32 - path2.len() as i32) / 4).max(0) as usize;
         let path1 = insert_n_curves_to_point_list(diff1, &path1);
         let path2 = insert_n_curves_to_point_list(diff2, &path2);
+        new_points1.extend(path1);
+        new_points2.extend(path2);
+    }
+    return (new_points1, new_points2);
+}
+
+
+pub fn has_new_path_begun_3d(points: &Vec<(f64, f64, f64)>) -> bool {
+    return points.len() % 4 == 1;
+}
+
+
+pub fn align_points_3d(points1: &Vec<(f64, f64, f64)>, points2: &Vec<(f64, f64, f64)>, center_if_no_points: (f64, f64, f64)) -> (Vec<(f64, f64, f64)>, Vec<(f64, f64, f64)>) {
+    let mut points1 = points1.clone();
+    let mut points2 = points2.clone();
+    if points1.len() == 0 {
+        let c = center_3d(&points1, center_if_no_points);
+        points1 = start_new_path_3d(&points1, c);
+    }
+    if has_new_path_begun_3d(&points1) {
+        points1.extend(line_as_cubic_bezier_3d(points1[points1.len() - 1], points1[points1.len() - 1]));
+    }
+    if points2.len() == 0 {
+        let c = center_3d(&points2, center_if_no_points);
+        points2 = start_new_path_3d(&points2, c);
+    }
+    if has_new_path_begun_3d(&points2) {
+        points2.extend(line_as_cubic_bezier_3d(points2[points2.len() - 1], points2[points2.len() - 1]));
+    }
+    let subpaths1 = generate_subpaths_3d(&points1);
+    let subpaths2 = generate_subpaths_3d(&points2);
+    let n_subpaths = subpaths1.len().max(subpaths2.len());
+    let mut new_points1 = Vec::new();
+    let mut new_points2 = Vec::new();
+
+    for i in 0..n_subpaths {
+        let path1 = get_nth_subpath_3d(&subpaths1, i);
+        let path2 = get_nth_subpath_3d(&subpaths2, i);
+        let diff1 = ((path2.len() as i32 - path1.len() as i32) / 4).max(0) as usize;
+        let diff2 = ((path1.len() as i32 - path2.len() as i32) / 4).max(0) as usize;
+        let path1 = insert_n_curves_to_point_list_3d(diff1, &path1);
+        let path2 = insert_n_curves_to_point_list_3d(diff2, &path2);
         new_points1.extend(path1);
         new_points2.extend(path2);
     }
@@ -532,6 +744,63 @@ pub fn add_n_more_subobjects(
 }
 
 
+pub fn add_n_more_subobjects_3d(
+    obj: ThreeDObject,
+    n: usize,
+    center_if_no_points: (f64, f64, f64)
+) -> ThreeDObject {
+    let subobjects = obj.subobjects.clone();
+    if n == 0 {
+        return obj;
+    }
+    if subobjects.len() == 0 {
+        let subobjects = vec![ThreeDObject {
+            points: vec![center_3d(&obj.points, center_if_no_points)],
+            subobjects: vec![],
+            index: 0,
+            fill: GradientImageOrColor::Color(Color {
+                red: 0.0,
+                green: 0.0,
+                blue: 0.0,
+                alpha: 0.0,
+            }),
+            stroke: GradientImageOrColor::Color(Color {
+                red: 0.0,
+                green: 0.0,
+                blue: 0.0,
+                alpha: 0.0,
+            }),
+            stroke_width: 0.0,
+        }; n];
+        return obj.set_subobjects(subobjects);
+    }
+    let target = subobjects.len() + n;
+    let mut repeat_indices = Vec::new();
+    for i in 0..target {
+        let index = i * subobjects.len() / target;
+        repeat_indices.push(index);
+    }
+    let mut split_factors = Vec::new();
+    for _ in 0..subobjects.len() {
+        let split_factor = 0;
+        split_factors.push(split_factor);
+    }
+    for val in repeat_indices {
+        split_factors[val] += 1;
+    }
+    let mut new_subobjects = Vec::new();
+    for (subobject, split_factor) in subobjects.iter().zip(split_factors) {
+        new_subobjects.push(subobject.clone());
+        for _ in 1..split_factor {
+            new_subobjects.push(subobject
+                .set_fill_opacity(0.0, true)
+                .set_stroke_opacity(0.0, true));
+        }
+    }
+    return obj.set_subobjects(new_subobjects);
+}
+
+
 pub fn align_subobjects(
     vec_obj1: VectorObject,
     vec_obj2: VectorObject,
@@ -540,6 +809,18 @@ pub fn align_subobjects(
     return (
         add_n_more_subobjects(vec_obj1.clone(), (vec_obj2.subobjects.len() as i32 - vec_obj1.subobjects.len() as i32).max(0) as usize, center_if_no_points),
         add_n_more_subobjects(vec_obj2.clone(), (vec_obj1.subobjects.len() as i32 - vec_obj2.subobjects.len() as i32).max(0) as usize, center_if_no_points)
+    );
+}
+
+
+pub fn align_subobjects_3d(
+    obj1: ThreeDObject,
+    obj2: ThreeDObject,
+    center_if_no_points: (f64, f64, f64)
+) -> (ThreeDObject, ThreeDObject) {
+    return (
+        add_n_more_subobjects_3d(obj1.clone(), (obj2.subobjects.len() as i32 - obj1.subobjects.len() as i32).max(0) as usize, center_if_no_points),
+        add_n_more_subobjects_3d(obj2.clone(), (obj1.subobjects.len() as i32 - obj2.subobjects.len() as i32).max(0) as usize, center_if_no_points)
     );
 }
 
@@ -566,6 +847,31 @@ pub fn align_data(
         vec_obj2.subobjects[i] = subobject2;
     }
     return (vec_obj1, vec_obj2);
+}
+
+
+pub fn align_data_3d(
+    obj1: ThreeDObject,
+    obj2: ThreeDObject,
+    skip_point_align: bool,
+    center_if_no_points: (f64, f64, f64)
+) -> (ThreeDObject, ThreeDObject) {
+    let (
+        mut obj1,
+        mut obj2
+    ) = null_point_align_3d(obj1, obj2);
+    (obj1, obj2) = align_subobjects_3d(obj1, obj2, center_if_no_points);
+    if !skip_point_align {
+        let (new_points1, new_points2) = align_points_3d(&obj1.points, &obj2.points, center_if_no_points);
+        obj1.points = new_points1;
+        obj2.points = new_points2;
+    }
+    for i in 0..obj1.subobjects.len() {
+        let (subobject1, subobject2) = align_data_3d(obj1.subobjects[i].clone(), obj2.subobjects[i].clone(), false, center_if_no_points);
+        obj1.subobjects[i] = subobject1;
+        obj2.subobjects[i] = subobject2;
+    }
+    return (obj1, obj2);
 }
 
 
@@ -613,6 +919,19 @@ pub fn quadratic_bezier_as_cubic_bezier(p1: (f64, f64), p2: (f64, f64), p3: (f64
 /// Checks if two points `(f64, f64)` are equal given a tolerance.
 pub fn consider_points_equals(p1: (f64, f64), p2: (f64, f64)) -> bool {
     return distance_squared(p1, p2) < 0.001;
+}
+
+
+pub fn distance_squared_3d(p1: (f64, f64, f64), p2: (f64, f64, f64)) -> f64 {
+    let dx = p1.0 - p2.0;
+    let dy = p1.1 - p2.1;
+    let dz = p1.2 - p2.2;
+    return dx * dx + dy * dy + dz * dz; // for faster computation, we don't use sqrt
+}
+
+
+pub fn consider_points_equals_3d(p1: (f64, f64, f64), p2: (f64, f64, f64)) -> bool {
+    return distance_squared_3d(p1, p2) < 0.001;
 }
 
 
@@ -669,11 +988,23 @@ pub fn smoothererstep(t: f64) -> f64 {
 
 
 pub fn rush_into(t: f64, inflection: f64) -> f64 {
+    if t == 0.0 {
+        return 0.0;
+    }
+    if t == 1.0 {
+        return 1.0;
+    }
     return 2.0 * smooth(t / 2.0, inflection);
 }
 
 
 pub fn rush_from(t: f64, inflection: f64) -> f64 {
+    if t == 0.0 {
+        return 0.0;
+    }
+    if t == 1.0 {
+        return 1.0;
+    }
     return 2.0 * smooth(t / 2.0 + 0.5, inflection) - 1.0;
 }
 

@@ -1,7 +1,7 @@
 pub mod draw_stroke_then_fill;
 pub mod scale_in_place;
 pub mod fade;
-pub mod animation_group;
+pub mod create_axes_3d;
 pub mod morph_shape;
 pub mod grow_arrow;
 pub mod create;

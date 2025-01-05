@@ -5,7 +5,7 @@ use js_sys::{Function, Promise};
 use wasm_bindgen::{prelude::Closure, JsCast, JsValue};
 use wasm_bindgen_futures::{future_to_promise, JsFuture};
 
-use crate::{colors::{Color, GradientImageOrColor, GradientStop, LinearGradient}, objects::vector_object::VectorObject, utils::{interpolate, interpolate_tuple_3d}};
+use crate::{colors::{Color, GradientImageOrColor, GradientStop, LinearGradient}, objects::vector_object::VectorObject, utils::{bezier_3d, consider_points_equals_3d, integer_interpolate, interpolate, interpolate_tuple_3d}};
 
 pub fn rot_matrix(angle: f64, axis: usize) -> [[f64; 3]; 3] {
     let mut matrix = [[0.0; 3]; 3];
@@ -369,6 +369,65 @@ pub fn line_as_cubic_bezier_3d(start: (f64, f64, f64), end: (f64, f64, f64)) -> 
     return vec![start, interpolate_tuple_3d(start, end, 1.0 / 3.0), interpolate_tuple_3d(start, end, 2.0 / 3.0), end];
 }
 
+
+pub fn generate_subpaths_3d(points: &Vec<(f64, f64, f64)>) -> Vec<Vec<(f64, f64, f64)>> {
+    let mut subpaths = Vec::new();
+    let range = (4..points.len()).step_by(4);
+    let filtered = range.filter(|i| {
+        let p1 = points[i - 1];
+        let p2 = points[*i];
+        return !consider_points_equals_3d(p1, p2);
+    });
+    let split_indices = [0].iter()
+        .chain(filtered.collect::<Vec<usize>>().iter())
+        .chain([points.len()].iter())
+        .map(|i| *i)
+        .collect::<Vec<usize>>();
+    for i in 0..split_indices.len() - 1 {
+        let start = split_indices[i];
+        let end = split_indices[i + 1];
+        subpaths.push(points[start..end].to_vec());
+    }
+    subpaths
+}
+
+
+pub fn partial_bezier_points_3d(points: &Vec<(f64, f64, f64)>, start_t: f64, end_t: f64) -> Vec<(f64, f64, f64)> {
+    if start_t == 1.0 {
+        let mut result = Vec::new();
+        for _ in (0..points.len()).step_by(3) {
+            result.push(points[points.len() - 1]);
+        }
+        return result;
+    }
+    let mut a_to_1 = Vec::new();
+    for i in 0..points.len() {
+        a_to_1.push(bezier_3d(&points[i..points.len()].to_vec(), start_t));
+    }
+    let end_prop = (end_t - start_t) / (1.0 - start_t);
+    let mut result = Vec::new();
+    for i in 0..points.len() {
+        result.push(bezier_3d(&a_to_1[0..i + 1].to_vec(), end_prop));
+    }
+    result
+}
+
+
+pub fn generate_cubic_bezier_tuples_3d(points: &Vec<(f64, f64, f64)>) -> Vec<((f64, f64, f64), (f64, f64, f64), (f64, f64, f64), (f64, f64, f64))> {
+    let remainder = points.len() % 4;
+    let points = points[0..points.len() - remainder].to_vec();
+    let mut tuples = Vec::new();
+    for i in (0..points.len()).step_by(4) {
+        let p1 = points[i];
+        let p2 = points[i + 1];
+        let p3 = points[i + 2];
+        let p4 = points[i + 3];
+        tuples.push((p1, p2, p3, p4));
+    }
+    tuples
+}
+
+
 impl ThreeDObject {
     pub fn new(
         points: Vec<(f64, f64, f64)>,
@@ -407,36 +466,35 @@ impl ThreeDObject {
             index: self.index
         }
     }
-    pub fn set_fill(&self, color: GradientImageOrColor) -> ThreeDObject {
-        ThreeDObject {
-            points: self.points.clone(),
-            subobjects: self.subobjects.clone(),
-            fill: ensure_valid_three_d_color(color),
-            stroke: self.stroke.clone(),
-            stroke_width: self.stroke_width,
-            index: self.index
+    pub fn set_fill(&self, color: GradientImageOrColor, recursive: bool) -> ThreeDObject {
+        let mut result = self.clone();
+        result.fill = ensure_valid_three_d_color(color.clone());
+        if recursive {
+            result.subobjects = result.subobjects.iter().map(|subobject| {
+                subobject.set_fill(color.clone(), true)
+            }).collect();
         }
+        result
     }
-    pub fn set_stroke(&self, color: GradientImageOrColor) -> ThreeDObject {
-        ThreeDObject {
-            points: self.points.clone(),
-            subobjects: self.subobjects.clone(),
-            fill: self.fill.clone(),
-            stroke: ensure_valid_three_d_color(color),
-            stroke_width: self.stroke_width,
-            index: self.index
+    pub fn set_stroke(&self, color: GradientImageOrColor, recursive: bool) -> ThreeDObject {
+        let mut result = self.clone();
+        result.stroke = ensure_valid_three_d_color(color.clone());
+        if recursive {
+            result.subobjects = result.subobjects.iter().map(|subobject| {
+                subobject.set_stroke(color.clone(), true)
+            }).collect();
         }
+        result
     }
-
-    pub fn set_stroke_width(&self, width: f64) -> ThreeDObject {
-        ThreeDObject {
-            points: self.points.clone(),
-            subobjects: self.subobjects.clone(),
-            fill: self.fill.clone(),
-            stroke: self.stroke.clone(),
-            stroke_width: width,
-            index: self.index
+    pub fn set_stroke_width(&self, width: f64, recursive: bool) -> ThreeDObject {
+        let mut result = self.clone();
+        result.stroke_width = width;
+        if recursive {
+            result.subobjects = result.subobjects.iter().map(|subobject| {
+                subobject.set_stroke_width(width, true)
+            }).collect();
         }
+        result
     }
     pub fn get_points(&self) -> Vec<(f64, f64, f64)> {
         self.points.clone()
@@ -492,6 +550,86 @@ impl ThreeDObject {
             stroke_width: self.stroke_width,
             index: self.index
         }
+    }
+    pub fn get_critical_point(&self, key: (f64, f64, f64)) -> (f64, f64, f64) {
+        let ((min_x, min_y, min_z), (max_x, max_y, max_z)) = self.get_bounding_box();
+        let (cx, cy, cz) = ((min_x + max_x) / 2.0, (min_y + max_y) / 2.0, (min_z + max_z) / 2.0);
+        let (key_x, key_y, key_z) = key;
+        let x = if key_x == 0.0 {
+            cx
+        } else if key_x < 0.0 {
+            min_x
+        } else {
+            max_x
+        };
+        let y = if key_y == 0.0 {
+            cy
+        } else if key_y < 0.0 {
+            min_y
+        } else {
+            max_y
+        };
+        let z = if key_z == 0.0 {
+            cz
+        } else if key_z < 0.0 {
+            min_z
+        } else {
+            max_z
+        };
+        (x, y, z)
+    }
+    pub fn next_to_other(
+        &self,
+        other: &ThreeDObject,
+        direction: (f64, f64, f64),
+        buff: f64,
+        aligned_edge: (f64, f64, f64),
+        recursive: bool
+    ) -> ThreeDObject {
+        let key1 = (direction.0 + aligned_edge.0, direction.1 + aligned_edge.1, direction.2 + aligned_edge.2);
+        let key2 = (-direction.0 + aligned_edge.0, -direction.1 + aligned_edge.1, -direction.2 + aligned_edge.2);
+        let target_point = other.get_critical_point(key1);
+        let point_to_align = self.get_critical_point(key2);
+        let shift = (target_point.0 - point_to_align.0 + buff * direction.0, target_point.1 - point_to_align.1 + buff * direction.1, target_point.2 - point_to_align.2 + buff * direction.2);
+        let result = self.shift(shift, recursive);
+        return result;
+    }
+    pub fn next_to_point(
+        &self,
+        point: (f64, f64, f64),
+        direction: (f64, f64, f64),
+        buff: f64,
+        aligned_edge: (f64, f64, f64),
+        recursive: bool
+    ) -> ThreeDObject {
+        let key2 = (-direction.0 + aligned_edge.0, -direction.1 + aligned_edge.1, -direction.2 + aligned_edge.2);
+        let target_point = point;
+        let point_to_align = self.get_critical_point(key2);
+        let shift = (target_point.0 - point_to_align.0 + buff * direction.0, target_point.1 - point_to_align.1 + buff * direction.1, target_point.2 - point_to_align.2 + buff * direction.2);
+        let result = self.shift(shift, recursive);
+        return result;
+    }
+    pub fn arrange_subobjects(
+        &self,
+        direction: (f64, f64, f64),
+        buff: f64,
+        aligned_edge: (f64, f64, f64),
+        recursive: bool
+    ) -> ThreeDObject {
+        if self.subobjects.len() == 0 {
+            return self.clone();
+        }
+        let mut result = self.clone();
+        let first_subobject = &self.subobjects[0];
+        let mut new_subobjects = vec![first_subobject.clone()];
+        for i in 1..self.subobjects.len() {
+            let previous_subobject = &new_subobjects[i - 1];
+            let next_subobject = &self.subobjects[i];
+            let new_subobject = previous_subobject.next_to_other(next_subobject, direction, buff, aligned_edge, recursive);
+            new_subobjects.push(new_subobject);
+        }
+        result.subobjects = new_subobjects;
+        result
     }
     pub fn shift(&self, shift: (f64, f64, f64), recursive: bool) -> ThreeDObject {
         let new_points = shift_points_3d(&self.points, shift);
@@ -586,12 +724,154 @@ impl ThreeDObject {
             index: self.index
         }
     }
+    pub fn set_fill_opacity(&self, alpha: f64, recursive: bool) -> ThreeDObject {
+        let mut result = self.clone();
+        match &mut result.fill {
+            GradientImageOrColor::Color(color) => {
+                color.alpha = alpha;
+            },
+            GradientImageOrColor::LinearGradient(gradient) => {
+                gradient.alpha = alpha;
+            },
+            GradientImageOrColor::RadialGradient(gradient) => {
+                gradient.alpha = alpha;
+            },
+            GradientImageOrColor::Image(image) => {
+                image.alpha = alpha;
+            }
+        }
+        if recursive {
+            result.subobjects = result.subobjects.iter().map(|subobject| {
+                subobject.set_fill_opacity(alpha, true)
+            }).collect();
+        }
+        result
+    }
+    pub fn set_stroke_opacity(&self, alpha: f64, recursive: bool) -> ThreeDObject {
+        let mut result = self.clone();
+        match &mut result.stroke {
+            GradientImageOrColor::Color(color) => {
+                color.alpha = alpha;
+            },
+            GradientImageOrColor::LinearGradient(gradient) => {
+                gradient.alpha = alpha;
+            },
+            GradientImageOrColor::RadialGradient(gradient) => {
+                gradient.alpha = alpha;
+            },
+            GradientImageOrColor::Image(image) => {
+                image.alpha = alpha;
+            }
+        }
+        if recursive {
+            result.subobjects = result.subobjects.iter().map(|subobject| {
+                subobject.set_stroke_opacity(alpha, true)
+            }).collect();
+        }
+        result
+    }
+    pub fn get_fill_opacity(&self) -> f64 {
+        match &self.fill {
+            GradientImageOrColor::Color(color) => color.alpha,
+            GradientImageOrColor::LinearGradient(gradient) => gradient.alpha,
+            GradientImageOrColor::RadialGradient(gradient) => gradient.alpha,
+            GradientImageOrColor::Image(image) => image.alpha
+        }
+    }
+    pub fn get_stroke_opacity(&self) -> f64 {
+        match &self.stroke {
+            GradientImageOrColor::Color(color) => color.alpha,
+            GradientImageOrColor::LinearGradient(gradient) => gradient.alpha,
+            GradientImageOrColor::RadialGradient(gradient) => gradient.alpha,
+            GradientImageOrColor::Image(image) => image.alpha
+        }
+    }
     pub fn get_subobjects_recursively(&self) -> Vec<ThreeDObject> {
         let mut subobjects = self.subobjects.clone();
         for subobject in self.subobjects.iter() {
             subobjects.extend(subobject.get_subobjects_recursively());
         }
         subobjects
+    }
+    pub fn get_partial_copy(&self, start_t: f64, end_t: f64, recursive: bool) -> ThreeDObject {
+        if start_t <= 0.0 && end_t >= 1.0 {
+            return self.clone();
+        }
+        let bezier_tuples = self.get_cubic_bezier_tuples();
+        if bezier_tuples.len() == 0 {
+            if recursive {
+                return self.set_subobjects(
+                    self.subobjects.iter().map(|subobject| {
+                        subobject.get_partial_copy(start_t, end_t, true)
+                    }).collect()
+                );
+            } else {
+                return self.clone();
+            }
+        }
+        let (lower_index, lower_residue) = integer_interpolate(0.0, bezier_tuples.len() as f64, start_t);
+        let (upper_index, upper_residue) = integer_interpolate(0.0, bezier_tuples.len() as f64, end_t);
+        if lower_index == upper_index {
+            let new_points = partial_bezier_points_3d(
+                &vec![
+                    bezier_tuples[lower_index as usize].0,
+                    bezier_tuples[lower_index as usize].1,
+                    bezier_tuples[lower_index as usize].2,
+                    bezier_tuples[lower_index as usize].3
+                ],
+                lower_residue,
+                upper_residue
+            );
+            let new_subobjects = if recursive {
+                self.subobjects.iter().map(|subobject| {
+                    subobject.get_partial_copy(start_t, end_t, true)
+                }).collect()
+            } else {
+                self.subobjects.clone()
+            };
+            let mut new_object = self.clone();
+            new_object.points = new_points;
+            new_object.subobjects = new_subobjects;
+            return new_object;
+        }
+        let mut new_points = Vec::new();
+        new_points.extend(partial_bezier_points_3d(
+            &vec![
+                bezier_tuples[lower_index as usize].0,
+                bezier_tuples[lower_index as usize].1,
+                bezier_tuples[lower_index as usize].2,
+                bezier_tuples[lower_index as usize].3
+            ],
+            lower_residue,
+            1.0
+        ));
+        for quad in bezier_tuples[(lower_index + 1) as usize..(upper_index as usize)].to_vec() {
+            new_points.extend(vec![quad.0, quad.1, quad.2, quad.3]);
+        }
+        new_points.extend(partial_bezier_points_3d(
+            &vec![
+                bezier_tuples[upper_index as usize].0,
+                bezier_tuples[upper_index as usize].1,
+                bezier_tuples[upper_index as usize].2,
+                bezier_tuples[upper_index as usize].3
+            ],
+            0.0,
+            upper_residue
+        ));
+        let new_subobjects = if recursive {
+            self.subobjects.iter().map(|subobject| {
+                subobject.get_partial_copy(start_t, end_t, true)
+            }).collect()
+        } else {
+            self.subobjects.clone()
+        };
+        let mut new_object = self.clone();
+        new_object.points = new_points;
+        new_object.subobjects = new_subobjects;
+        new_object
+    }
+    pub fn get_cubic_bezier_tuples(&self) -> Vec<((f64, f64, f64), (f64, f64, f64), (f64, f64, f64), (f64, f64, f64))> {
+        generate_cubic_bezier_tuples_3d(&self.points)
     }
     pub fn project_and_shade(&self, camera: &Camera, light_source: &LightSource) -> VectorObject {
         let mut subobjects_3d = self.get_subobjects_recursively();

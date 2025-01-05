@@ -64,6 +64,10 @@ pub fn get_partial_points(
     }
     let bezier_quads = vector_features.get_cubic_bezier_tuples();
     if bezier_quads.len() == 0 {
+        let mut new_subobjects = subobjects.clone();
+        if recursive {
+            new_subobjects = new_subobjects.iter().map(|subobject| get_partial_points(subobject, start, end, true)).collect();
+        }
         return VectorObject {
             points: points.clone(),
             fill: fill,
@@ -72,13 +76,17 @@ pub fn get_partial_points(
             stroke_width: stroke_width,
             line_cap: line_cap,
             line_join: line_join,
-            subobjects: subobjects.iter().map(|subobject| get_partial_points(subobject, start, end, recursive)).collect(),
+            subobjects: new_subobjects,
             index: vector_features.index,
         };
     }
     let (lower_index, lower_residue) = integer_interpolate(0.0, bezier_quads.len() as f64, start);
     let (upper_index, upper_residue) = integer_interpolate(0.0, bezier_quads.len() as f64, end);
     if lower_index == upper_index {
+        let mut new_subobjects = subobjects.clone();
+        if recursive {
+            new_subobjects = new_subobjects.iter().map(|subobject| get_partial_points(subobject, start, end, true)).collect();
+        }
         return VectorObject {
             points: partial_bezier_points(
                 &vec![
@@ -96,7 +104,7 @@ pub fn get_partial_points(
             stroke_width: stroke_width,
             line_cap: line_cap,
             line_join: line_join,
-            subobjects: subobjects.iter().map(|subobject| get_partial_points(subobject, start, end, true)).collect(),
+            subobjects: new_subobjects,
             index: vector_features.index,
         };
     }

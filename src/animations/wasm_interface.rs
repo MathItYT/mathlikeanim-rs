@@ -1,40 +1,22 @@
-use js_sys::{Array, Function};
+use js_sys::Array;
 use wasm_bindgen::prelude::*;
 
-use crate::objects::{vector_object::VectorObject, wasm_interface::{WasmColor, WasmVectorObject}};
+use crate::objects::three_d::wasm_interface::WasmThreeDObject;
+use crate::objects::wasm_interface::{WasmColor, WasmVectorObject};
 use crate::{scene::Scene, svg_scene::SVGScene};
+use super::create::create_3d;
+use super::create_axes_3d::create_axes_3d;
+use super::draw_stroke_then_fill::draw_stroke_then_fill_3d;
+use super::fade::{fade_in_3d, fade_out_3d};
+use super::morph_shape::morph_shape_3d;
+use super::rotate_animation::{rotate_x_animation_3d, rotate_y_animation_3d, rotate_z_animation_3d};
+use super::scale_in_place::scale_in_place_3d;
+use super::set_fill_animation::set_fill_animation_3d;
+use super::set_stroke_animation::set_stroke_animation_3d;
+use super::shift_animation::shift_animation_3d;
 use super::{move_camera::move_camera, move_camera_svg::move_camera_svg};
 
-use super::{animation_group::{animation_group, make_timings}, create::create, draw_stroke_then_fill::{draw_stroke_then_fill, write}, fade::{fade_in, fade_out}, grow_arrow::{grow_arrow_with_final_tip, grow_arrow_with_initial_tip, grow_arrow_with_tips_at_both_ends}, grow_from_center::grow_from_center, morph_shape::morph_shape, rotate_animation::rotate_animation, scale_in_place::scale_in_place, set_fill_animation::set_fill_animation, set_stroke_animation::set_stroke_animation, shift_animation::shift_animation, show_temporarily::show_temporarily, spinning_grow::spinning_grow};
-
-#[wasm_bindgen(js_name = makeTimings)]
-pub fn make_timings_js(
-    num_anim_funcs: usize,
-    lag_ratio: f64,
-) -> Vec<f64> {
-    make_timings(num_anim_funcs, lag_ratio)
-}
-
-#[wasm_bindgen(js_name = animationGroup)]
-pub fn animation_group_js(
-    vec_obj: WasmVectorObject,
-    anim_funcs: Vec<Function>,
-    lag_ratio: f64,
-    t: f64,
-) -> WasmVectorObject {
-    return WasmVectorObject {
-        native_vec_features: animation_group(
-            vec_obj.native_vec_features,
-            anim_funcs.iter().map(|func| {
-                move |vec_obj: VectorObject, t: f64| -> VectorObject {
-                    return func.call2(&JsValue::NULL, &JsValue::from(WasmVectorObject { native_vec_features: vec_obj }), &JsValue::from(t)).unwrap().dyn_into::<WasmVectorObject>().unwrap().native_vec_features;
-                }
-            }).collect(),
-            lag_ratio,
-            t
-        )
-    };
-}
+use super::{create::create, draw_stroke_then_fill::draw_stroke_then_fill, fade::{fade_in, fade_out}, grow_arrow::{grow_arrow_with_final_tip, grow_arrow_with_initial_tip, grow_arrow_with_tips_at_both_ends}, grow_from_center::grow_from_center, morph_shape::morph_shape, rotate_animation::rotate_animation, scale_in_place::scale_in_place, set_fill_animation::set_fill_animation, set_stroke_animation::set_stroke_animation, shift_animation::shift_animation, show_temporarily::show_temporarily, spinning_grow::spinning_grow};
 
 
 #[wasm_bindgen(js_name = create)]
@@ -45,6 +27,27 @@ pub fn create_js(
     let vec_obj = vec_obj.native_vec_features;
     let new_vec_obj = create(vec_obj, t);
     return WasmVectorObject { native_vec_features: new_vec_obj };
+}
+
+
+#[wasm_bindgen(js_name = create3D)]
+pub fn create_3d_js(
+    vec_obj: WasmThreeDObject,
+    t: f64,
+) -> WasmThreeDObject {
+    let obj_3d = vec_obj.three_d_object;
+    WasmThreeDObject { three_d_object: create_3d(obj_3d, t) }
+}
+
+
+#[wasm_bindgen(js_name = createAxes3D)]
+pub fn create_axes_3d_js(
+    axes: WasmThreeDObject,
+    t: f64,
+    default_stroke_width: Option<f64>,
+) -> WasmThreeDObject {
+    let axes = axes.three_d_object;
+    WasmThreeDObject { three_d_object: create_axes_3d(axes, t, default_stroke_width) }
 }
 
 
@@ -60,15 +63,14 @@ pub fn draw_stroke_then_fill_js(
 }
 
 
-#[wasm_bindgen(js_name = write)]
-pub fn write_js(
-    vec_obj: WasmVectorObject,
-    lag_ratio: f64,
+#[wasm_bindgen(js_name = drawStrokeThenFill3D)]
+pub fn draw_stroke_then_fill_3d_js(
+    obj_3d: WasmThreeDObject,
     t: f64,
     default_stroke_width: Option<f64>,
-) -> WasmVectorObject {
-    let result = write(vec_obj.native_vec_features, lag_ratio, t, default_stroke_width);
-    return WasmVectorObject { native_vec_features: result };
+) -> WasmThreeDObject {
+    let obj_3d = obj_3d.three_d_object;
+    WasmThreeDObject { three_d_object: draw_stroke_then_fill_3d(obj_3d, t, default_stroke_width) }
 }
 
 
@@ -83,6 +85,17 @@ pub fn fade_in_js(
 }
 
 
+#[wasm_bindgen(js_name = fadeIn3D)]
+pub fn fade_in_3d_js(
+    obj_3d: WasmThreeDObject,
+    scale_factor: f64,
+    shift: Array,
+    t: f64
+) -> WasmThreeDObject {
+    return WasmThreeDObject { three_d_object: fade_in_3d(obj_3d.three_d_object, scale_factor, (shift.get(0).as_f64().unwrap(), shift.get(1).as_f64().unwrap(), shift.get(2).as_f64().unwrap()), t) };
+}
+
+
 #[wasm_bindgen(js_name = fadeOut)]
 pub fn fade_out_js(
     vec_obj: WasmVectorObject,
@@ -94,6 +107,17 @@ pub fn fade_out_js(
 }
 
 
+#[wasm_bindgen(js_name = fadeOut3D)]
+pub fn fade_out_3d_js(
+    obj_3d: WasmThreeDObject,
+    scale_factor: f64,
+    shift: Array,
+    t: f64
+) -> WasmThreeDObject {
+    return WasmThreeDObject { three_d_object: fade_out_3d(obj_3d.three_d_object, scale_factor, (shift.get(0).as_f64().unwrap(), shift.get(1).as_f64().unwrap(), shift.get(2).as_f64().unwrap()), t) };
+}
+
+
 #[wasm_bindgen(js_name = growArrowWithFinalTip)]
 pub fn grow_arrow_with_final_tip_js(
     vec_obj: WasmVectorObject,
@@ -102,6 +126,46 @@ pub fn grow_arrow_with_final_tip_js(
     let vec_obj = vec_obj.native_vec_features;
     let new_vec_obj = grow_arrow_with_final_tip(vec_obj, t);
     return WasmVectorObject { native_vec_features: new_vec_obj };
+}
+
+
+#[wasm_bindgen(js_name = morphShape3D)]
+pub fn morph_shape_3d_js(
+    original: WasmThreeDObject,
+    target: WasmThreeDObject,
+    t: f64
+) -> WasmThreeDObject {
+    return WasmThreeDObject { three_d_object: morph_shape_3d(original.three_d_object, target.three_d_object, t) };
+}
+
+
+#[wasm_bindgen(js_name = rotateXAnimation3D)]
+pub fn rotate_x_animation_3d_js(
+    obj_3d: WasmThreeDObject,
+    angle: f64,
+    t: f64
+) -> WasmThreeDObject {
+    return WasmThreeDObject { three_d_object: rotate_x_animation_3d(obj_3d.three_d_object, angle, t) };
+}
+
+
+#[wasm_bindgen(js_name = rotateYAnimation3D)]
+pub fn rotate_y_animation_3d_js(
+    obj_3d: WasmThreeDObject,
+    angle: f64,
+    t: f64
+) -> WasmThreeDObject {
+    return WasmThreeDObject { three_d_object: rotate_y_animation_3d(obj_3d.three_d_object, angle, t) };
+}
+
+
+#[wasm_bindgen(js_name = rotateZAnimation3D)]
+pub fn rotate_z_animation_3d_js(
+    obj_3d: WasmThreeDObject,
+    angle: f64,
+    t: f64
+) -> WasmThreeDObject {
+    return WasmThreeDObject { three_d_object: rotate_z_animation_3d(obj_3d.three_d_object, angle, t) };
 }
 
 
@@ -194,6 +258,16 @@ pub fn scale_in_place_js(
 }
 
 
+#[wasm_bindgen(js_name = scaleInPlace3D)]
+pub fn scale_in_place_3d_js(
+    obj_3d: WasmThreeDObject,
+    scale_factor: f64,
+    t: f64
+) -> WasmThreeDObject {
+    return WasmThreeDObject { three_d_object: scale_in_place_3d(obj_3d.three_d_object, scale_factor, t) };
+}
+
+
 #[wasm_bindgen(js_name = setFillAnimation)]
 pub fn set_fill_animation_js(
     vec_obj: WasmVectorObject,
@@ -202,6 +276,17 @@ pub fn set_fill_animation_js(
 ) -> WasmVectorObject {
     let target_fill = (target_fill.color.red, target_fill.color.green, target_fill.color.blue, target_fill.color.alpha);
     return WasmVectorObject { native_vec_features: set_fill_animation(vec_obj.native_vec_features, target_fill, t) };
+}
+
+
+#[wasm_bindgen(js_name = setFillAnimation3D)]
+pub fn set_fill_animation_3d_js(
+    obj_3d: WasmThreeDObject,
+    target_fill: WasmColor,
+    t: f64
+) -> WasmThreeDObject {
+    let target_fill = (target_fill.color.red, target_fill.color.green, target_fill.color.blue, target_fill.color.alpha);
+    return WasmThreeDObject { three_d_object: set_fill_animation_3d(obj_3d.three_d_object, target_fill, t) };
 }
 
 
@@ -216,6 +301,17 @@ pub fn set_stroke_animation_js(
 }
 
 
+#[wasm_bindgen(js_name = setStrokeAnimation3D)]
+pub fn set_stroke_animation_3d_js(
+    obj_3d: WasmThreeDObject,
+    target_stroke: WasmColor,
+    t: f64
+) -> WasmThreeDObject {
+    let target_stroke = (target_stroke.color.red, target_stroke.color.green, target_stroke.color.blue, target_stroke.color.alpha);
+    return WasmThreeDObject { three_d_object: set_stroke_animation_3d(obj_3d.three_d_object, target_stroke, t) };
+}
+
+
 #[wasm_bindgen(js_name = shiftAnimation)]
 pub fn shift_animation_js(
     vec_obj: WasmVectorObject,
@@ -223,6 +319,16 @@ pub fn shift_animation_js(
     t: f64
 ) -> WasmVectorObject {
     return WasmVectorObject { native_vec_features: shift_animation(vec_obj.native_vec_features, (shift.get(0).as_f64().unwrap(), shift.get(1).as_f64().unwrap()), t) };
+}
+
+
+#[wasm_bindgen(js_name = shiftAnimation3D)]
+pub fn shift_animation_3d_js(
+    obj_3d: WasmThreeDObject,
+    shift: Array,
+    t: f64
+) -> WasmThreeDObject {
+    return WasmThreeDObject { three_d_object: shift_animation_3d(obj_3d.three_d_object, (shift.get(0).as_f64().unwrap(), shift.get(1).as_f64().unwrap(), shift.get(2).as_f64().unwrap()), t) };
 }
 
 

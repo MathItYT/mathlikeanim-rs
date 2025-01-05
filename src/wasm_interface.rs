@@ -1,10 +1,21 @@
 use js_sys::{Array, Function};
 use wasm_bindgen::prelude::*;
-use crate::{colors::Color, objects::wasm_interface::{WasmColor, WasmVectorObject}, utils::{add_n_more_subobjects, align_data, align_points, align_subobjects, bezier, bezier_f64, center, choose, consider_points_equals, distance_squared, double_smooth, ease_in_back, ease_in_circ, ease_in_cubic, ease_in_elastic, ease_in_expo, ease_in_out_back, ease_in_out_bounce, ease_in_out_circ, ease_in_out_cubic, ease_in_out_elastic, ease_in_out_expo, ease_in_out_quad, ease_in_out_quart, ease_in_out_quint, ease_in_out_sine, ease_in_quad, ease_in_quart, ease_in_quint, ease_in_sine, ease_out_bounce, ease_out_circ, ease_out_cubic, ease_out_elastic, ease_out_expo, ease_out_quad, ease_out_quart, ease_out_quint, ease_out_sine, elliptical_arc_path, exponential_decay, factorial, get_bbox, get_nth_subpath, has_new_path_begun, hex_to_color, insert_n_curves_to_point_list, integer_interpolate, interp, interpolate, interpolate_color, interpolate_tuple, interpolate_tuple_3d, line_as_cubic_bezier, linear, lingering, not_quite_there, null_point_align, permutation, points_from_anchors_and_handles, quadratic_bezier_as_cubic_bezier, radian, running_start, rush_from, rush_into, sigmoid, sleep, slow_into, smooth, smoothererstep, smootherstep, smoothstep, squish_rate_func, start_new_path, there_and_back, there_and_back_with_pause, wiggle}};
+use crate::{colors::Color, objects::{three_d::wasm_interface::WasmThreeDObject, wasm_interface::{WasmColor, WasmVectorObject}}, utils::{add_n_more_subobjects, add_n_more_subobjects_3d, align_data, align_data_3d, align_points, align_points_3d, align_subobjects, align_subobjects_3d, bezier, bezier_3d, bezier_f64, center, center_3d, choose, consider_points_equals, consider_points_equals_3d, distance_squared, distance_squared_3d, double_smooth, ease_in_back, ease_in_circ, ease_in_cubic, ease_in_elastic, ease_in_expo, ease_in_out_back, ease_in_out_bounce, ease_in_out_circ, ease_in_out_cubic, ease_in_out_elastic, ease_in_out_expo, ease_in_out_quad, ease_in_out_quart, ease_in_out_quint, ease_in_out_sine, ease_in_quad, ease_in_quart, ease_in_quint, ease_in_sine, ease_out_bounce, ease_out_circ, ease_out_cubic, ease_out_elastic, ease_out_expo, ease_out_quad, ease_out_quart, ease_out_quint, ease_out_sine, elliptical_arc_path, exponential_decay, factorial, get_bbox, get_nth_subpath, get_nth_subpath_3d, has_new_path_begun, has_new_path_begun_3d, hex_to_color, insert_n_curves_to_point_list, insert_n_curves_to_point_list_3d, integer_interpolate, interp, interpolate, interpolate_color, interpolate_tuple, interpolate_tuple_3d, line_as_cubic_bezier, linear, lingering, not_quite_there, null_point_align, null_point_align_3d, permutation, points_from_anchors_and_handles, quadratic_bezier_as_cubic_bezier, radian, running_start, rush_from, rush_into, sigmoid, sleep, slow_into, smooth, smoothererstep, smootherstep, smoothstep, squish_rate_func, start_new_path, start_new_path_3d, there_and_back, there_and_back_with_pause, wiggle}};
 
 #[wasm_bindgen(js_name = radian)]
 pub fn radian_js(ux: f64, uy: f64, vx: f64, vy: f64) -> f64 {
     return radian(ux, uy, vx, vy);
+}
+
+
+#[wasm_bindgen(js_name = bezier3D)]
+pub fn bezier_3d_js(points: Array, t: f64) -> Array {
+    let points = points.iter().map(|point| {
+        let point = point.dyn_into::<Array>().unwrap();
+        return (point.get(0).as_f64().unwrap(), point.get(1).as_f64().unwrap(), point.get(2).as_f64().unwrap());
+    }).collect();
+    let result = bezier_3d(&points, t);
+    return Array::of3(&JsValue::from_f64(result.0), &JsValue::from_f64(result.1), &JsValue::from_f64(result.2));
 }
 
 
@@ -76,6 +87,17 @@ pub fn center_js(points: Array, center_if_no_points: Array) -> Array {
 }
 
 
+#[wasm_bindgen(js_name = center3D)]
+pub fn center_3d_js(points: Array, center_if_no_points: Array) -> Array {
+    let points = points.iter().map(|point| {
+        let point = point.dyn_into::<Array>().unwrap();
+        return (point.get(0).as_f64().unwrap(), point.get(1).as_f64().unwrap(), point.get(2).as_f64().unwrap());
+    }).collect();
+    let result = center_3d(&points, (center_if_no_points.get(0).as_f64().unwrap(), center_if_no_points.get(1).as_f64().unwrap(), center_if_no_points.get(2).as_f64().unwrap()));
+    return Array::of3(&JsValue::from_f64(result.0), &JsValue::from_f64(result.1), &JsValue::from_f64(result.2));
+}
+
+
 #[wasm_bindgen(js_name = factorial)]
 pub fn factorial_js(n: u64) -> u64 {
     return factorial(n);
@@ -124,6 +146,12 @@ pub fn choose_js(n: u64, r: u64) -> u64 {
 #[wasm_bindgen(js_name = distanceSquared)]
 pub fn distance_squared_js(x1: f64, y1: f64, x2: f64, y2: f64) -> f64 {
     return distance_squared((x1, y1), (x2, y2));
+}
+
+
+#[wasm_bindgen(js_name = distanceSquared3D)]
+pub fn distance_squared_3d_js(x1: f64, y1: f64, z1: f64, x2: f64, y2: f64, z2: f64) -> f64 {
+    return distance_squared_3d((x1, y1, z1), (x2, y2, z2));
 }
 
 
@@ -206,6 +234,20 @@ pub fn start_new_path_js(points: Array, point: Array) -> Array {
 }
 
 
+#[wasm_bindgen(js_name = startNewPath3D)]
+pub fn start_new_path_3d_js(points: Array, point: Array) -> Array {
+    let points = points.iter().map(|point| {
+        let point = point.dyn_into::<Array>().unwrap();
+        return (point.get(0).as_f64().unwrap(), point.get(1).as_f64().unwrap(), point.get(2).as_f64().unwrap());
+    }).collect::<Vec<(f64, f64, f64)>>();
+    let point = (point.get(0).as_f64().unwrap(), point.get(1).as_f64().unwrap(), point.get(2).as_f64().unwrap());
+    let result = start_new_path_3d(&points, point);
+    return result.iter().map(|point| {
+        return Array::of3(&JsValue::from_f64(point.0), &JsValue::from_f64(point.1), &JsValue::from_f64(point.2));
+    }).collect();
+}
+
+
 #[wasm_bindgen(js_name = hasNewPathBegun)]
 pub fn has_new_path_begun_js(points: Array) -> bool {
     let points = points.iter().map(|point| {
@@ -213,6 +255,31 @@ pub fn has_new_path_begun_js(points: Array) -> bool {
         return (point.get(0).as_f64().unwrap(), point.get(1).as_f64().unwrap());
     }).collect();
     return has_new_path_begun(&points);
+}
+
+
+#[wasm_bindgen(js_name = hasNewPathBegun3D)]
+pub fn has_new_path_begun_3d_js(points: Array) -> bool {
+    let points = points.iter().map(|point| {
+        let point = point.dyn_into::<Array>().unwrap();
+        return (point.get(0).as_f64().unwrap(), point.get(1).as_f64().unwrap(), point.get(2).as_f64().unwrap());
+    }).collect();
+    return has_new_path_begun_3d(&points);
+}
+
+
+#[wasm_bindgen(js_name = considerPointsEquals3D)]
+pub fn consider_points_equals_3d_js(
+    x1: f64,
+    y1: f64,
+    z1: f64,
+    x2: f64,
+    y2: f64,
+    z2: f64
+) -> bool {
+    let point1 = (x1, y1, z1);
+    let point2 = (x2, y2, z2);
+    return consider_points_equals_3d(point1, point2);
 }
 
 
@@ -234,6 +301,64 @@ pub fn get_nth_subpath_js(points: Array, n: usize) -> Array {
 }
 
 
+#[wasm_bindgen(js_name = getNthSubpath3D)]
+pub fn get_nth_subpath_3d_js(points: Array, n: usize) -> Array {
+    let points = points.iter().map(|points| {
+        let points = points.dyn_into::<Array>().unwrap();
+        let points = points.iter().collect::<Vec<JsValue>>();
+        let points = points.iter().map(|point| {
+            let point = point.clone().dyn_into::<Array>().unwrap();
+            return (point.get(0).as_f64().unwrap(), point.get(1).as_f64().unwrap(), point.get(2).as_f64().unwrap());
+        }).collect();
+        return points;
+    }).collect();
+    let result = get_nth_subpath_3d(&points, n);
+    return result.iter().map(|point| {
+        return Array::of3(&JsValue::from_f64(point.0), &JsValue::from_f64(point.1), &JsValue::from_f64(point.2));
+    }).collect();
+}
+
+
+#[wasm_bindgen(js_name = insertNCurvesToPointList3D)]
+pub fn insert_n_curves_to_point_list_3d_js(n: usize, points: Array) -> Array {
+    let points = points.iter().map(|point| {
+        let point = point.dyn_into::<Array>().unwrap();
+        return (point.get(0).as_f64().unwrap(), point.get(1).as_f64().unwrap(), point.get(2).as_f64().unwrap());
+    }).collect();
+    let result = insert_n_curves_to_point_list_3d(n, &points);
+    return result.iter().map(|point| {
+        return Array::of3(&JsValue::from_f64(point.0), &JsValue::from_f64(point.1), &JsValue::from_f64(point.2));
+    }).collect();
+}
+
+
+#[wasm_bindgen(js_name = alignPoints3D)]
+pub fn align_points_3d_js(
+    points1: Array,
+    points2: Array,
+    center_if_no_points: Array
+) -> Array {
+    let points1 = points1.iter().map(|point| {
+        let point = point.dyn_into::<Array>().unwrap();
+        return (point.get(0).as_f64().unwrap(), point.get(1).as_f64().unwrap(), point.get(2).as_f64().unwrap());
+    }).collect();
+    let points2 = points2.iter().map(|point| {
+        let point = point.dyn_into::<Array>().unwrap();
+        return (point.get(0).as_f64().unwrap(), point.get(1).as_f64().unwrap(), point.get(2).as_f64().unwrap());
+    }).collect();
+    let center_if_no_points = (center_if_no_points.get(0).as_f64().unwrap(), center_if_no_points.get(1).as_f64().unwrap(), center_if_no_points.get(2).as_f64().unwrap());
+    let result = align_points_3d(&points1, &points2, center_if_no_points);
+    return Array::of2(
+        &JsValue::from(result.0.iter().map(|point| {
+            return Array::of3(&JsValue::from_f64(point.0), &JsValue::from_f64(point.1), &JsValue::from_f64(point.2));
+        }).collect::<Array>()),
+        &JsValue::from(result.1.iter().map(|point| {
+            return Array::of3(&JsValue::from_f64(point.0), &JsValue::from_f64(point.1), &JsValue::from_f64(point.2));
+        }).collect::<Array>())
+    );
+}
+
+
 #[wasm_bindgen(js_name = insertNCurvesToPointList)]
 pub fn insert_n_curves_to_point_list_js(n: usize, points: Array) -> Array {
     let points = points.iter().map(|point| {
@@ -244,6 +369,21 @@ pub fn insert_n_curves_to_point_list_js(n: usize, points: Array) -> Array {
     return result.iter().map(|point| {
         return Array::of2(&JsValue::from_f64(point.0), &JsValue::from_f64(point.1));
     }).collect();
+}
+
+
+#[wasm_bindgen(js_name = nullPointAlign3D)]
+pub fn null_point_align_3d_js(
+    obj1: WasmThreeDObject,
+    obj2: WasmThreeDObject
+) -> Array {
+    let obj1 = obj1.three_d_object;
+    let obj2 = obj2.three_d_object;
+    let result = null_point_align_3d(obj1, obj2);
+    return Array::of2(
+        &JsValue::from(WasmThreeDObject { three_d_object: result.0 }),
+        &JsValue::from(WasmThreeDObject { three_d_object: result.1 })
+    );
 }
 
 
@@ -293,6 +433,50 @@ pub fn add_n_more_subobjects_js(
 ) -> WasmVectorObject {
     let result = add_n_more_subobjects(vec_obj.native_vec_features, n, (center_if_no_points.get(0).as_f64().unwrap(), center_if_no_points.get(1).as_f64().unwrap()));
     return WasmVectorObject { native_vec_features: result };
+}
+
+
+#[wasm_bindgen(js_name = addNMoreSubobjects3D)]
+pub fn add_n_more_subobjects_3d_js(
+    obj_3d: WasmThreeDObject,
+    n: usize,
+    center_if_no_points: Array
+) -> WasmThreeDObject {
+    let result = add_n_more_subobjects_3d(obj_3d.three_d_object, n, (center_if_no_points.get(0).as_f64().unwrap(), center_if_no_points.get(1).as_f64().unwrap(), center_if_no_points.get(2).as_f64().unwrap()));
+    return WasmThreeDObject { three_d_object: result };
+}
+
+
+#[wasm_bindgen(js_name = alignSubobjects3D)]
+pub fn align_subobjects_3d_js(
+    obj_3d1: WasmThreeDObject,
+    obj_3d2: WasmThreeDObject,
+    center_if_no_points: Array
+) -> Array {
+    let obj_3d1 = obj_3d1.three_d_object;
+    let obj_3d2 = obj_3d2.three_d_object;
+    let result = align_subobjects_3d(obj_3d1, obj_3d2, (center_if_no_points.get(0).as_f64().unwrap(), center_if_no_points.get(1).as_f64().unwrap(), center_if_no_points.get(2).as_f64().unwrap()));
+    return Array::of2(
+        &JsValue::from(WasmThreeDObject { three_d_object: result.0 }),
+        &JsValue::from(WasmThreeDObject { three_d_object: result.1 })
+    );
+}
+
+
+#[wasm_bindgen(js_name = alignData3D)]
+pub fn align_data_3d_js(
+    obj_3d1: WasmThreeDObject,
+    obj_3d2: WasmThreeDObject,
+    skip_point_align: bool,
+    center_if_no_points: Array
+) -> Array {
+    let obj_3d1 = obj_3d1.three_d_object;
+    let obj_3d2 = obj_3d2.three_d_object;
+    let result = align_data_3d(obj_3d1, obj_3d2, skip_point_align, (center_if_no_points.get(0).as_f64().unwrap(), center_if_no_points.get(1).as_f64().unwrap(), center_if_no_points.get(2).as_f64().unwrap()));
+    return Array::of2(
+        &JsValue::from(WasmThreeDObject { three_d_object: result.0 }),
+        &JsValue::from(WasmThreeDObject { three_d_object: result.1 })
+    );
 }
 
 

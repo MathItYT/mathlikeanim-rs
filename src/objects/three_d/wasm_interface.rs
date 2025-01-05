@@ -911,21 +911,162 @@ impl WasmThreeDObject {
         }
     }
     #[wasm_bindgen(js_name = setFill)]
-    pub fn set_fill(&self, fill: WasmGradientImageOrColor) -> WasmThreeDObject {
+    pub fn set_fill(&self, fill: WasmGradientImageOrColor, recursive: bool) -> WasmThreeDObject {
         return WasmThreeDObject {
-            three_d_object: self.three_d_object.set_fill(fill.gradient_image_or_color)
+            three_d_object: self.three_d_object.set_fill(fill.gradient_image_or_color, recursive)
         }
     }
     #[wasm_bindgen(js_name = setStroke)]
-    pub fn set_stroke(&self, stroke: WasmGradientImageOrColor) -> WasmThreeDObject {
+    pub fn set_stroke(&self, stroke: WasmGradientImageOrColor, recursive: bool) -> WasmThreeDObject {
         return WasmThreeDObject {
-            three_d_object: self.three_d_object.set_stroke(stroke.gradient_image_or_color)
+            three_d_object: self.three_d_object.set_stroke(stroke.gradient_image_or_color, recursive)
         }
     }
     #[wasm_bindgen(js_name = setStrokeWidth)]
-    pub fn set_stroke_width(&self, stroke_width: f64) -> WasmThreeDObject {
+    pub fn set_stroke_width(&self, stroke_width: f64, recursive: bool) -> WasmThreeDObject {
         return WasmThreeDObject {
-            three_d_object: self.three_d_object.set_stroke_width(stroke_width)
+            three_d_object: self.three_d_object.set_stroke_width(stroke_width, recursive)
+        }
+    }
+    #[wasm_bindgen(js_name = getCubicBezierTuples)]
+    pub fn get_cubic_bezier_tuples(&self) -> Array {
+        let cubic_bezier_tuples = self.three_d_object.get_cubic_bezier_tuples();
+        let result = cubic_bezier_tuples.iter().map(
+            |tuple| {
+                let tuple_js = Array::of4(
+                    &Array::of3(
+                        &JsValue::from(tuple.0 .0),
+                        &JsValue::from(tuple.0 .1),
+                        &JsValue::from(tuple.0 .2)
+                    ),
+                    &Array::of3(
+                        &JsValue::from(tuple.1 .0),
+                        &JsValue::from(tuple.1 .1),
+                        &JsValue::from(tuple.1 .2)
+                    ),
+                    &Array::of3(
+                        &JsValue::from(tuple.2 .0),
+                        &JsValue::from(tuple.2 .1),
+                        &JsValue::from(tuple.2 .2)
+                    ),
+                    &Array::of3(
+                        &JsValue::from(tuple.3 .0),
+                        &JsValue::from(tuple.3 .1),
+                        &JsValue::from(tuple.3 .2)
+                    )
+                );
+                tuple_js
+            }
+        ).collect::<Array>();
+        result
+    }
+    #[wasm_bindgen(js_name = getPartialCopy)]
+    pub fn get_partial_copy(&self, start_t: f64, end_t: f64, recursive: bool) -> WasmThreeDObject {
+        return WasmThreeDObject {
+            three_d_object: self.three_d_object.get_partial_copy(start_t, end_t, recursive)
+        }
+    }
+    #[wasm_bindgen(js_name = setFillOpacity)]
+    pub fn set_fill_opacity(&self, opacity: f64, recursive: bool) -> WasmThreeDObject {
+        return WasmThreeDObject {
+            three_d_object: self.three_d_object.set_fill_opacity(opacity, recursive)
+        }
+    }
+    #[wasm_bindgen(js_name = setStrokeOpacity)]
+    pub fn set_stroke_opacity(&self, opacity: f64, recursive: bool) -> WasmThreeDObject {
+        return WasmThreeDObject {
+            three_d_object: self.three_d_object.set_stroke_opacity(opacity, recursive)
+        }
+    }
+    #[wasm_bindgen(js_name = getFillOpacity)]
+    pub fn get_fill_opacity(&self) -> f64 {
+        self.three_d_object.get_fill_opacity()
+    }
+    #[wasm_bindgen(js_name = getStrokeOpacity)]
+    pub fn get_stroke_opacity(&self) -> f64 {
+        self.three_d_object.get_stroke_opacity()
+    }
+    #[wasm_bindgen(js_name = getCriticalPoint)]
+    pub fn get_critical_point(&self, key_x: f64, key_y: f64, key_z: f64) -> Array {
+        let critical_point = self.three_d_object.get_critical_point((key_x, key_y, key_z));
+        let critical_point_js = Array::of3(
+            &JsValue::from(critical_point.0),
+            &JsValue::from(critical_point.1),
+            &JsValue::from(critical_point.2)
+        );
+        critical_point_js
+    }
+    #[wasm_bindgen(js_name = nextToOther)]
+    pub fn next_to_other(
+        &self,
+        other: &WasmThreeDObject,
+        direction: Array,
+        buff: f64,
+        aligned_edge: Array,
+        recursive: bool
+    ) -> WasmThreeDObject {
+        let direction = (
+            direction.get(0).as_f64().unwrap(),
+            direction.get(1).as_f64().unwrap(),
+            direction.get(2).as_f64().unwrap()
+        );
+        let aligned_edge = (
+            aligned_edge.get(0).as_f64().unwrap(),
+            aligned_edge.get(1).as_f64().unwrap(),
+            aligned_edge.get(2).as_f64().unwrap()
+        );
+        return WasmThreeDObject {
+            three_d_object: self.three_d_object.next_to_other(&other.three_d_object, direction, buff, aligned_edge, recursive)
+        }
+    }
+    #[wasm_bindgen(js_name = nextToPoint)]
+    pub fn next_to_point(
+        &self,
+        point: Array,
+        direction: Array,
+        buff: f64,
+        aligned_edge: Array,
+        recursive: bool
+    ) -> WasmThreeDObject {
+        let point = (
+            point.get(0).as_f64().unwrap(),
+            point.get(1).as_f64().unwrap(),
+            point.get(2).as_f64().unwrap()
+        );
+        let direction = (
+            direction.get(0).as_f64().unwrap(),
+            direction.get(1).as_f64().unwrap(),
+            direction.get(2).as_f64().unwrap()
+        );
+        let aligned_edge = (
+            aligned_edge.get(0).as_f64().unwrap(),
+            aligned_edge.get(1).as_f64().unwrap(),
+            aligned_edge.get(2).as_f64().unwrap()
+        );
+        return WasmThreeDObject {
+            three_d_object: self.three_d_object.next_to_point(point, direction, buff, aligned_edge, recursive)
+        }
+    }
+    #[wasm_bindgen(js_name = arrangeSubobjects)]
+    pub fn arrange_subobjects(
+        &self,
+        direction: Array,
+        buff: f64,
+        aligned_edge: Array,
+        recursive: bool
+    ) -> WasmThreeDObject {
+        let direction = (
+            direction.get(0).as_f64().unwrap(),
+            direction.get(1).as_f64().unwrap(),
+            direction.get(2).as_f64().unwrap()
+        );
+        let aligned_edge = (
+            aligned_edge.get(0).as_f64().unwrap(),
+            aligned_edge.get(1).as_f64().unwrap(),
+            aligned_edge.get(2).as_f64().unwrap()
+        );
+        return WasmThreeDObject {
+            three_d_object: self.three_d_object.arrange_subobjects(direction, buff, aligned_edge, recursive)
         }
     }
     #[wasm_bindgen(js_name = scale)]
