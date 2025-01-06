@@ -39,6 +39,14 @@ You can embed the library in your HTML file by adding a script tag, and don't fo
 ```
 
 
+## How to use it in Python?
+You can use the Python package to create animations in the same way you would do with the Rust library. You can install it by running:
+
+```bash
+pip install mathlikeanim-rs
+```
+
+
 ## Development
 If you want to contribute to this project, you can clone a fork of this repository and work with the Rust codebase.
 
