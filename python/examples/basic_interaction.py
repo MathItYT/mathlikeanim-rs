@@ -1,11 +1,8 @@
-import math
-
 from nicegui import ui
 from nicegui.events import ValueChangeEventArguments
 
 from mathlikeanim_rs.scene import Scene
 from mathlikeanim_rs.vector_object import VectorObject
-from mathlikeanim_rs.three_d_object import Camera, LightSource
 from mathlikeanim_rs.gradient_image_or_color import GradientImageOrColor, Color
 from mathlikeanim_rs.utils import hex_to_color
 
@@ -36,9 +33,11 @@ async def index():
         circle.stroke_width = 8
         await scene.set_background(GradientImageOrColor(hex_to_color('#161616', 1)))
         await scene.add(circle)
+
         async def animation_func(objs: dict[int, VectorObject], t: float):
             objs[0] = await circle.draw_stroke_then_fill(t)
             return objs
+
         await scene.play(animation_func, [0], 60)
         await scene.render_frame()
         ready = True

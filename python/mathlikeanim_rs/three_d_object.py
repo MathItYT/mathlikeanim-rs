@@ -16,15 +16,22 @@ from .vector_object import VectorObject
 class Camera:
     def __init__(
         self,
+        scene,
         position: tuple[float, float, float],
         rotation: tuple[float, float, float],
         focal_distance: float,
         zoom: float,
     ) -> None:
+        self.scene = scene
         self.position = position
         self.rotation = rotation
         self.focal_distance = focal_distance
         self.zoom = zoom
+    
+    async def project_points(self, points: list[tuple[float, float, float]]) -> list[tuple[float, float]]:
+        data = json.dumps([[[point[0], point[1], point[2]] for point in points], self.to_dict()])
+        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'projectPoints', {data})", timeout=10)
+        return [(point[0], point[1]) for point in result]
     
     @staticmethod
     def from_dict(data) -> 'Camera':
@@ -46,7 +53,8 @@ class Camera:
 
 
 class LightSource:
-    def __init__(self, position: tuple[float, float, float]) -> None:
+    def __init__(self, scene, position: tuple[float, float, float]) -> None:
+        self.scene = scene
         self.position = position
 
     @staticmethod

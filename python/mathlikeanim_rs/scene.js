@@ -84,6 +84,7 @@ import init, {
     WasmLightSource,
     contourPlot,
     linear,
+    projectPoints,
 } from 'mathlikeanim-rs';
 
 const colorToJson = (obj) => {
@@ -1314,6 +1315,10 @@ export default {
         },
         getObjects() {
             return this.scene.getObjects().map(vectorObjectToJson);
+        },
+        projectPoints(points, cameraJson) {
+            const camera = jsonToCamera(cameraJson);
+            return projectPoints(points, camera);
         },
         async getPythonOutput(pythonFuncId, args) {
             this.emitEvent('python-request', { pythonFuncId, args });

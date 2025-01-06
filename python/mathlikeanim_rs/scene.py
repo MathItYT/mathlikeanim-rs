@@ -9,7 +9,7 @@ from nicegui.events import GenericEventArguments
 
 import mathlikeanim_rs
 from .gradient_image_or_color import GradientImageOrColor, Color
-from .three_d_object import ThreeDObject
+from .three_d_object import ThreeDObject, Camera, LightSource
 from .vector_object import VectorObject
 
 
@@ -877,6 +877,21 @@ class Scene(
         data = json.dumps([])
         result = await self.client.run_javascript(f'return runMethod({self.id}, "getObjects", {data})')
         return [VectorObject.from_dict(self, obj) for obj in result]
+    
+    def new_camera(
+        self,
+        position: tuple[float, float, float],
+        rotation: tuple[float, float, float],
+        focal_distance: float,
+        zoom: float,
+    ) -> Camera:
+        return Camera(self, position, rotation, focal_distance, zoom)
+    
+    def new_light_source(
+        self,
+        position: tuple[float, float, float],
+    ) -> LightSource:
+        return LightSource(self, position)
 
     def register_callback(self, func: Callable):
         id_ = id(func)
