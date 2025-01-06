@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "mathlikeanim-rs": "^0.13.24"
+  }
+}

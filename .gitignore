@@ -16,5 +16,5 @@ app.yaml
 javascript
 *.tgz
 
-# Python is now being developed!
-python/
+dist/
+__pycache__/

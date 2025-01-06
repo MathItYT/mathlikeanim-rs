@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "mathlikeanim-rs"
+version = "0.13.24"
+description = "A Rust library for creating mathematical animations, now in Python"
+authors = ["MathItYT <benjamin.ubilla@uc.cl>"]
+repository = "https://github.com/MathItYT/mathlikeanim-rs"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.14"
+nicegui = "^2.9.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
