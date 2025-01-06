@@ -15,7 +15,15 @@ async def index():
     async def run():
         await scene.wait_until_ready()
         await scene.log('Hello from Python!')
-        await scene.exec_js('async function run() { alert("This was executed from Python!"); } return run();')
+        await scene.exec_js('''
+alert('Hello from Python!');
+const scene = scenes[0];
+const circ = circle([960, 540], 400)
+    .setStroke(WasmGradientImageOrColor.fromColor(hexToColor('#FF0000', 1)), false)
+    .setStrokeWidth(8, false);
+scene.add(circ.clone());
+await scene.renderFrame();
+''')
 
     ui.button('Run JavaScript', on_click=run)
 

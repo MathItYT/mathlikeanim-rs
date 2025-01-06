@@ -894,8 +894,7 @@ class Scene(
         return LightSource(self, position)
 
     async def exec_js(self, js: str) -> Any:
-        data = json.dumps([js])
-        return await self.client.run_javascript(f"return await runMethod({self.id}, 'execJS', {data})")
+        return await self.client.run_javascript(js, timeout=10e9)
     
     async def log(self, message: str) -> None:
         data = json.dumps([message])

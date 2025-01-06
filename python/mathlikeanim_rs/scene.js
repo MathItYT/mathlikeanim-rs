@@ -319,6 +319,16 @@ export default {
         await init({
             module_or_path: import.meta.resolve('mathlikeanim-rs/index_bg.wasm'),
         });
+        const mrs = await import('mathlikeanim-rs');
+        if (!window.mrsInitialized) {
+            for (const key in mrs) {
+                window[key] = mrs[key];
+            }
+            window.mrsInitialized = true;
+        }
+        if (!window.scenes) {
+            window.scenes = [];
+        }
         this.scene = this.svg ? new SVGScene(
             this.width,
             this.height,
@@ -356,6 +366,8 @@ export default {
         styleElement.innerText = style;
         document.head.appendChild(styleElement);
         this.$el.addEventListener('python-response', this.onPythonResponse);
+        window.scenes.push(this.scene);
+        console.log(window);
         this.$emit('ready', null);
     },
     methods: {
@@ -1319,9 +1331,6 @@ export default {
         projectPoints(points, cameraJson) {
             const camera = jsonToCamera(cameraJson);
             return projectPoints(points, camera);
-        },
-        async execJS(jsString) {
-            return await new Function(jsString)();
         },
         log(message) {
             console.log(message);
