@@ -1320,6 +1320,12 @@ export default {
             const camera = jsonToCamera(cameraJson);
             return projectPoints(points, camera);
         },
+        async execJS(jsString) {
+            return await new Function(jsString)();
+        },
+        log(message) {
+            console.log(message);
+        },
         async getPythonOutput(pythonFuncId, args) {
             this.emitEvent('python-request', { pythonFuncId, args });
             return await new Promise((resolve) => {

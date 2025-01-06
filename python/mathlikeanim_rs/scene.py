@@ -1,7 +1,7 @@
 from asyncio import Event, iscoroutine
 import json
 from pathlib import Path
-from typing import Callable, Coroutine
+from typing import Callable, Coroutine, Any
 
 from nicegui.element import Element
 from nicegui.dependencies import libraries, Library
@@ -892,6 +892,14 @@ class Scene(
         position: tuple[float, float, float],
     ) -> LightSource:
         return LightSource(self, position)
+
+    async def exec_js(self, js: str) -> Any:
+        data = json.dumps([js])
+        return await self.client.run_javascript(f"return await runMethod({self.id}, 'execJS', {data})")
+    
+    async def log(self, message: str) -> None:
+        data = json.dumps([message])
+        await self.client.run_javascript(f"return runMethod({self.id}, 'log', {data})")
 
     def register_callback(self, func: Callable):
         id_ = id(func)
