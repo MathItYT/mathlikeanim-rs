@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from nicegui import ui
 from nicegui.events import ValueChangeEventArguments
 
@@ -16,13 +18,9 @@ async def index():
 ''')
 
     scene = Scene()
-    ready = False
 
     async def run():
-        nonlocal ready
-        if ready:
-            return
-
+        button.disable()
         await scene.wait_until_ready()
         circle = await scene.new_circle(
             (960, 540),
@@ -33,6 +31,7 @@ async def index():
         circle.stroke_width = 8
         await scene.set_background(GradientImageOrColor(hex_to_color('#161616', 1)))
         await scene.add(circle)
+        await scene.begin_recording(Path('media'))
 
         async def animation_func(objs: dict[int, VectorObject], t: float):
             objs[0] = await circle.draw_stroke_then_fill(t)
@@ -40,7 +39,6 @@ async def index():
 
         await scene.play(animation_func, [0], 60)
         await scene.render_frame()
-        ready = True
     
     async def on_change(event: ValueChangeEventArguments):
         circle = await scene.new_circle(
@@ -53,7 +51,8 @@ async def index():
         await scene.add(circle)
         await scene.render_frame()
 
-    ui.button('Play', on_click=run)
+    button = ui.button('Play', on_click=run)
+    ui.button('Stop Recording', on_click=scene.stop_recording)
     ui.label('Radius')
     ui.slider(min=0, max=500, value=200, on_change=on_change)
 

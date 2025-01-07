@@ -308,4 +308,8 @@ impl SVGScene {
     pub fn get_class_js(&self, index: usize) -> Option<String> {
         return self.classes.get(&index).cloned();
     }
+    #[wasm_bindgen(js_name = getDivContainer)]
+    pub fn get_div_container_js(&self) -> web_sys::HtmlDivElement {
+        return self.div_container.clone().unwrap();
+    }
 }

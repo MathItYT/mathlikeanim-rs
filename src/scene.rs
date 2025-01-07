@@ -304,4 +304,8 @@ impl Scene {
     pub fn get_loaded_images_js(&self) -> js_sys::Map {
         return self.loaded_images.clone();
     }
+    #[wasm_bindgen(js_name = getContext)]
+    pub fn get_context_js(&self) -> web_sys::CanvasRenderingContext2d {
+        return self.context.unwrap().clone();
+    }
 }

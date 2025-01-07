@@ -1,4 +1,5 @@
 from asyncio import Event, iscoroutine
+import base64
 import json
 from pathlib import Path
 from typing import Callable, Coroutine, Any
@@ -48,9 +49,11 @@ class Scene(
         self._props['fps'] = fps
         self._props['svg'] = svg
         self._ready = Event()
+        self._media_dir: Path | None = None
         self._funcs = {}
         self.on('ready', self._on_ready)
         self.on('python-request', self._on_python_request, ['pythonFuncId', 'args'])
+        self.on('frame', self._on_frame, ['svg', 'frame'])
     
     async def _on_python_request(self, data: GenericEventArguments):
         data = data.args
@@ -61,6 +64,19 @@ class Scene(
             result = await result
         data = json.dumps([result])
         self.client.run_javascript(f'return runMethod({self.id}, "emitPythonResponse", {data})')
+    
+    def _on_frame(self, data: GenericEventArguments):
+        data = data.args
+        svg = data['svg']
+        frame = data['frame']
+        self._process_frame(svg, frame)
+
+    def _process_frame(self, svg: bool, frame: str):
+        extension = 'svg' if svg else 'png'
+        number_of_elements = len(list(self._media_dir.glob(f'*.{extension}'))) + 1
+        mode = 'w' if svg else 'wb'
+        with open(self._media_dir / f'{number_of_elements}.{extension}', mode) as f:
+            f.write(frame if svg else base64.b64decode(frame.split(',')[1]))
 
     async def wait_until_ready(self):
         await self._ready.wait()
@@ -899,6 +915,18 @@ class Scene(
     async def log(self, message: str) -> None:
         data = json.dumps([message])
         await self.client.run_javascript(f"return runMethod({self.id}, 'log', {data})")
+    
+    async def begin_recording(self, media_folder: Path) -> None:
+        data = json.dumps([])
+        self._media_dir = media_folder
+        self._media_dir.mkdir(exist_ok=True)
+        for path in self._media_dir.iterdir():
+            path.unlink()
+        await self.client.run_javascript(f"return runMethod({self.id}, 'beginRecording', {data})")
+    
+    async def stop_recording(self) -> bytes:
+        data = json.dumps([])
+        await self.client.run_javascript(f"return runMethod({self.id}, 'stopRecording', {data})")
 
     def register_callback(self, func: Callable):
         id_ = id(func)

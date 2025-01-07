@@ -367,7 +367,6 @@ export default {
         document.head.appendChild(styleElement);
         this.$el.addEventListener('python-response', this.onPythonResponse);
         window.scenes.push(this.scene);
-        console.log(window);
         this.$emit('ready', null);
     },
     methods: {
@@ -1346,6 +1345,24 @@ export default {
         },
         emitPythonResponse(data) {
             this.$el.dispatchEvent(new CustomEvent('python-response', { detail: data }));
+        },
+        beginRecording() {
+            this.scene.setOnRendered(async () => {
+                this.emitFrame();
+            });
+        },
+        stopRecording() {
+            this.scene.setOnRendered(async () => {});
+        },
+        emitFrame() {
+            const data = { svg: this.svg };
+            if (this.svg) {
+                data.frame = this.$el.children[0].outerHTML;
+            } else {
+                data.frame = this.$el.children[0].toDataURL();
+                console.log(data.frame);
+            }
+            this.emitEvent('frame', data);
         },
     },
     props: {
