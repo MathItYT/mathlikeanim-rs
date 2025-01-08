@@ -1347,12 +1347,12 @@ export default {
             this.$el.dispatchEvent(new CustomEvent('python-response', { detail: data }));
         },
         beginRecording() {
-            this.scene.setOnRendered(async () => {
+            this.scene.setOnRendered(() => {
                 this.emitFrame();
             });
         },
         stopRecording() {
-            this.scene.setOnRendered(async () => {});
+            this.scene.setOnRendered(() => {});
         },
         emitFrame() {
             const data = { svg: this.svg };
@@ -1360,7 +1360,6 @@ export default {
                 data.frame = this.$el.children[0].outerHTML;
             } else {
                 data.frame = this.$el.children[0].toDataURL();
-                console.log(data.frame);
             }
             this.emitEvent('frame', data);
         },
