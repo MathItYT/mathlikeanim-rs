@@ -51,7 +51,6 @@ class Scene(
         self._ready = Event()
         self._media_dir: Path | None = None
         self._funcs = {}
-        self.on('ready', self._on_ready)
         self.on('python-request', self._on_python_request, ['pythonFuncId', 'args'])
         self.on('frame', self._on_frame, ['svg', 'frame'])
     
@@ -79,6 +78,8 @@ class Scene(
             f.write(frame if svg else base64.b64decode(frame.split(',')[1]))
 
     async def wait_until_ready(self):
+        self.on('ready', self._on_ready)
+        await self.client.run_javascript(f'return runMethod({self.id}, "emitReady", [])', timeout=10)
         await self._ready.wait()
     
     def _on_ready(self):
@@ -924,7 +925,7 @@ class Scene(
             path.unlink()
         await self.client.run_javascript(f"return runMethod({self.id}, 'beginRecording', {data})")
     
-    async def stop_recording(self) -> bytes:
+    async def stop_recording(self) -> None:
         data = json.dumps([])
         await self.client.run_javascript(f"return runMethod({self.id}, 'stopRecording', {data})")
 

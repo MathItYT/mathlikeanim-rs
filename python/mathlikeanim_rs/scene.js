@@ -367,9 +367,11 @@ export default {
         document.head.appendChild(styleElement);
         this.$el.addEventListener('python-response', this.onPythonResponse);
         window.scenes.push(this.scene);
-        this.$emit('ready', null);
     },
     methods: {
+        emitReady() {
+            this.$emit('ready', {});
+        },
         onPythonResponse(event) {
             const resolve = this.resolveArray.pop();
             resolve(event.detail);
@@ -1352,7 +1354,7 @@ export default {
             });
         },
         stopRecording() {
-            this.scene.setOnRendered(() => {});
+            this.scene.setOnRendered(async () => {});
         },
         emitFrame() {
             const data = { svg: this.svg };
