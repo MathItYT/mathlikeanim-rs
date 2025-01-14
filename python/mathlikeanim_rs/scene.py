@@ -62,7 +62,7 @@ class Scene(
         if iscoroutine(result):
             result = await result
         data = json.dumps([result])
-        self.client.run_javascript(f'return runMethod({self.id}, "emitPythonResponse", {data})')
+        await self.exec_js(f'return runMethod({self.id}, "emitPythonResponse", {data})')
     
     def _on_frame(self, data: GenericEventArguments):
         data = data.args
@@ -79,7 +79,7 @@ class Scene(
 
     async def wait_until_ready(self):
         self.on('ready', self._on_ready)
-        await self.client.run_javascript(f'return runMethod({self.id}, "emitReady", [])', timeout=10)
+        await self.exec_js(f'return runMethod({self.id}, "emitReady", [])')
         await self._ready.wait()
     
     def _on_ready(self):
@@ -99,7 +99,7 @@ class Scene(
     ) -> VectorObject:
         tip_color = tip_color or Color(1, 1, 1, a=1)
         data = json.dumps([shape.to_dict(), tip_side_length, tip_color.to_dict()])
-        result = await self.client.run_javascript(f'return runMethod({self.id}, "addFinalTipToObject", {data})')
+        result = await self.exec_js(f'return runMethod({self.id}, "addFinalTipToObject", {data})')
         return VectorObject.from_dict(self, result)
 
     async def add_initial_tip_to_object(
@@ -110,7 +110,7 @@ class Scene(
     ) -> VectorObject:
         tip_color = tip_color or Color(1, 1, 1, a=1)
         data = json.dumps([shape.to_dict(), tip_side_length, tip_color.to_dict()])
-        result = await self.client.run_javascript(f'return runMethod({self.id}, "addInitialTipToObject", {data})')
+        result = await self.exec_js(f'return runMethod({self.id}, "addInitialTipToObject", {data})')
         return VectorObject.from_dict(self, result)
 
     async def add_both_sides_tips_to_object(
@@ -121,7 +121,7 @@ class Scene(
     ) -> VectorObject:
         tip_color = tip_color or Color(1, 1, 1, a=1)
         data = json.dumps([shape.to_dict(), tip_side_length, tip_color.to_dict()])
-        result = await self.client.run_javascript(f'return runMethod({self.id}, "addBothSidesTipsToObject", {data})')
+        result = await self.exec_js(f'return runMethod({self.id}, "addBothSidesTipsToObject", {data})')
         return VectorObject.from_dict(self, result)
     
     async def new_arc(
@@ -133,7 +133,7 @@ class Scene(
         n_samples: int = 10,
     ) -> VectorObject:
         data = json.dumps([[center[0], center[1]], radius, start_angle, end_angle, n_samples])
-        result = await self.client.run_javascript(f'return runMethod({self.id}, "newArc", {data})')
+        result = await self.exec_js(f'return runMethod({self.id}, "newArc", {data})')
         return VectorObject.from_dict(self, result)
 
     async def new_circle(
@@ -143,7 +143,7 @@ class Scene(
         num_points: int = 10,
     ) -> VectorObject:
         data = json.dumps([[center[0], center[1]], radius, num_points])
-        result = await self.client.run_javascript(f'return runMethod({self.id}, "newCircle", {data})')
+        result = await self.exec_js(f'return runMethod({self.id}, "newCircle", {data})')
         return VectorObject.from_dict(self, result)
 
     async def new_elliptical_arc(
@@ -156,7 +156,7 @@ class Scene(
         n_samples: int = 10,
     ) -> VectorObject:
         data = json.dumps([[center[0], center[1]], radius_x, radius_y, start_angle, end_angle, n_samples])
-        result = await self.client.run_javascript(f'return runMethod({self.id}, "newEllipticalArc", {data})')
+        result = await self.exec_js(f'return runMethod({self.id}, "newEllipticalArc", {data})')
         return VectorObject.from_dict(self, result)
     
     async def new_ellipse(
@@ -167,7 +167,7 @@ class Scene(
         num_points: int = 10,
     ) -> VectorObject:
         data = json.dumps([[center[0], center[1]], radius_x, radius_y, num_points])
-        result = await self.client.run_javascript(f'return runMethod({self.id}, "newEllipse", {data})')
+        result = await self.exec_js(f'return runMethod({self.id}, "newEllipse", {data})')
         return VectorObject.from_dict(self, result)
     
     async def new_annular_sector(
@@ -180,7 +180,7 @@ class Scene(
         n_samples: int = 10,
     ) -> VectorObject:
         data = json.dumps([[center[0], center[1]], inner_radius, outer_radius, start_angle, end_angle, n_samples])
-        result = await self.client.run_javascript(f'return runMethod({self.id}, "newAnnularSector", {data})')
+        result = await self.exec_js(f'return runMethod({self.id}, "newAnnularSector", {data})')
         return VectorObject.from_dict(self, result)
     
     async def new_dashed_object(
@@ -192,7 +192,7 @@ class Scene(
         equal_length: bool = True,
     ) -> VectorObject:
         data = json.dumps([vector_object.to_dict(), num_dashes, dashed_ratio, dash_offset, equal_length])
-        result = await self.client.run_javascript(f'return runMethod({self.id}, "newDashedObject", {data})')
+        result = await self.exec_js(f'return runMethod({self.id}, "newDashedObject", {data})')
         return VectorObject.from_dict(self, result)
     
     async def new_line(
@@ -204,7 +204,7 @@ class Scene(
     ) -> VectorObject:
         color = color or Color(1, 1, 1, a=1)
         data = json.dumps([[start[0], start[1]], [end[0], end[1]], color.to_dict(), stroke_width])
-        result = await self.client.run_javascript(f'return runMethod({self.id}, "newLine", {data})')
+        result = await self.exec_js(f'return runMethod({self.id}, "newLine", {data})')
         return VectorObject.from_dict(self, result)
     
     async def new_polygon(
@@ -212,7 +212,7 @@ class Scene(
         points: list[tuple[float, float]],
     ) -> VectorObject:
         data = json.dumps([[[point[0], point[1]] for point in points]])
-        result = await self.client.run_javascript(f'return runMethod({self.id}, "newPolygon", {data})')
+        result = await self.exec_js(f'return runMethod({self.id}, "newPolygon", {data})')
         return VectorObject.from_dict(self, result)
     
     async def new_regular_polygon(
@@ -222,7 +222,7 @@ class Scene(
         num_sides: int,
     ) -> VectorObject:
         data = json.dumps([[center[0], center[1]], side_length, num_sides])
-        result = await self.client.run_javascript(f'return runMethod({self.id}, "newRegularPolygon", {data})')
+        result = await self.exec_js(f'return runMethod({self.id}, "newRegularPolygon", {data})')
         return VectorObject.from_dict(self, result)
     
     async def new_square(
@@ -231,7 +231,7 @@ class Scene(
         side_length: float,
     ) -> VectorObject:
         data = json.dumps([[center[0], center[1]], side_length])
-        result = await self.client.run_javascript(f'return runMethod({self.id}, "newSquare", {data})')
+        result = await self.exec_js(f'return runMethod({self.id}, "newSquare", {data})')
         return VectorObject.from_dict(self, result)
     
     async def new_rectangle(
@@ -241,7 +241,7 @@ class Scene(
         height: float,
     ) -> VectorObject:
         data = json.dumps([[center[0], center[1]], width, height])
-        result = await self.client.run_javascript(f'return runMethod({self.id}, "newRectangle", {data})')
+        result = await self.exec_js(f'return runMethod({self.id}, "newRectangle", {data})')
         return VectorObject.from_dict(self, result)
     
     async def new_equilateral_triangle(
@@ -250,7 +250,7 @@ class Scene(
         side_length: float,
     ) -> VectorObject:
         data = json.dumps([[center[0], center[1]], side_length])
-        result = await self.client.run_javascript(f'return runMethod({self.id}, "newEquilateralTriangle", {data})')
+        result = await self.exec_js(f'return runMethod({self.id}, "newEquilateralTriangle", {data})')
         return VectorObject.from_dict(self, result)
     
     async def new_triangle(
@@ -260,7 +260,7 @@ class Scene(
         point3: tuple[float, float],
     ) -> VectorObject:
         data = json.dumps([[point1[0], point1[1]], [point2[0], point2[1]], [point3[0], point3[1]]])
-        result = await self.client.run_javascript(f'return runMethod({self.id}, "newTriangle", {data})')
+        result = await self.exec_js(f'return runMethod({self.id}, "newTriangle", {data})')
         return VectorObject.from_dict(self, result)
     
     async def new_right_triangle(
@@ -269,7 +269,7 @@ class Scene(
         point2: tuple[float, float],
     ) -> VectorObject:
         data = json.dumps([[point1[0], point1[1]], [point2[0], point2[1]]])
-        result = await self.client.run_javascript(f'return runMethod({self.id}, "newRightTriangle", {data})')
+        result = await self.exec_js(f'return runMethod({self.id}, "newRightTriangle", {data})')
         return VectorObject.from_dict(self, result)
     
     async def new_axes(
@@ -307,7 +307,7 @@ class Scene(
             x_tick_size, y_tick_size,
             add_x_tip, add_y_tip,
         ])
-        result = await self.client.run_javascript(f'return runMethod({self.id}, "newAxes", {data})')
+        result = await self.exec_js(f'return runMethod({self.id}, "newAxes", {data})')
         return VectorObject.from_dict(self, result)
 
     async def axes_coords_to_point(
@@ -321,7 +321,7 @@ class Scene(
         y_max: float,
     ) -> tuple[float, float]:
         data = json.dumps([axes.to_dict(), x, y, x_min, x_max, y_min, y_max])
-        result = await self.client.run_javascript(f'return runMethod({self.id}, "axesCoordsToPoint", {data})')
+        result = await self.exec_js(f'return runMethod({self.id}, "axesCoordsToPoint", {data})')
         return tuple(result)
     
     async def point_to_axes_coords(
@@ -334,7 +334,7 @@ class Scene(
         y_max: float,
     ) -> tuple[float, float]:
         data = json.dumps([axes.to_dict(), [point[0], point[1]], x_min, x_max, y_min, y_max])
-        result = await self.client.run_javascript(f'return runMethod({self.id}, "pointToAxesCoords", {data})')
+        result = await self.exec_js(f'return runMethod({self.id}, "pointToAxesCoords", {data})')
         return tuple(result)
     
     async def new_parametric_plot_in_axes(
@@ -350,7 +350,7 @@ class Scene(
         t_min, t_max, t_step = t_range
         id_ = self.register_callback(f)
         data = json.dumps([id_, t_min, t_max, t_step, axes.to_dict(), xMin, xMax, yMin, yMax])
-        result = await self.client.run_javascript(f'return await runMethod({self.id}, "newParametricPlotInAxes", {data})')
+        result = await self.exec_js(f'return await runMethod({self.id}, "newParametricPlotInAxes", {data})')
         return VectorObject.from_dict(self, result)
     
     async def new_plot_in_axes(
@@ -366,7 +366,7 @@ class Scene(
         x_1, x_2, x_step = x_range
         id_ = self.register_callback(f)
         data = json.dumps([id_, x_min, x_max, y_min, y_max, x_1, x_2, x_step, axes.to_dict()])
-        result = await self.client.run_javascript(f'return await runMethod({self.id}, "newPlotInAxes", {data})')
+        result = await self.exec_js(f'return await runMethod({self.id}, "newPlotInAxes", {data})')
         return VectorObject.from_dict(self, result)
     
     async def new_contour_plot_in_axes(
@@ -385,7 +385,7 @@ class Scene(
         y_1, y_2, y_step = y_range
         id_ = self.register_callback(f)
         data = json.dumps([id_, x_min, x_max, y_min, y_max, x_1, x_2, x_step, y_1, y_2, y_step, axes.to_dict(), intervals])
-        result = await self.client.run_javascript(f'return await runMethod({self.id}, "newContourPlotInAxes", {data})')
+        result = await self.exec_js(f'return await runMethod({self.id}, "newContourPlotInAxes", {data})')
         return VectorObject.from_dict(self, result)
     
     async def new_area_under_curve(
@@ -400,7 +400,7 @@ class Scene(
     ) -> VectorObject: 
         x_1, x_2 = x_range
         data = json.dumps([axes.to_dict(), plot.to_dict(), x_min, x_max, y_min, y_max, x_1, x_2])
-        result = await self.client.run_javascript(f'return runMethod({self.id}, "newAreaUnderCurve", {data})')
+        result = await self.exec_js(f'return runMethod({self.id}, "newAreaUnderCurve", {data})')
         return VectorObject.from_dict(self, result)
 
     async def riemann_rectangles_for_plot(
@@ -418,7 +418,7 @@ class Scene(
         x_1, x_2 = x_range
         id_ = self.register_callback(f)
         data = json.dumps([id_, x_min, x_max, y_min, y_max, direction, x_1, x_2, n_rects, axes.to_dict()])
-        result = await self.client.run_javascript(f'return await runMethod({self.id}, "riemannRectanglesForPlot", {data})')
+        result = await self.exec_js(f'return await runMethod({self.id}, "riemannRectanglesForPlot", {data})')
         return VectorObject.from_dict(self, result)
 
     async def secant_line_for_plot(
@@ -435,7 +435,7 @@ class Scene(
         x_1, x_2 = x_range
         id_ = self.register_callback(f)
         data = json.dumps([id_, x_1, x_2, length, axes.to_dict(), x_min, x_max, y_min, y_max])
-        result = await self.client.run_javascript(f'return await runMethod({self.id}, "secantLineForPlot", {data})')
+        result = await self.exec_js(f'return await runMethod({self.id}, "secantLineForPlot", {data})')
         return VectorObject.from_dict(self, result)
     
     async def new_parametric_plot(
@@ -446,7 +446,7 @@ class Scene(
         t_min, t_max, t_step = t_range
         id_ = self.register_callback(f)
         data = json.dumps([id_, t_min, t_max, t_step])
-        result = await self.client.run_javascript(f'return await runMethod({self.id}, "newParametricPlot", {data})')
+        result = await self.exec_js(f'return await runMethod({self.id}, "newParametricPlot", {data})')
         return VectorObject.from_dict(self, result)
     
     async def new_real_function(
@@ -457,7 +457,7 @@ class Scene(
         x_min, x_max, x_step = x_range
         id_ = self.register_callback(f)
         data = json.dumps([id_, x_min, x_max, x_step])
-        result = await self.client.run_javascript(f'return await runMethod({self.id}, "newRealFunction", {data})')
+        result = await self.exec_js(f'return await runMethod({self.id}, "newRealFunction", {data})')
         return VectorObject.from_dict(self, result)
     
     async def new_contour_plot(
@@ -471,7 +471,7 @@ class Scene(
         y_min, y_max, y_step = y_range
         id_ = self.register_callback(f)
         data = json.dumps([id_, x_min, x_max, x_step, y_min, y_max, y_step, intervals])
-        result = await self.client.run_javascript(f'return await runMethod({self.id}, "newContourPlot", {data})')
+        result = await self.exec_js(f'return await runMethod({self.id}, "newContourPlot", {data})')
         return VectorObject.from_dict(self, result)
     
     async def new_number_line(
@@ -504,7 +504,7 @@ class Scene(
             tick_size,
             angle,
         ])
-        result = await self.client.run_javascript(f'return runMethod({self.id}, "newNumberLine", {data})')
+        result = await self.exec_js(f'return runMethod({self.id}, "newNumberLine", {data})')
         return VectorObject.from_dict(self, result)
     
     async def number_to_point_on_number_line(
@@ -515,7 +515,7 @@ class Scene(
         x_max: float,
     ) -> tuple[float, float]:
         data = json.dumps([number_line.to_dict(), number, x_min, x_max])
-        result = await self.client.run_javascript(f'return runMethod({self.id}, "numberToPointOnNumberLine", {data})')
+        result = await self.exec_js(f'return runMethod({self.id}, "numberToPointOnNumberLine", {data})')
         return tuple(result)
     
     async def point_on_number_line_to_number(
@@ -526,7 +526,7 @@ class Scene(
         x_max: float,
     ) -> float:
         data = json.dumps([number_line.to_dict(), [point[0], point[1]], x_min, x_max])
-        result = await self.client.run_javascript(f'return runMethod({self.id}, "pointOnNumberLineToNumber", {data})')
+        result = await self.exec_js(f'return runMethod({self.id}, "pointOnNumberLineToNumber", {data})')
         return result
     
     async def get_numbers_tex(
@@ -548,7 +548,7 @@ class Scene(
             return result.to_dict()
         id_ = self.register_callback(number_to_vector_object_async)
         data = json.dumps([number_line.to_dict(), numbers, id_, x_min, x_max, height, direction, buff, index])
-        result = await self.client.run_javascript(f'return await runMethod({self.id}, "getNumbersTex", {data})')
+        result = await self.exec_js(f'return await runMethod({self.id}, "getNumbersTex", {data})')
         return VectorObject.from_dict(self, result)
 
     async def new_mathjax(
@@ -558,7 +558,7 @@ class Scene(
     ) -> VectorObject:
         font_base64 = font_base64 or {}
         data = json.dumps([expression, font_base64])
-        result = await self.client.run_javascript(f'return await runMethod({self.id}, "newMathjax", {data})')
+        result = await self.exec_js(f'return await runMethod({self.id}, "newMathjax", {data})')
         return VectorObject.from_dict(self, result)
     
     async def svg_to_vector_object(
@@ -568,7 +568,7 @@ class Scene(
     ) -> VectorObject:
         font_base64 = font_base64 or {}
         data = json.dumps([svg, font_base64])
-        result = await self.client.run_javascript(f'return await runMethod({self.id}, "svgToVectorObject", {data})')
+        result = await self.exec_js(f'return await runMethod({self.id}, "svgToVectorObject", {data})')
         return VectorObject.from_dict(self, result)
     
     async def text_to_vector_object(
@@ -583,7 +583,7 @@ class Scene(
     ) -> VectorObject:
         font_base64 = font_base64 or {}
         data = json.dumps([text, font_base64, font_weight, font_style, x, y, font_size])
-        result = await self.client.run_javascript(f'return await runMethod({self.id}, "textToVectorObject", {data})')
+        result = await self.exec_js(f'return await runMethod({self.id}, "textToVectorObject", {data})')
         return VectorObject.from_dict(self, result)
     
     async def new_sphere(
@@ -607,7 +607,7 @@ class Scene(
             stroke_width,
             index,
         ])
-        result = await self.client.run_javascript(f'return await runMethod({self.id}, "newSphere", {data})', timeout=60)
+        result = await self.exec_js(f'return await runMethod({self.id}, "newSphere", {data})')
         return ThreeDObject.from_dict(self, result)
     
     async def new_three_d_axes(
@@ -651,7 +651,7 @@ class Scene(
             n_pieces,
             index,
         ])
-        result = await self.client.run_javascript(f'return runMethod({self.id}, "newThreeDAxes", {data})')
+        result = await self.exec_js(f'return runMethod({self.id}, "newThreeDAxes", {data})')
         return ThreeDObject.from_dict(self, result)
     
     async def coords_to_point_on_three_d_axes(
@@ -667,7 +667,7 @@ class Scene(
     ) -> tuple[float, float, float]:
         coords = [coords[0], coords[1], coords[2]]
         data = json.dumps([axes.to_dict(), coords, x_min, x_max, y_min, y_max, z_min, z_max])
-        result = await self.client.run_javascript(f'return runMethod({self.id}, "coordsToPointOnThreeDAxes", {data})')
+        result = await self.exec_js(f'return runMethod({self.id}, "coordsToPointOnThreeDAxes", {data})')
         return tuple(result)
     
     async def point_on_three_d_axes_to_coords(
@@ -683,7 +683,7 @@ class Scene(
     ) -> tuple[float, float, float]:
         point = [point[0], point[1], point[2]]
         data = json.dumps([axes.to_dict(), point, x_min, x_max, y_min, y_max, z_min, z_max])
-        result = await self.client.run_javascript(f'return runMethod({self.id}, "pointOnThreeDAxesToCoords", {data})')
+        result = await self.exec_js(f'return runMethod({self.id}, "pointOnThreeDAxesToCoords", {data})')
         return tuple(result)
     
     async def new_parametric_plot_in_three_d_axes(
@@ -719,7 +719,7 @@ class Scene(
             [color.to_dict() for color in strokes],
             stroke_width,
             index])
-        result = await self.client.run_javascript(f'return await runMethod({self.id}, "newParametricPlotInThreeDAxes", {data})')
+        result = await self.exec_js(f'return await runMethod({self.id}, "newParametricPlotInThreeDAxes", {data})')
         return ThreeDObject.from_dict(self, result)
     
     async def new_plot_in_three_d_axes(
@@ -756,7 +756,7 @@ class Scene(
             stroke_width,
             index,
         ])
-        result = await self.client.run_javascript(f'return await runMethod({self.id}, "newPlotInThreeDAxes", {data})')
+        result = await self.exec_js(f'return await runMethod({self.id}, "newPlotInThreeDAxes", {data})')
         return ThreeDObject.from_dict(self, result)
     
     async def new_parametric_line_plot_in_three_d_axes(
@@ -787,7 +787,7 @@ class Scene(
             stroke_width,
             index,
         ])
-        result = await self.client.run_javascript(f'return await runMethod({self.id}, "newParametricLinePlotInThreeDAxes", {data})')
+        result = await self.exec_js(f'return await runMethod({self.id}, "newParametricLinePlotInThreeDAxes", {data})')
         return ThreeDObject.from_dict(self, result)
 
     async def from_uv_function(
@@ -804,7 +804,7 @@ class Scene(
     ) -> "ThreeDObject":
         id_ = self.register_callback(func)
         data = json.dumps([id_, u_range, v_range, u_num_steps, v_num_steps, [fill.to_dict() for fill in fills], [stroke.to_dict() for stroke in strokes], stroke_width, index])
-        result = await self.client.run_javascript(f"return await runMethod({self.scene.id}, 'fromUVFunction3D', {data})")
+        result = await self.exec_js(f"return await runMethod({self.scene.id}, 'fromUVFunction3D', {data})")
         return ThreeDObject.from_dict(self.scene, result)
     
     async def three_d_object_from_vector_object(
@@ -812,39 +812,39 @@ class Scene(
         vector_object: VectorObject,
     ) -> ThreeDObject:
         data = json.dumps([vector_object.to_dict()])
-        result = await self.client.run_javascript(f"return await runMethod({self.id}, 'threeDObjectFromVectorObject', {data})")
+        result = await self.exec_js(f"return await runMethod({self.id}, 'threeDObjectFromVectorObject', {data})")
         return ThreeDObject.from_dict(self, result)
     
     async def add(self, vector_object: VectorObject) -> None:
         data = json.dumps([vector_object.to_dict()])
-        await self.client.run_javascript(f'return runMethod({self.id}, "addToScene", {data})')
+        await self.exec_js(f'return runMethod({self.id}, "addToScene", {data})')
 
     async def remove(self, index: int) -> None:
-        await self.client.run_javascript(f'return runMethod({self.id}, "removeFromScene", {index})')
+        await self.exec_js(f'return runMethod({self.id}, "removeFromScene", {index})')
 
     async def clear(self) -> None:
         data = json.dumps([])
-        await self.client.run_javascript(f'return runMethod({self.id}, "clearScene", {data})')
+        await self.exec_js(f'return runMethod({self.id}, "clearScene", {data})')
     
     async def restore(self, index: int) -> None:
         data = json.dumps([index])
-        await self.client.run_javascript(f'return runMethod({self.id}, "restoreState", {data})')
+        await self.exec_js(f'return runMethod({self.id}, "restoreState", {data})')
     
     async def save_state(self, index: int) -> None:
         data = json.dumps([index])
-        await self.client.run_javascript(f'return runMethod({self.id}, "saveState", {data})')
+        await self.exec_js(f'return runMethod({self.id}, "saveState", {data})')
 
     async def set_top_left_corner(self, x: float, y: float) -> None:
         data = json.dumps([x, y])
-        await self.client.run_javascript(f'return runMethod({self.id}, "setTopLeftCorner", {data})')
+        await self.exec_js(f'return runMethod({self.id}, "setTopLeftCorner", {data})')
 
     async def set_bottom_right_corner(self, x: float, y: float) -> None:
         data = json.dumps([x, y])
-        await self.client.run_javascript(f'return runMethod({self.id}, "setBottomRightCorner", {data})')
+        await self.exec_js(f'return runMethod({self.id}, "setBottomRightCorner", {data})')
     
     async def set_background(self, background: GradientImageOrColor) -> None:
         data = json.dumps([background.to_dict()])
-        await self.client.run_javascript(f'return runMethod({self.id}, "setBackground", {data})')
+        await self.exec_js(f'return runMethod({self.id}, "setBackground", {data})')
 
     async def play(
         self,
@@ -857,20 +857,20 @@ class Scene(
             return {str(index): obj.to_dict() for index, obj in result.items()}
         id_ = self.register_callback(animation_func_async)
         data = json.dumps([id_, object_indices, duration_in_frames])
-        await self.client.run_javascript(f'return await runMethod({self.id}, "play", {data})', timeout=2.5*duration_in_frames / self._props['fps'])
+        await self.exec_js(f'return await runMethod({self.id}, "play", {data})')
     
     async def set_updater(self, index: int, updater: Callable[[VectorObject], VectorObject]) -> None:
         id_ = self.register_callback(lambda obj: updater(VectorObject.from_dict(self, obj)).to_dict())
         data = json.dumps([index, id_])
-        await self.client.run_javascript(f'return runMethod({self.id}, "setUpdater", {data})')
+        await self.exec_js(f'return runMethod({self.id}, "setUpdater", {data})')
     
     async def remove_updater(self, index: int) -> None:
         data = json.dumps([index])
-        await self.client.run_javascript(f'return runMethod({self.id}, "removeUpdater", {data})')
+        await self.exec_js(f'return runMethod({self.id}, "removeUpdater", {data})')
     
     async def wait(self, duration_in_frames: int, object_indices: list[int]) -> None:
         data = json.dumps([duration_in_frames, object_indices])
-        await self.client.run_javascript(f'return await runMethod({self.id}, "wait", {data})', timeout=2.5*duration_in_frames / self._props['fps'])
+        await self.exec_js(f'return await runMethod({self.id}, "wait", {data})')
     
     async def wait_until(
         self,
@@ -879,20 +879,20 @@ class Scene(
     ) -> None:
         id_ = self.register_callback(condition)
         data = json.dumps([id_, object_indices])
-        await self.client.run_javascript(f'return await runMethod({self.id}, "waitUntil", {data})', timeout=10e9)
+        await self.exec_js(f'return await runMethod({self.id}, "waitUntil", {data})')
     
     async def set_on_rendered(self, func: Callable[[], Coroutine[None, None, None]]) -> None:
         id_ = self.register_callback(func)
         data = json.dumps([id_])
-        await self.client.run_javascript(f'return runMethod({self.id}, "setOnRendered", {data})')
+        await self.exec_js(f'return runMethod({self.id}, "setOnRendered", {data})')
     
     async def render_frame(self) -> None:
         data = json.dumps([])
-        await self.client.run_javascript(f'return await runMethod({self.id}, "renderFrame", {data})')
+        await self.exec_js(f'return await runMethod({self.id}, "renderFrame", {data})')
     
     async def get_objects(self) -> list[VectorObject]:
         data = json.dumps([])
-        result = await self.client.run_javascript(f'return runMethod({self.id}, "getObjects", {data})')
+        result = await self.exec_js(f'return runMethod({self.id}, "getObjects", {data})')
         return [VectorObject.from_dict(self, obj) for obj in result]
     
     def new_camera(
@@ -911,11 +911,11 @@ class Scene(
         return LightSource(self, position)
 
     async def exec_js(self, js: str) -> Any:
-        return await self.client.run_javascript(js, timeout=10e9)
+        return await self.client.run_javascript(js, timeout=None)
     
     async def log(self, message: str) -> None:
         data = json.dumps([message])
-        await self.client.run_javascript(f"return runMethod({self.id}, 'log', {data})")
+        await self.exec_js(f"return runMethod({self.id}, 'log', {data})")
     
     async def begin_recording(self, media_folder: Path) -> None:
         data = json.dumps([])
@@ -923,11 +923,11 @@ class Scene(
         self._media_dir.mkdir(exist_ok=True)
         for path in self._media_dir.iterdir():
             path.unlink()
-        await self.client.run_javascript(f"return runMethod({self.id}, 'beginRecording', {data})")
+        await self.exec_js(f"return runMethod({self.id}, 'beginRecording', {data})")
     
     async def stop_recording(self) -> None:
         data = json.dumps([])
-        await self.client.run_javascript(f"return runMethod({self.id}, 'stopRecording', {data})")
+        await self.exec_js(f"return runMethod({self.id}, 'stopRecording', {data})")
 
     def register_callback(self, func: Callable):
         id_ = id(func)
