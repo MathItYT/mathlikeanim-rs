@@ -30,7 +30,7 @@ class Camera:
     
     async def project_points(self, points: list[tuple[float, float, float]]) -> list[tuple[float, float]]:
         data = json.dumps([[[point[0], point[1], point[2]] for point in points], self.to_dict()])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'projectPoints', {data})", timeout=10)
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'projectPoints', {data})")
         return [(point[0], point[1]) for point in result]
     
     @staticmethod
@@ -93,75 +93,75 @@ class ThreeDObject:
 
     async def create_axes_3d(self, t: float, default_stroke_width: float = 0.5) -> "ThreeDObject":
         data = json.dumps([self.to_dict(), t, default_stroke_width])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'createAxes3D', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'createAxes3D', {data})")
         return ThreeDObject.from_dict(self.scene, result)
     
     async def create(self, t: float) -> "ThreeDObject":
         data = json.dumps([self.to_dict(), t])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'createThreeDObject', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'createThreeDObject', {data})")
         return ThreeDObject.from_dict(self.scene, result)
     
     async def draw_stroke_then_fill(self, t: float, default_stroke_width: float = 0.5) -> "ThreeDObject":
         data = json.dumps([self.to_dict(), t, default_stroke_width])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'drawStrokeThenFill3D', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'drawStrokeThenFill3D', {data})")
         return ThreeDObject.from_dict(self.scene, result)
     
     async def fade_in(self, scale_factor: float, shift: tuple[float, float, float], t: float) -> "ThreeDObject":
         shift = [shift[0], shift[1], shift[2]]
         data = json.dumps([self.to_dict(), scale_factor, shift, t])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'fadeIn3D', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'fadeIn3D', {data})")
         return ThreeDObject.from_dict(self.scene, result)
     
     async def fade_out(self, scale_factor: float, shift: tuple[float, float, float], t: float) -> "ThreeDObject":
         shift = [shift[0], shift[1], shift[2]]
         data = json.dumps([self.to_dict(), scale_factor, shift, t])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'fadeOut3D', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'fadeOut3D', {data})")
         return ThreeDObject.from_dict(self.scene, result)
     
     async def grow_from_center(self, t: float) -> "ThreeDObject":
         data = json.dumps([self.to_dict(), t])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'growFromCenter3D', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'growFromCenter3D', {data})")
         return ThreeDObject.from_dict(self.scene, result)
     
     async def morph_shape(self, target: "ThreeDObject", t: float) -> "ThreeDObject":
         data = json.dumps([self.to_dict(), target.to_dict(), t])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'morphShape3D', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'morphShape3D', {data})")
         return ThreeDObject.from_dict(self.scene, result)
     
     async def rotate_x_animation(self, angle: float, t: float) -> "ThreeDObject":
         data = json.dumps([self.to_dict(), angle, t])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'rotateXAnimation3D', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'rotateXAnimation3D', {data})")
         return ThreeDObject.from_dict(self.scene, result)
     
     async def rotate_y_animation(self, angle: float, t: float) -> "ThreeDObject":
         data = json.dumps([self.to_dict(), angle, t])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'rotateYAnimation3D', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'rotateYAnimation3D', {data})")
         return ThreeDObject.from_dict(self.scene, result)
     
     async def rotate_z_animation(self, angle: float, t: float) -> "ThreeDObject":
         data = json.dumps([self.to_dict(), angle, t])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'rotateZAnimation3D', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'rotateZAnimation3D', {data})")
         return ThreeDObject.from_dict(self.scene, result)
     
     async def scale_in_place(self, scale_factor: float, t: float) -> "ThreeDObject":
         data = json.dumps([self.to_dict(), scale_factor, t])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'scaleInPlace3D', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'scaleInPlace3D', {data})")
         return ThreeDObject.from_dict(self.scene, result)
     
     async def set_fill_animation(self, color: GradientImageOrColor, t: float) -> "ThreeDObject":
         data = json.dumps([self.to_dict(), color.to_dict(), t])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'setFillAnimation3D', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'setFillAnimation3D', {data})")
         return ThreeDObject.from_dict(self.scene, result)
     
     async def set_stroke_animation(self, color: GradientImageOrColor, t: float) -> "ThreeDObject":
         data = json.dumps([self.to_dict(), color.to_dict(), t])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'setStrokeAnimation3D', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'setStrokeAnimation3D', {data})")
         return ThreeDObject.from_dict(self.scene, result)
     
     async def shift_animation(self, shift: tuple[float, float, float], t: float) -> "ThreeDObject":
         shift = [shift[0], shift[1], shift[2]]
         data = json.dumps([self.to_dict(), shift, t])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'shiftAnimation3D', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'shiftAnimation3D', {data})")
         return ThreeDObject.from_dict(self.scene, result)
     
     def set_points(self, points: list[tuple[float, float, float]]) -> "ThreeDObject":
@@ -262,7 +262,7 @@ class ThreeDObject:
     
     async def get_anchors_and_handles(self) -> tuple[list[tuple[float, float, float]], list[tuple[float, float, float]], list[tuple[float, float, float]], list[tuple[float, float, float]]]:
         data = json.dumps([self.to_dict()])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'getAnchorsAndHandles3D', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'getAnchorsAndHandles3D', {data})")
         return (
             [(point[0], point[1], point[2]) for point in result[0]],
             [(point[0], point[1], point[2]) for point in result[1]],
@@ -275,17 +275,17 @@ class ThreeDObject:
         anchors_and_handles: tuple[list[tuple[float, float, float]], list[tuple[float, float, float]], list[tuple[float, float, float]], list[tuple[float, float, float]]],
     ) -> "ThreeDObject":
         data = json.dumps([self.to_dict(), anchors_and_handles])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'setAnchorsAndHandles3D', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'setAnchorsAndHandles3D', {data})")
         return ThreeDObject.from_dict(self.scene, result)
     
     async def scale_handle_to_anchor_distances(self, scale_factor: float, recursive: bool) -> "ThreeDObject":
         data = json.dumps([self.to_dict(), scale_factor, recursive])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'scaleHandleToAnchorDistances3D', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'scaleHandleToAnchorDistances3D', {data})")
         return ThreeDObject.from_dict(self.scene, result)
     
     async def get_cubic_bezier_tuples(self) -> list[tuple[tuple[float, float, float], tuple[float, float, float], tuple[float, float, float], tuple[float, float, float]]]:
         data = json.dumps([self.to_dict()])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'getCubicBezierTuples3D', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'getCubicBezierTuples3D', {data})")
         return [
             (
                 (point[0], point[1], point[2]),
@@ -298,7 +298,7 @@ class ThreeDObject:
     
     async def get_partial_copy(self, start: float, end: float, recursive: bool) -> "ThreeDObject":
         data = json.dumps([self.to_dict(), start, end, recursive])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'getPartialCopy3D', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'getPartialCopy3D', {data})")
         return ThreeDObject.from_dict(self.scene, result)
     
     def set_fill_opacity(self, opacity: float, recursive: bool) -> "ThreeDObject":
@@ -385,7 +385,7 @@ class ThreeDObject:
     
     async def get_critical_point(self, key: tuple[float, float, float]) -> tuple[float, float, float]:
         data = json.dumps([self.to_dict(), [key[0], key[1], key[2]]])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'getCriticalPoint3D', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'getCriticalPoint3D', {data})")
         return (result[0], result[1], result[2])
     
     async def next_to_other(
@@ -397,7 +397,7 @@ class ThreeDObject:
         recursive: bool,
     ) -> "ThreeDObject":
         data = json.dumps([self.to_dict(), other.to_dict(), [direction[0], direction[1], direction[2]], buff, [aligned_edge[0], aligned_edge[1], aligned_edge[2]], recursive])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'nextToOther3D', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'nextToOther3D', {data})")
         return ThreeDObject.from_dict(self.scene, result)
     
     async def next_to_point(
@@ -409,7 +409,7 @@ class ThreeDObject:
         recursive: bool,
     ) -> "ThreeDObject":
         data = json.dumps([self.to_dict(), [point[0], point[1], point[2]], [direction[0], direction[1], direction[2]], buff, [aligned_edge[0], aligned_edge[1], aligned_edge[2]], recursive])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'nextToPoint3D', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'nextToPoint3D', {data})")
         return ThreeDObject.from_dict(self.scene, result)
     
     async def arrange_subobjects(
@@ -420,37 +420,37 @@ class ThreeDObject:
         recursive: bool,
     ) -> "ThreeDObject":
         data = json.dumps([self.to_dict(), [direction[0], direction[1], direction[2]], buff, [aligned_edge[0], aligned_edge[1], aligned_edge[2]], recursive])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'arrangeSubobjects3D', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'arrangeSubobjects3D', {data})")
         return ThreeDObject.from_dict(self.scene, result)
     
     async def scale(self, scale_factor: float, recursive: bool) -> "ThreeDObject":
         data = json.dumps([self.to_dict(), scale_factor, recursive])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'scale3D', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'scale3D', {data})")
         return ThreeDObject.from_dict(self.scene, result)
     
     async def strecth(self, scale_factor: tuple[float, float, float], recursive: bool) -> "ThreeDObject":
         data = json.dumps([self.to_dict(), [scale_factor[0], scale_factor[1], scale_factor[2]], recursive])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'stretch3D', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'stretch3D', {data})")
         return ThreeDObject.from_dict(self.scene, result)
     
     async def shift(self, shift: tuple[float, float, float], recursive: bool) -> "ThreeDObject":
         data = json.dumps([self.to_dict(), [shift[0], shift[1], shift[2]], recursive])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'shift3D', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'shift3D', {data})")
         return ThreeDObject.from_dict(self.scene, result)
     
     async def rotate_x(self, angle: float, recursive: bool) -> "ThreeDObject":
         data = json.dumps([self.to_dict(), angle, recursive])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'rotateX3D', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'rotateX3D', {data})")
         return ThreeDObject.from_dict(self.scene, result)
     
     async def rotate_y(self, angle: float, recursive: bool) -> "ThreeDObject":
         data = json.dumps([self.to_dict(), angle, recursive])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'rotateY3D', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'rotateY3D', {data})")
         return ThreeDObject.from_dict(self.scene, result)
     
     async def rotate_z(self, angle: float, recursive: bool) -> "ThreeDObject":
         data = json.dumps([self.to_dict(), angle, recursive])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'rotateZ3D', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'rotateZ3D', {data})")
         return ThreeDObject.from_dict(self.scene, result)
     
     async def project_and_shade(
@@ -459,7 +459,7 @@ class ThreeDObject:
         light_source: LightSource,
     ) -> VectorObject:
         data = json.dumps([self.to_dict(), camera.to_dict(), light_source.to_dict()])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'projectAndShade3D', {data})", timeout=10)
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'projectAndShade3D', {data})")
         return VectorObject.from_dict(self.scene, result)
     
     async def apply_function(
@@ -469,12 +469,12 @@ class ThreeDObject:
     ) -> "ThreeDObject":
         id_ = self.scene.register_callback(func)
         data = json.dumps([self.to_dict(), id_, recursive])
-        result = await self.scene.client.run_javascript(f"return await runMethod({self.scene.id}, 'applyFunction3D', {data})")
+        result = await self.scene.exec_js(f"return await runMethod({self.scene.id}, 'applyFunction3D', {data})")
         return ThreeDObject.from_dict(self.scene, result)
     
     async def get_bounding_box(self) -> tuple[tuple[float, float, float], tuple[float, float, float]]:
         data = json.dumps([self.to_dict()])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'getBoundingBox3D', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'getBoundingBox3D', {data})")
         return (
             (result[0][0], result[0][1], result[0][2]),
             (result[1][0], result[1][1], result[1][2]),
@@ -482,22 +482,22 @@ class ThreeDObject:
     
     async def get_center(self) -> tuple[float, float, float]:
         data = json.dumps([self.to_dict()])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'getCenter3D', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'getCenter3D', {data})")
         return (result[0], result[1], result[2])
     
     async def merged_points(self) -> list[tuple[float, float, float]]:
         data = json.dumps([self.to_dict()])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'mergedPoints3D', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'mergedPoints3D', {data})")
         return [(point[0], point[1], point[2]) for point in result]
     
     async def move_to(self, point: tuple[float, float, float], recursive: bool) -> "ThreeDObject":
         data = json.dumps([self.to_dict(), [point[0], point[1], point[2]], recursive])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'moveTo3D', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'moveTo3D', {data})")
         return ThreeDObject.from_dict(self.scene, result)
     
     async def get_subobjects_recursively(self) -> list["ThreeDObject"]:
         data = json.dumps([self.to_dict()])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'getSubobjectsRecursively3D', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'getSubobjectsRecursively3D', {data})")
         return [ThreeDObject.from_dict(self.scene, subobject) for subobject in result]
 
     @staticmethod

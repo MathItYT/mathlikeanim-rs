@@ -40,85 +40,85 @@ class VectorObject:
     
     async def create(self, t: float) -> "VectorObject":
         data = json.dumps([self.to_dict(), t])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'createVectorObject', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'createVectorObject', {data})")
         return VectorObject.from_dict(self.scene, result)
     
     async def draw_stroke_then_fill(self, t: float, default_stroke_width: float = 2.0) -> "VectorObject":
         data = json.dumps([self.to_dict(), t, default_stroke_width])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'drawStrokeThenFill', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'drawStrokeThenFill', {data})")
         return VectorObject.from_dict(self.scene, result)
     
     async def fade_in(self, scale_factor: float, shift: tuple[float, float], t: float) -> "VectorObject":
         shift = [shift[0], shift[1]]
         data = json.dumps([self.to_dict(), scale_factor, shift, t])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'fadeIn', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'fadeIn', {data})")
         return VectorObject.from_dict(self.scene, result)
     
     async def fade_out(self, scale_factor: float, shift: tuple[float, float], t: float) -> "VectorObject":
         shift = [shift[0], shift[1]]
         data = json.dumps([self.to_dict(), scale_factor, shift, t])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'fadeOut', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'fadeOut', {data})")
         return VectorObject.from_dict(self.scene, result)
     
     async def grow_arrow_with_final_tip(self, t: float) -> "VectorObject":
         data = json.dumps([self.to_dict(), t])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'growArrowWithFinalTip', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'growArrowWithFinalTip', {data})")
         return VectorObject.from_dict(self.scene, result)
     
     async def grow_arrow_with_initial_tip(self, t: float) -> "VectorObject":
         data = json.dumps([self.to_dict(), t])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'growArrowWithInitialTip', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'growArrowWithInitialTip', {data})")
         return VectorObject.from_dict(self.scene, result)
     
     async def grow_arrow_with_tips_at_both_ends(self, t: float) -> "VectorObject":
         data = json.dumps([self.to_dict(), t])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'growArrowWithTipsAtBothEnds', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'growArrowWithTipsAtBothEnds', {data})")
         return VectorObject.from_dict(self.scene, result)
     
     async def grow_from_center(self, t: float) -> "VectorObject":
         data = json.dumps([self.to_dict(), t])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'growFromCenter', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'growFromCenter', {data})")
         return VectorObject.from_dict(self.scene, result)
     
     async def morph_shape(self, target: "VectorObject", t: float) -> "VectorObject":
         data = json.dumps([self.to_dict(), target.to_dict(), t])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'morphShape', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'morphShape', {data})")
         return VectorObject.from_dict(self.scene, result)
     
     async def rotate_animation(self, angle: float, t: float) -> "VectorObject":
         data = json.dumps([self.to_dict(), angle, t])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'rotateAnimation', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'rotateAnimation', {data})")
         return VectorObject.from_dict(self.scene, result)
     
     async def scale_in_place(self, scale_factor: float, t: float) -> "VectorObject":
         data = json.dumps([self.to_dict(), scale_factor, t])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'scaleInPlace', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'scaleInPlace', {data})")
         return VectorObject.from_dict(self.scene, result)
     
     async def set_fill_animation(self, color: Color, t: float) -> "VectorObject":
         data = json.dumps([self.to_dict(), color.to_dict(), t])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'setFillAnimation', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'setFillAnimation', {data})")
         return VectorObject.from_dict(self.scene, result)
     
     async def set_stroke_animation(self, color: Color, t: float) -> "VectorObject":
         data = json.dumps([self.to_dict(), color.to_dict(), t])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'setStrokeAnimation', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'setStrokeAnimation', {data})")
         return VectorObject.from_dict(self.scene, result)
     
     async def shift_animation(self, shift: tuple[float, float], t: float) -> "VectorObject":
         shift = [shift[0], shift[1]]
         data = json.dumps([self.to_dict(), shift, t])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'shiftAnimation', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'shiftAnimation', {data})")
         return VectorObject.from_dict(self.scene, result)
     
     async def show_temporarily(self, t: float) -> "VectorObject":
         data = json.dumps([self.to_dict(), t])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'showTemporarily', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'showTemporarily', {data})")
         return VectorObject.from_dict(self.scene, result)
     
     async def spinning_grow(self, angle: float, t: float) -> "VectorObject":
         data = json.dumps([self.to_dict(), angle, t])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'spinningGrow', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'spinningGrow', {data})")
         return VectorObject.from_dict(self.scene, result)
     
     def get_index(self) -> int:
@@ -140,7 +140,7 @@ class VectorObject:
     
     async def increment_index(self, increment: int, recursive: bool) -> "VectorObject":
         data = json.dumps([self.to_dict(), increment, recursive])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'incrementIndex', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'incrementIndex', {data})")
         return VectorObject.from_dict(self.scene, result)
     
     def get_points(self) -> list[tuple[float, float]]:
@@ -179,7 +179,7 @@ class VectorObject:
     
     async def get_subobjects_recursively(self, with_points: bool) -> list['VectorObject']:
         data = json.dumps([self.to_dict(), with_points])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'getSubobjectsRecursively', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'getSubobjectsRecursively', {data})")
         return [VectorObject.from_dict(self.scene, subobject) for subobject in result]
     
     def add(self, subobject: "VectorObject") -> "VectorObject":
@@ -251,17 +251,17 @@ class VectorObject:
     
     async def get_subcurve(self, start: float, end: float) -> "VectorObject":
         data = json.dumps([self.to_dict(), start, end])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'getSubcurve', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'getSubcurve', {data})")
         return VectorObject.from_dict(self.scene, result)
     
     async def get_partial_copy(self, start: float, end: float, recursive: bool) -> "VectorObject":
         data = json.dumps([self.to_dict(), start, end, recursive])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'getPartialCopy', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'getPartialCopy', {data})")
         return VectorObject.from_dict(self.scene, result)
     
     async def get_anchors_and_handles(self) -> tuple[list[tuple[float, float]], list[tuple[float, float]], list[tuple[float, float]], list[tuple[float, float]]]:
         data = json.dumps([self.to_dict()])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'getAnchorsAndHandles', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'getAnchorsAndHandles', {data})")
         return (
             [(point[0], point[1]) for point in result[0]],
             [(point[0], point[1]) for point in result[1]],
@@ -271,7 +271,7 @@ class VectorObject:
     
     async def scale_handle_to_anchor_distances(self, scale: float, recursive: bool) -> "VectorObject":
         data = json.dumps([self.to_dict(), scale, recursive])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'scaleHandleToAnchorDistances', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'scaleHandleToAnchorDistances', {data})")
         return VectorObject.from_dict(self.scene, result)
     
     async def set_anchors_and_handles(
@@ -285,17 +285,17 @@ class VectorObject:
             [[point[0], point[1]] for point in anchors_and_handles[3]],
         ]
         data = json.dumps([self.to_dict(), anchors_and_handles])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'setAnchorsAndHandles', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'setAnchorsAndHandles', {data})")
         return VectorObject.from_dict(self.scene, result)
     
     async def get_nth_curve_points(self, n: int) -> list[tuple[float, float]]:
         data = json.dumps([self.to_dict(), n])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'getNthCurvePoints', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'getNthCurvePoints', {data})")
         return [(point[0], point[1]) for point in result]
     
     async def get_nth_curve_length_pieces(self, n: int, sample_points: int = 10) -> list[float]:
         data = json.dumps([self.to_dict(), n, sample_points])
-        return await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'getNthCurveLengthPieces', {data})")
+        return await self.scene.exec_js(f"return runMethod({self.scene.id}, 'getNthCurveLengthPieces', {data})")
     
     def get_num_curves(self) -> int:
         return len(self.subobjects) // 4
@@ -305,7 +305,7 @@ class VectorObject:
     
     async def get_subpaths(self) -> list[list[tuple[float, float]]]:
         data = json.dumps([self.to_dict()])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'getSubpaths', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'getSubpaths', {data})")
         return [[(point[0], point[1]) for point in subpath] for subpath in result]
     
     async def apply_function(
@@ -317,17 +317,17 @@ class VectorObject:
     ) -> "VectorObject":
         id_ = self.scene.register_callback(function)
         data = json.dumps([self.to_dict(), id_, recursive, about_point, about_edge])
-        result = await self.scene.client.run_javascript(f"return await runMethod({self.scene.id}, 'applyFunction', {data})")
+        result = await self.scene.exec_js(f"return await runMethod({self.scene.id}, 'applyFunction', {data})")
         return VectorObject.from_dict(self.scene, result)
     
     async def get_pieces(self, n_pieces: int) -> "VectorObject":
         data = json.dumps([self.to_dict(), n_pieces])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'getPieces', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'getPieces', {data})")
         return VectorObject.from_dict(self.scene, result)
     
     async def get_cubic_bezier_tuples(self) -> list[tuple[tuple[float, float], tuple[float, float], tuple[float, float], tuple[float, float]]]:
         data = json.dumps([self.to_dict()])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'getCubicBezierTuples', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'getCubicBezierTuples', {data})")
         return [
             (
                 (point[0], point[1]),
@@ -340,45 +340,45 @@ class VectorObject:
     
     async def scale(self, scale_factor: float, recursive: bool) -> "VectorObject":
         data = json.dumps([self.to_dict(), scale_factor, recursive])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'scale', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'scale', {data})")
         return VectorObject.from_dict(self.scene, result)
     
     async def stretch(self, stretch_factor: tuple[float, float], recursive: bool) -> "VectorObject":
         data = json.dumps([self.to_dict(), [stretch_factor[0], stretch_factor[1]], recursive])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'stretch', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'stretch', {data})")
         return VectorObject.from_dict(self.scene, result)
     
     async def shift(self, shift: tuple[float, float], recursive: bool) -> "VectorObject":
         data = json.dumps([self.to_dict(), [shift[0], shift[1]], recursive])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'shift', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'shift', {data})")
         return VectorObject.from_dict(self.scene, result)
     
     async def merged_points(self) -> list[tuple[float, float]]:
         data = json.dumps([self.to_dict()])
-        return await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'mergedPoints', {data})")
+        return await self.scene.exec_js(f"return runMethod({self.scene.id}, 'mergedPoints', {data})")
     
     async def get_bounding_box(self) -> tuple[tuple[float, float], tuple[float, float]]:
         data = json.dumps([self.to_dict()])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'getBoundingBox', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'getBoundingBox', {data})")
         return ((result[0][0], result[0][1]), (result[1][0], result[1][1]))
     
     async def get_center(self) -> tuple[float, float]:
         data = json.dumps([self.to_dict()])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'getCenter', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'getCenter', {data})")
         return (result[0], result[1])
     
     async def get_center_of_mass(self) -> tuple[float, float]:
         data = json.dumps([self.to_dict()])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'getCenterOfMass', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'getCenterOfMass', {data})")
         return (result[0], result[1])
     
     async def get_height(self) -> float:
         data = json.dumps([self.to_dict()])
-        return await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'getHeight', {data})")
+        return await self.scene.exec_js(f"return runMethod({self.scene.id}, 'getHeight', {data})")
     
     async def get_width(self) -> float:
         data = json.dumps([self.to_dict()])
-        return await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'getWidth', {data})")
+        return await self.scene.exec_js(f"return runMethod({self.scene.id}, 'getWidth', {data})")
     
     def get_fill_opacity(self) -> float:
         return (
@@ -457,12 +457,12 @@ class VectorObject:
 
     async def move_to(self, point: tuple[float, float], recursive: bool) -> "VectorObject":
         data = json.dumps([self.to_dict(), [point[0], point[1]], recursive])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'moveTo', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'moveTo', {data})")
         return VectorObject.from_dict(self.scene, result)
     
     async def rotate(self, angle: float, recursive: bool) -> "VectorObject":
         data = json.dumps([self.to_dict(), angle, recursive])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'rotate', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'rotate', {data})")
         return VectorObject.from_dict(self.scene, result)
     
     async def next_to_other(
@@ -474,7 +474,7 @@ class VectorObject:
         recursive: bool,
     ) -> "VectorObject":
         data = json.dumps([self.to_dict(), other.to_dict(), [direction[0], direction[1]], buff, [aligned_edge[0], aligned_edge[1]], recursive])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'nextToOther', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'nextToOther', {data})")
         return VectorObject.from_dict(self.scene, result)
     
     async def next_to_point(
@@ -486,7 +486,7 @@ class VectorObject:
         recursive: bool,
     ) -> "VectorObject":
         data = json.dumps([self.to_dict(), [point[0], point[1]], [direction[0], direction[1]], buff, [aligned_edge[0], aligned_edge[1]], recursive])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'nextToPoint', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'nextToPoint', {data})")
         return VectorObject.from_dict(self.scene, result)
     
     async def arrange_subobjects(
@@ -497,7 +497,7 @@ class VectorObject:
         recursive: bool
     ) -> "VectorObject":
         data = json.dumps([self.to_dict(), [direction[0], direction[1]], buff, [aligned_edge[0], aligned_edge[1]], recursive])
-        result = await self.scene.client.run_javascript(f"return runMethod({self.scene.id}, 'arrangeSubobjects', {data})")
+        result = await self.scene.exec_js(f"return runMethod({self.scene.id}, 'arrangeSubobjects', {data})")
         return VectorObject.from_dict(self.scene, result)
 
     def get_fill(self) -> GradientImageOrColor:

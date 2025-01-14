@@ -91,6 +91,79 @@ class Scene(
     def new_empty_three_d_object(self) -> ThreeDObject:
         return ThreeDObject(self)
     
+    async def set_3d_index(self, index: int) -> None:
+        data = json.dumps([index])
+        await self.exec_js(f'return runMethod({self.id}, "setScene3DIndex", {data})')
+    
+    async def project_and_shade(self) -> VectorObject:
+        result = await self.exec_js(f'return runMethod({self.id}, "projectAndShadeScene", [])')
+        return VectorObject.from_dict(self, result)
+
+    async def set_camera_position(self, position: tuple[float, float, float]) -> None:
+        data = json.dumps([[position[0], position[1], position[2]]])
+        await self.exec_js(f'return runMethod({self.id}, "setSceneCameraPosition", {data})')
+    
+    async def set_camera_rotation(self, rotation: tuple[float, float, float]) -> None:
+        data = json.dumps([[rotation[0], rotation[1], rotation[2]]])
+        await self.exec_js(f'return runMethod({self.id}, "setSceneCameraRotation", {data})')
+    
+    async def set_camera_focal_distance(self, focal_distance: float) -> None:
+        data = json.dumps([focal_distance])
+        await self.exec_js(f'return runMethod({self.id}, "setSceneCameraFocalDistance", {data})')
+    
+    async def set_camera_zoom(self, zoom: float) -> None:
+        data = json.dumps([zoom])
+        await self.exec_js(f'return runMethod({self.id}, "setSceneCameraZoom", {data})')
+    
+    async def set_light_source_position(self, position: tuple[float, float, float]) -> None:
+        data = json.dumps([[position[0], position[1], position[2]]])
+        await self.exec_js(f'return runMethod({self.id}, "setSceneLightSourcePosition", {data})')
+    
+    async def get_3d_index(self) -> int:
+        return await self.exec_js(f'return runMethod({self.id}, "getScene3DIndex", [])')
+    
+    async def get_camera_position(self) -> tuple[float, float, float]:
+        result = await self.exec_js(f'return runMethod({self.id}, "getSceneCameraPosition", [])')
+        return tuple(result)
+    
+    async def get_camera_rotation(self) -> tuple[float, float, float]:
+        result = await self.exec_js(f'return runMethod({self.id}, "getSceneCameraRotation", [])')
+        return tuple(result)
+    
+    async def get_camera_focal_distance(self) -> float:
+        return await self.exec_js(f'return runMethod({self.id}, "getSceneCameraFocalDistance", [])')
+    
+    async def get_camera_zoom(self) -> float:
+        return await self.exec_js(f'return runMethod({self.id}, "getSceneCameraZoom", [])')
+    
+    async def get_light_source_position(self) -> tuple[float, float, float]:
+        result = await self.exec_js(f'return runMethod({self.id}, "getSceneLightSourcePosition", [])')
+        return tuple(result)
+
+    async def add_3d(self, three_d_object: ThreeDObject) -> None:
+        data = json.dumps([three_d_object.to_dict()])
+        await self.exec_js(f'return runMethod({self.id}, "addScene3D", {data})')
+    
+    async def insert_3d(self, index: int, three_d_object: ThreeDObject) -> None:
+        data = json.dumps([index, three_d_object.to_dict()])
+        await self.exec_js(f'return runMethod({self.id}, "insertScene3D", {data})')
+
+    async def remove_3d(self, index: int) -> None:
+        data = json.dumps([index])
+        await self.exec_js(f'return runMethod({self.id}, "removeScene3D", {data})')
+    
+    async def get_3d_objects(self) -> list[ThreeDObject]:
+        result = await self.exec_js(f'return runMethod({self.id}, "getScene3DObjects", [])')
+        return [ThreeDObject.from_dict(self, obj) for obj in result]
+    
+    async def set_3d_objects(self, three_d_objects: list[ThreeDObject]) -> None:
+        data = json.dumps([[obj.to_dict() for obj in three_d_objects]])
+        await self.exec_js(f'return runMethod({self.id}, "setScene3DObjects", {data})')
+    
+    async def set_3d_object(self, three_d_object: ThreeDObject) -> None:
+        data = json.dumps([three_d_object.to_dict()])
+        await self.exec_js(f'return runMethod({self.id}, "setScene3DObject", {data})')
+    
     async def add_final_tip_to_object(
         self,
         shape: VectorObject,

@@ -1,9 +1,9 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, f64::consts::PI};
 use js_sys::{Array, Function, Map, Promise};
 use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::JsFuture;
 
-use crate::{colors::{Color, GradientImageOrColor}, objects::{vector_object::VectorObject, wasm_interface::{WasmGradientImageOrColor, WasmVectorObject}}, web_renderer::render_all_vectors_svg, scene_api::SceneAPI, utils::sleep};
+use crate::{colors::{Color, GradientImageOrColor}, objects::{three_d::{three_d_object::{Camera, LightSource, ThreeDObject}, wasm_interface::WasmThreeDObject}, vector_object::VectorObject, wasm_interface::{WasmGradientImageOrColor, WasmVectorObject}}, scene_api::SceneAPI, utils::sleep, web_renderer::render_all_vectors_svg};
 
 #[wasm_bindgen]
 #[derive(Clone)]
@@ -32,6 +32,12 @@ pub struct SVGScene {
     pub classes: HashMap<usize, String>,
     #[wasm_bindgen(skip)]
     pub updaters: Map,
+    #[wasm_bindgen(skip)]
+    pub camera: Camera,
+    #[wasm_bindgen(skip)]
+    pub light_source: LightSource,
+    #[wasm_bindgen(skip)]
+    pub three_d_object: ThreeDObject,
 }
 
 
@@ -54,7 +60,34 @@ impl SceneAPI for SVGScene {
             states: HashMap::new(),
             callback: Closure::wrap(Box::new(|| Promise::resolve(&JsValue::NULL)) as Box<dyn Fn() -> Promise>).into_js_value().dyn_into().unwrap(),
             classes: HashMap::new(),
-            updaters: Map::new()
+            updaters: Map::new(),
+            camera: Camera {
+                position: (960.0, 540.0, 0.0),
+                rotation: (0.0, -PI / 2.0, 0.0),
+                focal_distance: 20.0 * height as f64 / 8.0,
+                zoom: 1.0,
+            },
+            light_source: LightSource {
+                position: (width as f64, height as f64, 0.0),
+            },
+            three_d_object: ThreeDObject::new(
+                Vec::new(),
+                Vec::new(),
+                GradientImageOrColor::Color(Color {
+                    red: 0.0,
+                    green: 0.0,
+                    blue: 0.0,
+                    alpha: 0.0
+                }),
+                GradientImageOrColor::Color(Color {
+                    red: 0.0,
+                    green: 0.0,
+                    blue: 0.0,
+                    alpha: 0.0
+                }),
+                0.0,
+                0,
+            )
         };
     }
     fn set_updater(&mut self, index: usize, updater: Function) {
@@ -311,5 +344,99 @@ impl SVGScene {
     #[wasm_bindgen(js_name = getDivContainer)]
     pub fn get_div_container_js(&self) -> web_sys::HtmlDivElement {
         return self.div_container.clone().unwrap();
+    }
+    #[wasm_bindgen(js_name = set3DIndex)]
+    pub fn set_3d_index_js(&mut self, index: usize) {
+        self.three_d_object.index = index;
+    }
+    #[wasm_bindgen(js_name = projectAndShade)]
+    pub fn project_and_shade_js(&mut self) -> WasmVectorObject {
+        WasmVectorObject { native_vec_features: self.three_d_object.project_and_shade(&self.camera, &self.light_source) }
+    }
+    #[wasm_bindgen(js_name = setCameraPosition)]
+    pub fn set_camera_position_js(&mut self, x: f64, y: f64, z: f64) {
+        self.camera.position = (x, y, z);
+    }
+    #[wasm_bindgen(js_name = setCameraRotation)]
+    pub fn set_camera_rotation_js(&mut self, x: f64, y: f64, z: f64) {
+        self.camera.rotation = (x, y, z);
+    }
+    #[wasm_bindgen(js_name = setCameraFocalDistance)]
+    pub fn set_camera_focal_distance_js(&mut self, focal_distance: f64) {
+        self.camera.focal_distance = focal_distance;
+    }
+    #[wasm_bindgen(js_name = get3DIndex)]
+    pub fn get_3d_index_js(&self) -> usize {
+        return self.three_d_object.index;
+    }
+    #[wasm_bindgen(js_name = getCameraPosition)]
+    pub fn get_camera_position_js(&self) -> js_sys::Array {
+        let array = js_sys::Array::new();
+        array.push(&JsValue::from_f64(self.camera.position.0));
+        array.push(&JsValue::from_f64(self.camera.position.1));
+        array.push(&JsValue::from_f64(self.camera.position.2));
+        return array;
+    }
+    #[wasm_bindgen(js_name = getCameraRotation)]
+    pub fn get_camera_rotation_js(&self) -> js_sys::Array {
+        let array = js_sys::Array::new();
+        array.push(&JsValue::from_f64(self.camera.rotation.0));
+        array.push(&JsValue::from_f64(self.camera.rotation.1));
+        array.push(&JsValue::from_f64(self.camera.rotation.2));
+        return array;
+    }
+    #[wasm_bindgen(js_name = getCameraFocalDistance)]
+    pub fn get_camera_focal_distance_js(&self) -> f64 {
+        return self.camera.focal_distance;
+    }
+    #[wasm_bindgen(js_name = getCameraZoom)]
+    pub fn get_camera_zoom_js(&self) -> f64 {
+        return self.camera.zoom;
+    }
+    #[wasm_bindgen(js_name = getLightSourcePosition)]
+    pub fn get_light_source_position_js(&self) -> js_sys::Array {
+        let array = js_sys::Array::new();
+        array.push(&JsValue::from_f64(self.light_source.position.0));
+        array.push(&JsValue::from_f64(self.light_source.position.1));
+        array.push(&JsValue::from_f64(self.light_source.position.2));
+        return array;
+    }
+    #[wasm_bindgen(js_name = setCameraZoom)]
+    pub fn set_camera_zoom_js(&mut self, zoom: f64) {
+        self.camera.zoom = zoom;
+    }
+    #[wasm_bindgen(js_name = setLightSourcePosition)]
+    pub fn set_light_source_position_js(&mut self, x: f64, y: f64, z: f64) {
+        self.light_source.position = (x, y, z);
+    }
+    #[wasm_bindgen(js_name = add3D)]
+    pub fn add_3d_js(&mut self, object: WasmThreeDObject) {
+        self.three_d_object.subobjects.push(object.three_d_object);
+    }
+    #[wasm_bindgen(js_name = insert3D)]
+    pub fn insert_3d_js(&mut self, index: usize, object: WasmThreeDObject) {
+        self.three_d_object.subobjects.insert(index, object.three_d_object);
+    }
+    #[wasm_bindgen(js_name = remove3D)]
+    pub fn remove_3d_js(&mut self, index: usize) {
+        self.three_d_object.subobjects = self.three_d_object.subobjects.clone().into_iter().filter(|obj| obj.index != index).collect();
+    }
+    #[wasm_bindgen(js_name = get3DObjects)]
+    pub fn get_3d_objects_js(&self) -> js_sys::Array {
+        let js_array = js_sys::Array::new();
+        for obj in &self.three_d_object.subobjects {
+            js_array.push(&JsValue::from(WasmThreeDObject {
+                three_d_object: obj.clone()
+            }));
+        }
+        return js_array;
+    }
+    #[wasm_bindgen(js_name = set3DObjects)]
+    pub fn set_3d_objects_js(&mut self, objects: Vec<WasmThreeDObject>) {
+        self.three_d_object.subobjects = objects.iter().map(|x| x.three_d_object.clone()).collect();
+    }
+    #[wasm_bindgen(js_name = set3DObject)]
+    pub fn set_3d_object_js(&mut self, object: WasmThreeDObject) {
+        self.three_d_object = object.three_d_object;
     }
 }

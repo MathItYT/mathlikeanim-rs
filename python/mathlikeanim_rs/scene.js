@@ -1336,6 +1336,67 @@ export default {
         log(message) {
             console.log(message);
         },
+        setScene3DIndex(index) {
+            this.scene.set3DIndex(index);
+        },
+        projectAndShadeScene() {
+            return vectorObjectToJson(this.scene.projectAndShade());
+        },
+        setSceneCameraPosition(position) {
+            this.scene.setCameraPosition(...position);
+        },
+        setSceneCameraRotation(rotation) {
+            this.scene.setCameraRotation(...rotation);
+        },
+        setSceneCameraFocalDistance(focalDistance) {
+            this.scene.setCameraFocalDistance(focalDistance);
+        },
+        setSceneCameraZoom(zoom) {
+            this.scene.setCameraZoom(zoom);
+        },
+        setSceneLightSourcePosition(position) {
+            this.scene.setLightSourcePosition(...position);
+        },
+        getScene3DIndex() {
+            return this.scene.get3DIndex();
+        },
+        getSceneCameraPosition() {
+            return this.scene.getCameraPosition();
+        },
+        getSceneCameraRotation() {
+            return this.scene.getCameraRotation();
+        },
+        getSceneCameraFocalDistance() {
+            return this.scene.getCameraFocalDistance();
+        },
+        getSceneCameraZoom() {
+            return this.scene.getCameraZoom();
+        },
+        getSceneLightSourcePosition() {
+            return this.scene.getLightSourcePosition();
+        },
+        addScene3D(objJson) {
+            const obj = jsonToThreeDObject(objJson);
+            this.scene.add3D(obj.clone());
+        },
+        insertScene3D(index, objJson) {
+            const obj = jsonToThreeDObject(objJson);
+            this.scene.insert3D(index, obj.clone());
+        },
+        removeScene3D(i) {
+            this.scene.remove3D(i);
+        },
+        getScene3DObjects() {
+            return this.scene.get3DObjects().map(threeDObjectToJson);
+        },
+        setScene3DObjects(objsJson) {
+            const objs = objsJson.map(jsonToThreeDObject);
+            this.scene.set3DObjects(objs);
+        },
+        setScene3DObject(objJson) {
+            const obj = jsonToThreeDObject(objJson);
+            this.scene.set3DObject(obj.clone());
+        },
         async getPythonOutput(pythonFuncId, args) {
             this.emitEvent('python-request', { pythonFuncId, args });
             return await new Promise((resolve) => {
