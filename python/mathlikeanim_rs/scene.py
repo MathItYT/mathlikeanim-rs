@@ -164,6 +164,10 @@ class Scene(
         data = json.dumps([three_d_object.to_dict()])
         await self.exec_js(f'return runMethod({self.id}, "setScene3DObject", {data})')
     
+    async def get_3d_object(self) -> ThreeDObject:
+        result = await self.exec_js(f'return runMethod({self.id}, "getScene3DObject", [])')
+        return ThreeDObject.from_dict(self, result)
+    
     async def add_final_tip_to_object(
         self,
         shape: VectorObject,

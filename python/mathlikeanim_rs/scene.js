@@ -1397,6 +1397,9 @@ export default {
             const obj = jsonToThreeDObject(objJson);
             this.scene.set3DObject(obj.clone());
         },
+        getScene3DObject() {
+            return threeDObjectToJson(this.scene.get3DObject());
+        },
         async getPythonOutput(pythonFuncId, args) {
             this.emitEvent('python-request', { pythonFuncId, args });
             return await new Promise((resolve) => {

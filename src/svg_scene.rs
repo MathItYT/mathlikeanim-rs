@@ -350,7 +350,7 @@ impl SVGScene {
         self.three_d_object.index = index;
     }
     #[wasm_bindgen(js_name = projectAndShade)]
-    pub fn project_and_shade_js(&mut self) -> WasmVectorObject {
+    pub fn project_and_shade_js(&self) -> WasmVectorObject {
         WasmVectorObject { native_vec_features: self.three_d_object.project_and_shade(&self.camera, &self.light_source) }
     }
     #[wasm_bindgen(js_name = setCameraPosition)]
@@ -438,5 +438,11 @@ impl SVGScene {
     #[wasm_bindgen(js_name = set3DObject)]
     pub fn set_3d_object_js(&mut self, object: WasmThreeDObject) {
         self.three_d_object = object.three_d_object;
+    }
+    #[wasm_bindgen(js_name = get3DObject)]
+    pub fn get_3d_object_js(&self) -> WasmThreeDObject {
+        return WasmThreeDObject {
+            three_d_object: self.three_d_object.clone()
+        };
     }
 }
