@@ -1,6 +1,6 @@
 {
   "name": "@mathlikeanim-rs/renderer",
-  "version": "0.14.4",
+  "version": "0.14.5",
   "description": "",
   "license": "MIT",
   "author": "MathItYT",
@@ -19,7 +19,7 @@
     "typescript": "^5.7.3"
   },
   "dependencies": {
-    "@mathlikeanim-rs/mathlikeanim-rs": "^0.14.3"
+    "@mathlikeanim-rs/mathlikeanim-rs": "^0.14.4"
   },
   "scripts": {
     "build": "npx tsc",
