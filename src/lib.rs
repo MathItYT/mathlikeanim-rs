@@ -1,9 +1,2 @@
-pub mod objects;
 pub mod utils;
-pub mod web_renderer;
-pub mod scene_api;
-pub mod scene;
-pub mod animations;
-pub mod svg_scene;
-pub mod colors;
-pub mod wasm_interface;
+pub mod objects;

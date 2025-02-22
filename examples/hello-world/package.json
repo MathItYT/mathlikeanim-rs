@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@mathlikeanim-rs/renderer": "^0.14.3"
+  }
+}

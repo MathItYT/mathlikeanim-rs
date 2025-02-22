@@ -13,9 +13,9 @@ package-lock.json
 cache.json
 app.yaml
 .gcloudignore
-javascript
 *.tgz
 
 dist/
 __pycache__/
 media/
+pkg/

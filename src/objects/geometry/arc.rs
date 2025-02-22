@@ -1,288 +1,236 @@
-use std::f64::consts::PI;
+use wasm_bindgen::prelude::*;
 
-use crate::{colors::{Color, GradientImageOrColor}, objects::vector_object::VectorObject, utils::{line_as_cubic_bezier, points_from_anchors_and_handles}};
+use crate::{objects::vector_object::VectorObjectBuilder, utils::{bezier::AnchorsAndHandles, point2d::{Path2D, Point2D}}};
 
+use super::tipable::Tipable;
 
-pub fn arc(
-    center: (f64, f64),
-    radius: f64,
-    start_angle: f64,
-    end_angle: f64,
-    n_samples: Option<usize>,
-    stroke_color: Option<(f64, f64, f64, f64)>,
-    fill_color: Option<(f64, f64, f64, f64)>,
-    stroke_width: Option<f64>,
-    line_cap: Option<&'static str>,
-    line_join: Option<&'static str>,
-    index: Option<usize>,
-) -> VectorObject {
-    let mut anchors = Vec::new();
-    let n_samples = match n_samples {
-        Some(n) => n,
-        None => 10
-    };
-    let angle_step = (end_angle - start_angle) / (n_samples as f64 - 1.0);
-    for i in 0..n_samples {
-        let angle = start_angle + (i as f64) * angle_step;
-        let x = angle.cos();
-        let y = angle.sin();
-        anchors.push((x, y));
+/// An @type {Arc} is a portion of the circumference of a circle.
+#[wasm_bindgen]
+#[derive(Clone, Debug)]
+pub struct Arc {
+    /// The center point of the arc as a @type {Point2D}.
+    center: Point2D,
+    /// The radius of the arc.
+    radius: f32,
+    /// The start angle of the arc in radians.
+    start_angle: f32,
+    /// The end angle of the arc in radians.
+    end_angle: f32,
+}
+
+#[wasm_bindgen]
+impl Arc {
+    /// Creates a new @type {Arc} object from a center point, radius, start angle, and end angle.
+    #[wasm_bindgen(constructor, return_description = "An arc.")]
+    pub fn new(
+        #[wasm_bindgen(param_description = "The center point of the arc as a @type {Point2D}.")]
+        center: Point2D,
+        #[wasm_bindgen(param_description = "The radius of the arc.")]
+        radius: f32,
+        #[wasm_bindgen(param_description = "The start angle of the arc in radians.")]
+        start_angle: f32,
+        #[wasm_bindgen(param_description = "The end angle of the arc in radians.")]
+        end_angle: f32,
+    ) -> Arc {
+        Arc {
+            center,
+            radius,
+            start_angle,
+            end_angle,
+        }
     }
-    let tangent_vectors = anchors.iter().map(|point| {
-        let x = -point.1;
-        let y = point.0;
-        return (x, y);
-    }).collect::<Vec<(f64, f64)>>();
-    let handles1 = anchors[..anchors.len()-1].iter().zip(tangent_vectors[..tangent_vectors.len()-1].iter()).map(|(anchor, tangent_vector)| {
-        let x = anchor.0 + angle_step / 3.0 * tangent_vector.0;
-        let y = anchor.1 + angle_step / 3.0 * tangent_vector.1;
-        return (x, y);
-    }).collect::<Vec<(f64, f64)>>();
-    let handles2 = anchors[1..].iter().zip(tangent_vectors[1..].iter()).map(|(anchor, tangent_vector)| {
-        let x = anchor.0 - angle_step / 3.0 * tangent_vector.0;
-        let y = anchor.1 - angle_step / 3.0 * tangent_vector.1;
-        return (x, y);
-    }).collect::<Vec<(f64, f64)>>();
-    let points = points_from_anchors_and_handles(anchors[..anchors.len()-1].to_vec(), handles1, handles2, anchors[1..].to_vec());
-    return VectorObject {
-        points,
-        fill_rule: "nonzero",
-        subobjects: vec![],
-        index: match index {
-            Some(i) => i,
-            None => 0
-        },
-        stroke: match stroke_color {
-            Some(color) => GradientImageOrColor::Color(Color {
-                red: color.0,
-                green: color.1,
-                blue: color.2,
-                alpha: color.3
-            }),
-            None => GradientImageOrColor::Color(Color {
-                red: 0.0,
-                green: 0.0,
-                blue: 0.0,
-                alpha: 0.0
-            })
-        },
-        fill: match fill_color {
-            Some(color) => GradientImageOrColor::Color(Color {
-                red: color.0,
-                green: color.1,
-                blue: color.2,
-                alpha: color.3
-            }),
-            None => GradientImageOrColor::Color(Color {
-                red: 1.0,
-                green: 1.0,
-                blue: 1.0,
-                alpha: 1.0
-            })
-        },
-        stroke_width: match stroke_width {
-            Some(width) => width,
-            None => 4.0
-        },
-        line_cap: match line_cap {
-            Some(cap) => cap,
-            None => "butt"
-        },
-        line_join: match line_join {
-            Some(join) => join,
-            None => "miter"
-        },
-    }.scale(radius, true).shift(center, true);
+
+    /// Creates a new vector object builder with the arc's points.
+    #[wasm_bindgen(return_description = "A @type {VectorObjectBuilder} representing the arc.")]
+    pub fn vector_object_builder(&self, samples: Option<usize>) -> VectorObjectBuilder {
+        let samples = samples.unwrap_or(15);
+        let anchors = (0..samples)
+            .map(|i| self.start_angle + (self.end_angle - self.start_angle) * i as f32 / (samples - 1) as f32)
+            .map(|angle| Point2D::new(angle.cos(), angle.sin()))
+            .collect::<Vec<Point2D>>();
+        let dtheta = (self.end_angle - self.start_angle) / (samples - 1) as f32;
+        let tangent_vectors = anchors.iter().map(|point| {
+            Point2D::new(-point.y, point.x)
+        }).collect::<Vec<Point2D>>();
+        let factor = 4.0 / 3.0 * (dtheta / 4.0).tan();
+        let handles1 = anchors[0..samples - 1].iter().zip(tangent_vectors[0..samples - 1].iter()).map(|(point, tangent)| {
+            *point + *tangent * factor
+        }).collect::<Vec<Point2D>>();
+        let handles2 = anchors[1..samples].iter().zip(tangent_vectors[1..samples].iter()).map(|(point, tangent)| {
+            *point - *tangent * factor
+        }).collect::<Vec<Point2D>>();
+        let path = Path2D::from_anchors_and_handles(&AnchorsAndHandles::new(
+            anchors[0..samples - 1].to_vec(),
+            handles1,
+            handles2,
+            anchors[1..samples].to_vec(),
+        ).unwrap());
+        VectorObjectBuilder::default()
+            .set_path(path)
+            .scale(self.radius, self.radius, None, None)
+            .shift(self.center.x, self.center.y, None)
+    }
+
+    /// Returns the center point of the arc.
+    #[wasm_bindgen(getter, return_description = "The center point of the arc as a @type {Point2D}.")]
+    pub fn center(&self) -> Point2D {
+        self.center
+    }
+
+    /// Returns the radius of the arc.
+    #[wasm_bindgen(getter, return_description = "The radius of the arc.")]
+    pub fn radius(&self) -> f32 {
+        self.radius
+    }
+
+    /// Returns the start angle of the arc in radians.
+    #[wasm_bindgen(getter, return_description = "The start angle of the arc in radians.")]
+    pub fn start_angle(&self) -> f32 {
+        self.start_angle
+    }
+
+    /// Returns the end angle of the arc in radians.
+    #[wasm_bindgen(getter, return_description = "The end angle of the arc in radians.")]
+    pub fn end_angle(&self) -> f32 {
+        self.end_angle
+    }
+
+    /// Returns a VectorObjectBuilder representing the arc and a tip at the start of the arc.
+    #[wasm_bindgen(return_description = "A @type {VectorObjectBuilder} representing the arc and a tip at the start of the arc.")]
+    pub fn start_tip_vector_object_builder(
+        &self,
+        #[wasm_bindgen(param_description = "The tip shape as a @type {VectorObjectBuilder} to add to the start of the arc. It must be pointing to the right and centered at (0, 0). This function will rotate and move it to the correct angle.")]
+        tip_shape: VectorObjectBuilder,
+        #[wasm_bindgen(param_description = "The number of samples to use to create the arc, by default 15.")]
+        samples: Option<usize>
+    ) -> VectorObjectBuilder {
+        let mut builder = self.vector_object_builder(samples);
+        builder = builder.add_child(self.tip_at_start(tip_shape));
+        builder
+    }
+
+    /// Returns a VectorObjectBuilder representing the arc and a tip at the end of the arc.
+    #[wasm_bindgen(return_description = "A @type {VectorObjectBuilder} representing the arc and a tip at the end of the arc.")]
+    pub fn end_tip_vector_object_builder(
+        &self,
+        #[wasm_bindgen(param_description = "The tip shape as a @type {VectorObjectBuilder} to add to the end of the arc. It must be pointing to the right and centered at (0, 0). This function will rotate and move it to the correct angle.")]
+        tip_shape: VectorObjectBuilder,
+        #[wasm_bindgen(param_description = "The number of samples to use to create the arc.")]
+        samples: Option<usize>
+    ) -> VectorObjectBuilder {
+        let mut builder = self.vector_object_builder(samples);
+        builder = builder.add_child(self.tip_at_end(tip_shape));
+        builder
+    }
+
+    /// Returns a VectorObjectBuilder representing the arc and tips at both ends of the arc.
+    #[wasm_bindgen(return_description = "A @type {VectorObjectBuilder} representing the arc and tips at both ends of the arc.")]
+    pub fn both_tips_vector_object_builder(
+        &self,
+        #[wasm_bindgen(param_description = "The tip shape as a @type {VectorObjectBuilder} to add to the start of the arc. It must be pointing to the right and centered at (0, 0). This function will rotate and move it to the correct angle.")]
+        tip_shape: VectorObjectBuilder,
+        #[wasm_bindgen(param_description = "The number of samples to use to create the arc.")]
+        samples: Option<usize>
+    ) -> VectorObjectBuilder {
+        let mut builder = self.vector_object_builder(samples);
+        builder = builder.add_child(self.tip_at_start(tip_shape.clone()));
+        builder = builder.add_child(self.tip_at_end(tip_shape));
+        builder
+    }
+
+    /// Returns the point on the arc at a given t progress value.
+    #[wasm_bindgen(return_description = "The @type {Point2D} on the arc at the given t value.")]
+    pub fn point_at(
+        &self,
+        #[wasm_bindgen(param_description = "The t value to evaluate the polynomial at. A number between 0 and 1.")]
+        t: f32,
+    ) -> Point2D {
+        let angle = self.start_angle + (self.end_angle - self.start_angle) * t;
+        let x = self.center.x + self.radius * angle.cos();
+        let y = self.center.y + self.radius * angle.sin();
+        Point2D::new(x, y)
+    }
+
+    /// Returns the length of the arc.
+    #[wasm_bindgen(return_description = "The length of the arc.")]
+    pub fn length(&self) -> f32 {
+        let angle = self.end_angle - self.start_angle;
+        angle.abs() * self.radius
+    }
 }
 
+impl Tipable for Arc {
+    fn start(&self) -> Point2D {
+        self.point_at(0.0)
+    }
 
-pub fn circle(
-    center: (f64, f64),
-    radius: f64,
-    num_points: Option<usize>,
-    stroke_color: Option<(f64, f64, f64, f64)>,
-    fill_color: Option<(f64, f64, f64, f64)>,
-    stroke_width: Option<f64>,
-    line_cap: Option<&'static str>,
-    line_join: Option<&'static str>,
-    index: Option<usize>,
-) -> VectorObject {
-    return arc(
-        center,
-        radius,
-        0.0,
-        2.0 * PI,
-        num_points,
-        stroke_color,
-        fill_color,
-        stroke_width,
-        line_cap,
-        line_join,
-        index,
-    );
+    fn end(&self) -> Point2D {
+        self.point_at(1.0)
+    }
+
+    fn angle_at_end(&self) -> f32 {
+        self.end_angle + std::f32::consts::PI / 2.0
+    }
+
+    fn angle_at_start(&self) -> f32 {
+        self.start_angle - std::f32::consts::PI / 2.0
+    }
 }
 
-
-pub fn elliptical_arc(
-    center: (f64, f64),
-    x_radius: f64,
-    y_radius: f64,
-    start_angle: f64,
-    end_angle: f64,
-    num_points: Option<usize>,
-    stroke_color: Option<(f64, f64, f64, f64)>,
-    fill_color: Option<(f64, f64, f64, f64)>,
-    stroke_width: Option<f64>,
-    line_cap: Option<&'static str>,
-    line_join: Option<&'static str>,
-    index: Option<usize>,
-) -> VectorObject {
-    return arc(
-        (0.0, 0.0),
-        x_radius,
-        start_angle,
-        end_angle,
-        num_points,
-        stroke_color,
-        fill_color,
-        stroke_width,
-        line_cap,
-        line_join,
-        index,
-    ).stretch((1.0, y_radius / x_radius), true).shift(center, true);
+/// A @type {Circle} is a set of all points in a plane that are at a given distance from a given point, the center.
+#[wasm_bindgen]
+#[derive(Clone, Debug)]
+pub struct Circle {
+    /// The center @type {Point2D} of the circle.
+    center: Point2D,
+    /// The radius of the circle.
+    radius: f32,
 }
 
-
-pub fn ellipse(
-    center: (f64, f64),
-    x_radius: f64,
-    y_radius: f64,
-    num_points: Option<usize>,
-    stroke_color: Option<(f64, f64, f64, f64)>,
-    fill_color: Option<(f64, f64, f64, f64)>,
-    stroke_width: Option<f64>,
-    line_cap: Option<&'static str>,
-    line_join: Option<&'static str>,
-    index: Option<usize>,
-) -> VectorObject {
-    return elliptical_arc(
-        center,
-        x_radius,
-        y_radius,
-        0.0,
-        2.0 * PI,
-        num_points,
-        stroke_color,
-        fill_color,
-        stroke_width,
-        line_cap,
-        line_join,
-        index,
-    );
-}
-
-
-pub fn annular_sector(
-    center: (f64, f64),
-    inner_radius: f64,
-    outer_radius: f64,
-    start_angle: f64,
-    end_angle: f64,
-    num_points: Option<usize>,
-    stroke_color: Option<(f64, f64, f64, f64)>,
-    fill_color: Option<(f64, f64, f64, f64)>,
-    stroke_width: Option<f64>,
-    line_cap: Option<&'static str>,
-    line_join: Option<&'static str>,
-    index: Option<usize>,
-) -> VectorObject {
-    let mut points = Vec::new();
-    let inner_arc = arc(
-        center,
-        inner_radius,
-        start_angle,
-        end_angle,
-        num_points,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-    );
-    let outer_arc = arc(
-        center,
-        outer_radius,
-        start_angle,
-        end_angle,
-        num_points,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-    );
-    let inner_arc_points = inner_arc.points.clone();
-    let mut outer_arc_points = outer_arc.points.clone();
-    outer_arc_points.reverse();
-    points.extend(inner_arc_points.clone());
-    points.extend(line_as_cubic_bezier(
-        inner_arc_points.clone()[inner_arc_points.len() - 1],
-        outer_arc_points[0]
-    ));
-    points.extend(outer_arc_points.clone());
-    points.extend(line_as_cubic_bezier(
-        outer_arc_points.clone()[outer_arc_points.len() - 1],
-        inner_arc_points[0]
-    ));
-    return VectorObject {
-        points,
-        fill_rule: "nonzero",
-        subobjects: vec![],
-        index: match index {
-            Some(i) => i,
-            None => 0
-        },
-        stroke: match stroke_color {
-            Some(color) => GradientImageOrColor::Color(Color {
-                red: color.0,
-                green: color.1,
-                blue: color.2,
-                alpha: color.3
-            }),
-            None => GradientImageOrColor::Color(Color {
-                red: 0.0,
-                green: 0.0,
-                blue: 0.0,
-                alpha: 0.0
-            })
-        },
-        fill: match fill_color {
-            Some(color) => GradientImageOrColor::Color(Color {
-                red: color.0,
-                green: color.1,
-                blue: color.2,
-                alpha: color.3
-            }),
-            None => GradientImageOrColor::Color(Color {
-                red: 1.0,
-                green: 1.0,
-                blue: 1.0,
-                alpha: 1.0
-            })
-        },
-        stroke_width: match stroke_width {
-            Some(width) => width,
-            None => 4.0
-        },
-        line_cap: match line_cap {
-            Some(cap) => cap,
-            None => "butt"
-        },
-        line_join: match line_join {
-            Some(join) => join,
-            None => "miter"
-        },
-    };
+#[wasm_bindgen]
+impl Circle {
+    /// Creates a new @type {Circle} from a center @type {Point2D} and a radius.
+    #[wasm_bindgen(constructor, return_description = "A circle.")]
+    pub fn new(
+        #[wasm_bindgen(param_description = "The center point of the circle as a @type {Point2D}.")]
+        center: Point2D,
+        #[wasm_bindgen(param_description = "The radius of the circle.")]
+        radius: f32,
+    ) -> Circle {
+        Circle { center, radius }
+    }
+    /// Creates an @type {Arc} from the circle.
+    #[wasm_bindgen(getter, return_description = "An @type {Arc} representing the circle.")]
+    pub fn arc(&self) -> Arc {
+        Arc::new(self.center, self.radius, 0.0, 2.0 * std::f32::consts::PI)
+    }
+    /// Creates a new @type {VectorObjectBuilder} from the circle.
+    #[wasm_bindgen(return_description = "A @type {VectorObjectBuilder} representing the circle.")]
+    pub fn vector_object_builder(
+        &self,
+        #[wasm_bindgen(param_description = "The number of samples to use to create the circle, by default 15.")]
+        samples: Option<usize>
+    ) -> VectorObjectBuilder {
+        self.arc().vector_object_builder(samples).close()
+    }
+    /// Returns the center point of the circle as a @type {Point2D}.
+    #[wasm_bindgen(getter, return_description = "The center point of the circle.")]
+    pub fn center(&self) -> Point2D {
+        self.center
+    }
+    /// Returns the radius of the circle.
+    #[wasm_bindgen(getter, return_description = "The radius of the circle.")]
+    pub fn radius(&self) -> f32 {
+        self.radius
+    }
+    /// Returns the circumference of the circle.
+    #[wasm_bindgen(return_description = "The circumference of the circle.")]
+    pub fn circumference(&self) -> f32 {
+        2.0 * std::f32::consts::PI * self.radius
+    }
+    /// Returns the area of the circle.
+    #[wasm_bindgen(return_description = "The area of the circle.")]
+    pub fn area(&self) -> f32 {
+        std::f32::consts::PI * self.radius.powi(2)
+    }
 }
