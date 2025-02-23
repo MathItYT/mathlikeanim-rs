@@ -27,7 +27,7 @@ initWasm().then((wasm) => {
     ...
 });
 ```
-That's it! You have successfully installed MathLikeAnim-rs on your JavaScript project. To use it, go to [Get Started](/tutorial-get-started.html) tutorial to learn how to create interactive mathematical animations for the web.
+That's it! You have successfully installed MathLikeAnim-rs on your JavaScript project. To use it, go to [Get Started](./tutorial-Get%20started.html) tutorial to learn how to create interactive mathematical animations for the web.
 
 ## How to use it in Python?
 Python support is available, but for older versions of the library. We are working on updating the Python package to the latest version of the project. If you still want to use the Python package, you can install it by running:
