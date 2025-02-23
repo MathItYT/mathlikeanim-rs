@@ -5,7 +5,7 @@ use crate::{objects::geometry::triangle::EquilateralTriangle, utils::{bezier::Cu
 
 use super::geometry::rectangle::Rectangle;
 
-/// A @type {VectorObject} is a vector object that can be drawn on a vector graphics canvas.
+/// A VectorObject is a vector object that can be drawn on a vector graphics canvas.
 #[wasm_bindgen]
 #[derive(Clone, Debug)]
 pub struct VectorObject {
@@ -992,6 +992,50 @@ impl VectorOperation for ApplyTransform {
     }
 }
 
+pub struct LerpFill {
+    pub fill: Style,
+    pub t: f32,
+    pub recursive: Option<bool>,
+}
+
+impl VectorOperation for LerpFill {
+    fn apply(&self, object: &mut VectorObject) {
+        object.fill = Style::lerp(&object.fill, &self.fill, self.t);
+        if self.recursive.unwrap_or(true) {
+            for child in &mut object.children {
+                let lerp_fill = LerpFill {
+                    fill: self.fill.clone(),
+                    t: self.t,
+                    recursive: Some(true),
+                };
+                lerp_fill.apply(child);
+            }
+        }
+    }
+}
+
+pub struct LerpStroke {
+    pub stroke: Style,
+    pub t: f32,
+    pub recursive: Option<bool>,
+}
+
+impl VectorOperation for LerpStroke {
+    fn apply(&self, object: &mut VectorObject) {
+        object.stroke = Style::lerp(&object.stroke, &self.stroke, self.t);
+        if self.recursive.unwrap_or(true) {
+            for child in &mut object.children {
+                let lerp_stroke = LerpStroke {
+                    stroke: self.stroke.clone(),
+                    t: self.t,
+                    recursive: Some(true),
+                };
+                lerp_stroke.apply(child);
+            }
+        }
+    }
+}
+
 impl Default for VectorObject {
     fn default() -> Self {
         VectorObject {
@@ -1012,7 +1056,7 @@ impl Default for VectorObject {
     }
 }
 
-/// A @type {VectorObjectBuilder} can be used to build a @type {VectorObject} with operations.
+/// A VectorObjectBuilder can be used to build a VectorObject with operations.
 #[wasm_bindgen]
 #[derive(Clone)]
 pub struct VectorObjectBuilder {
@@ -1033,7 +1077,7 @@ impl Default for VectorObjectBuilder {
 
 #[wasm_bindgen]
 impl VectorObjectBuilder {
-    /// Creates a new @type {VectorObjectBuilder} from a @type {VectorObject}.
+    /// Creates a new VectorObjectBuilder from a VectorObject.
     #[wasm_bindgen(constructor, return_description = "A new vector object builder.")]
     pub fn new(
         #[wasm_bindgen(param_description = "The vector object to start building on.")]
@@ -1045,7 +1089,7 @@ impl VectorObjectBuilder {
         }
     }
 
-    /// Returns the default tip shape pointing to the right and centered at the origin as a @type {VectorObjectBuilder}.
+    /// Returns the default tip shape pointing to the right and centered at the origin as a VectorObjectBuilder.
     #[wasm_bindgen(return_description = "The default tip shape pointing to the right and centered at the origin.")]
     pub fn default_tip_shape(
         #[wasm_bindgen(param_description = "The length of the tip shape.")]
@@ -1058,7 +1102,7 @@ impl VectorObjectBuilder {
         ).vector_object_builder().set_fill(Style::from_color(Color::new(0, 0, 0, 1.0)), None)
     }
 
-    /// Creates a new @type {VectorObjectBuilder} from an SVG string.
+    /// Creates a new VectorObjectBuilder from an SVG string.
     #[wasm_bindgen(return_description = "A new vector object builder.")]
     pub fn from_svg(
         #[wasm_bindgen(param_description = "The SVG string to create the vector object builder from.")]
@@ -1084,17 +1128,17 @@ impl VectorObjectBuilder {
         }
         vector_object_builder
     }
-    /// Clones the @type {VectorObjectBuilder}.
+    /// Clones the VectorObjectBuilder.
     #[wasm_bindgen(js_name = clone, return_description = "A clone of the vector object builder.")]
     pub fn clone_js(&self) -> VectorObjectBuilder {
         self.clone()
     }
-    /// Creates a @type {VectorObjectBuilder} representing an empty @type {VectorObject}.
+    /// Creates a VectorObjectBuilder representing an empty VectorObject.
     #[wasm_bindgen(return_description = "A new vector object builder representing an empty vector object.")]
     pub fn default_vector_object_builder() -> VectorObjectBuilder {
         VectorObjectBuilder::default()
     }
-    /// Shifts the @type {VectorObjectBuilder} by the given dx and dy.
+    /// Shifts the VectorObjectBuilder by the given dx and dy.
     #[wasm_bindgen(return_description = "The vector object being built with the shift operation.")]
     pub fn shift(
         mut self,
@@ -1109,7 +1153,7 @@ impl VectorObjectBuilder {
         self.ops.add_operation(Box::leak(shift));
         self
     }
-    /// Centers the @type {VectorObjectBuilder} at the given @type {Point2D}.
+    /// Centers the VectorObjectBuilder at the given Point2D.
     #[wasm_bindgen(return_description = "The vector object being built with the move to operation.")]
     pub fn move_to(
         mut self,
@@ -1122,7 +1166,7 @@ impl VectorObjectBuilder {
         self.ops.add_operation(Box::leak(move_to));
         self
     }
-    /// Scales the @type {VectorObjectBuilder} by the given factor.
+    /// Scales the VectorObjectBuilder by the given factor.
     #[wasm_bindgen(return_description = "The vector object being built with the scale operation.")]
     pub fn scale(
         mut self,
@@ -1139,7 +1183,7 @@ impl VectorObjectBuilder {
         self.ops.add_operation(Box::leak(scale));
         self
     }
-    /// Scales the @type {VectorObjectBuilder} to the given width.
+    /// Scales the VectorObjectBuilder to the given width.
     #[wasm_bindgen(return_description = "The vector object being built with the scale to width operation.")]
     pub fn scale_to_width(
         mut self,
@@ -1156,7 +1200,7 @@ impl VectorObjectBuilder {
         self.ops.add_operation(Box::leak(scale_to_width));
         self
     }
-    /// Scales the @type {VectorObjectBuilder} to the given height.
+    /// Scales the VectorObjectBuilder to the given height.
     #[wasm_bindgen(return_description = "The vector object being built with the scale to height operation.")]
     pub fn scale_to_height(
         mut self,
@@ -1173,7 +1217,7 @@ impl VectorObjectBuilder {
         self.ops.add_operation(Box::leak(scale_to_height));
         self
     }
-    /// Rotates the @type {VectorObjectBuilder} by the given angle in radians.
+    /// Rotates the VectorObjectBuilder by the given angle in radians.
     #[wasm_bindgen(return_description = "The vector object being built with the rotate operation.")]
     pub fn rotate(
         mut self,
@@ -1188,7 +1232,7 @@ impl VectorObjectBuilder {
         self.ops.add_operation(Box::leak(rotate));
         self
     }
-    /// Sets the @type {TransformationMatrix} of the @type {VectorObjectBuilder}.
+    /// Sets the TransformationMatrix of the VectorObjectBuilder.
     #[wasm_bindgen(return_description = "The vector object being built with the transform operation.")]
     pub fn set_transform(
         mut self,
@@ -1201,7 +1245,7 @@ impl VectorObjectBuilder {
         self.ops.add_operation(Box::leak(transform));
         self
     }
-    /// Applies the @type {TransformationMatrix} to the @type {VectorObjectBuilder}.
+    /// Applies the TransformationMatrix to the VectorObjectBuilder.
     #[wasm_bindgen(return_description = "The vector object being built with the apply transform operation.")]
     pub fn apply_transform(
         mut self,
@@ -1214,7 +1258,7 @@ impl VectorObjectBuilder {
         self.ops.add_operation(Box::leak(apply_transform));
         self
     }
-    /// Adds a child to the @type {VectorObjectBuilder}.
+    /// Adds a child to the VectorObjectBuilder.
     #[wasm_bindgen(return_description = "The vector object being built with the add children operation.")]
     pub fn add_children(
         mut self,
@@ -1225,7 +1269,7 @@ impl VectorObjectBuilder {
         self.ops.add_operation(Box::leak(add_children));
         self
     }
-    /// Inserts a child into the @type {VectorObjectBuilder} at the given index.
+    /// Inserts a child into the VectorObjectBuilder at the given index.
     #[wasm_bindgen(return_description = "The vector object being built with the insert child operation.")]
     pub fn insert_child(
         mut self,
@@ -1238,7 +1282,7 @@ impl VectorObjectBuilder {
         self.ops.add_operation(Box::leak(insert_child));
         self
     }
-    /// Inserts children into the @type {VectorObjectBuilder} at the given index.
+    /// Inserts children into the VectorObjectBuilder at the given index.
     #[wasm_bindgen(return_description = "The vector object being built with the insert children operation.")]
     pub fn insert_children(
         mut self,
@@ -1251,7 +1295,7 @@ impl VectorObjectBuilder {
         self.ops.add_operation(Box::leak(insert_children));
         self
     }
-    /// Removes a child from the @type {VectorObjectBuilder} given its index.
+    /// Removes a child from the VectorObjectBuilder given its index.
     #[wasm_bindgen(return_description = "The vector object being built with the remove child by index operation.")]
     pub fn remove_child_by_index(
         mut self,
@@ -1262,7 +1306,7 @@ impl VectorObjectBuilder {
         self.ops.add_operation(Box::leak(remove_child_by_index));
         self
     }
-    /// Removes a child from the @type {VectorObjectBuilder} given its name.
+    /// Removes a child from the VectorObjectBuilder given its name.
     #[wasm_bindgen(return_description = "The vector object being built with the remove child by name operation.")]
     pub fn remove_child_by_name(
         mut self,
@@ -1273,7 +1317,7 @@ impl VectorObjectBuilder {
         self.ops.add_operation(Box::leak(remove_child_by_name));
         self
     }
-    /// Matches the style properties of the @type {VectorObjectBuilder} with another @type {VectorObject}.
+    /// Matches the style properties of the VectorObjectBuilder with another VectorObject.
     #[wasm_bindgen(return_description = "The vector object being built with the match style properties operation.")]
     pub fn match_style_properties(
         mut self,
@@ -1284,7 +1328,7 @@ impl VectorObjectBuilder {
         self.ops.add_operation(Box::leak(match_style_properties));
         self
     }
-    /// Sets the actual path of the @type {VectorObjectBuilder}. Actual path is the path that is drawn with its transformation matrix applied.
+    /// Sets the actual path of the VectorObjectBuilder. Actual path is the path that is drawn with its transformation matrix applied.
     #[wasm_bindgen(return_description = "The vector object being built with the set actual path operation.")]
     pub fn set_actual_path(
         mut self,
@@ -1295,7 +1339,7 @@ impl VectorObjectBuilder {
         self.ops.add_operation(Box::leak(set_actual_path));
         self
     }
-    /// Trims the stroke of the @type {VectorObjectBuilder} to the given start and end proportions.
+    /// Trims the stroke of the VectorObjectBuilder to the given start and end proportions.
     #[wasm_bindgen(return_description = "The vector object being built with the become partial operation.")]
     pub fn become_partial(
         mut self,
@@ -1314,7 +1358,7 @@ impl VectorObjectBuilder {
         self.ops.add_operation(Box::leak(become_partial));
         self
     }
-    /// Trims the path of the @type {VectorObjectBuilder} to the given start and end proportions.
+    /// Trims the path of the VectorObjectBuilder to the given start and end proportions.
     pub fn pointwise_become_partial(
         mut self,
         #[wasm_bindgen(param_description = "The proportion of the path to start at.")]
@@ -1328,7 +1372,7 @@ impl VectorObjectBuilder {
         self.ops.add_operation(Box::leak(pointwise_become_partial));
         self
     }
-    /// Moves the current drawing point to the given @type {Point2D}.
+    /// Moves the current drawing point to the given Point2D.
     #[wasm_bindgen(return_description = "The vector object being built with the move point operation.")]
     pub fn move_point(
         mut self,
@@ -1339,7 +1383,7 @@ impl VectorObjectBuilder {
         self.ops.add_operation(Box::leak(move_point));
         self
     }
-    /// Draws a line from the current drawing point to the given @type {Point2D}.
+    /// Draws a line from the current drawing point to the given Point2D.
     #[wasm_bindgen(return_description = "The vector object being built with the line to operation.")]
     pub fn line_to(
         mut self,
@@ -1350,7 +1394,7 @@ impl VectorObjectBuilder {
         self.ops.add_operation(Box::leak(line_to));
         self
     }
-    /// Draws a quadratic bezier curve from the current drawing point with the given control @type {Point2D} and end @type {Point2D}.
+    /// Draws a quadratic bezier curve from the current drawing point with the given control Point2D and end Point2D.
     #[wasm_bindgen(return_description = "The vector object being built with the quadratic curve to operation.")]
     pub fn quadratic_curve_to(
         mut self,
@@ -1363,7 +1407,7 @@ impl VectorObjectBuilder {
         self.ops.add_operation(Box::leak(quadratic_curve_to));
         self
     }
-    /// Draws a cubic bezier curve from the current drawing point with the given control @type {Point2D}s and end @type {Point2D}.
+    /// Draws a cubic bezier curve from the current drawing point with the given control Point2Ds and end Point2D.
     #[wasm_bindgen(return_description = "The vector object being built with the bezier curve to operation.")]
     pub fn bezier_curve_to(
         mut self,
@@ -1378,14 +1422,14 @@ impl VectorObjectBuilder {
         self.ops.add_operation(Box::leak(bezier_curve_to));
         self
     }
-    /// Closes the current subpath of the @type {VectorObjectBuilder}.
+    /// Closes the current subpath of the VectorObjectBuilder.
     #[wasm_bindgen(return_description = "The vector object being built with the close operation.")]
     pub fn close(mut self) -> VectorObjectBuilder {
         let close = Box::new(Close {});
         self.ops.add_operation(Box::leak(close));
         self
     }
-    /// Fades fill's opacity of the @type {VectorObjectBuilder} by the given factor.
+    /// Fades fill's opacity of the VectorObjectBuilder by the given factor.
     #[wasm_bindgen(return_description = "The vector object being built with the fade fill operation.")]
     pub fn fade_fill(
         mut self,
@@ -1398,7 +1442,7 @@ impl VectorObjectBuilder {
         self.ops.add_operation(Box::leak(fade_fill));
         self
     }
-    /// Fades stroke's opacity of the @type {VectorObjectBuilder} by the given factor.
+    /// Fades stroke's opacity of the VectorObjectBuilder by the given factor.
     #[wasm_bindgen(return_description = "The vector object being built with the fade stroke operation.")]
     pub fn fade_stroke(
         mut self,
@@ -1411,7 +1455,7 @@ impl VectorObjectBuilder {
         self.ops.add_operation(Box::leak(fade_stroke));
         self
     }
-    /// Sets the @type {Path2D} of the @type {VectorObjectBuilder}.
+    /// Sets the Path2D of the VectorObjectBuilder.
     #[wasm_bindgen(return_description = "The vector object being built with the set path operation.")]
     pub fn set_path(
         mut self,
@@ -1422,7 +1466,7 @@ impl VectorObjectBuilder {
         self.ops.add_operation(Box::leak(set_path));
         self
     }
-    /// Sets the fill @type {Style} of the @type {VectorObjectBuilder}.
+    /// Sets the fill Style of the VectorObjectBuilder.
     #[wasm_bindgen(return_description = "The vector object being built with the set fill operation.")]
     pub fn set_fill(
         mut self,
@@ -1435,7 +1479,7 @@ impl VectorObjectBuilder {
         self.ops.add_operation(Box::leak(set_fill));
         self
     }
-    /// Sets the fill rule of the @type {VectorObjectBuilder}.
+    /// Sets the fill rule of the VectorObjectBuilder.
     #[wasm_bindgen(return_description = "The vector object being built with the set fill rule operation.")]
     pub fn set_fill_rule(
         mut self,
@@ -1448,7 +1492,7 @@ impl VectorObjectBuilder {
         self.ops.add_operation(Box::leak(set_fill_rule));
         self
     }
-    /// Sets the stroke @type {Style} of the @type {VectorObjectBuilder}.
+    /// Sets the stroke Style of the VectorObjectBuilder.
     #[wasm_bindgen(return_description = "The vector object being built with the set stroke operation.")]
     pub fn set_stroke(
         mut self,
@@ -1461,7 +1505,7 @@ impl VectorObjectBuilder {
         self.ops.add_operation(Box::leak(set_stroke));
         self
     }
-    /// Sets the stroke width of the @type {VectorObjectBuilder}.
+    /// Sets the stroke width of the VectorObjectBuilder.
     #[wasm_bindgen(return_description = "The vector object being built with the set stroke width operation.")]
     pub fn set_stroke_width(
         mut self,
@@ -1474,7 +1518,7 @@ impl VectorObjectBuilder {
         self.ops.add_operation(Box::leak(set_stroke_width));
         self
     }
-    /// Sets the stroke line cap of the @type {VectorObjectBuilder}.
+    /// Sets the stroke line cap of the VectorObjectBuilder.
     #[wasm_bindgen(return_description = "The vector object being built with the set stroke line cap operation.")]
     pub fn set_stroke_line_cap(
         mut self,
@@ -1487,7 +1531,7 @@ impl VectorObjectBuilder {
         self.ops.add_operation(Box::leak(set_stroke_line_cap));
         self
     }
-    /// Sets the stroke line join of the @type {VectorObjectBuilder}.
+    /// Sets the stroke line join of the VectorObjectBuilder.
     #[wasm_bindgen(return_description = "The vector object being built with the set stroke line join operation.")]
     pub fn set_stroke_line_join(
         mut self,
@@ -1500,7 +1544,7 @@ impl VectorObjectBuilder {
         self.ops.add_operation(Box::leak(set_stroke_line_join));
         self
     }
-    /// Sets the stroke miter limit of the @type {VectorObjectBuilder}.
+    /// Sets the stroke miter limit of the VectorObjectBuilder.
     #[wasm_bindgen(return_description = "The vector object being built with the set stroke miter limit operation.")]
     pub fn set_stroke_miter_limit(
         mut self,
@@ -1513,7 +1557,7 @@ impl VectorObjectBuilder {
         self.ops.add_operation(Box::leak(set_stroke_miter_limit));
         self
     }
-    /// Sets the stroke dash offset of the @type {VectorObjectBuilder}.
+    /// Sets the stroke dash offset of the VectorObjectBuilder.
     #[wasm_bindgen(return_description = "The vector object being built with the set stroke dash offset operation.")]
     pub fn set_stroke_dash_offset(
         mut self,
@@ -1526,7 +1570,7 @@ impl VectorObjectBuilder {
         self.ops.add_operation(Box::leak(set_stroke_dash_offset));
         self
     }
-    /// Sets the stroke dash array of the @type {VectorObjectBuilder}.
+    /// Sets the stroke dash array of the VectorObjectBuilder.
     #[wasm_bindgen(return_description = "The vector object being built with the set stroke dash array operation.")]
     pub fn set_stroke_dash_array(
         mut self,
@@ -1539,7 +1583,7 @@ impl VectorObjectBuilder {
         self.ops.add_operation(Box::leak(set_stroke_dash_array));
         self
     }
-    /// Sets the children of the @type {VectorObjectBuilder}.
+    /// Sets the children of the VectorObjectBuilder.
     #[wasm_bindgen(return_description = "The vector object being built with the set children operation.")]
     pub fn set_children(
         mut self,
@@ -1550,7 +1594,7 @@ impl VectorObjectBuilder {
         self.ops.add_operation(Box::leak(set_children));
         self
     }
-    /// Sets the name of the @type {VectorObjectBuilder}.
+    /// Sets the name of the VectorObjectBuilder.
     #[wasm_bindgen(return_description = "The vector object being built with the set name operation.")]
     pub fn set_name(
         mut self,
@@ -1561,7 +1605,7 @@ impl VectorObjectBuilder {
         self.ops.add_operation(Box::leak(set_name));
         self
     }
-    /// Adds a child to the @type {VectorObjectBuilder}.
+    /// Adds a child to the VectorObjectBuilder.
     #[wasm_bindgen(return_description = "The vector object being built with the add child operation.")]
     pub fn add_child(
         mut self,
@@ -1572,7 +1616,7 @@ impl VectorObjectBuilder {
         self.ops.add_operation(Box::leak(add_child));
         self
     }
-    /// Removes all children with the given indices from the @type {VectorObjectBuilder}.
+    /// Removes all children with the given indices from the VectorObjectBuilder.
     #[wasm_bindgen(return_description = "The vector object being built with the remove children at indices operation.")]
     pub fn remove_children_at_indices(
         mut self,
@@ -1583,7 +1627,7 @@ impl VectorObjectBuilder {
         self.ops.add_operation(Box::leak(remove_children_at_indices));
         self
     }
-    /// Removes all children with the given names from the @type {VectorObjectBuilder}.
+    /// Removes all children with the given names from the VectorObjectBuilder.
     #[wasm_bindgen(return_description = "The vector object being built with the remove children by names operation.")]
     pub fn remove_children_by_names(
         mut self,
@@ -1594,7 +1638,7 @@ impl VectorObjectBuilder {
         self.ops.add_operation(Box::leak(remove_children_by_names));
         self
     }
-    /// Sets the children from the start index to the end index of the @type {VectorObjectBuilder}.
+    /// Sets the children from the start index to the end index of the VectorObjectBuilder.
     #[wasm_bindgen(return_description = "The vector object being built with the set slice children operation.")]
     pub fn set_slice_children(
         mut self,
@@ -1609,7 +1653,7 @@ impl VectorObjectBuilder {
         self.ops.add_operation(Box::leak(set_slice_children));
         self
     }
-    /// Puts the @type {VectorObjectBuilder} next to the given @type {Point2D} at the given direction, with a buff distance between them and aligning at the given edge.
+    /// Puts the VectorObjectBuilder next to the given Point2D at the given direction, with a buff distance between them and aligning at the given edge.
     #[wasm_bindgen(return_description = "The vector object being built with the next to point operation.")]
     pub fn next_to_point(
         mut self,
@@ -1628,7 +1672,7 @@ impl VectorObjectBuilder {
         self.ops.add_operation(Box::leak(next_to_point));
         self
     }
-    /// Puts the @type {VectorObjectBuilder} next to the given @type {VectorObjectBuilder} at the given direction, with a buff distance between them and aligning at the given edge.
+    /// Puts the VectorObjectBuilder next to the given VectorObjectBuilder at the given direction, with a buff distance between them and aligning at the given edge.
     #[wasm_bindgen(return_description = "The vector object being built with the next to other operation.")]
     pub fn next_to_other(
         mut self,
@@ -1647,7 +1691,7 @@ impl VectorObjectBuilder {
         self.ops.add_operation(Box::leak(next_to_other));
         self
     }
-    /// Arranges the children of the @type {VectorObjectBuilder} in the given direction, with a buff distance between them and aligning at the given edge.
+    /// Arranges the children of the VectorObjectBuilder in the given direction, with a buff distance between them and aligning at the given edge.
     #[wasm_bindgen(return_description = "The vector object being built with the arrange subobjects operation.")]
     pub fn arrange_children(
         mut self,
@@ -1666,14 +1710,44 @@ impl VectorObjectBuilder {
         self.ops.add_operation(Box::leak(arrange_subobjects));
         self
     }
-    /// Reverses the path of the @type {VectorObjectBuilder}.
+    /// Reverses the path of the VectorObjectBuilder.
     #[wasm_bindgen(return_description = "The vector object being built with the reverse path operation.")]
     pub fn reverse_path(mut self) -> VectorObjectBuilder {
         let reverse_path = Box::new(ReversePath {});
         self.ops.add_operation(Box::leak(reverse_path));
         self
     }
-    /// Builds the @type {VectorObject} by applying sequentially all the operations to the @type {VectorObjectBuilder}.
+    /// Linearly interpolates the fill Style of the VectorObjectBuilder with another VectorObjectBuilder.
+    #[wasm_bindgen(return_description = "The vector object being built with the interpolate fill operation.")]
+    pub fn lerp_fill(
+        mut self,
+        #[wasm_bindgen(param_description = "The vector object to interpolate the fill style with.")]
+        fill: Style,
+        #[wasm_bindgen(param_description = "The factor to interpolate the fill style by.")]
+        t: f32,
+        #[wasm_bindgen(param_description = "Whether to apply the interpolate fill operation to the children of the vector object, default is true.")]
+        recursive: Option<bool>
+    ) -> VectorObjectBuilder {
+        let interpolate_fill = Box::new(LerpFill { fill, t, recursive });
+        self.ops.add_operation(Box::leak(interpolate_fill));
+        self
+    }
+    /// Linearly interpolates the stroke Style of the VectorObjectBuilder with another VectorObjectBuilder.
+    #[wasm_bindgen(return_description = "The vector object being built with the interpolate stroke operation.")]
+    pub fn lerp_stroke(
+        mut self,
+        #[wasm_bindgen(param_description = "The vector object to interpolate the stroke style with.")]
+        stroke: Style,
+        #[wasm_bindgen(param_description = "The factor to interpolate the stroke style by.")]
+        t: f32,
+        #[wasm_bindgen(param_description = "Whether to apply the interpolate stroke operation to the children of the vector object, default is true.")]
+        recursive: Option<bool>
+    ) -> VectorObjectBuilder {
+        let interpolate_stroke = Box::new(LerpStroke { stroke, t, recursive });
+        self.ops.add_operation(Box::leak(interpolate_stroke));
+        self
+    }
+    /// Builds the VectorObject by applying sequentially all the operations to the VectorObjectBuilder.
     #[wasm_bindgen(return_description = "The vector object built by applying the operations to it.")]
     pub fn build(self) -> VectorObject {
         let mut vector_object = Rc::clone(&self.object);
@@ -1814,16 +1888,16 @@ impl VectorObjectBuilder {
 
 #[wasm_bindgen]
 impl VectorObject {
-    /// Creates a new @type {VectorObject}.
+    /// Creates a new VectorObject.
     #[wasm_bindgen(constructor, return_description = "A new vector object.")]
     pub fn new(
-        #[wasm_bindgen(param_description = "The @type {Path2D} of the vector object.")]
+        #[wasm_bindgen(param_description = "The Path2D of the vector object.")]
         path: Path2D,
-        #[wasm_bindgen(param_description = "The fill @type {Style} of the vector object.")]
+        #[wasm_bindgen(param_description = "The fill Style of the vector object.")]
         fill: Style,
         #[wasm_bindgen(param_description = "The fill rule of the vector object.")]
         fill_rule: String,
-        #[wasm_bindgen(param_description = "The stroke @type {Style} of the vector object.")]
+        #[wasm_bindgen(param_description = "The stroke Style of the vector object.")]
         stroke: Style,
         #[wasm_bindgen(param_description = "The stroke width of the vector object.")]
         stroke_width: f32,
@@ -1841,7 +1915,7 @@ impl VectorObject {
         children: Vec<VectorObject>,
         #[wasm_bindgen(param_description = "The name of the vector object.")]
         name: Option<String>,
-        #[wasm_bindgen(param_description = "The @type {TransformationMatrix} of the vector object.")]
+        #[wasm_bindgen(param_description = "The TransformationMatrix of the vector object.")]
         transform: TransformationMatrix
     ) -> VectorObject {
         VectorObject {
@@ -1865,82 +1939,82 @@ impl VectorObject {
     pub fn clone_js(&self) -> VectorObject {
         self.clone()
     }
-    /// Creates a new empty @type {VectorObject}.
+    /// Creates a new empty VectorObject.
     #[wasm_bindgen(return_description = "A new empty vector object.")]
     pub fn default_vector_object() -> VectorObject {
         VectorObject::default()
     }
-    /// Gets the @type {Path2D} of the @type {VectorObject}.
+    /// Gets the Path2D of the VectorObject.
     #[wasm_bindgen(getter, return_description = "The path of the vector object.")]
     pub fn path(&self) -> Path2D {
         self.path.clone()
     }
-    /// Gets the fill @type {Style} of the @type {VectorObject}.
+    /// Gets the fill Style of the VectorObject.
     #[wasm_bindgen(getter, return_description = "The fill style of the vector object.")]
     pub fn fill(&self) -> Style {
         self.fill.clone()
     }
-    /// Gets the fill rule of the @type {VectorObject}.
+    /// Gets the fill rule of the VectorObject.
     #[wasm_bindgen(getter, return_description = "The fill rule of the vector object.")]
     pub fn fill_rule(&self) -> String {
         self.fill_rule.to_string()
     }
-    /// Gets the stroke @type {Style} of the @type {VectorObject}.
+    /// Gets the stroke Style of the VectorObject.
     #[wasm_bindgen(getter, return_description = "The stroke style of the vector object.")]
     pub fn stroke(&self) -> Style {
         self.stroke.clone()
     }
-    /// Gets the stroke width of the @type {VectorObject}.
+    /// Gets the stroke width of the VectorObject.
     #[wasm_bindgen(getter, return_description = "The stroke width of the vector object.")]
     pub fn stroke_width(&self) -> f32 {
         self.stroke_width
     }
-    /// Gets the stroke line cap of the @type {VectorObject}.
+    /// Gets the stroke line cap of the VectorObject.
     #[wasm_bindgen(getter, return_description = "The stroke line cap of the vector object.")]
     pub fn stroke_line_cap(&self) -> String {
         self.stroke_line_cap.to_string()
     }
-    /// Gets the stroke line join of the @type {VectorObject}.
+    /// Gets the stroke line join of the VectorObject.
     #[wasm_bindgen(getter, return_description = "The stroke line join of the vector object.")]
     pub fn stroke_line_join(&self) -> String {
         self.stroke_line_join.to_string()
     }
-    /// Gets the stroke miter limit of @type {VectorObject}.
+    /// Gets the stroke miter limit of VectorObject.
     #[wasm_bindgen(getter, return_description = "The stroke miter limit of the vector object.")]
     pub fn stroke_miter_limit(&self) -> f32 {
         self.stroke_miter_limit
     }
-    /// Gets the stroke dash offset of the @type {VectorObject}.
+    /// Gets the stroke dash offset of the VectorObject.
     #[wasm_bindgen(getter, return_description = "The stroke dash offset of the vector object.")]
     pub fn stroke_dash_offset(&self) -> f32 {
         self.stroke_dash_offset
     }
-    /// Gets the stroke dash array of the @type {VectorObject}.
+    /// Gets the stroke dash array of the VectorObject.
     #[wasm_bindgen(getter, return_description = "The stroke dash array of the vector object.", unchecked_return_type = "number[]")]
     pub fn stroke_dash_array(&self) -> Vec<f32> {
         self.stroke_dash_array.to_vec()
     }
-    /// Gets the children of the @type {VectorObject}.
+    /// Gets the children of the VectorObject.
     #[wasm_bindgen(getter, return_description = "The children of the vector object.")]
     pub fn children(&self) -> Vec<VectorObject> {
         self.children.clone()
     }
-    /// Gets the name of the @type {VectorObject}.
+    /// Gets the name of the VectorObject.
     #[wasm_bindgen(getter, return_description = "The name of the vector object.")]
     pub fn name(&self) -> Option<String> {
         self.name.as_ref().map(|name| name.to_string())
     }
-    /// Gets the transformation matrix of the @type {VectorObject}.
+    /// Gets the transformation matrix of the VectorObject.
     #[wasm_bindgen(getter, return_description = "The transformation matrix of the vector object.")]
     pub fn transform(&self) -> TransformationMatrix {
         self.transform.clone()
     }
-    /// Gets the @type {Path2D} with the applied @type {TransformationMatrix}.
+    /// Gets the Path2D with the applied TransformationMatrix.
     #[wasm_bindgen(getter, return_description = "The path of the vector object with the applied transform.")]
     pub fn actual_path(&self) -> Path2D {
         self.path.transform(&self.transform)
     }
-    /// Gets the @type {BoundingBox} of the @type {VectorObject}.
+    /// Gets the BoundingBox of the VectorObject.
     #[wasm_bindgen(return_description = "The bounding box of the vector object.")]
     pub fn bounding_box(
         &self,
@@ -1957,14 +2031,14 @@ impl VectorObject {
         }
         bbox
     }
-    /// Gets the center @type {Point2D} of the @type {VectorObject}.
+    /// Gets the center Point2D of the VectorObject.
     #[wasm_bindgen(getter, return_description = "The center of the vector object.")]
     pub fn center(
         &self,
     ) -> Option<Point2D> {
         self.bounding_box(None).map(|bbox| bbox.center())
     }
-    /// Gets the critical @type {Point2D} of the @type {VectorObject}.
+    /// Gets the critical Point2D of the VectorObject.
     #[wasm_bindgen(return_description = "The critical point of the vector object.")]
     pub fn get_critical_point(
         &self,
@@ -2001,7 +2075,7 @@ impl VectorObject {
         };
         Some(Point2D { x, y })
     }
-    /// Gets the children of the @type {VectorObject} recursively.
+    /// Gets the children of the VectorObject recursively.
     #[wasm_bindgen(return_description = "The children of the vector object.")]
     pub fn get_children_recursive(
         &self,
@@ -2022,22 +2096,22 @@ impl VectorObject {
     pub fn num_curves(&self) -> usize {
         self.path.len() / 4
     }
-    /// Gets the number of points in the @type {VectorObject}'s path.
+    /// Gets the number of points in the VectorObject's path.
     #[wasm_bindgen(getter, return_description = "The number of points in the vector object.")]
     pub fn num_points(&self) -> usize {
         self.path.len()
     }
-    /// Gets the number of children in the @type {VectorObject}.
+    /// Gets the number of children in the VectorObject.
     #[wasm_bindgen(getter, return_description = "The number of children in the vector object.")]
     pub fn num_children(&self) -> usize {
         self.children.len()
     }
-    /// Gets whether the @type {VectorObject}'s path is closed.
+    /// Gets whether the VectorObject's path is closed.
     #[wasm_bindgen(getter, return_description = "Whether the vector object's path is closed.")]
     pub fn is_closed(&self) -> bool {
         self.path[0].equals(&self.path[self.path.len() - 1], None)
     }
-    /// Gets the subpaths of the @type {VectorObject}.
+    /// Gets the subpaths of the VectorObject.
     #[wasm_bindgen(getter, return_description = "The subpaths of the vector object.")]
     pub fn subpaths(&self) -> Vec<Path2D> {
         let rng = (4..self.path.len()).step_by(4);
@@ -2046,17 +2120,17 @@ impl VectorObject {
         let subpaths = split_indices.iter().zip(split_indices[1..].iter()).filter(|(start, end)| *end - *start >= 4).map(|(start, end)| self.path.slice(*start, *end)).collect();
         subpaths
     }
-    /// Gets the width of the @type {VectorObject}.
+    /// Gets the width of the VectorObject.
     #[wasm_bindgen(getter, return_description = "The width of the vector object.")]
     pub fn width(&self) -> Option<f32> {
         self.bounding_box(None).map(|bbox| bbox.width())
     }
-    /// Gets the height of the @type {VectorObject}.
+    /// Gets the height of the VectorObject.
     #[wasm_bindgen(getter, return_description = "The height of the vector object.")]
     pub fn height(&self) -> Option<f32> {
         self.bounding_box(None).map(|bbox| bbox.height())
     }
-    /// Slices the @type {VectorObject}'s children.
+    /// Slices the VectorObject's children.
     #[wasm_bindgen(return_description = "The sliced children of the vector object.")]
     pub fn slice_children(
         &self,
@@ -2067,7 +2141,7 @@ impl VectorObject {
     ) -> Vec<VectorObject> {
         self.children[start..end].to_vec()
     }
-    /// Gets the children of the @type {VectorObject} with the given names.
+    /// Gets the children of the VectorObject with the given names.
     #[wasm_bindgen(return_description = "The children with the given names.")]
     pub fn get_children_by_names(
         &self,

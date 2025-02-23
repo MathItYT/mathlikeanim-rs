@@ -2,20 +2,22 @@ import { VectorObject } from "@mathlikeanim-rs/mathlikeanim-rs";
 import Scene from "./scene";
 
 /**
- * A scene that renders to a @type {HTMLCanvasElement}.
+ * A scene that renders to a HTMLCanvasElement.
  */
 export default class CanvasScene extends Scene {
     /**
-     * The canvas element.
+     * The canvas element. Must be appended to the DOM to be visible.
+     * @type {HTMLCanvasElement}
      */
     canvas: HTMLCanvasElement;
     /**
      * The rendering context.
+     * @type {CanvasRenderingContext2D}
      */
     context: CanvasRenderingContext2D;
 
     /**
-     * Creates a new @type {CanvasScene}.
+     * Creates a new CanvasScene.
      * @param {number} width - The width of the canvas.
      * @param {number} height - The height of the canvas.
      */
@@ -40,7 +42,7 @@ export default class CanvasScene extends Scene {
     }
 
     /**
-     * Renders a @type {VectorObject} to the canvas. Internal use only.
+     * Renders a VectorObject to the canvas. Internal use only.
      * @param {VectorObject} object - The object to render.
      * @returns {void}
      * @private
@@ -83,7 +85,7 @@ export default class CanvasScene extends Scene {
     }
 
     /**
-     * Renders the fill of a @type {VectorObject}. Internal use only.
+     * Renders the fill of a VectorObject. Internal use only.
      * @param {VectorObject} object - The object to render the fill of.
      * @returns {void}
      * @private
@@ -134,7 +136,7 @@ export default class CanvasScene extends Scene {
     }
 
     /**
-     * Renders the stroke of a @type {VectorObject}. Internal use only.
+     * Renders the stroke of a VectorObject. Internal use only.
      * @param {VectorObject} object - The object to render the stroke of.
      * @returns {void}
      * @private

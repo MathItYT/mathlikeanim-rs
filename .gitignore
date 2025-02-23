@@ -19,3 +19,4 @@ dist/
 __pycache__/
 media/
 pkg/
+!docs/assets/*.svg

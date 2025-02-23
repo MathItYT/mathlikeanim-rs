@@ -6,15 +6,20 @@ This is an animation library written in Rust, widely inspired by [Manim](https:/
 
 
 ## Features
-- [x] Interactivity.
-- [x] Basic shapes.
-- [ ] Function plotting.
-- [x] Animations in HTML Canvas and SVG.
-- [x] Text rendering.
-- [x] Math formulas rendering.
-- [ ] 3D rendering.
-- [x] Browser support.
-- [ ] Python support.
+- 🟢 Interactivity.
+- 🟢 Basic shapes.
+- 🟡 Function plotting.
+- 🟢 Animations in HTML Canvas and SVG.
+- 🟢 Text rendering.
+- 🟢 Math formulas rendering.
+- 🟡 3D rendering.
+- 🟢 Browser support.
+- 🟡 Python support.
+
+### Meaning
+- 🟢: Done.
+- 🟡: Meant to be supported, but not available yet.
+- 🔴: Not supported.
 
 
 ## How to install it?
@@ -51,6 +56,7 @@ You must install the `@mathlikeanim-rs/mathlikeanim-rs` (the Rust core) package 
     initWasm().then((wasm) => {
         ...
     });
+</script>
 ```
 
 

@@ -7,16 +7,16 @@ use wasm_bindgen::prelude::*;
 
 use crate::{objects::vector_object::VectorObjectBuilder, utils::font_face::FontFace};
 
-/// A @type {Typst} is a typesetting object that can be used to render math text with Typst.
+/// A Typst is a typesetting object that can be used to render math text with Typst.
 #[wasm_bindgen]
 pub struct Typst {
-    /// The source of the @type {Typst} object.
+    /// The source of the Typst object.
     source: Rc<String>,
 }
 
 #[wasm_bindgen]
 impl Typst {
-    /// Creates a new @type {Typst} object from a source string.
+    /// Creates a new Typst object from a source string.
     #[wasm_bindgen(constructor, return_description = "A new typesetting object.")]
     pub fn new(
         #[wasm_bindgen(param_description = "The source of the typesetting object.")]
@@ -24,12 +24,12 @@ impl Typst {
     ) -> Typst {
         Typst { source: Rc::new(source) }
     }
-    /// Returns the source of the @type {Typst} object.
+    /// Returns the source of the Typst object.
     #[wasm_bindgen(getter, return_description = "The source of the typesetting object.")]
     pub fn source(&self) -> String {
         self.source.to_string()
     }
-    /// Renders the @type {Typst} object to an SVG string.
+    /// Renders the Typst object to an SVG string.
     #[wasm_bindgen(return_description = "The SVG string.")]
     pub fn render_to_svg(
         &self,
@@ -54,11 +54,11 @@ impl Typst {
         let svg = svg_merged(&doc, padding);
         Ok(svg)
     }
-    /// Renders the @type {Typst} object to a @type {VectorObjectBuilder}.
-    #[wasm_bindgen(return_description = "A @type {VectorObjectBuilder} representing the typesetting object.")]
+    /// Renders the Typst object to a VectorObjectBuilder.
+    #[wasm_bindgen(return_description = "A VectorObjectBuilder representing the typesetting object.")]
     pub fn render_to_vector_object_builder(
         &self,
-        #[wasm_bindgen(param_description = "The @type {FontFace}s to use when rendering the typesetting object, if any.")]
+        #[wasm_bindgen(param_description = "The FontFaces to use when rendering the typesetting object, if any.")]
         font_faces: Option<Vec<FontFace>>
     ) -> Result<VectorObjectBuilder, JsError> {
         let svg = self.render_to_svg(font_faces.clone())?;

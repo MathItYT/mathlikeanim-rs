@@ -4,7 +4,7 @@ use wasm_bindgen::prelude::*;
 
 use super::point2d::{Path2D, Point2D};
 
-/// A @type {TransformationMatrix} is a 2D transformation matrix following the CSS matrix transform format.
+/// A TransformationMatrix is a 2D transformation matrix following the CSS matrix transform format.
 #[wasm_bindgen]
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct TransformationMatrix {
@@ -24,7 +24,7 @@ pub struct TransformationMatrix {
 
 #[wasm_bindgen]
 impl TransformationMatrix {
-    /// Creates a new @type {TransformationMatrix} with the given components.
+    /// Creates a new TransformationMatrix with the given components.
     #[wasm_bindgen(constructor, return_description = "A 2D transformation matrix following the CSS matrix transform format.")]
     pub fn new(
         #[wasm_bindgen(param_description = "The a component of the matrix.")]
@@ -92,7 +92,7 @@ impl TransformationMatrix {
         }
     }
 
-    /// Applies another @type {TransformationMatrix} to this matrix.
+    /// Applies another TransformationMatrix to this matrix.
     #[wasm_bindgen]
     pub fn apply(&mut self, other: &TransformationMatrix) {
         *self = *other * *self;
@@ -115,7 +115,7 @@ impl TransformationMatrix {
         }
     }
 
-    /// Gets the matrix that undoes this @type {TransformationMatrix}.
+    /// Gets the matrix that undoes this TransformationMatrix.
     #[wasm_bindgen(return_description = "The inverse matrix.")]
     pub fn inverse(self) -> TransformationMatrix {
         let det = self.a * self.d - self.b * self.c;

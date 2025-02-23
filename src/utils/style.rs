@@ -34,7 +34,7 @@ impl Default for Color {
 
 #[wasm_bindgen]
 impl Color {
-    /// Creates a new @type {Color} with the given red, green, blue, and alpha components.
+    /// Creates a new Color with the given red, green, blue, and alpha components.
     #[wasm_bindgen(constructor, return_description = "A new color.")]
     pub fn new(
         #[wasm_bindgen(param_description = "The red component of the color.")]
@@ -58,7 +58,7 @@ impl Color {
     pub fn default_color() -> Color {
         Color::default()
     }
-    /// Linearly interpolates between two @type {Color}s given a progress value.
+    /// Linearly interpolates between two Colors given a progress value.
     #[wasm_bindgen]
     pub fn lerp(
         #[wasm_bindgen(param_description = "The start color.")]
@@ -102,7 +102,7 @@ impl Default for ColorStop {
 
 #[wasm_bindgen]
 impl ColorStop {
-    /// Creates a new @type {ColorStop} with the given color and position.
+    /// Creates a new ColorStop with the given color and position.
     #[wasm_bindgen(constructor, return_description = "A new color stop.")]
     pub fn new(
         #[wasm_bindgen(param_description = "The color of the stop.")]
@@ -141,7 +141,7 @@ impl Default for LinearGradient {
 
 #[wasm_bindgen]
 impl LinearGradient {
-    /// Creates a new @type {LinearGradient} with the given start point, end point, and @type {ColorStop}s.
+    /// Creates a new LinearGradient with the given start point, end point, and ColorStops.
     #[wasm_bindgen(constructor, return_description = "A new linear gradient.")]
     pub fn new(
         #[wasm_bindgen(param_description = "The start point of the gradient.")]
@@ -157,7 +157,7 @@ impl LinearGradient {
             color_stops: Rc::new(color_stops),
         }
     }
-    /// Returns the default @type {LinearGradient}, which is a gradient from the start to the end the same color.
+    /// Returns the default LinearGradient, which is a gradient from the start to the end the same color.
     #[wasm_bindgen(return_description = "The default linear gradient.")]
     pub fn single_color_gradient(
         #[wasm_bindgen(param_description = "The start point of the gradient.")]
@@ -173,17 +173,17 @@ impl LinearGradient {
             color_stops: Rc::new(vec![ColorStop { color, position: 0.0 }, ColorStop { color, position: 1.0 }]),
         }
     }
-    /// Returns the default @type {LinearGradient}, which is a gradient from the origin to the origin with no @type {ColorStop}s.
+    /// Returns the default LinearGradient, which is a gradient from the origin to the origin with no ColorStops.
     #[wasm_bindgen(return_description = "The default linear gradient.")]
     pub fn default_linear_gradient() -> LinearGradient {
         LinearGradient::default()
     }
-    /// Gets the @type {ColorStop}s of the gradient.
+    /// Gets the ColorStops of the gradient.
     #[wasm_bindgen(getter, return_description = "The color stops of the gradient.")]
     pub fn color_stops(&self) -> Vec<ColorStop> {
         self.color_stops.to_vec()
     }
-    /// Sets the @type {ColorStop}s of the gradient.
+    /// Sets the ColorStops of the gradient.
     #[wasm_bindgen(setter)]
     pub fn set_color_stops(
         &mut self,
@@ -192,7 +192,7 @@ impl LinearGradient {
     ) {
         self.color_stops = Rc::new(color_stops);
     }
-    /// Gets the @type {Color} at a given offset along the gradient.
+    /// Gets the Color at a given offset along the gradient.
     #[wasm_bindgen(return_description = "The color at the given offset.")]
     pub fn color_at_offset(
         &self,
@@ -213,7 +213,7 @@ impl LinearGradient {
         }
         stops[stops.len() - 1].color
     }
-    /// Gets the @type {Color} at a given point along the gradient.
+    /// Gets the Color at a given point along the gradient.
     #[wasm_bindgen(return_description = "The color at the given point.")]
     pub fn color_at(
         &self,
@@ -227,7 +227,7 @@ impl LinearGradient {
         let t = d / dp.magnitude();
         self.color_at_offset(t)
     }
-    /// Linearly interpolates between two @type {LinearGradient}s given a progress value.
+    /// Linearly interpolates between two LinearGradients given a progress value.
     #[wasm_bindgen(return_description = "The interpolated linear gradient.")]
     pub fn lerp(
         #[wasm_bindgen(param_description = "The first linear gradient.")]
@@ -295,7 +295,7 @@ impl Default for RadialGradient {
 
 #[wasm_bindgen]
 impl RadialGradient {
-    /// Creates a new @type {RadialGradient} with the given focal point, center point, radius, and @type {ColorStop}s.
+    /// Creates a new RadialGradient with the given focal point, center point, radius, and ColorStops.
     #[wasm_bindgen(constructor, return_description = "A new radial gradient.")]
     pub fn new(
         #[wasm_bindgen(param_description = "The focal point of the gradient.")]
@@ -314,17 +314,17 @@ impl RadialGradient {
             color_stops: Rc::new(color_stops),
         }
     }
-    /// Returns the default @type {RadialGradient}, which is a gradient from the focal point to the center with the same color.
+    /// Returns the default RadialGradient, which is a gradient from the focal point to the center with the same color.
     #[wasm_bindgen(return_description = "The default radial gradient.")]
     pub fn default_radial_gradient() -> RadialGradient {
         RadialGradient::default()
     }
-    /// Gets the @type {ColorStop}s of the gradient.
+    /// Gets the ColorStops of the gradient.
     #[wasm_bindgen(getter, return_description = "The color stops of the gradient.")]
     pub fn color_stops(&self) -> Vec<ColorStop> {
         self.color_stops.to_vec()
     }
-    /// Sets the @type {ColorStop}s of the gradient.
+    /// Sets the ColorStops of the gradient.
     #[wasm_bindgen(setter)]
     pub fn set_color_stops(
         &mut self,
@@ -333,7 +333,7 @@ impl RadialGradient {
     ) {
         self.color_stops = Rc::new(color_stops);
     }
-    /// Gets the @type {Color} at a given offset along the gradient.
+    /// Gets the Color at a given offset along the gradient.
     #[wasm_bindgen(return_description = "The color at the given offset.")]
     pub fn color_at_offset(
         &self,
@@ -354,7 +354,7 @@ impl RadialGradient {
         }
         stops[stops.len() - 1].color
     }
-    /// Gets the @type {Color} at a given point along the gradient.
+    /// Gets the Color at a given point along the gradient.
     #[wasm_bindgen(return_description = "The color at the given point.")]
     pub fn color_at(
         &self,
@@ -387,7 +387,7 @@ impl RadialGradient {
             color_stops: Rc::new(vec![ColorStop { color, position: 0.0 }, ColorStop { color, position: 1.0 }]),
         }
     }
-    /// Linearly interpolates between two @type {RadialGradient}s given a progress value.
+    /// Linearly interpolates between two RadialGradients given a progress value.
     #[wasm_bindgen(return_description = "The interpolated radial gradient.")]
     pub fn lerp(
         #[wasm_bindgen(param_description = "The first radial gradient.")]
@@ -460,7 +460,7 @@ impl Default for ImageBitmap {
 
 #[wasm_bindgen]
 impl ImageBitmap {
-    /// Creates a new @type {ImageBitmap} with the given x, y, width, height, and pixel data.
+    /// Creates a new ImageBitmap with the given x, y, width, height, and pixel data.
     #[wasm_bindgen(constructor, return_description = "A new image bitmap.")]
     pub fn new(
         #[wasm_bindgen(param_description = "The x coordinate of the bitmap.")]
@@ -496,12 +496,12 @@ impl ImageBitmap {
     ) {
         self.data = Rc::new(data);
     }
-    /// Returns the default @type {ImageBitmap}, which is an empty bitmap.
+    /// Returns the default ImageBitmap, which is an empty bitmap.
     #[wasm_bindgen(return_description = "The default image bitmap.")]
     pub fn default_image_bitmap() -> ImageBitmap {
         ImageBitmap::default()
     }
-    /// Gets the color of a @type {Point2D} in the bitmap.
+    /// Gets the color of a Point2D in the bitmap.
     #[wasm_bindgen(return_description = "The color of the pixel.")]
     pub fn get_pixel(
         &self,
@@ -518,7 +518,7 @@ impl ImageBitmap {
             alpha: self.data[index + 3] as f32 / 255.0,
         }
     }
-    /// Sets a pixel color at a @type {Point2D} in the bitmap.
+    /// Sets a pixel color at a Point2D in the bitmap.
     pub fn set_pixel(
         &mut self,
         #[wasm_bindgen(param_description = "The point to set the pixel color at.")]
@@ -640,7 +640,7 @@ impl ImageBitmap {
             data: Rc::new(data),
         }
     }
-    /// Linearly interpolates between two @type {ImageBitmap}s given a progress value.
+    /// Linearly interpolates between two ImageBitmaps given a progress value.
     #[wasm_bindgen(return_description = "The interpolated image bitmap.")]
     pub fn lerp(
         #[wasm_bindgen(param_description = "The first image bitmap.")]
@@ -720,7 +720,7 @@ impl Default for Style {
 
 #[wasm_bindgen]
 impl Style {
-    /// Creates a new @type {Style} with the given color, linear gradient, radial gradient, or image. It must have exactly one of these.
+    /// Creates a new Style with the given color, linear gradient, radial gradient, or image. It must have exactly one of these.
     #[wasm_bindgen(constructor, return_description = "A new style.")]
     pub fn new(
         #[wasm_bindgen(param_description = "The color of the style, if provided.")]
@@ -756,7 +756,7 @@ impl Style {
             image,
         })
     }
-    /// Creates a new @type {Style} with the given color.
+    /// Creates a new Style with the given color.
     #[wasm_bindgen(return_description = "A new style from the color.")]
     pub fn from_color(
         #[wasm_bindgen(param_description = "The color of the style.")]
@@ -764,7 +764,7 @@ impl Style {
     ) -> Style {
         Style::new(Some(color), None, None, None).unwrap()
     }
-    /// Creates a new @type {Style} with the given linear gradient.
+    /// Creates a new Style with the given linear gradient.
     #[wasm_bindgen(return_description = "A new style from the linear gradient.")]
     pub fn from_linear_gradient(
         #[wasm_bindgen(param_description = "The linear gradient of the style.")]
@@ -772,12 +772,12 @@ impl Style {
     ) -> Style {
         Style::new(None, Some(gradient), None, None).unwrap()
     }
-    /// Creates a new @type {Style} with the given radial gradient.
+    /// Creates a new Style with the given radial gradient.
     #[wasm_bindgen(return_description = "A new style from the radial gradient.")]
     pub fn from_radial_gradient(gradient: RadialGradient) -> Style {
         Style::new(None, None, Some(gradient), None).unwrap()
     }
-    /// Creates a new @type {Style} with the given image.
+    /// Creates a new Style with the given image.
     #[wasm_bindgen(return_description = "A new style from the image.")]
     pub fn from_image(
         #[wasm_bindgen(param_description = "The image of the style.")]
@@ -785,12 +785,12 @@ impl Style {
     ) -> Style {
         Style::new(None, None, None, Some(image)).unwrap()
     }
-    /// Returns the default @type {Style}, which is a color with the default color.
+    /// Returns the default Style, which is a color with the default color.
     #[wasm_bindgen(return_description = "The default style.")]
     pub fn default_style() -> Style {
         Style::default()
     }
-    /// Fades the @type {Style} by a given amount.
+    /// Fades the Style by a given amount.
     #[wasm_bindgen(return_description = "The faded style.")]
     pub fn fade(
         &self,
@@ -828,12 +828,12 @@ impl Style {
             image,
         }
     }
-    /// Gets the @type {Color} of the style, if it's a color.
+    /// Gets the Color of the style, if it's a color.
     #[wasm_bindgen(getter, return_description = "The color of the style.")]
     pub fn color(&self) -> Option<Color> {
         self.color.clone()
     }
-    /// Sets the style to a @type {Color}.
+    /// Sets the style to a Color.
     #[wasm_bindgen(setter)]
     pub fn set_color(
         &mut self,
@@ -845,12 +845,12 @@ impl Style {
         self.radial_gradient = None;
         self.image = None;
     }
-    /// Gets the @type {LinearGradient} of the style, if it's a linear gradient.
+    /// Gets the LinearGradient of the style, if it's a linear gradient.
     #[wasm_bindgen(getter, return_description = "The linear gradient of the style.")]
     pub fn linear_gradient(&self) -> Option<LinearGradient> {
         self.linear_gradient.clone()
     }
-    /// Sets the style to a @type {LinearGradient}.
+    /// Sets the style to a LinearGradient.
     #[wasm_bindgen(setter)]
     pub fn set_linear_gradient(
         &mut self,
@@ -862,12 +862,12 @@ impl Style {
         self.radial_gradient = None;
         self.image = None;
     }
-    /// Gets the @type {RadialGradient} of the style, if it's a radial gradient.
+    /// Gets the RadialGradient of the style, if it's a radial gradient.
     #[wasm_bindgen(getter, return_description = "The radial gradient of the style.")]
     pub fn radial_gradient(&self) -> Option<RadialGradient> {
         self.radial_gradient.clone()
     }
-    /// Sets the style to a @type {RadialGradient}.
+    /// Sets the style to a RadialGradient.
     #[wasm_bindgen(setter)]
     pub fn set_radial_gradient(
         &mut self,
@@ -879,12 +879,12 @@ impl Style {
         self.radial_gradient = Some(radial_gradient);
         self.image = None;
     }
-    /// Gets the @type {ImageBitmap} of the style, if it's an image.
+    /// Gets the ImageBitmap of the style, if it's an image.
     #[wasm_bindgen(getter, return_description = "The image of the style.")]
     pub fn image(&self) -> Option<ImageBitmap> {
         self.image.clone()
     }
-    /// Sets the style to an @type {ImageBitmap}.
+    /// Sets the style to an ImageBitmap.
     #[wasm_bindgen(setter)]
     pub fn set_image(&mut self, image: ImageBitmap) {
         self.color = None;
@@ -892,7 +892,7 @@ impl Style {
         self.radial_gradient = None;
         self.image = Some(image);
     }
-    /// Gets the @type {Color} at a given point.
+    /// Gets the Color at a given point.
     #[wasm_bindgen(return_description = "The color at the given point.")]
     pub fn color_at(
         &self,
@@ -913,7 +913,7 @@ impl Style {
         }
         Color::default()
     }
-    /// Linearly interpolates between two @type {Style}s given a progress value.
+    /// Linearly interpolates between two Styles given a progress value.
     #[wasm_bindgen(return_description = "The interpolated style.")]
     pub fn lerp(
         #[wasm_bindgen(param_description = "The first style.")]

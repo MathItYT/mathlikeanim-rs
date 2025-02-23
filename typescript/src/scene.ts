@@ -1,28 +1,36 @@
 import { VectorObject } from "@mathlikeanim-rs/mathlikeanim-rs";
 
+export type Animation = (oldObject: VectorObject, t: number) => VectorObject;
+export type Easing = (t: number) => number;
+
 /**
- * A scene that can animate @type {VectorObject}s.
+ * A scene that can animate VectorObjects.
  */
 export default abstract class Scene {
     /**
      * The width of the scene.
+     * @type {number}
      */
     readonly width: number;
     /**
      * The height of the scene.
+     * @type {number}
      */
     readonly height: number;
     /**
      * The objects in the scene.
+     * @type {VectorObject[]}
      */
     objects: VectorObject[];
     /**
      * Objects when previous animation was entirely finished.
+     * @type {VectorObject[]}
+     * @private
      */
     private oldObjects: VectorObject[];
 
     /**
-     * Creates a new @type {Scene}.
+     * Creates a new Scene.
      * @param {number} width - The width of the scene.
      * @param {number} height - The height of the scene.
      */
@@ -35,15 +43,15 @@ export default abstract class Scene {
 
     /**
      * Plays an animation.
-     * @param {Map<string | number, (oldObject: VectorObject, t: number) => VectorObject>} animations - The animations to play.
+     * @param {Map<string | number, Animation>} animations - The animations to play.
      * @param {number} duration - The duration of the animation in milliseconds.
-     * @param {(t: number) => number} easing - The easing function.
+     * @param {Easing} easing - The easing function to use.
      * @returns {Promise<void>} - A promise that resolves when the animation has finished.
      */
     play(
-        animations: Map<string | number, (oldObject: VectorObject, t: number) => VectorObject>,
+        animations: Map<string | number, Animation>,
         duration: number,
-        easing: (t: number) => number,
+        easing: Easing,
     ): Promise<void> {
         this.oldObjects = this.objects.map(object => object.clone());
         return new Promise(resolve => {
@@ -68,7 +76,7 @@ export default abstract class Scene {
 
     /**
      * Animates the objects. Internal use only.
-     * @param {Map<string | number, (oldObject: VectorObject, t: number) => VectorObject>} animations - The animations to play.
+     * @param {Map<string | number, Animation>} animations - The animations to play.
      * @param {number} t - The progress of the animation.
      * @returns {void}
      * @private

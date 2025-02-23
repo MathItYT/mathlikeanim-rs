@@ -2,13 +2,17 @@ import { Style, VectorObject } from "@mathlikeanim-rs/mathlikeanim-rs";
 import Scene from "./scene";
 
 /**
- * A scene that renders to a @type {SVGSVGElement}.
+ * A scene that renders to a SVG element.
  */
 export default class SVGScene extends Scene {
+    /**
+     * The SVG element. Must be appended to the DOM to render.
+     * @type {SVGSVGElement}
+     */
     svg: SVGSVGElement;
     
     /**
-     * Creates a new @type {SVGScene}.
+     * Creates a new SVGScene.
      * @param {number} width - The width of the SVG.
      * @param {number} height - The height of the SVG.
      */
@@ -34,7 +38,7 @@ export default class SVGScene extends Scene {
     }
 
     /**
-     * Renders a @type {VectorObject} to the SVG. Internal use only.
+     * Renders a VectorObject to the SVG. Internal use only.
      * @param {VectorObject} object - The object to render.
      * @param {number[]} index - The index of the object.
      * @param {SVGDefsElement} defs - The defs element.
@@ -78,7 +82,7 @@ export default class SVGScene extends Scene {
     }
 
     /**
-     * Renders the path data of a @type {VectorObject}. Internal use only.
+     * Renders the path data of a VectorObject. Internal use only.
      * @param {VectorObject} object - The object to render.
      * @returns {string} - The path data.
      * @private
@@ -100,7 +104,7 @@ export default class SVGScene extends Scene {
     }
 
     /**
-     * Renders the fill of a @type {VectorObject}. Internal use only.
+     * Renders the fill of a VectorObject. Internal use only.
      * @param {VectorObject} object - The object to render the fill of.
      * @param {SVGDefsElement} defs - The defs element.
      * @param {number[]} index - The index of the object.
@@ -170,7 +174,7 @@ export default class SVGScene extends Scene {
     }
 
     /**
-     * Renders the stroke of a @type {VectorObject}. Internal use only.
+     * Renders the stroke of a VectorObject. Internal use only.
      * @param {VectorObject} object - The object to render the stroke of.
      * @param {SVGDefsElement} defs - The defs element.
      * @param {number[]} index - The index of the object.
@@ -182,7 +186,7 @@ export default class SVGScene extends Scene {
     }
 
     /**
-     * Renders the stroke of a @type {VectorObject}. Internal use only.
+     * Renders the stroke of a VectorObject. Internal use only.
      * @param {VectorObject} object - The object to render the stroke of.
      * @param {SVGDefsElement} defs - The defs element.
      * @param {number[]} index - The index of the object.

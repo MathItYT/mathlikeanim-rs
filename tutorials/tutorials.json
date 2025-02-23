@@ -1,0 +1,12 @@
+{
+  "Tutorials": {
+    "title": "Tutorials",
+    "children": ["Install", "Get Started"]
+  },
+  "Install": {
+    "title": "Install"
+  },
+  "Get Started": {
+    "title": "Get Started"
+  }
+}

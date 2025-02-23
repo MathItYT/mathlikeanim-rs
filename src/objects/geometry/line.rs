@@ -4,26 +4,26 @@ use crate::{objects::vector_object::VectorObjectBuilder, utils::point2d::Point2D
 
 use super::tipable::Tipable;
 
-/// A @type {Line} is a straight one-dimensional figure that extends infinitely in both directions.
+/// A Line is a straight one-dimensional figure that extends infinitely in both directions.
 /// It is defined by two points.
 #[wasm_bindgen]
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Line {
-    /// The starting point of the line as @type {Point2D}.
+    /// The starting point of the line as Point2D.
     pub start: Point2D,
-    /// The ending point of the line as @type {Point2D}.
+    /// The ending point of the line as Point2D.
     pub end: Point2D,
 }
 
 #[wasm_bindgen]
 impl Line {
-    /// Creates a new @type {Line} object from two points.
+    /// Creates a new Line object from two points.
     #[wasm_bindgen(constructor, return_description = "A line connecting the start and end points.")]
     pub fn new(start: Point2D, end: Point2D) -> Line {
         Line { start, end }
     }
 
-    /// Gets a @type {VectorObjectBuilder} with the line's points.
+    /// Gets a VectorObjectBuilder with the line's points.
     #[wasm_bindgen(getter, return_description = "A vector object builder with the line's points.")]
     pub fn vector_object_builder(
         &self,
@@ -39,7 +39,7 @@ impl Line {
         Point2D::distance(&self.start, &self.end)
     }
 
-    /// Returns the midpoint of the line as a @type {Point2D}.
+    /// Returns the midpoint of the line as a Point2D.
     #[wasm_bindgen(return_description = "The midpoint of the line.")]
     pub fn midpoint(&self) -> Point2D {
         (self.start + self.end) * 0.5
@@ -63,7 +63,7 @@ impl Line {
         -1.0 / self.slope()
     }
 
-    /// Returns the perpendicular line of the line at a given @type {Point2D}.
+    /// Returns the perpendicular line of the line at a given Point2D.
     #[wasm_bindgen(return_description = "The perpendicular line of the line at the given point.")]
     pub fn perpendicular_line(
         &self,
@@ -75,7 +75,7 @@ impl Line {
         Line::new(point, Point2D::new(0.0, y_intercept))
     }
 
-    /// Returns the intersection @type {Point2D} of the line with another line, if it exists.
+    /// Returns the intersection Point2D of the line with another line, if it exists.
     #[wasm_bindgen(return_description = "The intersection point of the two lines if it exists.")]
     pub fn intersection(
         &self,
@@ -91,7 +91,7 @@ impl Line {
         }
     }
 
-    /// Returns whether the line contains a given @type {Point2D}.
+    /// Returns whether the line contains a given Point2D.
     #[wasm_bindgen(return_description = "Whether the line contains the given point.")]
     pub fn contains(
         &self,
@@ -105,7 +105,7 @@ impl Line {
         point.x >= x_min && point.x <= x_max && point.y >= y_min && point.y <= y_max
     }
 
-    /// Returns the distance from the line to a given @type {Point2D}.
+    /// Returns the distance from the line to a given Point2D.
     #[wasm_bindgen(return_description = "The distance from the line to the given point.")]
     pub fn distance_to_point(
         &self,
@@ -118,8 +118,8 @@ impl Line {
         (a * point.x + b * point.y + c).abs() / (a * a + b * b).sqrt()
     }
 
-    /// Creates a @type {VectorObjectBuilder} with the line's points and a tip at the start.
-    #[wasm_bindgen(return_description = "A @type {VectorObjectBuilder} with the line's points and a tip at the start.")]
+    /// Creates a VectorObjectBuilder with the line's points and a tip at the start.
+    #[wasm_bindgen(return_description = "A VectorObjectBuilder with the line's points and a tip at the start.")]
     pub fn with_tip_at_the_start(
         &self,
         #[wasm_bindgen(param_description = "The shape of the tip. The shape must be pointing to the right and centered to (0, 0), this function will rotate and move it to the correct angle.")]
@@ -130,8 +130,8 @@ impl Line {
         builder
     }
 
-    /// Creates a @type {VectorObjectBuilder} with the line's points and a tip at the end.
-    #[wasm_bindgen(return_description = "A @type {VectorObjectBuilder} with the line's points and a tip at the end.")]
+    /// Creates a VectorObjectBuilder with the line's points and a tip at the end.
+    #[wasm_bindgen(return_description = "A VectorObjectBuilder with the line's points and a tip at the end.")]
     pub fn with_tip_at_the_end(
         &self,
         #[wasm_bindgen(param_description = "The shape of the tip. The shape must be pointing to the right and centered to (0, 0), this function will rotate and move it to the correct angle.")]
@@ -142,8 +142,8 @@ impl Line {
         builder
     }
 
-    /// Creates a @type {VectorObjectBuilder} with the line's points and tips at both ends.
-    #[wasm_bindgen(return_description = "A @type {VectorObjectBuilder} with the line's points and tips at both ends.")]
+    /// Creates a VectorObjectBuilder with the line's points and tips at both ends.
+    #[wasm_bindgen(return_description = "A VectorObjectBuilder with the line's points and tips at both ends.")]
     pub fn with_tips_at_both_ends(
         &self,
         #[wasm_bindgen(param_description = "The shape of the tip. The shape must be pointing to the right, this function will rotate and move it to the correct angle.")]

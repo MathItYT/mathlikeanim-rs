@@ -4,7 +4,7 @@ use wasm_bindgen::prelude::*;
 
 use super::point2d::{Path2D, Point2D};
 
-/// @type {AnchorsAndHandles} is an object containing the start anchors, first control points, second control points, and end anchors of a path.
+/// Start anchors, first control points, second control points, and end anchors of a path.
 #[wasm_bindgen]
 #[derive(Clone, Debug)]
 pub struct AnchorsAndHandles {
@@ -20,7 +20,7 @@ pub struct AnchorsAndHandles {
 
 #[wasm_bindgen]
 impl AnchorsAndHandles {
-    /// Creates a new @type {AnchorsAndHandles} object from start anchors, first control points, second control points, and end anchors.
+    /// Creates a new AnchorsAndHandles object.
     #[wasm_bindgen(constructor, return_description = "An object containing the start anchors, first control points, second control points, and end anchors of a path.")]
     pub fn new(
         #[wasm_bindgen(param_description = "The start anchors of the path.")]
@@ -40,7 +40,7 @@ impl AnchorsAndHandles {
         }
         Ok(AnchorsAndHandles { start_anchors: Rc::new(start_anchors), first_controls: Rc::new(first_controls), second_controls: Rc::new(second_controls), end_anchors: Rc::new(end_anchors) })
     }
-    /// Creates a new @type {AnchorsAndHandles} object from a path.
+    /// Creates a AnchorsAndHandles object from a Path2D object.
     #[wasm_bindgen(return_description = "An object containing the start anchors, first control points, second control points, and end anchors of a path.")]
     pub fn from_path(
         #[wasm_bindgen(param_description = "The path to extract the anchors and handles from.")]
@@ -89,7 +89,7 @@ impl AnchorsAndHandles {
     }
 }
 
-/// A @type {CubicBezierTuple} is a cubic bezier curve represented by a start anchor, first control point, second control point, and end anchor.
+/// A cubic bezier curve represented by four points: a start anchor, a first control point, a second control point, and an end anchor.
 #[wasm_bindgen]
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct CubicBezierTuple {
@@ -105,7 +105,7 @@ pub struct CubicBezierTuple {
 
 #[wasm_bindgen]
 impl CubicBezierTuple {
-    /// Creates a new @type {CubicBezierTuple} from a start anchor, first control point, second control point, and end anchor.
+    /// Creates a new cubic bezier curve.
     #[wasm_bindgen(constructor, return_description = "A cubic bezier curve.")]
     pub fn new(
         #[wasm_bindgen(param_description = "The start anchor of the cubic bezier.")]
@@ -119,7 +119,7 @@ impl CubicBezierTuple {
     ) -> CubicBezierTuple {
         CubicBezierTuple { start_anchor, first_control, second_control, end_anchor }
     }
-    /// Creates a new @type {CubicBezierTuple} from two @type {Point2D}s representing a line.
+    /// Creates a new cubic bezier curve from a line.
     #[wasm_bindgen(return_description = "The cubic bezier curve representing the line.")]
     pub fn from_line(
         #[wasm_bindgen(param_description = "The start point of the line.")]
@@ -131,7 +131,7 @@ impl CubicBezierTuple {
         let handle2 = Point2D::lerp(&p1, &p2, 2.0 / 3.0);
         CubicBezierTuple::new(p1, handle1, handle2, p2)
     }
-    /// Creates a new @type {CubicBezierTuple} from three @type {Point2D}s representing a quadratic bezier.
+    /// Creates a new cubic bezier curve from a quadratic bezier.
     #[wasm_bindgen(return_description = "The cubic bezier curve representing the quadratic bezier.")]
     pub fn from_quadratic(
         #[wasm_bindgen(param_description = "The first anchor point of the quadratic bezier.")]
@@ -145,27 +145,27 @@ impl CubicBezierTuple {
         let handle2 = Point2D::lerp(&p2, &p3, 1.0 / 3.0);
         CubicBezierTuple::new(p1, handle1, handle2, p3)
     }
-    /// Returns the start anchor of the @type {CubicBezierTuple}.
+    /// Returns the start anchor of the cubic bezier.
     #[wasm_bindgen(getter, return_description = "The start anchor of the cubic bezier.")]
     pub fn start_anchor(&self) -> Point2D {
         self.start_anchor
     }
-    /// Returns the first control point of the @type {CubicBezierTuple}.
+    /// Returns the first control point of the cubic bezier.
     #[wasm_bindgen(getter, return_description = "The first control point of the cubic bezier.")]
     pub fn first_control(&self) -> Point2D {
         self.first_control
     }
-    /// Returns the second control point of the @type {CubicBezierTuple}.
+    /// Returns the second control point of the cubic bezier.
     #[wasm_bindgen(getter, return_description = "The second control point of the cubic bezier.")]
     pub fn second_control(&self) -> Point2D {
         self.second_control
     }
-    /// Returns the end anchor of the @type {CubicBezierTuple}.
+    /// Returns the end anchor of the cubic bezier.
     #[wasm_bindgen(getter, return_description = "The end anchor of the cubic bezier.")]
     pub fn end_anchor(&self) -> Point2D {
         self.end_anchor
     }
-    /// Returns the point on the @type {CubicBezierTuple} when the polynomial is evaluated at the given t value.
+    /// Returns the point on the cubic bezier curve at a given t value.
     #[wasm_bindgen(return_description = "The point on the cubic bezier curve when the polynomial is evaluated at the given t value.")]
     pub fn point_at(
         &self,
@@ -182,7 +182,7 @@ impl CubicBezierTuple {
             + self.second_control * (3.0 * one_minus_t * t_squared)
             + self.end_anchor * t_cubed
     }
-    /// Returns an approximation of the length of the @type {CubicBezierTuple}. Based on sampling the curve and add an optional extra length to fill in the gaps.
+    /// Returns an approximation of the length of the cubic bezier curve, based on sampling points along the curve and an optional extra length to add.
     pub fn length(
         &self,
         #[wasm_bindgen(param_description = "The number of samples to take along the curve.")]

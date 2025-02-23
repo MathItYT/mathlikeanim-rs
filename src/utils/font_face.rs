@@ -2,7 +2,7 @@ use std::rc::Rc;
 
 use wasm_bindgen::prelude::*;
 
-/// A @type {FontFace} is a font face that can be used to render text.
+/// A FontFace represents a font that can be used for rendering text.
 #[wasm_bindgen]
 #[derive(Clone, Debug, PartialEq)]
 pub struct FontFace {
@@ -12,8 +12,8 @@ pub struct FontFace {
 
 #[wasm_bindgen]
 impl FontFace {
-    /// Creates a new @type {FontFace} with the given data.
-    #[wasm_bindgen(constructor, return_description = "A font face with the given name, weight, style, and data.")]
+    /// Creates a new FontFace from font data.
+    #[wasm_bindgen(constructor, return_description = "A new font face.")]
     pub fn new(
         #[wasm_bindgen(param_description = "The data of the font face.")]
         data: Vec<u8>,

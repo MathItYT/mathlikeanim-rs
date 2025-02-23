@@ -25,7 +25,7 @@ impl Default for Point2D {
 
 #[wasm_bindgen]
 impl Point2D {
-    /// Creates a new @type {Point2D} with the given coordinates.
+    /// Creates a new Point2D with the given coordinates.
     #[wasm_bindgen(constructor, return_description = "A 2D point.")]
     pub fn new(
         #[wasm_bindgen(param_description = "The x-coordinate of the point.")]
@@ -36,7 +36,7 @@ impl Point2D {
         Point2D { x, y }
     }
 
-    /// Linearly interpolates between two @type {Point2D} objects.
+    /// Linearly interpolates between two Point2D objects.
     #[wasm_bindgen(return_description = "The interpolated point.")]
     pub fn lerp(
         #[wasm_bindgen(param_description = "The start point.")]
@@ -51,7 +51,7 @@ impl Point2D {
             y: lerp(point1.y, point2.y, t),
         }
     }
-    /// Returns the distance between two @type {Point2D}s.
+    /// Returns the distance between two Point2Ds.
     #[wasm_bindgen(return_description = "The distance between the two points.")]
     pub fn distance_squared(
         &self,
@@ -62,7 +62,7 @@ impl Point2D {
         let dy = self.y - other.y;
         dx * dx + dy * dy
     }
-    /// Checks if two @type {Point2D} objects are equal within a given tolerance.
+    /// Checks if two Point2D objects are equal within a given tolerance.
     #[wasm_bindgen(return_description = "A boolean indicating whether the two points are equal.")]
     pub fn equals(
         &self,
@@ -74,7 +74,7 @@ impl Point2D {
         let tolerance = tolerance.unwrap_or(0.01);
         self.distance_squared(other) < tolerance * tolerance
     }
-    /// Returns the @type {Point2D} rotated around a given center point by a given angle.
+    /// Returns the Point2D rotated around a given center point by a given angle.
     #[wasm_bindgen(return_description = "The rotated point.")]
     pub fn rotate_around(
         &self,
@@ -88,7 +88,7 @@ impl Point2D {
         let y = sin * (self.x - center.x) + cos * (self.y - center.y) + center.y;
         Point2D { x, y }
     }
-    /// Returns the distance between two @type {Point2D}s.
+    /// Returns the distance between two Point2Ds.
     #[wasm_bindgen(return_description = "The distance between the two points.")]
     pub fn distance(
         &self,
@@ -97,17 +97,17 @@ impl Point2D {
     ) -> f32 {
         self.distance_squared(other).sqrt()
     }
-    /// Returns the squared magnitude of the @type {Point2D}.
+    /// Returns the squared magnitude of the Point2D.
     #[wasm_bindgen(getter, return_description = "The squared magnitude of the point.")]
     pub fn magnitude_squared(&self) -> f32 {
         self.x * self.x + self.y * self.y
     }
-    /// Returns the magnitude of the @type {Point2D}.
+    /// Returns the magnitude of the Point2D.
     #[wasm_bindgen(getter, return_description = "The magnitude of the point.")]
     pub fn magnitude(&self) -> f32 {
         self.magnitude_squared().sqrt()
     }
-    /// Returns the normalized @type {Point2D}.
+    /// Returns the normalized Point2D.
     #[wasm_bindgen(getter, return_description = "The normalized point.")]
     pub fn normalized(&self) -> Point2D {
         let magnitude = self.magnitude();
@@ -116,7 +116,7 @@ impl Point2D {
             y: self.y / magnitude,
         }
     }
-    /// Returns the dot product of @type {Point2D} objects.
+    /// Returns the dot product of Point2D objects.
     #[wasm_bindgen(return_description = "The dot product of the two points.")]
     pub fn dot(
         &self,
@@ -125,7 +125,7 @@ impl Point2D {
     ) -> f32 {
         self.x * other.x + self.y * other.y
     }
-    /// Returns the angle between two @type {Point2D}s.
+    /// Returns the angle between two Point2Ds.
     #[wasm_bindgen(return_description = "The angle between the two points.")]
     pub fn angle(
         &self,
@@ -289,7 +289,7 @@ pub struct Path2D {
 
 #[wasm_bindgen]
 impl Path2D {
-    /// Creates a new @type {Path2D} with the given points.
+    /// Creates a new Path2D with the given points.
     #[wasm_bindgen(constructor, return_description = "A 2D path.")]
     pub fn new(
         #[wasm_bindgen(param_description = "The points of the path.")]
@@ -298,7 +298,7 @@ impl Path2D {
         Path2D { points: Rc::new(points) }
     }
 
-    /// Creates a new @type {Path2D} given a @type {AnchorsAndHandles} object.
+    /// Creates a new Path2D given a AnchorsAndHandles object.
     #[wasm_bindgen(return_description = "A 2D path.")]
     pub fn from_anchors_and_handles(
         #[wasm_bindgen(param_description = "The AnchorsAndHandles object.")]
@@ -314,7 +314,7 @@ impl Path2D {
         Path2D { points: Rc::new(points) }
     }
 
-    /// Repeats the @type {Path2D} a given number of times.
+    /// Repeats the Path2D a given number of times.
     #[wasm_bindgen(return_description = "The repeated path.")]
     pub fn repeat(
         &self,
@@ -328,13 +328,13 @@ impl Path2D {
         Path2D { points: Rc::new(points) }
     }
 
-    /// Returns the @type {Point2D}s of the @type {Path2D}.
+    /// Returns the Point2Ds of the Path2D.
     #[wasm_bindgen(getter, return_description = "The points of the path.")]
     pub fn points(&self) -> Vec<Point2D> {
         Rc::clone(&self.points).to_vec()
     }
 
-    /// Sets the @type {Point2D}s of the @type {Path2D}.
+    /// Sets the Point2Ds of the Path2D.
     #[wasm_bindgen(setter)]
     pub fn set_points(
         &mut self,
@@ -344,13 +344,13 @@ impl Path2D {
         self.points = Rc::new(points);
     }
 
-    /// Returns whether the @type {Path2D} is empty.
+    /// Returns whether the Path2D is empty.
     #[wasm_bindgen(getter, return_description = "A boolean indicating whether the path is empty.")]
     pub fn is_empty(&self) -> bool {
         self.points.is_empty()
     }
 
-    /// Returns the closest @type {Point2D} in the @type {Path2D} to a given @type {Point2D}.
+    /// Returns the closest Point2D in the Path2D to a given Point2D.
     #[wasm_bindgen(return_description = "The closest point in the path.")]
     pub fn closest_point(
         &self,
@@ -369,13 +369,13 @@ impl Path2D {
         closest_point
     }
 
-    /// Returns the length of the @type {Path2D}.
+    /// Returns the length of the Path2D.
     #[wasm_bindgen(getter, return_description = "The length of the path.")]
     pub fn len(&self) -> usize {
         self.points.len()
     }
 
-    /// Returns the @type {Point2D} at a given index.
+    /// Returns the Point2D at a given index.
     #[wasm_bindgen(return_description = "The first point of the path.")]
     pub fn get(
         &self,
@@ -385,7 +385,7 @@ impl Path2D {
         self.points[index]
     }
 
-    /// Sets the @type {Point2D} at the given index.
+    /// Sets the Point2D at the given index.
     pub fn set(
         &mut self,
         #[wasm_bindgen(param_description = "The index of the point.")]
@@ -396,7 +396,7 @@ impl Path2D {
         Rc::make_mut(&mut self.points)[index] = point;
     }
 
-    /// Appends a @type {Point2D} to the @type {Path2D}.
+    /// Appends a Point2D to the Path2D.
     pub fn push(
         &mut self,
         #[wasm_bindgen(param_description = "The point to append.")]
@@ -405,13 +405,13 @@ impl Path2D {
         Rc::make_mut(&mut self.points).push(point);
     }
 
-    /// Removes the last @type {Point2D} from the @type {Path2D}.
+    /// Removes the last Point2D from the Path2D.
     #[wasm_bindgen(return_description = "The last point of the path.")]
     pub fn pop(&mut self) -> Option<Point2D> {
         Rc::make_mut(&mut self.points).pop()
     }
 
-    /// Inserts a @type {Point2D} at a given index.
+    /// Inserts a Point2D at a given index.
     pub fn insert(
         &mut self,
         #[wasm_bindgen(param_description = "The index to insert the point at.")]
@@ -422,7 +422,7 @@ impl Path2D {
         Rc::make_mut(&mut self.points).insert(index, point);
     }
 
-    /// Removes a @type {Point2D} at a given index.
+    /// Removes a Point2D at a given index.
     #[wasm_bindgen(return_description = "The removed point.")]
     pub fn remove(
         &mut self,
@@ -432,12 +432,12 @@ impl Path2D {
         Rc::make_mut(&mut self.points).remove(index)
     }
 
-    /// Removes all @type {Point2D}s from the @type {Path2D}.
+    /// Removes all Point2Ds from the Path2D.
     pub fn clear(&mut self) {
         Rc::make_mut(&mut self.points).clear();
     }
 
-    /// Returns a new @type {Path2D} representing a bezier curve portion of the @type {Path2D}.
+    /// Returns a new Path2D representing a bezier curve portion of the Path2D.
     #[wasm_bindgen(return_description = "A Path2D object representing the portion of the input path.")]
     pub fn partial_bezier_path(
         &self,
@@ -532,7 +532,7 @@ impl Path2D {
         Path2D { points }
     }
 
-    /// Creates a new @type {Path2D} by filling the @type {Path2D} with a given @type {Point2D} a given number of times.
+    /// Creates a new Path2D by filling the Path2D with a given Point2D a given number of times.
     #[wasm_bindgen(return_description = "A path that is a portion of the input path.")]
     pub fn fill(
         #[wasm_bindgen(param_description = "The point to fill the path with.")]
@@ -545,12 +545,12 @@ impl Path2D {
         }
     }
 
-    /// Reverse the @type {Path2D}.
+    /// Reverse the Path2D.
     pub fn reverse(&mut self) {
         Rc::make_mut(&mut self.points).reverse();
     }
 
-    /// Sets a slice of the @type {Path2D}.
+    /// Sets a slice of the Path2D.
     pub fn set_slice(
         &mut self,
         #[wasm_bindgen(param_description = "The start index of the slice.")]
@@ -564,7 +564,7 @@ impl Path2D {
         Rc::make_mut(&mut self.points).splice(start..end, points.to_vec());
     }
 
-    /// Returns a slice of the @type {Path2D}
+    /// Returns a slice of the Path2D
     #[wasm_bindgen(return_description = "A slice of the path.")]
     pub fn slice(
         &self,
@@ -578,7 +578,7 @@ impl Path2D {
         }
     }
 
-    /// Returns a @type {CubicBezierTuple} at a given index.
+    /// Returns a CubicBezierTuple at a given index.
     #[wasm_bindgen(getter, return_description = "The cubic bezier tuples of the path.")]
     pub fn cubic_bezier_tuples(&self) -> Vec<CubicBezierTuple> {
         let remainder = self.points.len() % 4;
@@ -588,7 +588,7 @@ impl Path2D {
         }).collect()
     }
 
-    /// Appends a @type {CubicBezierTuple} to the @type {Path2D}.
+    /// Appends a CubicBezierTuple to the Path2D.
     pub fn push_bezier(
         &mut self,
         #[wasm_bindgen(param_description = "The cubic bezier tuple to add.")]
@@ -606,7 +606,7 @@ impl Path2D {
         Rc::make_mut(&mut self.points).push(cubic_bezier.end_anchor());
     }
 
-    /// Returns an approximation of the length of the @type {path}, based on sampling points along each cubic bezier curve in the path and an optional extra length to add to each approximation.
+    /// Returns an approximation of the length of the path, based on sampling points along each cubic bezier curve in the path and an optional extra length to add to each approximation.
     #[wasm_bindgen(return_description = "An approximation of the length of the path.")]
     pub fn length(
         &self,

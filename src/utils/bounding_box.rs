@@ -2,7 +2,7 @@ use wasm_bindgen::prelude::*;
 
 use super::point2d::{Path2D, Point2D};
 
-/// A @type {BoundingBox} is a rectangle that represents the smallest rectangle that contains a path.
+/// A bounding box is a rectangle that contains a set of points.
 #[wasm_bindgen]
 #[derive(Clone, Debug)]
 pub struct BoundingBox {
@@ -18,7 +18,7 @@ pub struct BoundingBox {
 
 #[wasm_bindgen]
 impl BoundingBox {
-    /// Creates a new @type {BoundingBox} with the given dimensions.
+    /// Creates a new bounding box from a minimum x-coordinate, minimum y-coordinate, width, and height.
     #[wasm_bindgen(constructor, return_description = "A bounding box with the given dimensions.")]
     pub fn new(
         #[wasm_bindgen(param_description = "The minimum x-coordinate of the bounding box.")]
@@ -40,7 +40,7 @@ impl BoundingBox {
             height,
         })
     }
-    /// Creates the @type {BoundingBox} of a @type {Path2D}.
+    /// Creates the instance of a path's bounding box.
     #[wasm_bindgen(return_description = "The bounding box of the path.")]
     pub fn from_path(
         #[wasm_bindgen(param_description = "The path to calculate the bounding box of.")]
@@ -70,31 +70,31 @@ impl BoundingBox {
         })
     }
 
-    /// Gets the minimum x-coordinate of the @type {BoundingBox}.
+    /// Gets the minimum x-coordinate of the bounding box.
     #[wasm_bindgen(getter, return_description = "The minimum x-coordinate of the bounding box.")]
     pub fn min_x(&self) -> f32 {
         self.min_x
     }
 
-    /// Gets the minimum y-coordinate of the @type {BoundingBox}.
+    /// Gets the minimum y-coordinate of the bounding box.
     #[wasm_bindgen(getter, return_description = "The minimum y-coordinate of the bounding box.")]
     pub fn min_y(&self) -> f32 {
         self.min_y
     }
 
-    /// Gets the width of the @type {BoundingBox}.
+    /// Gets the width of the bounding box.
     #[wasm_bindgen(getter, return_description = "The width of the bounding box.")]
     pub fn width(&self) -> f32 {
         self.width
     }
 
-    /// Gets the height of the @type {BoundingBox}.d
+    /// Gets the height of the bounding box.
     #[wasm_bindgen(getter, return_description = "The height of the bounding box.")]
     pub fn height(&self) -> f32 {
         self.height
     }
 
-    /// Checks if a point is contained within the @type {BoundingBox}.
+    /// Checks if a point is contained within the bounding box.
     #[wasm_bindgen(return_description = "A boolean indicating if the point is contained within the bounding box.")]
     pub fn contains(
         &self,
@@ -106,7 +106,7 @@ impl BoundingBox {
         x >= self.min_x && x <= self.min_x + self.width && y >= self.min_y && y <= self.min_y + self.height
     }
 
-    /// Checks if the bounding box overlaps with another @type {BoundingBox}.
+    /// Checks if the bounding box overlaps with another bounding box.
     #[wasm_bindgen(return_description = "A boolean indicating if the bounding box overlaps with the other bounding box.")]
     pub fn intersects(
         &self,
@@ -119,7 +119,7 @@ impl BoundingBox {
             && self.min_y + self.height > other.min_y
     }
 
-    /// Returns the intersection of the @type {BoundingBox} with another @type {BoundingBox}, if it exists.
+    /// Returns the intersection of the bounding box with another bounding box, it means the area that is common to both bounding boxes.
     #[wasm_bindgen(return_description = "The intersection of the bounding box with the other bounding box.")]
     pub fn intersection(
         #[wasm_bindgen(param_description = "The bounding box to intersect with.")]
@@ -153,7 +153,7 @@ impl BoundingBox {
         })
     }
 
-    /// Returns the union of the @type {BoundingBox} with another @type {BoundingBox}.
+    /// Returns the union of the bounding box with another bounding box, it means the smallest bounding box that contains both bounding boxes.
     #[wasm_bindgen(return_description = "The union of the bounding box with the other bounding box.")]
     pub fn union(
         #[wasm_bindgen(param_description = "The bounding box to union with.")]
@@ -183,7 +183,7 @@ impl BoundingBox {
         })
     }
 
-    /// Returns the center @type {Point2D} of the @type {BoundingBox}.
+    /// Returns the center point of the bounding box.
     #[wasm_bindgen(getter, return_description = "The center of the bounding box.")]
     pub fn center(&self) -> Point2D {
         Point2D {

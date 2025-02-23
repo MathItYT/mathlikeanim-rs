@@ -4,11 +4,11 @@ use crate::{objects::vector_object::VectorObjectBuilder, utils::{bezier::Anchors
 
 use super::tipable::Tipable;
 
-/// An @type {Arc} is a portion of the circumference of a circle.
+/// An Arc is a portion of the circumference of a circle.
 #[wasm_bindgen]
 #[derive(Clone, Debug)]
 pub struct Arc {
-    /// The center point of the arc as a @type {Point2D}.
+    /// The center point of the arc as a Point2D.
     center: Point2D,
     /// The radius of the arc.
     radius: f32,
@@ -20,10 +20,10 @@ pub struct Arc {
 
 #[wasm_bindgen]
 impl Arc {
-    /// Creates a new @type {Arc} object from a center point, radius, start angle, and end angle.
+    /// Creates a new Arc object from a center point, radius, start angle, and end angle.
     #[wasm_bindgen(constructor, return_description = "An arc.")]
     pub fn new(
-        #[wasm_bindgen(param_description = "The center point of the arc as a @type {Point2D}.")]
+        #[wasm_bindgen(param_description = "The center point of the arc as a Point2D.")]
         center: Point2D,
         #[wasm_bindgen(param_description = "The radius of the arc.")]
         radius: f32,
@@ -41,7 +41,7 @@ impl Arc {
     }
 
     /// Creates a new vector object builder with the arc's points.
-    #[wasm_bindgen(return_description = "A @type {VectorObjectBuilder} representing the arc.")]
+    #[wasm_bindgen(return_description = "A VectorObjectBuilder representing the arc.")]
     pub fn vector_object_builder(&self, samples: Option<usize>) -> VectorObjectBuilder {
         let samples = samples.unwrap_or(15);
         let anchors = (0..samples)
@@ -72,7 +72,7 @@ impl Arc {
     }
 
     /// Returns the center point of the arc.
-    #[wasm_bindgen(getter, return_description = "The center point of the arc as a @type {Point2D}.")]
+    #[wasm_bindgen(getter, return_description = "The center point of the arc as a Point2D.")]
     pub fn center(&self) -> Point2D {
         self.center
     }
@@ -96,10 +96,10 @@ impl Arc {
     }
 
     /// Returns a VectorObjectBuilder representing the arc and a tip at the start of the arc.
-    #[wasm_bindgen(return_description = "A @type {VectorObjectBuilder} representing the arc and a tip at the start of the arc.")]
+    #[wasm_bindgen(return_description = "A VectorObjectBuilder representing the arc and a tip at the start of the arc.")]
     pub fn start_tip_vector_object_builder(
         &self,
-        #[wasm_bindgen(param_description = "The tip shape as a @type {VectorObjectBuilder} to add to the start of the arc. It must be pointing to the right and centered at (0, 0). This function will rotate and move it to the correct angle.")]
+        #[wasm_bindgen(param_description = "The tip shape as a VectorObjectBuilder to add to the start of the arc. It must be pointing to the right and centered at (0, 0). This function will rotate and move it to the correct angle.")]
         tip_shape: VectorObjectBuilder,
         #[wasm_bindgen(param_description = "The number of samples to use to create the arc, by default 15.")]
         samples: Option<usize>
@@ -110,10 +110,10 @@ impl Arc {
     }
 
     /// Returns a VectorObjectBuilder representing the arc and a tip at the end of the arc.
-    #[wasm_bindgen(return_description = "A @type {VectorObjectBuilder} representing the arc and a tip at the end of the arc.")]
+    #[wasm_bindgen(return_description = "A VectorObjectBuilder representing the arc and a tip at the end of the arc.")]
     pub fn end_tip_vector_object_builder(
         &self,
-        #[wasm_bindgen(param_description = "The tip shape as a @type {VectorObjectBuilder} to add to the end of the arc. It must be pointing to the right and centered at (0, 0). This function will rotate and move it to the correct angle.")]
+        #[wasm_bindgen(param_description = "The tip shape as a VectorObjectBuilder to add to the end of the arc. It must be pointing to the right and centered at (0, 0). This function will rotate and move it to the correct angle.")]
         tip_shape: VectorObjectBuilder,
         #[wasm_bindgen(param_description = "The number of samples to use to create the arc.")]
         samples: Option<usize>
@@ -124,10 +124,10 @@ impl Arc {
     }
 
     /// Returns a VectorObjectBuilder representing the arc and tips at both ends of the arc.
-    #[wasm_bindgen(return_description = "A @type {VectorObjectBuilder} representing the arc and tips at both ends of the arc.")]
+    #[wasm_bindgen(return_description = "A VectorObjectBuilder representing the arc and tips at both ends of the arc.")]
     pub fn both_tips_vector_object_builder(
         &self,
-        #[wasm_bindgen(param_description = "The tip shape as a @type {VectorObjectBuilder} to add to the start of the arc. It must be pointing to the right and centered at (0, 0). This function will rotate and move it to the correct angle.")]
+        #[wasm_bindgen(param_description = "The tip shape as a VectorObjectBuilder to add to the start of the arc. It must be pointing to the right and centered at (0, 0). This function will rotate and move it to the correct angle.")]
         tip_shape: VectorObjectBuilder,
         #[wasm_bindgen(param_description = "The number of samples to use to create the arc.")]
         samples: Option<usize>
@@ -139,7 +139,7 @@ impl Arc {
     }
 
     /// Returns the point on the arc at a given t progress value.
-    #[wasm_bindgen(return_description = "The @type {Point2D} on the arc at the given t value.")]
+    #[wasm_bindgen(return_description = "The Point2D on the arc at the given t value.")]
     pub fn point_at(
         &self,
         #[wasm_bindgen(param_description = "The t value to evaluate the polynomial at. A number between 0 and 1.")]
@@ -177,11 +177,11 @@ impl Tipable for Arc {
     }
 }
 
-/// A @type {Circle} is a set of all points in a plane that are at a given distance from a given point, the center.
+/// A Circle is a set of all points in a plane that are at a given distance from a given point, the center.
 #[wasm_bindgen]
 #[derive(Clone, Debug)]
 pub struct Circle {
-    /// The center @type {Point2D} of the circle.
+    /// The center Point2D of the circle.
     center: Point2D,
     /// The radius of the circle.
     radius: f32,
@@ -189,23 +189,23 @@ pub struct Circle {
 
 #[wasm_bindgen]
 impl Circle {
-    /// Creates a new @type {Circle} from a center @type {Point2D} and a radius.
+    /// Creates a new Circle from a center Point2D and a radius.
     #[wasm_bindgen(constructor, return_description = "A circle.")]
     pub fn new(
-        #[wasm_bindgen(param_description = "The center point of the circle as a @type {Point2D}.")]
+        #[wasm_bindgen(param_description = "The center point of the circle as a Point2D.")]
         center: Point2D,
         #[wasm_bindgen(param_description = "The radius of the circle.")]
         radius: f32,
     ) -> Circle {
         Circle { center, radius }
     }
-    /// Creates an @type {Arc} from the circle.
-    #[wasm_bindgen(getter, return_description = "An @type {Arc} representing the circle.")]
+    /// Creates an Arc from the circle.
+    #[wasm_bindgen(getter, return_description = "An Arc representing the circle.")]
     pub fn arc(&self) -> Arc {
         Arc::new(self.center, self.radius, 0.0, 2.0 * std::f32::consts::PI)
     }
-    /// Creates a new @type {VectorObjectBuilder} from the circle.
-    #[wasm_bindgen(return_description = "A @type {VectorObjectBuilder} representing the circle.")]
+    /// Creates a new VectorObjectBuilder from the circle.
+    #[wasm_bindgen(return_description = "A VectorObjectBuilder representing the circle.")]
     pub fn vector_object_builder(
         &self,
         #[wasm_bindgen(param_description = "The number of samples to use to create the circle, by default 15.")]
@@ -213,7 +213,7 @@ impl Circle {
     ) -> VectorObjectBuilder {
         self.arc().vector_object_builder(samples).close()
     }
-    /// Returns the center point of the circle as a @type {Point2D}.
+    /// Returns the center point of the circle as a Point2D.
     #[wasm_bindgen(getter, return_description = "The center point of the circle.")]
     pub fn center(&self) -> Point2D {
         self.center
