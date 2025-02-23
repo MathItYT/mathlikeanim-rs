@@ -184,7 +184,7 @@ init().then(run);
 
     const scene = new CanvasScene(1920, 1080);
     const button = document.getElementById('run-button');
-    const svgContent = await fetch('/assets/play.svg').then(res => res.text());
+    const svgContent = await fetch('./assets/play.svg').then(res => res.text());
     button.innerHTML = svgContent;
     button.addEventListener('click', run);
     const canvas = document.getElementById('canvas');
