@@ -120,12 +120,12 @@ init().then(run);
 <script type="importmap">
     {
         "imports": {
-            "@mathlikeanim-rs/renderer": "/node_modules/@mathlikeanim-rs/renderer/dist/index.js",
-            "/node_modules/@mathlikeanim-rs/renderer/dist/canvas-scene": "/node_modules/@mathlikeanim-rs/renderer/dist/canvas-scene.js",
-            "/node_modules/@mathlikeanim-rs/renderer/dist/scene": "/node_modules/@mathlikeanim-rs/renderer/dist/scene.js",
-            "/node_modules/@mathlikeanim-rs/renderer/dist/svg-scene": "/node_modules/@mathlikeanim-rs/renderer/dist/svg-scene.js",
-            "@mathlikeanim-rs/mathlikeanim-rs": "/node_modules/@mathlikeanim-rs/mathlikeanim-rs/index.js",
-            "@mathlikeanim-rs/mathlikeanim-rs/": "/node_modules/@mathlikeanim-rs/mathlikeanim-rs/"
+            "@mathlikeanim-rs/renderer": "./node_modules/@mathlikeanim-rs/renderer/dist/index.js",
+            "./node_modules/@mathlikeanim-rs/renderer/dist/canvas-scene": "./node_modules/@mathlikeanim-rs/renderer/dist/canvas-scene.js",
+            "./node_modules/@mathlikeanim-rs/renderer/dist/scene": "./node_modules/@mathlikeanim-rs/renderer/dist/scene.js",
+            "./node_modules/@mathlikeanim-rs/renderer/dist/svg-scene": "./node_modules/@mathlikeanim-rs/renderer/dist/svg-scene.js",
+            "@mathlikeanim-rs/mathlikeanim-rs": "./node_modules/@mathlikeanim-rs/mathlikeanim-rs/index.js",
+            "@mathlikeanim-rs/mathlikeanim-rs/": "./node_modules/@mathlikeanim-rs/mathlikeanim-rs/"
         }
     }
 </script>

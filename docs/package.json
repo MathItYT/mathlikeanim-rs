@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "@mathlikeanim-rs/renderer": "^0.14.5",
+    "@mathlikeanim-rs/renderer": "^0.14.6",
     "clean-jsdoc-theme": "^4.3.0"
   }
 }

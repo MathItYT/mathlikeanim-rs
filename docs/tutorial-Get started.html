@@ -91,12 +91,12 @@ document.body.appendChild(scene.canvas); // or scene.svg
 init().then(run);
 </code></pre><script type="importmap">{
         "imports": {
-            "@mathlikeanim-rs/renderer": "/node_modules/@mathlikeanim-rs/renderer/dist/index.js",
-            "/node_modules/@mathlikeanim-rs/renderer/dist/canvas-scene": "/node_modules/@mathlikeanim-rs/renderer/dist/canvas-scene.js",
-            "/node_modules/@mathlikeanim-rs/renderer/dist/scene": "/node_modules/@mathlikeanim-rs/renderer/dist/scene.js",
-            "/node_modules/@mathlikeanim-rs/renderer/dist/svg-scene": "/node_modules/@mathlikeanim-rs/renderer/dist/svg-scene.js",
-            "@mathlikeanim-rs/mathlikeanim-rs": "/node_modules/@mathlikeanim-rs/mathlikeanim-rs/index.js",
-            "@mathlikeanim-rs/mathlikeanim-rs/": "/node_modules/@mathlikeanim-rs/mathlikeanim-rs/"
+            "@mathlikeanim-rs/renderer": "./node_modules/@mathlikeanim-rs/renderer/dist/index.js",
+            "./node_modules/@mathlikeanim-rs/renderer/dist/canvas-scene": "./node_modules/@mathlikeanim-rs/renderer/dist/canvas-scene.js",
+            "./node_modules/@mathlikeanim-rs/renderer/dist/scene": "./node_modules/@mathlikeanim-rs/renderer/dist/scene.js",
+            "./node_modules/@mathlikeanim-rs/renderer/dist/svg-scene": "./node_modules/@mathlikeanim-rs/renderer/dist/svg-scene.js",
+            "@mathlikeanim-rs/mathlikeanim-rs": "./node_modules/@mathlikeanim-rs/mathlikeanim-rs/index.js",
+            "@mathlikeanim-rs/mathlikeanim-rs/": "./node_modules/@mathlikeanim-rs/mathlikeanim-rs/"
         }
     }</script><div class="pre-div"><div class="pre-top-bar-container"><div class="code-lang-name-container"><div class="code-lang-name">RESULT</div></div></div><div style="margin-top:2rem"><div style="display:flex;justify-content:center"><canvas id="canvas" width="1920" height="1080"></canvas></div><div style="display:flex;justify-content:center"><button class="icon-button" id="run-button"></button></div></div></div><script type="module">import initWasm from '@mathlikeanim-rs/mathlikeanim-rs';
     import { CanvasScene, SVGScene } from '@mathlikeanim-rs/renderer';
