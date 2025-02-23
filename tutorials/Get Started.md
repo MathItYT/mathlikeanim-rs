@@ -1,6 +1,6 @@
 ## Get started with MathLikeAnim-rs!
 
-Welcome to the **Get Started** tutorial! Here you will learn how to create interactive mathematical animations for the web using the **MathLikeAnim-rs** library. If you haven't installed the library yet, we recommend you to go to the [Installation Guide](/tutorial-install.html) tutorial to learn how to install the library on your JavaScript project.
+Welcome to the **Get Started** tutorial! Here you will learn how to create interactive mathematical animations for the web using the **MathLikeAnim-rs** library. If you haven't installed the library yet, we recommend you to go to the [Installation Guide](/tutorial-Install%20the%20library.html) tutorial to learn how to install the library on your JavaScript project.
 
 In the last guide, we coded the basic structure of a MathLikeAnim-rs project:
 
