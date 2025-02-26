@@ -110,6 +110,11 @@ impl Point2D {
     ) -> f32 {
         self.distance_squared(other).sqrt()
     }
+    /// Clones the Point2D.
+    #[wasm_bindgen(js_name = clone)]
+    pub fn copy(&self) -> Point2D {
+        *self
+    }
     /// Returns the squared magnitude of the Point2D.
     #[wasm_bindgen(getter, return_description = "The squared magnitude of the point.")]
     pub fn magnitude_squared(&self) -> f32 {
@@ -347,6 +352,12 @@ impl Path2D {
             points.push(anchors_and_handles.end_anchors()[i]);
         }
         Path2D { points: Rc::new(points) }
+    }
+
+    /// Clones the Path2D.
+    #[wasm_bindgen(js_name = clone)]
+    pub fn copy(&self) -> Path2D {
+        self.clone()
     }
 
     /// Repeats the Path2D a given number of times.

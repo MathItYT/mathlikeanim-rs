@@ -26,4 +26,10 @@ impl FontFace {
     pub fn data(&self) -> Vec<u8> {
         self.data.to_vec()
     }
+
+    /// Clones the font face.
+    #[wasm_bindgen(js_name = clone)]
+    pub fn copy(&self) -> FontFace {
+        self.clone()
+    }
 }

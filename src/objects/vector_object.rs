@@ -1409,9 +1409,9 @@ impl VectorObjectBuilder {
     pub fn move_point(
         mut self,
         #[wasm_bindgen(param_description = "The point to start a new bezier curve at.")]
-        point: Point2D
+        point: &Point2D
     ) -> VectorObjectBuilder {
-        let move_point = Box::new(MovePoint { point });
+        let move_point = Box::new(MovePoint { point: *point });
         self.ops.add_operation(Box::leak(move_point));
         self
     }
@@ -1420,9 +1420,9 @@ impl VectorObjectBuilder {
     pub fn line_to(
         mut self,
         #[wasm_bindgen(param_description = "The point to draw a line to.")]
-        p: Point2D
+        p: &Point2D
     ) -> VectorObjectBuilder {
-        let line_to = Box::new(LineTo { point: p });
+        let line_to = Box::new(LineTo { point: *p });
         self.ops.add_operation(Box::leak(line_to));
         self
     }
@@ -1431,11 +1431,11 @@ impl VectorObjectBuilder {
     pub fn quadratic_curve_to(
         mut self,
         #[wasm_bindgen(param_description = "The control point of the quadratic curve.")]
-        p1: Point2D,
+        p1: &Point2D,
         #[wasm_bindgen(param_description = "The end point of the quadratic curve.")]
-        p2: Point2D
+        p2: &Point2D
     ) -> VectorObjectBuilder {
-        let quadratic_curve_to = Box::new(QuadraticCurveTo { p1, p2 });
+        let quadratic_curve_to = Box::new(QuadraticCurveTo { p1: *p1, p2: *p2 });
         self.ops.add_operation(Box::leak(quadratic_curve_to));
         self
     }
@@ -1444,13 +1444,13 @@ impl VectorObjectBuilder {
     pub fn bezier_curve_to(
         mut self,
         #[wasm_bindgen(param_description = "The first control point of the bezier curve.")]
-        p1: Point2D,
+        p1: &Point2D,
         #[wasm_bindgen(param_description = "The second control point of the bezier curve.")]
-        p2: Point2D,
+        p2: &Point2D,
         #[wasm_bindgen(param_description = "The end point of the bezier curve.")]
-        p3: Point2D
+        p3: &Point2D
     ) -> VectorObjectBuilder {
-        let bezier_curve_to = Box::new(BezierCurveTo { p1, p2, p3 });
+        let bezier_curve_to = Box::new(BezierCurveTo { p1: *p1, p2: *p2, p3: *p3 });
         self.ops.add_operation(Box::leak(bezier_curve_to));
         self
     }

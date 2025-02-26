@@ -87,6 +87,11 @@ impl AnchorsAndHandles {
     pub fn len(&self) -> usize {
         self.start_anchors.len()
     }
+    /// Clones the AnchorsAndHandles object.
+    #[wasm_bindgen(js_name = clone)]
+    pub fn copy(&self) -> AnchorsAndHandles {
+        self.clone()
+    }
 }
 
 /// A cubic bezier curve represented by four points: a start anchor, a first control point, a second control point, and an end anchor.
@@ -201,5 +206,10 @@ impl CubicBezierTuple {
             last_point = point;
         }
         length + extra_length
+    }
+    /// Clones the CubicBezierTuple object.
+    #[wasm_bindgen(js_name = clone)]
+    pub fn copy(&self) -> CubicBezierTuple {
+        *self
     }
 }

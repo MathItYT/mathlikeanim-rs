@@ -768,6 +768,11 @@ impl Style {
             image,
         })
     }
+    /// Clones the Style.
+    #[wasm_bindgen(js_name = clone, return_description = "The cloned style.")]
+    pub fn clone_js(&self) -> Style {
+        self.clone()
+    }
     /// Creates a new Style with the given color.
     #[wasm_bindgen(return_description = "A new style from the color.")]
     pub fn from_color(

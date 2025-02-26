@@ -17,25 +17,25 @@ const run = async () => {
     if (firstTime) {
         firstTime = false;
         const canvas = scene.canvas;
-        // stream = canvas.captureStream(60);
-        // recorder = new MediaRecorder(stream, { bitsPerSecond: 5100000, mimeType: 'video/mp4' });
-        // recorder.ondataavailable = e => {
-        //     if (e.data.size) {
-        //         chunks.push(e.data);
-        //     }
-        // };
-        // recorder.onstop = () => {
-        //     const blob = new Blob(chunks, { type: 'video/mp4' });
-        //     chunks = [];
-        //     const url = URL.createObjectURL(blob);
-        //     const a = document.createElement('a');
-        //     a.href = url;
-        //     a.download = 'video.mp4';
-        //     a.click();
-        //     URL.revokeObjectURL(url);
-        // }
-        // stopRecordingButton.addEventListener('click', stopRecording);
-        // recorder.start();
+        stream = canvas.captureStream(60);
+        recorder = new MediaRecorder(stream, { bitsPerSecond: 510000, mimeType: 'video/mp4' });
+        recorder.ondataavailable = e => {
+            if (e.data.size) {
+                chunks.push(e.data);
+            }
+        };
+        recorder.onstop = () => {
+            const blob = new Blob(chunks, { type: 'video/mp4' });
+            chunks = [];
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'video.mp4';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        stopRecordingButton.addEventListener('click', stopRecording);
+        recorder.start();
         canvas.style.width = '50vw';
         canvas.style.height = 'auto';
         document.body.appendChild(canvas);

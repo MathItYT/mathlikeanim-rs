@@ -74,6 +74,12 @@ impl TransformationMatrix {
         }
     }
 
+    /// Clones the TransformationMatrix.
+    #[wasm_bindgen(js_name = clone)]
+    pub fn copy(&self) -> TransformationMatrix {
+        *self
+    }
+
     /// Gets the matrix that scales by a given x and y value.
     #[wasm_bindgen(return_description = "The scaled matrix.")]
     pub fn scale(

@@ -27,10 +27,10 @@ impl Rectangle {
     #[wasm_bindgen(getter, return_description = "A VectorObjectBuilder representing the rectangle.")]
     pub fn vector_object_builder(&self) -> VectorObjectBuilder {
         let mut builder = VectorObjectBuilder::default()
-            .move_point(self.top_left())
-            .line_to(self.top_right())
-            .line_to(self.bottom_right())
-            .line_to(self.bottom_left())
+            .move_point(&self.top_left())
+            .line_to(&self.top_right())
+            .line_to(&self.bottom_right())
+            .line_to(&self.bottom_left())
             .close();
         if let Some(rotation) = self.rotation {
             builder = builder.rotate(rotation, Some(self.center()), None);

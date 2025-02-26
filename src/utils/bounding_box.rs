@@ -40,6 +40,11 @@ impl BoundingBox {
             height,
         })
     }
+    /// Clones the bounding box.
+    #[wasm_bindgen(js_name = clone)]
+    pub fn copy(&self) -> BoundingBox {
+        self.clone()
+    }
     /// Creates the instance of a path's bounding box.
     #[wasm_bindgen(return_description = "The bounding box of the path.")]
     pub fn from_path(

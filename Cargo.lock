@@ -1165,7 +1165,7 @@ dependencies = [
 
 [[package]]
 name = "mathlikeanim-rs"
-version = "0.14.7"
+version = "0.14.8"
 dependencies = [
  "base64",
  "image",

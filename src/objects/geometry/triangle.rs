@@ -44,7 +44,7 @@ impl Triangle {
     /// Creates a VectorObjectBuilder with the triangle's points.
     #[wasm_bindgen(return_description = "A VectorObjectBuilder with the triangle's points.")]
     pub fn vector_object_builder(&self) -> VectorObjectBuilder {
-        VectorObjectBuilder::default().move_point(self.a).line_to(self.b).line_to(self.c).close()
+        VectorObjectBuilder::default().move_point(&self.a).line_to(&self.b).line_to(&self.c).close()
     }
 
     /// Returns the first vertex of the triangle as Point2D.

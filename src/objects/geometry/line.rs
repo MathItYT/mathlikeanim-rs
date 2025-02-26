@@ -29,8 +29,8 @@ impl Line {
         &self,
     ) -> VectorObjectBuilder {
         VectorObjectBuilder::default()
-            .move_point(self.start)
-            .line_to(self.end)
+            .move_point(&self.start)
+            .line_to(&self.end)
     }
 
     /// Returns the length of the line.
