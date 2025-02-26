@@ -18,7 +18,7 @@ const run = async () => {
         firstTime = false;
         const canvas = scene.canvas;
         stream = canvas.captureStream(60);
-        recorder = new MediaRecorder(stream, { bitsPerSecond: 510000, mimeType: 'video/mp4' });
+        recorder = new MediaRecorder(stream, { mimeType: 'video/mp4', videoBitsPerSecond: 1920*1080*60*8 });
         recorder.ondataavailable = e => {
             if (e.data.size) {
                 chunks.push(e.data);

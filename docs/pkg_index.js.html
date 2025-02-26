@@ -224,23 +224,35 @@ function getArrayJsValueFromWasm0(ptr, len) {
     return result;
 }
 
-function passArray8ToWasm0(arg, malloc) {
-    const ptr = malloc(arg.length * 1, 1) >>> 0;
-    getUint8ArrayMemory0().set(arg, ptr / 1);
-    WASM_VECTOR_LEN = arg.length;
-    return ptr;
-}
-
-function getArrayU8FromWasm0(ptr, len) {
-    ptr = ptr >>> 0;
-    return getUint8ArrayMemory0().subarray(ptr / 1, ptr / 1 + len);
-}
-
 function takeFromExternrefTable0(idx) {
     const value = wasm.__wbindgen_export_2.get(idx);
     wasm.__externref_table_dealloc(idx);
     return value;
 }
+/**
+ * Linearly interpolates between two values given a progress value.
+ * @param {number} a - The start value.
+ * @param {number} b - The end value.
+ * @param {number} t - The progress value.
+ * @returns {number} The interpolated value.
+ */
+export function lerp(a, b, t) {
+    const ret = wasm.lerp(a, b, t);
+    return ret;
+}
+
+/**
+ * Returns the progress value between two numbers given an interpolated value.
+ * @param {number} a - The start value.
+ * @param {number} b - The end value.
+ * @param {number} value - The value to find the progress of.
+ * @returns {number} The progress value.
+ */
+export function inverse_lerp(a, b, value) {
+    const ret = wasm.inverse_lerp(a, b, value);
+    return ret;
+}
+
 /**
  * Multiplies two matrices together.
  * @param {number[]} a - The first matrix to multiply as a flat array.
@@ -278,28 +290,16 @@ export function matrix_product_path(matrix, path, a_rows, a_columns, b_columns) 
     return Path2D.__wrap(ret);
 }
 
-/**
- * Linearly interpolates between two values given a progress value.
- * @param {number} a - The start value.
- * @param {number} b - The end value.
- * @param {number} t - The progress value.
- * @returns {number} The interpolated value.
- */
-export function lerp(a, b, t) {
-    const ret = wasm.lerp(a, b, t);
-    return ret;
+function passArray8ToWasm0(arg, malloc) {
+    const ptr = malloc(arg.length * 1, 1) >>> 0;
+    getUint8ArrayMemory0().set(arg, ptr / 1);
+    WASM_VECTOR_LEN = arg.length;
+    return ptr;
 }
 
-/**
- * Returns the progress value between two numbers given an interpolated value.
- * @param {number} a - The start value.
- * @param {number} b - The end value.
- * @param {number} value - The value to find the progress of.
- * @returns {number} The progress value.
- */
-export function inverse_lerp(a, b, value) {
-    const ret = wasm.inverse_lerp(a, b, value);
-    return ret;
+function getArrayU8FromWasm0(ptr, len) {
+    ptr = ptr >>> 0;
+    return getUint8ArrayMemory0().subarray(ptr / 1, ptr / 1 + len);
 }
 
 const AnchorsAndHandlesFinalization = (typeof FinalizationRegistry === 'undefined')
@@ -414,6 +414,14 @@ export class AnchorsAndHandles {
     get len() {
         const ret = wasm.anchorsandhandles_len(this.__wbg_ptr);
         return ret >>> 0;
+    }
+    /**
+     * Clones the AnchorsAndHandles object.
+     * @returns {AnchorsAndHandles}
+     */
+    clone() {
+        const ret = wasm.anchorsandhandles_clone(this.__wbg_ptr);
+        return AnchorsAndHandles.__wrap(ret);
     }
 }
 
@@ -599,6 +607,14 @@ export class BoundingBox {
         return this;
     }
     /**
+     * Clones the bounding box.
+     * @returns {BoundingBox}
+     */
+    clone() {
+        const ret = wasm.boundingbox_clone(this.__wbg_ptr);
+        return BoundingBox.__wrap(ret);
+    }
+    /**
      * Creates the instance of a path's bounding box.
      * @param {Path2D} path - The path to calculate the bounding box of.
      * @returns {BoundingBox | undefined} The bounding box of the path.
@@ -629,7 +645,7 @@ export class BoundingBox {
      * @returns {number} The width of the bounding box.
      */
     get width() {
-        const ret = wasm.arc_radius(this.__wbg_ptr);
+        const ret = wasm.boundingbox_width(this.__wbg_ptr);
         return ret;
     }
     /**
@@ -637,7 +653,7 @@ export class BoundingBox {
      * @returns {number} The height of the bounding box.
      */
     get height() {
-        const ret = wasm.arc_start_angle(this.__wbg_ptr);
+        const ret = wasm.boundingbox_height(this.__wbg_ptr);
         return ret;
     }
     /**
@@ -1128,6 +1144,14 @@ export class CubicBezierTuple {
         const ret = wasm.cubicbeziertuple_length(this.__wbg_ptr, isLikeNone(samples) ? 0x100000001 : (samples) >>> 0, isLikeNone(extra_length) ? 0x100000001 : Math.fround(extra_length));
         return ret;
     }
+    /**
+     * Clones the CubicBezierTuple object.
+     * @returns {CubicBezierTuple}
+     */
+    clone() {
+        const ret = wasm.cubicbeziertuple_clone(this.__wbg_ptr);
+        return CubicBezierTuple.__wrap(ret);
+    }
 }
 
 const EquilateralTriangleFinalization = (typeof FinalizationRegistry === 'undefined')
@@ -1229,6 +1253,14 @@ const FontFaceFinalization = (typeof FinalizationRegistry === 'undefined')
  */
 export class FontFace {
 
+    static __wrap(ptr) {
+        ptr = ptr >>> 0;
+        const obj = Object.create(FontFace.prototype);
+        obj.__wbg_ptr = ptr;
+        FontFaceFinalization.register(obj, obj.__wbg_ptr, obj);
+        return obj;
+    }
+
     static __unwrap(jsValue) {
         if (!(jsValue instanceof FontFace)) {
             return 0;
@@ -1268,6 +1300,14 @@ export class FontFace {
         var v1 = getArrayU8FromWasm0(ret[0], ret[1]).slice();
         wasm.__wbindgen_free(ret[0], ret[1] * 1, 1);
         return v1;
+    }
+    /**
+     * Clones the font face.
+     * @returns {FontFace}
+     */
+    clone() {
+        const ret = wasm.fontface_clone(this.__wbg_ptr);
+        return FontFace.__wrap(ret);
     }
 }
 
@@ -1318,7 +1358,7 @@ export class ImageBitmap {
      * @returns {number}
      */
     get y() {
-        const ret = wasm.__wbg_get_colorstop_position(this.__wbg_ptr);
+        const ret = wasm.__wbg_get_imagebitmap_y(this.__wbg_ptr);
         return ret;
     }
     /**
@@ -1326,7 +1366,7 @@ export class ImageBitmap {
      * @param {number} arg0
      */
     set y(arg0) {
-        wasm.__wbg_set_colorstop_position(this.__wbg_ptr, arg0);
+        wasm.__wbg_set_imagebitmap_y(this.__wbg_ptr, arg0);
     }
     /**
      * The width of the bitmap.
@@ -1359,18 +1399,53 @@ export class ImageBitmap {
         wasm.__wbg_set_imagebitmap_height(this.__wbg_ptr, arg0);
     }
     /**
+     * Number of pixels in a row of the bitmap.
+     * @returns {number}
+     */
+    get data_width() {
+        const ret = wasm.__wbg_get_imagebitmap_data_width(this.__wbg_ptr);
+        return ret >>> 0;
+    }
+    /**
+     * Number of pixels in a row of the bitmap.
+     * @param {number} arg0
+     */
+    set data_width(arg0) {
+        wasm.__wbg_set_imagebitmap_data_width(this.__wbg_ptr, arg0);
+    }
+    /**
+     * Number of pixels in a column of the bitmap.
+     * @returns {number}
+     */
+    get data_height() {
+        const ret = wasm.__wbg_get_imagebitmap_data_height(this.__wbg_ptr);
+        return ret >>> 0;
+    }
+    /**
+     * Number of pixels in a column of the bitmap.
+     * @param {number} arg0
+     */
+    set data_height(arg0) {
+        wasm.__wbg_set_imagebitmap_data_height(this.__wbg_ptr, arg0);
+    }
+    /**
      * Creates a new ImageBitmap with the given x, y, width, height, and pixel data.
      * @param {number} x - The x coordinate of the bitmap.
      * @param {number} y - The y coordinate of the bitmap.
      * @param {number} width - The width of the bitmap.
      * @param {number} height - The height of the bitmap.
+     * @param {number} data_width - Number of pixels in a row of the bitmap.
+     * @param {number} data_height - Number of pixels in a column of the bitmap.
      * @param {Uint8Array} data - The pixel data of the bitmap.
      */
-    constructor(x, y, width, height, data) {
+    constructor(x, y, width, height, data_width, data_height, data) {
         const ptr0 = passArray8ToWasm0(data, wasm.__wbindgen_malloc);
         const len0 = WASM_VECTOR_LEN;
-        const ret = wasm.imagebitmap_new(x, y, width, height, ptr0, len0);
-        this.__wbg_ptr = ret >>> 0;
+        const ret = wasm.imagebitmap_new(x, y, width, height, data_width, data_height, ptr0, len0);
+        if (ret[2]) {
+            throw takeFromExternrefTable0(ret[1]);
+        }
+        this.__wbg_ptr = ret[0] >>> 0;
         ImageBitmapFinalization.register(this, this.__wbg_ptr, this);
         return this;
     }
@@ -1429,12 +1504,14 @@ export class ImageBitmap {
      * @param {number} y - The y coordinate of the bitmap.
      * @param {number} width - The width of the bitmap.
      * @param {number} height - The height of the bitmap.
+     * @param {number} data_width - Number of pixels in a row of the bitmap.
+     * @param {number} data_height - Number of pixels in a column of the bitmap.
      * @param {Color} color - The color to fill the bitmap with.
      * @returns {ImageBitmap} The filled image bitmap.
      */
-    static fill(x, y, width, height, color) {
+    static fill(x, y, width, height, data_width, data_height, color) {
         _assertClass(color, Color);
-        const ret = wasm.imagebitmap_fill(x, y, width, height, color.__wbg_ptr);
+        const ret = wasm.imagebitmap_fill(x, y, width, height, data_width, data_height, color.__wbg_ptr);
         return ImageBitmap.__wrap(ret);
     }
     /**
@@ -1443,12 +1520,14 @@ export class ImageBitmap {
      * @param {number} y - The y coordinate of the bitmap.
      * @param {number} width - The width of the bitmap.
      * @param {number} height - The height of the bitmap.
+     * @param {number} data_width - Number of pixels in a row of the bitmap.
+     * @param {number} data_height - Number of pixels in a column of the bitmap.
      * @param {LinearGradient} gradient - The linear gradient to fill the bitmap with.
      * @returns {ImageBitmap} The filled image bitmap.
      */
-    static fill_linear_gradient(x, y, width, height, gradient) {
+    static fill_linear_gradient(x, y, width, height, data_width, data_height, gradient) {
         _assertClass(gradient, LinearGradient);
-        const ret = wasm.imagebitmap_fill_linear_gradient(x, y, width, height, gradient.__wbg_ptr);
+        const ret = wasm.imagebitmap_fill_linear_gradient(x, y, width, height, data_width, data_height, gradient.__wbg_ptr);
         return ImageBitmap.__wrap(ret);
     }
     /**
@@ -1457,13 +1536,37 @@ export class ImageBitmap {
      * @param {number} y - The y coordinate of the bitmap.
      * @param {number} width - The width of the bitmap.
      * @param {number} height - The height of the bitmap.
+     * @param {number} data_width - Number of pixels in a row of the bitmap.
+     * @param {number} data_height - Number of pixels in a column of the bitmap.
      * @param {RadialGradient} gradient - The radial gradient to fill the bitmap with.
      * @returns {ImageBitmap} The filled image bitmap.
      */
-    static fill_radial_gradient(x, y, width, height, gradient) {
+    static fill_radial_gradient(x, y, width, height, data_width, data_height, gradient) {
         _assertClass(gradient, RadialGradient);
-        const ret = wasm.imagebitmap_fill_radial_gradient(x, y, width, height, gradient.__wbg_ptr);
+        const ret = wasm.imagebitmap_fill_radial_gradient(x, y, width, height, data_width, data_height, gradient.__wbg_ptr);
         return ImageBitmap.__wrap(ret);
+    }
+    /**
+     * Gets the data as base64 encoded string.
+     * @returns {string} The base64 encoded string of the image bitmap.
+     */
+    get base64() {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ret = wasm.imagebitmap_base64(this.__wbg_ptr);
+            var ptr1 = ret[0];
+            var len1 = ret[1];
+            if (ret[3]) {
+                ptr1 = 0; len1 = 0;
+                throw takeFromExternrefTable0(ret[2]);
+            }
+            deferred2_0 = ptr1;
+            deferred2_1 = len1;
+            return getStringFromWasm0(ptr1, len1);
+        } finally {
+            wasm.__wbindgen_free(deferred2_0, deferred2_1, 1);
+        }
     }
     /**
      * Linearly interpolates between two ImageBitmaps given a progress value.
@@ -1816,16 +1919,17 @@ export class LinearGradient {
      * @param {Point2D} p1 - The start point of the gradient.
      * @param {Point2D} p2 - The end point of the gradient.
      * @param {Color} color - The color of the gradient.
+     * @param {number | null} [repeats] - Number of times to repeat the color.
      * @returns {LinearGradient} The default linear gradient.
      */
-    static single_color_gradient(p1, p2, color) {
+    static single_color_gradient(p1, p2, color, repeats) {
         _assertClass(p1, Point2D);
         var ptr0 = p1.__destroy_into_raw();
         _assertClass(p2, Point2D);
         var ptr1 = p2.__destroy_into_raw();
         _assertClass(color, Color);
         var ptr2 = color.__destroy_into_raw();
-        const ret = wasm.lineargradient_single_color_gradient(ptr0, ptr1, ptr2);
+        const ret = wasm.lineargradient_single_color_gradient(ptr0, ptr1, ptr2, isLikeNone(repeats) ? 0x100000001 : (repeats) >>> 0);
         return LinearGradient.__wrap(ret);
     }
     /**
@@ -1937,6 +2041,14 @@ export class Path2D {
     static from_anchors_and_handles(anchors_and_handles) {
         _assertClass(anchors_and_handles, AnchorsAndHandles);
         const ret = wasm.path2d_from_anchors_and_handles(anchors_and_handles.__wbg_ptr);
+        return Path2D.__wrap(ret);
+    }
+    /**
+     * Clones the Path2D.
+     * @returns {Path2D}
+     */
+    clone() {
+        const ret = wasm.path2d_clone(this.__wbg_ptr);
         return Path2D.__wrap(ret);
     }
     /**
@@ -2223,6 +2335,16 @@ export class Point2D {
         return Point2D.__wrap(ret);
     }
     /**
+     * Gets a cartesian point from polar coordinates.
+     * @param {number} radius - The radius of the point.
+     * @param {number} angle - The angle of the point.
+     * @returns {Point2D} A 2D point.
+     */
+    static from_polar(radius, angle) {
+        const ret = wasm.point2d_from_polar(radius, angle);
+        return Point2D.__wrap(ret);
+    }
+    /**
      * Returns the distance between two Point2Ds.
      * @param {Point2D} other - The other point.
      * @returns {number} The distance between the two points.
@@ -2264,6 +2386,14 @@ export class Point2D {
         _assertClass(other, Point2D);
         const ret = wasm.point2d_distance(this.__wbg_ptr, other.__wbg_ptr);
         return ret;
+    }
+    /**
+     * Clones the Point2D.
+     * @returns {Point2D}
+     */
+    clone() {
+        const ret = wasm.arc_center(this.__wbg_ptr);
+        return Point2D.__wrap(ret);
     }
     /**
      * Returns the squared magnitude of the Point2D.
@@ -2309,6 +2439,26 @@ export class Point2D {
         const ret = wasm.point2d_angle(this.__wbg_ptr, other.__wbg_ptr);
         return ret;
     }
+    /**
+     * Gets the direction angle with respect to (0, 0) of the Point2D.
+     * @returns {number} The direction angle of the point.
+     */
+    get direction() {
+        const ret = wasm.point2d_direction(this.__wbg_ptr);
+        return ret;
+    }
+    /**
+     * Projects a point onto a line given the start and end points of the line.
+     * @param {Point2D} start - The start point of the line.
+     * @param {Point2D} end - The end point of the line.
+     * @returns {number} The proportion of the line.
+     */
+    project_onto_line(start, end) {
+        _assertClass(start, Point2D);
+        _assertClass(end, Point2D);
+        const ret = wasm.point2d_project_onto_line(this.__wbg_ptr, start.__wbg_ptr, end.__wbg_ptr);
+        return ret;
+    }
 }
 
 const RadialGradientFinalization = (typeof FinalizationRegistry === 'undefined')
@@ -2339,7 +2489,7 @@ export class RadialGradient {
         wasm.__wbg_radialgradient_free(ptr, 0);
     }
     /**
-     * The focal point of the gradient.
+     * The start circle center point of the gradient.
      * @returns {Point2D}
      */
     get f() {
@@ -2347,7 +2497,7 @@ export class RadialGradient {
         return Point2D.__wrap(ret);
     }
     /**
-     * The focal point of the gradient.
+     * The start circle center point of the gradient.
      * @param {Point2D} arg0
      */
     set f(arg0) {
@@ -2356,7 +2506,7 @@ export class RadialGradient {
         wasm.__wbg_set_lineargradient_p1(this.__wbg_ptr, ptr0);
     }
     /**
-     * The center point of the gradient.
+     * The end circle center point of the gradient.
      * @returns {Point2D}
      */
     get c() {
@@ -2364,7 +2514,7 @@ export class RadialGradient {
         return Point2D.__wrap(ret);
     }
     /**
-     * The center point of the gradient.
+     * The end circle center point of the gradient.
      * @param {Point2D} arg0
      */
     set c(arg0) {
@@ -2377,7 +2527,7 @@ export class RadialGradient {
      * @returns {number}
      */
     get r() {
-        const ret = wasm.__wbg_get_radialgradient_r(this.__wbg_ptr);
+        const ret = wasm.__wbg_get_imagebitmap_x(this.__wbg_ptr);
         return ret;
     }
     /**
@@ -2385,12 +2535,12 @@ export class RadialGradient {
      * @param {number} arg0
      */
     set r(arg0) {
-        wasm.__wbg_set_radialgradient_r(this.__wbg_ptr, arg0);
+        wasm.__wbg_set_imagebitmap_x(this.__wbg_ptr, arg0);
     }
     /**
      * Creates a new RadialGradient with the given focal point, center point, radius, and ColorStops.
-     * @param {Point2D} f - The focal point of the gradient.
-     * @param {Point2D} c - The center of the gradient.
+     * @param {Point2D} f - The start circle center point of the gradient.
+     * @param {Point2D} c - The end circle center point of the gradient.
      * @param {number} r - The radius of the gradient.
      * @param {ColorStop[]} color_stops - The color stops of the gradient.
      */
@@ -2455,20 +2605,21 @@ export class RadialGradient {
     }
     /**
      * Returns a single color radial gradient.
-     * @param {Point2D} f - The focal point of the gradient.
-     * @param {Point2D} c - The center of the gradient.
+     * @param {Point2D} f - The start circle center point of the gradient.
+     * @param {Point2D} c - The end circle center point of the gradient.
      * @param {number} r - The radius of the gradient.
      * @param {Color} color - The color of the gradient.
+     * @param {number | null} [repeats] - Number of times to repeat the color.
      * @returns {RadialGradient} A single color radial gradient.
      */
-    static single_color_gradient(f, c, r, color) {
+    static single_color_gradient(f, c, r, color, repeats) {
         _assertClass(f, Point2D);
         var ptr0 = f.__destroy_into_raw();
         _assertClass(c, Point2D);
         var ptr1 = c.__destroy_into_raw();
         _assertClass(color, Color);
         var ptr2 = color.__destroy_into_raw();
-        const ret = wasm.radialgradient_single_color_gradient(ptr0, ptr1, r, ptr2);
+        const ret = wasm.radialgradient_single_color_gradient(ptr0, ptr1, r, ptr2, isLikeNone(repeats) ? 0x100000001 : (repeats) >>> 0);
         return RadialGradient.__wrap(ret);
     }
     /**
@@ -2539,7 +2690,7 @@ export class Rectangle {
      * @returns {Point2D} The position of the rectangle.
      */
     get position() {
-        const ret = wasm.cubicbeziertuple_first_control(this.__wbg_ptr);
+        const ret = wasm.rectangle_position(this.__wbg_ptr);
         return Point2D.__wrap(ret);
     }
     /**
@@ -2563,7 +2714,7 @@ export class Rectangle {
      * @returns {Point2D} The top left corner of the rectangle.
      */
     get top_left() {
-        const ret = wasm.cubicbeziertuple_first_control(this.__wbg_ptr);
+        const ret = wasm.rectangle_position(this.__wbg_ptr);
         return Point2D.__wrap(ret);
     }
     /**
@@ -2801,7 +2952,7 @@ export class Square {
      * @returns {Point2D} The center point of the square as a Point2D.
      */
     get center() {
-        const ret = wasm.cubicbeziertuple_first_control(this.__wbg_ptr);
+        const ret = wasm.rectangle_position(this.__wbg_ptr);
         return Point2D.__wrap(ret);
     }
     /**
@@ -2900,6 +3051,14 @@ export class Style {
         this.__wbg_ptr = ret[0] >>> 0;
         StyleFinalization.register(this, this.__wbg_ptr, this);
         return this;
+    }
+    /**
+     * Clones the Style.
+     * @returns {Style} The cloned style.
+     */
+    clone() {
+        const ret = wasm.style_clone(this.__wbg_ptr);
+        return Style.__wrap(ret);
     }
     /**
      * Creates a new Style with the given color.
@@ -3046,13 +3205,22 @@ export class Style {
      * @param {Style} style1 - The first style.
      * @param {Style} style2 - The second style.
      * @param {number} t - The progress value.
+     * @param {number | null} [x] - Top left x coordinate of the bitmap. Must be provided if both styles are images.
+     * @param {number | null} [y] - Top left y coordinate of the bitmap. Must be provided if both styles are images.
+     * @param {number | null} [width] - Width of the bitmap. Must be provided if both styles are images.
+     * @param {number | null} [height] - Height of the bitmap. Must be provided if both styles are images.
+     * @param {number | null} [data_width] - Number of pixels in a row of the bitmap. Must be provided if both styles are different kinds of gradients or one of them is an image.
+     * @param {number | null} [data_height] - Number of pixels in a column of the bitmap. Must be provided if both styles are different kinds of gradients or one of them is an image.
      * @returns {Style} The interpolated style.
      */
-    static lerp(style1, style2, t) {
+    static lerp(style1, style2, t, x, y, width, height, data_width, data_height) {
         _assertClass(style1, Style);
         _assertClass(style2, Style);
-        const ret = wasm.style_lerp(style1.__wbg_ptr, style2.__wbg_ptr, t);
-        return Style.__wrap(ret);
+        const ret = wasm.style_lerp(style1.__wbg_ptr, style2.__wbg_ptr, t, isLikeNone(x) ? 0x100000001 : Math.fround(x), isLikeNone(y) ? 0x100000001 : Math.fround(y), isLikeNone(width) ? 0x100000001 : Math.fround(width), isLikeNone(height) ? 0x100000001 : Math.fround(height), isLikeNone(data_width) ? 0x100000001 : (data_width) >>> 0, isLikeNone(data_height) ? 0x100000001 : (data_height) >>> 0);
+        if (ret[2]) {
+            throw takeFromExternrefTable0(ret[1]);
+        }
+        return Style.__wrap(ret[0]);
     }
 }
 
@@ -3088,7 +3256,7 @@ export class TransformationMatrix {
      * @returns {number}
      */
     get a() {
-        const ret = wasm.__wbg_get_transformationmatrix_a(this.__wbg_ptr);
+        const ret = wasm.__wbg_get_point2d_x(this.__wbg_ptr);
         return ret;
     }
     /**
@@ -3096,14 +3264,14 @@ export class TransformationMatrix {
      * @param {number} arg0
      */
     set a(arg0) {
-        wasm.__wbg_set_transformationmatrix_a(this.__wbg_ptr, arg0);
+        wasm.__wbg_set_point2d_x(this.__wbg_ptr, arg0);
     }
     /**
      * The b component of the matrix.
      * @returns {number}
      */
     get b() {
-        const ret = wasm.__wbg_get_transformationmatrix_b(this.__wbg_ptr);
+        const ret = wasm.__wbg_get_point2d_y(this.__wbg_ptr);
         return ret;
     }
     /**
@@ -3111,7 +3279,7 @@ export class TransformationMatrix {
      * @param {number} arg0
      */
     set b(arg0) {
-        wasm.__wbg_set_transformationmatrix_b(this.__wbg_ptr, arg0);
+        wasm.__wbg_set_point2d_y(this.__wbg_ptr, arg0);
     }
     /**
      * The c component of the matrix.
@@ -3204,6 +3372,14 @@ export class TransformationMatrix {
      */
     static translate(x, y) {
         const ret = wasm.transformationmatrix_translate(x, y);
+        return TransformationMatrix.__wrap(ret);
+    }
+    /**
+     * Clones the TransformationMatrix.
+     * @returns {TransformationMatrix}
+     */
+    clone() {
+        const ret = wasm.transformationmatrix_clone(this.__wbg_ptr);
         return TransformationMatrix.__wrap(ret);
     }
     /**
@@ -4112,8 +4288,7 @@ export class VectorObjectBuilder {
     move_point(point) {
         const ptr = this.__destroy_into_raw();
         _assertClass(point, Point2D);
-        var ptr0 = point.__destroy_into_raw();
-        const ret = wasm.vectorobjectbuilder_move_point(ptr, ptr0);
+        const ret = wasm.vectorobjectbuilder_move_point(ptr, point.__wbg_ptr);
         return VectorObjectBuilder.__wrap(ret);
     }
     /**
@@ -4124,8 +4299,7 @@ export class VectorObjectBuilder {
     line_to(p) {
         const ptr = this.__destroy_into_raw();
         _assertClass(p, Point2D);
-        var ptr0 = p.__destroy_into_raw();
-        const ret = wasm.vectorobjectbuilder_line_to(ptr, ptr0);
+        const ret = wasm.vectorobjectbuilder_line_to(ptr, p.__wbg_ptr);
         return VectorObjectBuilder.__wrap(ret);
     }
     /**
@@ -4137,10 +4311,8 @@ export class VectorObjectBuilder {
     quadratic_curve_to(p1, p2) {
         const ptr = this.__destroy_into_raw();
         _assertClass(p1, Point2D);
-        var ptr0 = p1.__destroy_into_raw();
         _assertClass(p2, Point2D);
-        var ptr1 = p2.__destroy_into_raw();
-        const ret = wasm.vectorobjectbuilder_quadratic_curve_to(ptr, ptr0, ptr1);
+        const ret = wasm.vectorobjectbuilder_quadratic_curve_to(ptr, p1.__wbg_ptr, p2.__wbg_ptr);
         return VectorObjectBuilder.__wrap(ret);
     }
     /**
@@ -4153,12 +4325,9 @@ export class VectorObjectBuilder {
     bezier_curve_to(p1, p2, p3) {
         const ptr = this.__destroy_into_raw();
         _assertClass(p1, Point2D);
-        var ptr0 = p1.__destroy_into_raw();
         _assertClass(p2, Point2D);
-        var ptr1 = p2.__destroy_into_raw();
         _assertClass(p3, Point2D);
-        var ptr2 = p3.__destroy_into_raw();
-        const ret = wasm.vectorobjectbuilder_bezier_curve_to(ptr, ptr0, ptr1, ptr2);
+        const ret = wasm.vectorobjectbuilder_bezier_curve_to(ptr, p1.__wbg_ptr, p2.__wbg_ptr, p3.__wbg_ptr);
         return VectorObjectBuilder.__wrap(ret);
     }
     /**
@@ -4483,28 +4652,40 @@ export class VectorObjectBuilder {
      * Linearly interpolates the fill Style of the VectorObjectBuilder with another VectorObjectBuilder.
      * @param {Style} fill - The vector object to interpolate the fill style with.
      * @param {number} t - The factor to interpolate the fill style by.
+     * @param {number | null} [x] - The image's top left corner x-coordinate. It must be provided if the fill style contains an image or different kinds of gradients.
+     * @param {number | null} [y] - The image's top left corner y-coordinate. It must be provided if the fill style contains an image or different kinds of gradients.
+     * @param {number | null} [width] - The image's rendering width. It must be provided if the fill style contains an image or different kinds of gradients.
+     * @param {number | null} [height] - The image's rendering height. It must be provided if the fill style contains an image or different kinds of gradients.
+     * @param {number | null} [data_width] - The image's number of pixels in a row. It must be provided if the fill style contains an image or different kinds of gradients.
+     * @param {number | null} [data_height] - The image's number of pixels in a column. It must be provided if the fill style contains an image or different kinds of gradients.
      * @param {boolean | null} [recursive] - Whether to apply the interpolate fill operation to the children of the vector object, default is true.
      * @returns {VectorObjectBuilder} The vector object being built with the interpolate fill operation.
      */
-    lerp_fill(fill, t, recursive) {
+    lerp_fill(fill, t, x, y, width, height, data_width, data_height, recursive) {
         const ptr = this.__destroy_into_raw();
         _assertClass(fill, Style);
         var ptr0 = fill.__destroy_into_raw();
-        const ret = wasm.vectorobjectbuilder_lerp_fill(ptr, ptr0, t, isLikeNone(recursive) ? 0xFFFFFF : recursive ? 1 : 0);
+        const ret = wasm.vectorobjectbuilder_lerp_fill(ptr, ptr0, t, isLikeNone(x) ? 0x100000001 : Math.fround(x), isLikeNone(y) ? 0x100000001 : Math.fround(y), isLikeNone(width) ? 0x100000001 : Math.fround(width), isLikeNone(height) ? 0x100000001 : Math.fround(height), isLikeNone(data_width) ? 0x100000001 : (data_width) >>> 0, isLikeNone(data_height) ? 0x100000001 : (data_height) >>> 0, isLikeNone(recursive) ? 0xFFFFFF : recursive ? 1 : 0);
         return VectorObjectBuilder.__wrap(ret);
     }
     /**
      * Linearly interpolates the stroke Style of the VectorObjectBuilder with another VectorObjectBuilder.
      * @param {Style} stroke - The vector object to interpolate the stroke style with.
      * @param {number} t - The factor to interpolate the stroke style by.
+     * @param {number | null} [x] - The image's top left corner x-coordinate. It must be provided if the stroke style contains an image or different kinds of gradients.
+     * @param {number | null} [y] - The image's top left corner y-coordinate. It must be provided if the stroke style contains an image or different kinds of gradients.
+     * @param {number | null} [width] - The image's rendering width. It must be provided if the stroke style contains an image or different kinds of gradients.
+     * @param {number | null} [height] - The image's rendering height. It must be provided if the stroke style contains an image or different kinds of gradients.
+     * @param {number | null} [data_width] - The image's number of pixels in a row. It must be provided if the stroke style contains an image or different kinds of gradients.
+     * @param {number | null} [data_height] - The image's number of pixels in a column. It must be provided if the stroke style contains an image or different kinds of gradients.
      * @param {boolean | null} [recursive] - Whether to apply the interpolate stroke operation to the children of the vector object, default is true.
      * @returns {VectorObjectBuilder} The vector object being built with the interpolate stroke operation.
      */
-    lerp_stroke(stroke, t, recursive) {
+    lerp_stroke(stroke, t, x, y, width, height, data_width, data_height, recursive) {
         const ptr = this.__destroy_into_raw();
         _assertClass(stroke, Style);
         var ptr0 = stroke.__destroy_into_raw();
-        const ret = wasm.vectorobjectbuilder_lerp_stroke(ptr, ptr0, t, isLikeNone(recursive) ? 0xFFFFFF : recursive ? 1 : 0);
+        const ret = wasm.vectorobjectbuilder_lerp_stroke(ptr, ptr0, t, isLikeNone(x) ? 0x100000001 : Math.fround(x), isLikeNone(y) ? 0x100000001 : Math.fround(y), isLikeNone(width) ? 0x100000001 : Math.fround(width), isLikeNone(height) ? 0x100000001 : Math.fround(height), isLikeNone(data_width) ? 0x100000001 : (data_width) >>> 0, isLikeNone(data_height) ? 0x100000001 : (data_height) >>> 0, isLikeNone(recursive) ? 0xFFFFFF : recursive ? 1 : 0);
         return VectorObjectBuilder.__wrap(ret);
     }
     /**
@@ -4572,7 +4753,7 @@ function __wbg_get_imports() {
         const ret = arg0.getTime();
         return ret;
     };
-    imports.wbg.__wbg_log_5c4af1b4abeb2c77 = function(arg0, arg1) {
+    imports.wbg.__wbg_log_1005d0103de713ad = function(arg0, arg1) {
         console.log(getStringFromWasm0(arg0, arg1));
     };
     imports.wbg.__wbg_new0_f788a2397c7ca929 = function() {
@@ -4631,6 +4812,10 @@ function __wbg_get_imports() {
         var len1 = WASM_VECTOR_LEN;
         getDataViewMemory0().setInt32(arg0 + 4 * 1, len1, true);
         getDataViewMemory0().setInt32(arg0 + 4 * 0, ptr1, true);
+    };
+    imports.wbg.__wbindgen_string_new = function(arg0, arg1) {
+        const ret = getStringFromWasm0(arg0, arg1);
+        return ret;
     };
     imports.wbg.__wbindgen_throw = function(arg0, arg1) {
         throw new Error(getStringFromWasm0(arg0, arg1));

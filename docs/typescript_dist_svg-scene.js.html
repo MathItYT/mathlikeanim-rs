@@ -52,13 +52,13 @@ export default class SVGScene extends Scene {
     renderObject(object, index, defs, parent) {
         const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
         g.setAttribute("id", `group-${index.join("-")}`);
-        parent.appendChild(g);
         if (object.num_curves === 0) {
             const subG = document.createElementNS("http://www.w3.org/2000/svg", "g");
             g.appendChild(subG);
             for (const [child_index, child] of object.children.entries()) {
                 this.renderObject(child, [...index, child_index], defs, subG);
             }
+            parent.appendChild(g);
             return;
         }
         const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
@@ -82,6 +82,7 @@ export default class SVGScene extends Scene {
                 this.renderObject(child, [...index, child_index], defs, subG);
             }
         }
+        parent.appendChild(g);
     }
     /**
      * Renders the path data of a VectorObject. Internal use only.
@@ -124,6 +125,7 @@ export default class SVGScene extends Scene {
             linearGradient.setAttribute("y1", linear_gradient.p1.y.toString());
             linearGradient.setAttribute("x2", linear_gradient.p2.x.toString());
             linearGradient.setAttribute("y2", linear_gradient.p2.y.toString());
+            linearGradient.setAttribute("gradientUnits", "userSpaceOnUse");
             linear_gradient.color_stops.forEach((stop, index) => {
                 const stopElement = document.createElementNS("http://www.w3.org/2000/svg", "stop");
                 stopElement.setAttribute("offset", stop.position.toString());
@@ -142,7 +144,8 @@ export default class SVGScene extends Scene {
             radialGradient.setAttribute("r", radial_gradient.r.toString());
             radialGradient.setAttribute("fx", radial_gradient.f.x.toString());
             radialGradient.setAttribute("fy", radial_gradient.f.y.toString());
-            radial_gradient.color_stops.forEach((stop, index) => {
+            radialGradient.setAttribute("gradientUnits", "userSpaceOnUse");
+            radial_gradient.color_stops.forEach(stop => {
                 const stopElement = document.createElementNS("http://www.w3.org/2000/svg", "stop");
                 stopElement.setAttribute("offset", stop.position.toString());
                 stopElement.setAttribute("stop-color", `rgba(${stop.color.red}, ${stop.color.green}, ${stop.color.blue}, ${stop.color.alpha})`);
@@ -159,8 +162,7 @@ export default class SVGScene extends Scene {
             pattern.setAttribute("width", style.image.width.toString());
             pattern.setAttribute("height", style.image.height.toString());
             pattern.setAttribute("patternUnits", "userSpaceOnUse");
-            const data = style.image.data;
-            const base64 = btoa(String.fromCharCode(...data));
+            const base64 = style.image.base64;
             const image = document.createElementNS("http://www.w3.org/2000/svg", "image");
             image.setAttribute("x", "0");
             image.setAttribute("y", "0");

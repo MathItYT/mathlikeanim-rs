@@ -9,11 +9,11 @@
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import Scene from "./scene";
+import SVGScene from "./svg-scene";
 /**
  * A scene that renders to a HTMLCanvasElement.
  */
-export default class CanvasScene extends Scene {
+export default class CanvasScene extends SVGScene {
     /**
      * Creates a new CanvasScene.
      * @param {number} width - The width of the canvas.
@@ -31,171 +31,24 @@ export default class CanvasScene extends Scene {
      * @returns {Promise&lt;void>} - A promise that resolves when the scene has been rendered.
      */
     render() {
+        const _super = Object.create(null, {
+            render: { get: () => super.render }
+        });
         return __awaiter(this, void 0, void 0, function* () {
-            this.context.resetTransform();
-            this.context.clearRect(0, 0, this.width, this.height);
-            for (const object of this.objects) {
-                this.renderObject(object);
-            }
+            yield _super.render.call(this).then(() => __awaiter(this, void 0, void 0, function* () {
+                ;
+                const svgAsBase64 = btoa(new XMLSerializer().serializeToString(this.svg));
+                const img = new Image();
+                const promise = new Promise(resolve => {
+                    img.onload = () => {
+                        this.context.drawImage(img, 0, 0);
+                        resolve(null);
+                    };
+                });
+                img.src = `data:image/svg+xml;base64,${svgAsBase64}`;
+                yield promise;
+            }));
         });
-    }
-    /**
-     * Renders a VectorObject to the canvas. Internal use only.
-     * @param {VectorObject} object - The object to render.
-     * @returns {void}
-     * @private
-     */
-    renderObject(object) {
-        if (object.num_curves === 0) {
-            for (const child of object.children) {
-                this.renderObject(child);
-            }
-            return;
-        }
-        const a = object.transform.a;
-        const b = object.transform.b;
-        const c = object.transform.c;
-        const d = object.transform.d;
-        const e = object.transform.e;
-        const f = object.transform.f;
-        this.context.setTransform(a, b, c, d, e, f);
-        this.context.beginPath();
-        object.subpaths.forEach(subpath => {
-            const start = subpath.get(0);
-            const end = subpath.get(subpath.len - 1);
-            this.context.moveTo(start.x, start.y);
-            subpath.cubic_bezier_tuples.forEach(tuple => {
-                this.context.bezierCurveTo(tuple.first_control.x, tuple.first_control.y, tuple.second_control.x, tuple.second_control.y, tuple.end_anchor.x, tuple.end_anchor.y);
-            });
-            if (start.equals(end)) {
-                this.context.closePath();
-            }
-        });
-        this.renderFill(object);
-        this.renderStroke(object);
-        for (const child of object.children) {
-            this.renderObject(child);
-        }
-    }
-    /**
-     * Renders the fill of a VectorObject. Internal use only.
-     * @param {VectorObject} object - The object to render the fill of.
-     * @returns {void}
-     * @private
-     */
-    renderFill(object) {
-        const fill = object.fill;
-        const fillRule = object.fill_rule === "nonzero" ? "nonzero" : "evenodd";
-        if (fill.color) {
-            this.context.fillStyle = `rgba(${fill.color.red}, ${fill.color.green}, ${fill.color.blue}, ${fill.color.alpha})`;
-            this.context.fill(fillRule);
-            return;
-        }
-        if (fill.linear_gradient) {
-            const gradient = this.context.createLinearGradient(fill.linear_gradient.p1.x, fill.linear_gradient.p1.y, fill.linear_gradient.p2.x, fill.linear_gradient.p2.y);
-            fill.linear_gradient.color_stops.forEach(stop => {
-                gradient.addColorStop(stop.position, `rgba(${stop.color.red}, ${stop.color.green}, ${stop.color.blue}, ${stop.color.alpha})`);
-            });
-            this.context.fillStyle = gradient;
-            this.context.fill(fillRule);
-            return;
-        }
-        if (fill.radial_gradient) {
-            // f, c and r are the focal point, center and radius of the circle
-            const gradient = this.context.createRadialGradient(fill.radial_gradient.f.x, fill.radial_gradient.f.y, 0, fill.radial_gradient.c.x, fill.radial_gradient.c.y, fill.radial_gradient.r);
-            fill.radial_gradient.color_stops.forEach(stop => {
-                gradient.addColorStop(stop.position, `rgba(${stop.color.red}, ${stop.color.green}, ${stop.color.blue}, ${stop.color.alpha})`);
-            });
-            this.context.fillStyle = gradient;
-            this.context.fill(fillRule);
-            return;
-        }
-        if (fill.image) {
-            const data = fill.image.data;
-            const imageData = new ImageData(new Uint8ClampedArray(data), fill.image.width, fill.image.height);
-            const ctx2 = document.createElement("canvas").getContext("2d");
-            ctx2.putImageData(imageData, fill.image.x, fill.image.y, 0, 0, fill.image.width, fill.image.height);
-            const pattern = this.context.createPattern(ctx2.canvas, "repeat");
-            this.context.fillStyle = pattern;
-            this.context.fill(fillRule);
-            return;
-        }
-    }
-    /**
-     * Renders the stroke of a VectorObject. Internal use only.
-     * @param {VectorObject} object - The object to render the stroke of.
-     * @returns {void}
-     * @private
-     */
-    renderStroke(object) {
-        if (object.stroke_width === 0) {
-            return;
-        }
-        const stroke = object.stroke;
-        const strokeWidth = object.stroke_width;
-        const lineCap = object.stroke_line_cap === "butt" ? "butt" : object.stroke_line_cap === "round" ? "round" : "square";
-        const lineJoin = object.stroke_line_join === "miter" ? "miter" : object.stroke_line_join === "round" ? "round" : "bevel";
-        const miterLimit = object.stroke_miter_limit;
-        const dashArray = object.stroke_dash_array;
-        const dashOffset = object.stroke_dash_offset;
-        if (stroke.color) {
-            this.context.strokeStyle = `rgba(${stroke.color.red}, ${stroke.color.green}, ${stroke.color.blue}, ${stroke.color.alpha})`;
-            this.context.lineWidth = strokeWidth;
-            this.context.lineCap = lineCap;
-            this.context.lineJoin = lineJoin;
-            this.context.miterLimit = miterLimit;
-            this.context.setLineDash(new Array(...dashArray));
-            this.context.lineDashOffset = dashOffset;
-            this.context.stroke();
-            return;
-        }
-        if (stroke.linear_gradient) {
-            const gradient = this.context.createLinearGradient(stroke.linear_gradient.p1.x, stroke.linear_gradient.p1.y, stroke.linear_gradient.p2.x, stroke.linear_gradient.p2.y);
-            stroke.linear_gradient.color_stops.forEach(stop => {
-                gradient.addColorStop(stop.position, `rgba(${stop.color.red}, ${stop.color.green}, ${stop.color.blue}, ${stop.color.alpha})`);
-            });
-            this.context.strokeStyle = gradient;
-            this.context.lineWidth = strokeWidth;
-            this.context.lineCap = lineCap;
-            this.context.lineJoin = lineJoin;
-            this.context.miterLimit = miterLimit;
-            this.context.setLineDash(new Array(...dashArray));
-            this.context.lineDashOffset = dashOffset;
-            this.context.stroke();
-            return;
-        }
-        if (stroke.radial_gradient) {
-            // f, c and r are the focal point, center and radius of the circle
-            const gradient = this.context.createRadialGradient(stroke.radial_gradient.f.x, stroke.radial_gradient.f.y, 0, stroke.radial_gradient.c.x, stroke.radial_gradient.c.y, stroke.radial_gradient.r);
-            stroke.radial_gradient.color_stops.forEach(stop => {
-                gradient.addColorStop(stop.position, `rgba(${stop.color.red}, ${stop.color.green}, ${stop.color.blue}, ${stop.color.alpha})`);
-            });
-            this.context.strokeStyle = gradient;
-            this.context.lineWidth = strokeWidth;
-            this.context.lineCap = lineCap;
-            this.context.lineJoin = lineJoin;
-            this.context.miterLimit = miterLimit;
-            this.context.setLineDash(new Array(...dashArray));
-            this.context.lineDashOffset = dashOffset;
-            this.context.stroke();
-            return;
-        }
-        if (stroke.image) {
-            const data = stroke.image.data;
-            const imageData = new ImageData(new Uint8ClampedArray(data), stroke.image.width, stroke.image.height);
-            const ctx2 = document.createElement("canvas").getContext("2d");
-            ctx2.putImageData(imageData, stroke.image.x, stroke.image.y, 0, 0, stroke.image.width, stroke.image.height);
-            const pattern = this.context.createPattern(ctx2.canvas, "repeat");
-            this.context.strokeStyle = pattern;
-            this.context.lineWidth = strokeWidth;
-            this.context.lineCap = lineCap;
-            this.context.lineJoin = lineJoin;
-            this.context.miterLimit = miterLimit;
-            this.context.setLineDash(new Array(...dashArray));
-            this.context.lineDashOffset = dashOffset;
-            this.context.stroke();
-            return;
-        }
     }
 }
 //# sourceMappingURL=canvas-scene.js.map</code></pre></article></section></div></div></div><div class="search-container" id="PkfLWpAbet" style="display:none"><div class="wrapper" id="iCxFxjkHbP"><button class="icon-button search-close-button" id="VjLlGakifb" aria-label="close search"><svg><use xlink:href="#close-icon"></use></svg></button><div class="search-box-c"><svg><use xlink:href="#search-icon"></use></svg> <input type="text" id="vpcKVYIppa" class="search-input" placeholder="Search..." autofocus></div><div class="search-result-c" id="fWwVHRuDuN"><span class="search-result-c-text">Type anything to view search result</span></div></div></div><div class="mobile-menu-icon-container"><button class="icon-button" id="mobile-menu" data-isopen="false" aria-label="menu"><svg><use xlink:href="#menu-icon"></use></svg></button></div><div id="mobile-sidebar" class="mobile-sidebar-container"><div class="mobile-sidebar-wrapper"><div class="mobile-nav-links"></div><div class="mobile-sidebar-items-c"><div class="sidebar-section-title with-arrow" data-isopen="false" id="sidebar-classes"><div>Classes</div><svg><use xlink:href="#down-icon"></use></svg></div><div class="sidebar-section-children-container"><div class="sidebar-section-children"><a href="AnchorsAndHandles.html">AnchorsAndHandles</a></div><div class="sidebar-section-children"><a href="Arc.html">Arc</a></div><div class="sidebar-section-children"><a href="BoundingBox.html">BoundingBox</a></div><div class="sidebar-section-children"><a href="Circle.html">Circle</a></div><div class="sidebar-section-children"><a href="Color.html">Color</a></div><div class="sidebar-section-children"><a href="ColorStop.html">ColorStop</a></div><div class="sidebar-section-children"><a href="CubicBezierTuple.html">CubicBezierTuple</a></div><div class="sidebar-section-children"><a href="EquilateralTriangle.html">EquilateralTriangle</a></div><div class="sidebar-section-children"><a href="FontFace.html">FontFace</a></div><div class="sidebar-section-children"><a href="ImageBitmap.html">ImageBitmap</a></div><div class="sidebar-section-children"><a href="IntegerLerp.html">IntegerLerp</a></div><div class="sidebar-section-children"><a href="Line.html">Line</a></div><div class="sidebar-section-children"><a href="LinearGradient.html">LinearGradient</a></div><div class="sidebar-section-children"><a href="Path2D.html">Path2D</a></div><div class="sidebar-section-children"><a href="Point2D.html">Point2D</a></div><div class="sidebar-section-children"><a href="RadialGradient.html">RadialGradient</a></div><div class="sidebar-section-children"><a href="Rectangle.html">Rectangle</a></div><div class="sidebar-section-children"><a href="RightTriangle.html">RightTriangle</a></div><div class="sidebar-section-children"><a href="Square.html">Square</a></div><div class="sidebar-section-children"><a href="Style.html">Style</a></div><div class="sidebar-section-children"><a href="TransformationMatrix.html">TransformationMatrix</a></div><div class="sidebar-section-children"><a href="Triangle.html">Triangle</a></div><div class="sidebar-section-children"><a href="Typst.html">Typst</a></div><div class="sidebar-section-children"><a href="VectorObject.html">VectorObject</a></div><div class="sidebar-section-children"><a href="VectorObjectBuilder.html">VectorObjectBuilder</a></div><div class="sidebar-section-children"><a href="module.exports.html">exports</a></div><div class="sidebar-section-children"><a href="module.exports.html">exports</a></div><div class="sidebar-section-children"><a href="module.exports.html">exports</a></div></div><div class="sidebar-section-title with-arrow" data-isopen="false" id="sidebar-tutorials"><div>Tutorials</div><svg><use xlink:href="#down-icon"></use></svg></div><div class="sidebar-section-children-container"><div class="sidebar-section-children"><a href="tutorial-Initial tutorials.html">Initial tutorials</a></div></div><div class="sidebar-section-title with-arrow" data-isopen="false" id="sidebar-global"><div>Global</div><svg><use xlink:href="#down-icon"></use></svg></div><div class="sidebar-section-children-container"><div class="sidebar-section-children"><a href="global.html#inverse_lerp">inverse_lerp</a></div><div class="sidebar-section-children"><a href="global.html#lerp">lerp</a></div><div class="sidebar-section-children"><a href="global.html#matrix_product">matrix_product</a></div><div class="sidebar-section-children"><a href="global.html#matrix_product_path">matrix_product_path</a></div><div class="sidebar-section-children"><a href="global.html#play">play</a></div><div class="sidebar-section-children"><a href="global.html#render">render</a></div><div class="sidebar-section-children"><a href="global.html#render">render</a></div></div></div><div class="mobile-navbar-actions"><div class="navbar-right-item"><button class="icon-button search-button" aria-label="open-search"><svg><use xlink:href="#search-icon"></use></svg></button></div><div class="navbar-right-item"><button class="icon-button theme-toggle" aria-label="toggle-theme"><svg><use class="theme-svg-use" xlink:href="#light-theme-icon"></use></svg></button></div><div class="navbar-right-item"><button class="icon-button font-size" aria-label="change-font-size"><svg><use xlink:href="#font-size-icon"></use></svg></button></div></div></div></div><script type="text/javascript" src="scripts/core.min.js"></script><script src="scripts/search.min.js" defer="defer"></script><script src="scripts/third-party/fuse.js" defer="defer"></script><script type="text/javascript">var tocbotInstance=tocbot.init({tocSelector:"#eed4d2a0bfd64539bb9df78095dec881",contentSelector:".main-content",headingSelector:"h1, h2, h3",hasInnerContainers:!0,scrollContainer:".main-content",headingsOffset:130,onClick:bringLinkToView})</script></body></html>
