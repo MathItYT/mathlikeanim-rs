@@ -1,6 +1,6 @@
 [package]
 name = "mathlikeanim-rs"
-version = "0.14.5"
+version = "0.14.7"
 edition = "2021"
 readme = "README.md"
 description = "A Rust library for creating mathematical animations"
@@ -30,6 +30,8 @@ keywords = ["animation", "graphics", "easing", "transitions", "WebAssembly"]
 categories = ["mathematics", "graphics", "wasm"]
 
 [dependencies]
+base64 = "0.22.1"
+image = "0.25.5"
 typst = "0.13.0"
 typst-as-lib = "0.12.0"
 typst-svg = "0.13.0"

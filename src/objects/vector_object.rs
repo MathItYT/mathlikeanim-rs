@@ -1,6 +1,6 @@
 use std::{rc::Rc, sync::Arc};
 
-use wasm_bindgen::prelude::*;
+use wasm_bindgen::{prelude::*, throw_str};
 use crate::{objects::geometry::triangle::EquilateralTriangle, utils::{bezier::CubicBezierTuple, bounding_box::BoundingBox, console::log, font_face::FontFace, interpolation::IntegerLerp, linear_algebra::TransformationMatrix, point2d::{Path2D, Point2D}, style::{Color, ImageBitmap, Style}}};
 
 use super::geometry::rectangle::Rectangle;
@@ -995,17 +995,33 @@ impl VectorOperation for ApplyTransform {
 pub struct LerpFill {
     pub fill: Style,
     pub t: f32,
+    pub x: Option<f32>,
+    pub y: Option<f32>,
+    pub width: Option<f32>,
+    pub height: Option<f32>,
+    pub data_width: Option<usize>,
+    pub data_height: Option<usize>,
     pub recursive: Option<bool>,
 }
 
 impl VectorOperation for LerpFill {
     fn apply(&self, object: &mut VectorObject) {
-        object.fill = Style::lerp(&object.fill, &self.fill, self.t);
+        let fill = Style::lerp(&object.fill, &self.fill, self.t, self.x, self.y, self.width, self.height, self.data_width, self.data_height);
+        if fill.is_err() {
+            throw_str(&fill.unwrap_err());
+        }
+        object.fill = fill.unwrap();
         if self.recursive.unwrap_or(true) {
             for child in &mut object.children {
                 let lerp_fill = LerpFill {
                     fill: self.fill.clone(),
                     t: self.t,
+                    x: self.x,
+                    y: self.y,
+                    width: self.width,
+                    height: self.height,
+                    data_width: self.data_width,
+                    data_height: self.data_height,
                     recursive: Some(true),
                 };
                 lerp_fill.apply(child);
@@ -1017,17 +1033,33 @@ impl VectorOperation for LerpFill {
 pub struct LerpStroke {
     pub stroke: Style,
     pub t: f32,
+    pub x: Option<f32>,
+    pub y: Option<f32>,
+    pub width: Option<f32>,
+    pub height: Option<f32>,
+    pub data_width: Option<usize>,
+    pub data_height: Option<usize>,
     pub recursive: Option<bool>,
 }
 
 impl VectorOperation for LerpStroke {
     fn apply(&self, object: &mut VectorObject) {
-        object.stroke = Style::lerp(&object.stroke, &self.stroke, self.t);
+        let stroke = Style::lerp(&object.stroke, &self.stroke, self.t, self.x, self.y, self.width, self.height, self.data_width, self.data_height);
+        if stroke.is_err() {
+            throw_str(&stroke.unwrap_err());
+        }
+        object.stroke = stroke.unwrap();
         if self.recursive.unwrap_or(true) {
             for child in &mut object.children {
                 let lerp_stroke = LerpStroke {
                     stroke: self.stroke.clone(),
                     t: self.t,
+                    x: self.x,
+                    y: self.y,
+                    width: self.width,
+                    height: self.height,
+                    data_width: self.data_width,
+                    data_height: self.data_height,
                     recursive: Some(true),
                 };
                 lerp_stroke.apply(child);
@@ -1725,10 +1757,22 @@ impl VectorObjectBuilder {
         fill: Style,
         #[wasm_bindgen(param_description = "The factor to interpolate the fill style by.")]
         t: f32,
+        #[wasm_bindgen(param_description = "The image's top left corner x-coordinate. It must be provided if the fill style contains an image or different kinds of gradients.")]
+        x: Option<f32>,
+        #[wasm_bindgen(param_description = "The image's top left corner y-coordinate. It must be provided if the fill style contains an image or different kinds of gradients.")]
+        y: Option<f32>,
+        #[wasm_bindgen(param_description = "The image's rendering width. It must be provided if the fill style contains an image or different kinds of gradients.")]
+        width: Option<f32>,
+        #[wasm_bindgen(param_description = "The image's rendering height. It must be provided if the fill style contains an image or different kinds of gradients.")]
+        height: Option<f32>,
+        #[wasm_bindgen(param_description = "The image's number of pixels in a row. It must be provided if the fill style contains an image or different kinds of gradients.")]
+        data_width: Option<usize>,
+        #[wasm_bindgen(param_description = "The image's number of pixels in a column. It must be provided if the fill style contains an image or different kinds of gradients.")]
+        data_height: Option<usize>,
         #[wasm_bindgen(param_description = "Whether to apply the interpolate fill operation to the children of the vector object, default is true.")]
-        recursive: Option<bool>
+        recursive: Option<bool>,
     ) -> VectorObjectBuilder {
-        let interpolate_fill = Box::new(LerpFill { fill, t, recursive });
+        let interpolate_fill = Box::new(LerpFill { fill, t, x, y, width, height, data_width, data_height, recursive });
         self.ops.add_operation(Box::leak(interpolate_fill));
         self
     }
@@ -1740,10 +1784,22 @@ impl VectorObjectBuilder {
         stroke: Style,
         #[wasm_bindgen(param_description = "The factor to interpolate the stroke style by.")]
         t: f32,
+        #[wasm_bindgen(param_description = "The image's top left corner x-coordinate. It must be provided if the stroke style contains an image or different kinds of gradients.")]
+        x: Option<f32>,
+        #[wasm_bindgen(param_description = "The image's top left corner y-coordinate. It must be provided if the stroke style contains an image or different kinds of gradients.")]
+        y: Option<f32>,
+        #[wasm_bindgen(param_description = "The image's rendering width. It must be provided if the stroke style contains an image or different kinds of gradients.")]
+        width: Option<f32>,
+        #[wasm_bindgen(param_description = "The image's rendering height. It must be provided if the stroke style contains an image or different kinds of gradients.")]
+        height: Option<f32>,
+        #[wasm_bindgen(param_description = "The image's number of pixels in a row. It must be provided if the stroke style contains an image or different kinds of gradients.")]
+        data_width: Option<usize>,
+        #[wasm_bindgen(param_description = "The image's number of pixels in a column. It must be provided if the stroke style contains an image or different kinds of gradients.")]
+        data_height: Option<usize>,
         #[wasm_bindgen(param_description = "Whether to apply the interpolate stroke operation to the children of the vector object, default is true.")]
-        recursive: Option<bool>
+        recursive: Option<bool>,
     ) -> VectorObjectBuilder {
-        let interpolate_stroke = Box::new(LerpStroke { stroke, t, recursive });
+        let interpolate_stroke = Box::new(LerpStroke { stroke, t, x, y, width, height, data_width, data_height, recursive });
         self.ops.add_operation(Box::leak(interpolate_stroke));
         self
     }
@@ -1847,20 +1903,20 @@ impl VectorObjectBuilder {
     }
     pub fn from_image(image: &usvg::Image) -> VectorObjectBuilder {
         let kind = image.kind();
+        let size = image.size();
+        let data_width = size.width() as usize;
+        let data_height = size.height() as usize;
         let data = match &kind {
             usvg::ImageKind::PNG(data) => {
-                let mut image_data = Vec::new();
-                image_data.extend_from_slice(data);
+                let image_data = data.to_vec();
                 Some(image_data)
             }
             usvg::ImageKind::JPEG(data) => {
-                let mut image_data = Vec::new();
-                image_data.extend_from_slice(data);
+                let image_data = data.to_vec();
                 Some(image_data)
             }
             usvg::ImageKind::WEBP(data) => {
-                let mut image_data = Vec::new();
-                image_data.extend_from_slice(data);
+                let image_data = data.to_vec();
                 Some(image_data)
             }
             _ => None
@@ -1876,10 +1932,11 @@ impl VectorObjectBuilder {
         let mut vector_object_builder = Rectangle::new(
             BoundingBox::new(x, y, width, height).unwrap(),
             None
-        ).vector_object_builder();
-        vector_object_builder = vector_object_builder.set_fill(Style::from_image(
-            ImageBitmap::new(x, y, width, height, data.unwrap())
-        ), Some(false));
+        ).vector_object_builder().set_stroke_width(0.0, Some(false));
+        vector_object_builder = vector_object_builder.set_fill(
+            Style::from_image(ImageBitmap::new(x, y, width, height, data_width, data_height, data.unwrap()).unwrap()),
+            Some(false)
+        );
         let transform = TransformationMatrix::from_svg_transform(image.abs_transform());
         vector_object_builder = vector_object_builder.set_transform(transform, Some(false));
         vector_object_builder

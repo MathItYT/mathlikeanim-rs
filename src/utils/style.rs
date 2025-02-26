@@ -1,7 +1,9 @@
 use std::rc::Rc;
 
+use image::{codecs::png::PngEncoder, RgbaImage};
 use usvg::{Opacity, Paint};
 use wasm_bindgen::prelude::*;
+use base64::{prelude::BASE64_STANDARD, Engine};
 
 use crate::utils::interpolation::{inverse_lerp, lerp};
 
@@ -165,12 +167,19 @@ impl LinearGradient {
         #[wasm_bindgen(param_description = "The end point of the gradient.")]
         p2: Point2D,
         #[wasm_bindgen(param_description = "The color of the gradient.")]
-        color: Color
+        color: Color,
+        #[wasm_bindgen(param_description = "Number of times to repeat the color.")]
+        repeats: Option<usize>
     ) -> LinearGradient {
+        let repeats = repeats.unwrap_or(2);
+        let mut color_stops = vec![];
+        for i in 0..repeats {
+            color_stops.push(ColorStop { color, position: i as f32 / (repeats - 1) as f32 });
+        }
         LinearGradient {
             p1,
             p2,
-            color_stops: Rc::new(vec![ColorStop { color, position: 0.0 }, ColorStop { color, position: 1.0 }]),
+            color_stops: Rc::new(color_stops),
         }
     }
     /// Returns the default LinearGradient, which is a gradient from the origin to the origin with no ColorStops.
@@ -220,11 +229,7 @@ impl LinearGradient {
         #[wasm_bindgen(param_description = "The point to get the color at.")]
         p: Point2D
     ) -> Color {
-        let dp = self.p2 - self.p1;
-        let dt = dp.normalized();
-        let normal = Point2D::new(-dt.y, dt.x);
-        let d = (p.x - self.p1.x) * normal.x + (p.y - self.p1.y) * normal.y;
-        let t = d / dp.magnitude();
+        let t = p.project_onto_line(&self.p1, &self.p2);
         self.color_at_offset(t)
     }
     /// Linearly interpolates between two LinearGradients given a progress value.
@@ -272,9 +277,9 @@ impl LinearGradient {
 #[wasm_bindgen]
 #[derive(Debug, Clone)]
 pub struct RadialGradient {
-    /// The focal point of the gradient.
+    /// The start circle center point of the gradient.
     pub f: Point2D,
-    /// The center point of the gradient.
+    /// The end circle center point of the gradient.
     pub c: Point2D,
     /// The radius of the gradient.
     pub r: f32,
@@ -298,9 +303,9 @@ impl RadialGradient {
     /// Creates a new RadialGradient with the given focal point, center point, radius, and ColorStops.
     #[wasm_bindgen(constructor, return_description = "A new radial gradient.")]
     pub fn new(
-        #[wasm_bindgen(param_description = "The focal point of the gradient.")]
+        #[wasm_bindgen(param_description = "The start circle center point of the gradient.")]
         f: Point2D,
-        #[wasm_bindgen(param_description = "The center of the gradient.")]
+        #[wasm_bindgen(param_description = "The end circle center point of the gradient.")]
         c: Point2D,
         #[wasm_bindgen(param_description = "The radius of the gradient.")]
         r: f32,
@@ -361,30 +366,49 @@ impl RadialGradient {
         #[wasm_bindgen(param_description = "The point to get the color at.")]
         p: Point2D
     ) -> Color {
-        let dp = self.c - self.f;
-        let dt = dp.normalized();
-        let normal = Point2D::new(-dt.y, dt.x);
-        let d = (p.x - self.f.x) * normal.x + (p.y - self.f.y) * normal.y;
-        let t = d / dp.magnitude();
-        self.color_at_offset(t)
+        // We need first to solve this equation: dist(c, f + (p - f) * t) = r
+        // where dist is the distance between two points, c is the center point, f is the focal point, p is the point, and r is the radius.
+        // This simplifies to a quadratic equation At^2 + Bt + C = 0, where:
+        // A = (p.x - f.x)^2 + (p.y - f.y)^2
+        // B = 2 * (f.x - c.x) * (p.x - f.x) + 2 * (f.y - c.y) * (p.y - f.y)
+        // C = (f.x - c.x)^2 + (f.y - c.y)^2 - r^2
+        // The solutions are t = (-B ± sqrt(B^2 - 4AC)) / 2A and we choose the one with plus sign.
+        let a = (p.x - self.f.x).powi(2) + (p.y - self.f.y).powi(2);
+        let b = 2.0 * (self.f.x - self.c.x) * (p.x - self.f.x) + 2.0 * (self.f.y - self.c.y) * (p.y - self.f.y);
+        let c = (self.f.x - self.c.x).powi(2) + (self.f.y - self.c.y).powi(2) - self.r.powi(2);
+        // It may be possible that A = 0, in which case the distance from p to f is 0, then p is f, so the offset is 0.0
+        if a == 0.0 {
+            return self.color_at_offset(0.0);
+        }
+        let t = (-b + (b.powi(2) - 4.0 * a * c).sqrt()) / (2.0 * a);
+        // Then let's project the point onto the line segment from f to f + (p - f) * t
+        let projection = p.project_onto_line(&self.f, &(self.f + (p - self.f) * t));
+        self.color_at_offset(projection)
     }
     /// Returns a single color radial gradient.
     #[wasm_bindgen(return_description = "A single color radial gradient.")]
     pub fn single_color_gradient(
-        #[wasm_bindgen(param_description = "The focal point of the gradient.")]
+        #[wasm_bindgen(param_description = "The start circle center point of the gradient.")]
         f: Point2D,
-        #[wasm_bindgen(param_description = "The center of the gradient.")]
+        #[wasm_bindgen(param_description = "The end circle center point of the gradient.")]
         c: Point2D,
         #[wasm_bindgen(param_description = "The radius of the gradient.")]
         r: f32,
         #[wasm_bindgen(param_description = "The color of the gradient.")]
-        color: Color
+        color: Color,
+        #[wasm_bindgen(param_description = "Number of times to repeat the color.")]
+        repeats: Option<usize>
     ) -> RadialGradient {
+        let repeats = repeats.unwrap_or(2);
+        let mut color_stops = vec![];
+        for i in 0..repeats {
+            color_stops.push(ColorStop { color, position: i as f32 / (repeats - 1) as f32 });
+        }
         RadialGradient {
             f,
             c,
             r,
-            color_stops: Rc::new(vec![ColorStop { color, position: 0.0 }, ColorStop { color, position: 1.0 }]),
+            color_stops: Rc::new(color_stops),
         }
     }
     /// Linearly interpolates between two RadialGradients given a progress value.
@@ -442,8 +466,12 @@ pub struct ImageBitmap {
     pub width: f32,
     /// The height of the bitmap.
     pub height: f32,
-    /// The pixel data of the bitmap.
-    data: Rc<Vec<u8>>,
+    /// Number of pixels in a row of the bitmap.
+    pub data_width: usize,
+    /// Number of pixels in a column of the bitmap.
+    pub data_height: usize,
+    /// Rgba data of the bitmap.
+    rgba_image: RgbaImage
 }
 
 impl Default for ImageBitmap {
@@ -453,7 +481,9 @@ impl Default for ImageBitmap {
             y: 0.0,
             width: 0.0,
             height: 0.0,
-            data: Rc::new(vec![]),
+            data_width: 0,
+            data_height: 0,
+            rgba_image: RgbaImage::new(0, 0)
         }
     }
 }
@@ -471,21 +501,32 @@ impl ImageBitmap {
         width: f32,
         #[wasm_bindgen(param_description = "The height of the bitmap.")]
         height: f32,
+        #[wasm_bindgen(param_description = "Number of pixels in a row of the bitmap.")]
+        data_width: usize,
+        #[wasm_bindgen(param_description = "Number of pixels in a column of the bitmap.")]
+        data_height: usize,
         #[wasm_bindgen(param_description = "The pixel data of the bitmap.")]
         data: Vec<u8>
-    ) -> ImageBitmap {
-        ImageBitmap {
+    ) -> Result<ImageBitmap, JsError> {
+        let rgba_image = RgbaImage::from_raw(data_width as u32, data_height as u32, data);
+        if rgba_image.is_none() {
+            return Err(JsError::new("Failed to create image bitmap."));
+        }
+        let rgba_image = rgba_image.unwrap();
+        Ok(ImageBitmap {
             x,
             y,
             width,
             height,
-            data: Rc::new(data),
-        }
+            data_width,
+            data_height,
+            rgba_image,
+        })
     }
     /// Gets the pixel data of the bitmap.
     #[wasm_bindgen(getter, return_description = "The pixel data of the bitmap.")]
     pub fn data(&self) -> Vec<u8> {
-        self.data.to_vec()
+        self.rgba_image.clone().into_raw()
     }
     /// Sets the pixel data of the bitmap.
     #[wasm_bindgen(setter)]
@@ -494,7 +535,7 @@ impl ImageBitmap {
         #[wasm_bindgen(param_description = "The pixel data of the bitmap.")]
         data: Vec<u8>
     ) {
-        self.data = Rc::new(data);
+        self.rgba_image = RgbaImage::from_raw(self.data_width as u32, self.data_height as u32, data).unwrap();
     }
     /// Returns the default ImageBitmap, which is an empty bitmap.
     #[wasm_bindgen(return_description = "The default image bitmap.")]
@@ -508,15 +549,10 @@ impl ImageBitmap {
         #[wasm_bindgen(param_description = "The point to get the pixel color at.")]
         p: Point2D
     ) -> Color {
-        let x = p.x as usize;
-        let y = p.y as usize;
-        let index = ((y - self.y as usize) * self.width as usize + (x - self.x as usize)) * 4;
-        Color {
-            red: self.data[index],
-            green: self.data[index + 1],
-            blue: self.data[index + 2],
-            alpha: self.data[index + 3] as f32 / 255.0,
-        }
+        let x = ((p.x - self.x) % self.width / self.width * self.data_width as f32) as u32;
+        let y = ((p.y - self.y) % self.height / self.height * self.data_height as f32) as u32;
+        let pixel = self.rgba_image.get_pixel(x, y);
+        Color::new(pixel[0], pixel[1], pixel[2], pixel[3] as f32 / 255.0)
     }
     /// Sets a pixel color at a Point2D in the bitmap.
     pub fn set_pixel(
@@ -526,14 +562,9 @@ impl ImageBitmap {
         #[wasm_bindgen(param_description = "The color of the pixel.")]
         color: &Color
     ) {
-        let x = p.x as usize;
-        let y = p.y as usize;
-        let index = ((y - self.y as usize) * self.width as usize + (x - self.x as usize)) * 4;
-        let data = Rc::make_mut(&mut self.data);
-        data[index] = color.red;
-        data[index + 1] = color.green;
-        data[index + 2] = color.blue;
-        data[index + 3] = (color.alpha * 255.0) as u8;
+        let x = ((p.x - self.x) % self.width / self.width * self.data_width as f32) as u32;
+        let y = ((p.y - self.y) % self.height / self.height * self.data_height as f32) as u32;
+        self.rgba_image.put_pixel(x, y, image::Rgba([color.red, color.green, color.blue, (color.alpha * 255.0) as u8]));
     }
     /// Gets a bitmap that is filled with a color.
     #[wasm_bindgen(return_description = "The filled image bitmap.")]
@@ -546,26 +577,22 @@ impl ImageBitmap {
         width: f32,
         #[wasm_bindgen(param_description = "The height of the bitmap.")]
         height: f32,
+        #[wasm_bindgen(param_description = "Number of pixels in a row of the bitmap.")]
+        data_width: usize,
+        #[wasm_bindgen(param_description = "Number of pixels in a column of the bitmap.")]
+        data_height: usize,
         #[wasm_bindgen(param_description = "The color to fill the bitmap with.")]
         color: &Color
     ) -> ImageBitmap {
-        let length = (width * height * 4.0) as usize;
-        let mut data = vec![0; length];
-        for i in 0..length {
-            data[i] = match i % 4 {
-                0 => color.red,
-                1 => color.green,
-                2 => color.blue,
-                3 => (color.alpha * 255.0) as u8,
-                _ => 0,
-            };
-        }
+        let rgba_image = RgbaImage::from_pixel(data_width as u32, data_height as u32, image::Rgba([color.red, color.green, color.blue, (color.alpha * 255.0) as u8]));
         ImageBitmap {
             x,
             y,
             width,
             height,
-            data: Rc::new(data),
+            data_width,
+            data_height,
+            rgba_image: rgba_image.clone(),
         }
     }
     /// Gets a bitmap that is filled with a linear gradient.
@@ -579,29 +606,26 @@ impl ImageBitmap {
         width: f32,
         #[wasm_bindgen(param_description = "The height of the bitmap.")]
         height: f32,
+        #[wasm_bindgen(param_description = "Number of pixels in a row of the bitmap.")]
+        data_width: usize,
+        #[wasm_bindgen(param_description = "Number of pixels in a column of the bitmap.")]
+        data_height: usize,
         #[wasm_bindgen(param_description = "The linear gradient to fill the bitmap with.")]
-        gradient: &LinearGradient
+        gradient: &LinearGradient,
     ) -> ImageBitmap {
-        let length = (width * height * 4.0) as usize;
-        let mut data = vec![0; length];
-        for i in 0..length {
-            let x = i % (width as usize);
-            let y = i / (width as usize);
-            let color = gradient.color_at(Point2D::new(x as f32, y as f32));
-            data[i] = match i % 4 {
-                0 => color.red,
-                1 => color.green,
-                2 => color.blue,
-                3 => (color.alpha * 255.0) as u8,
-                _ => 0,
-            };
-        }
+        let rgba_image = RgbaImage::from_fn(data_width as u32, data_height as u32, |x_raw, y_raw| {
+            let p = Point2D::new(x_raw as f32 / data_width as f32 * width + x, y_raw as f32 / data_height as f32 * height + y);
+            let color = gradient.color_at(p);
+            image::Rgba([color.red, color.green, color.blue, (color.alpha * 255.0) as u8])
+        });
         ImageBitmap {
             x,
             y,
             width,
             height,
-            data: Rc::new(data),
+            data_width,
+            data_height,
+            rgba_image: rgba_image.clone(),
         }
     }
     /// Gets a bitmap that is filled with a radial gradient.
@@ -615,30 +639,36 @@ impl ImageBitmap {
         width: f32,
         #[wasm_bindgen(param_description = "The height of the bitmap.")]
         height: f32,
+        #[wasm_bindgen(param_description = "Number of pixels in a row of the bitmap.")]
+        data_width: usize,
+        #[wasm_bindgen(param_description = "Number of pixels in a column of the bitmap.")]
+        data_height: usize,
         #[wasm_bindgen(param_description = "The radial gradient to fill the bitmap with.")]
-        gradient: &RadialGradient
+        gradient: &RadialGradient,
     ) -> ImageBitmap {
-        let length = (width * height * 4.0) as usize;
-        let mut data = vec![0; length];
-        for i in 0..length {
-            let x = i % (width as usize);
-            let y = i / (width as usize);
-            let color = gradient.color_at(Point2D::new(x as f32, y as f32));
-            data[i] = match i % 4 {
-                0 => color.red,
-                1 => color.green,
-                2 => color.blue,
-                3 => (color.alpha * 255.0) as u8,
-                _ => 0,
-            };
-        }
+        let rgba_image = RgbaImage::from_fn(data_width as u32, data_height as u32, |x_raw, y_raw| {
+            let p = Point2D::new(x_raw as f32 / data_width as f32 * width + x, y_raw as f32 / data_height as f32 * height + y);
+            let color = gradient.color_at(p);
+            image::Rgba([color.red, color.green, color.blue, (color.alpha * 255.0) as u8])
+        });
         ImageBitmap {
             x,
             y,
             width,
             height,
-            data: Rc::new(data),
+            data_width,
+            data_height,
+            rgba_image: rgba_image.clone(),
         }
+    }
+    /// Gets the data as base64 encoded string.
+    #[wasm_bindgen(getter, return_description = "The base64 encoded string of the image bitmap.")]
+    pub fn base64(&self) -> Result<String, String> {
+        let mut png_data = vec![];
+        let encoder = PngEncoder::new(&mut png_data);
+        self.rgba_image.write_with_encoder(encoder).map_err(|e| e.to_string())?;
+        let base64 = BASE64_STANDARD.encode(&png_data);
+        Ok(base64)
     }
     /// Linearly interpolates between two ImageBitmaps given a progress value.
     #[wasm_bindgen(return_description = "The interpolated image bitmap.")]
@@ -648,47 +678,29 @@ impl ImageBitmap {
         #[wasm_bindgen(param_description = "The second image bitmap.")]
         bitmap2: &ImageBitmap,
         #[wasm_bindgen(param_description = "The progress value.")]
-        t: f32
+        t: f32,
     ) -> ImageBitmap {
-        let x = lerp(bitmap1.x, bitmap2.x, t);
-        let y = lerp(bitmap1.y, bitmap2.y, t);
-        let width = lerp(bitmap1.width, bitmap2.width, t);
-        let height = lerp(bitmap1.height, bitmap2.height, t);
-        let length = bitmap1.data.len().max(bitmap2.data.len());
-        let mut data = vec![0; length];
-        for i in 0..length {
-            let color1 = if i < bitmap1.data.len() {
-                Color {
-                    red: bitmap1.data[i],
-                    green: bitmap1.data[i + 1],
-                    blue: bitmap1.data[i + 2],
-                    alpha: bitmap1.data[i + 3] as f32 / 255.0,
-                }
-            } else {
-                Color::default()
-            };
-            let color2 = if i < bitmap2.data.len() {
-                Color {
-                    red: bitmap2.data[i],
-                    green: bitmap2.data[i + 1],
-                    blue: bitmap2.data[i + 2],
-                    alpha: bitmap2.data[i + 3] as f32 / 255.0,
-                }
-            } else {
-                Color::default()
-            };
+        let x = bitmap1.x.min(bitmap2.x);
+        let y = bitmap1.y.min(bitmap2.y);
+        let width = bitmap1.width.max(bitmap2.width);
+        let height = bitmap1.height.max(bitmap2.height);
+        let data_width = bitmap1.data_width.max(bitmap2.data_width);
+        let data_height = bitmap1.data_height.max(bitmap2.data_height);
+        let new_image = RgbaImage::from_fn(data_width as u32, data_height as u32, |x_raw, y_raw| {
+            let p = Point2D::new(x_raw as f32 / data_width as f32 * width + x, y_raw as f32 / data_height as f32 * height + y);
+            let color1 = bitmap1.get_pixel(p);
+            let color2 = bitmap2.get_pixel(p);
             let color = Color::lerp(&color1, &color2, t);
-            data[i] = color.red;
-            data[i + 1] = color.green;
-            data[i + 2] = color.blue;
-            data[i + 3] = (color.alpha * 255.0) as u8;
-        }
+            image::Rgba([color.red, color.green, color.blue, (color.alpha * 255.0) as u8])
+        });
         ImageBitmap {
             x,
             y,
             width,
             height,
-            data: Rc::new(data),
+            data_width,
+            data_height,
+            rgba_image: new_image.clone(),
         }
     }
 }
@@ -815,10 +827,8 @@ impl Style {
             }
         }
         if let Some(image) = &mut image {
-            for i in 0..image.data.len() {
-                if i % 4 == 3 {
-                    Rc::make_mut(&mut image.data)[i] = (image.data[i] as f32 * (1.0 - amount)) as u8;
-                }
+            for pixel in image.rgba_image.pixels_mut() {
+                pixel[3] = (pixel[3] as f32 * (1.0 - amount)) as u8;
             }
         }
         Style {
@@ -921,8 +931,20 @@ impl Style {
         #[wasm_bindgen(param_description = "The second style.")]
         style2: &Style,
         #[wasm_bindgen(param_description = "The progress value.")]
-        t: f32
-    ) -> Style {
+        t: f32,
+        #[wasm_bindgen(param_description = "Top left x coordinate of the bitmap. Must be provided if both styles are images.")]
+        x: Option<f32>,
+        #[wasm_bindgen(param_description = "Top left y coordinate of the bitmap. Must be provided if both styles are images.")]
+        y: Option<f32>,
+        #[wasm_bindgen(param_description = "Width of the bitmap. Must be provided if both styles are images.")]
+        width: Option<f32>,
+        #[wasm_bindgen(param_description = "Height of the bitmap. Must be provided if both styles are images.")]
+        height: Option<f32>,
+        #[wasm_bindgen(param_description = "Number of pixels in a row of the bitmap. Must be provided if both styles are different kinds of gradients or one of them is an image.")]
+        data_width: Option<usize>,
+        #[wasm_bindgen(param_description = "Number of pixels in a column of the bitmap. Must be provided if both styles are different kinds of gradients or one of them is an image.")]
+        data_height: Option<usize>
+    ) -> Result<Style, String> {
         let color1 = style1.color();
         let color2 = style2.color();
         let linear_gradient1 = style1.linear_gradient();
@@ -933,95 +955,119 @@ impl Style {
         let image2 = style2.image();
         if color1.is_some() && color2.is_some() {
             let color = Color::lerp(&color1.unwrap(), &color2.unwrap(), t);
-            return Style::from_color(color);
+            return Ok(Style::from_color(color));
         }
         if linear_gradient1.is_some() && linear_gradient2.is_some() {
             let linear_gradient = LinearGradient::lerp(&linear_gradient1.unwrap(), &linear_gradient2.unwrap(), t);
-            return Style::from_linear_gradient(linear_gradient);
+            return Ok(Style::from_linear_gradient(linear_gradient));
         }
         if radial_gradient1.is_some() && radial_gradient2.is_some() {
             let radial_gradient = RadialGradient::lerp(&radial_gradient1.unwrap(), &radial_gradient2.unwrap(), t);
-            return Style::from_radial_gradient(radial_gradient);
+            return Ok(Style::from_radial_gradient(radial_gradient));
         }
         if image1.is_some() && image2.is_some() {
             let image = ImageBitmap::lerp(&image1.unwrap(), &image2.unwrap(), t);
-            return Style::from_image(image);
+            return Ok(Style::from_image(image));
         }
         if color1.is_some() {
             let color = color1.unwrap();
             if linear_gradient2.is_some() {
                 let linear_gradient2 = linear_gradient2.unwrap();
-                let linear_gradient1 = LinearGradient::single_color_gradient(linear_gradient2.p1, linear_gradient2.p2, color);
-                return Style::lerp(&Style::from_linear_gradient(linear_gradient1), &Style::from_linear_gradient(linear_gradient2), t);
+                let linear_gradient1 = LinearGradient::single_color_gradient(linear_gradient2.p1, linear_gradient2.p2, color, Some(linear_gradient2.color_stops.len()));
+                return Style::lerp(&Style::from_linear_gradient(linear_gradient1), &Style::from_linear_gradient(linear_gradient2), t, x, y, width, height, data_width, data_height);
             }
             if radial_gradient2.is_some() {
                 let radial_gradient2 = radial_gradient2.unwrap();
-                let radial_gradient1 = RadialGradient::single_color_gradient(radial_gradient2.f, radial_gradient2.c, radial_gradient2.r, color);
-                return Style::lerp(&Style::from_radial_gradient(radial_gradient1), &Style::from_radial_gradient(radial_gradient2), t);
+                let radial_gradient1 = RadialGradient::single_color_gradient(radial_gradient2.f, radial_gradient2.c, radial_gradient2.r, color, Some(radial_gradient2.color_stops.len()));
+                return Style::lerp(&Style::from_radial_gradient(radial_gradient1), &Style::from_radial_gradient(radial_gradient2), t, x, y, width, height, data_width, data_height);
             }
             if image2.is_some() {
+                if x.is_none() || y.is_none() || width.is_none() || height.is_none() {
+                    return Err("Bitmap data must be provided if one of the styles is an image.".to_string());
+                }
                 let image2 = image2.unwrap();
-                let image1 = ImageBitmap::fill(image2.x, image2.y, image2.width, image2.height, &color);
-                return Style::lerp(&Style::from_image(image1), &Style::from_image(image2), t);
+                let image1 = ImageBitmap::fill(x.unwrap(), y.unwrap(), width.unwrap(), height.unwrap(), data_width.unwrap(), data_height.unwrap(), &color);
+                return Style::lerp(&Style::from_image(image1), &Style::from_image(image2), t, x, y, width, height, data_width, data_height);
             }
         }
         if linear_gradient1.is_some() {
             let linear_gradient1 = linear_gradient1.unwrap();
             if color2.is_some() {
                 let color2 = color2.unwrap();
-                let linear_gradient2 = LinearGradient::single_color_gradient(linear_gradient1.p1, linear_gradient1.p2, color2);
-                return Style::lerp(&Style::from_linear_gradient(linear_gradient1), &Style::from_linear_gradient(linear_gradient2), t);
+                let linear_gradient2 = LinearGradient::single_color_gradient(linear_gradient1.p1, linear_gradient1.p2, color2, Some(linear_gradient1.color_stops.len()));
+                return Style::lerp(&Style::from_linear_gradient(linear_gradient1), &Style::from_linear_gradient(linear_gradient2), t, x, y, width, height, data_width, data_height);
             }
             if radial_gradient2.is_some() {
+                if x.is_none() || y.is_none() || width.is_none() || height.is_none() {
+                    return Err("Bitmap data must be provided if both styles are different kinds of gradients.".to_string());
+                }
                 let radial_gradient2 = radial_gradient2.unwrap();
-                let image2 = ImageBitmap::fill_radial_gradient(radial_gradient2.c.x, radial_gradient2.c.y, radial_gradient2.r * 2.0, radial_gradient2.r * 2.0, &radial_gradient2);
-                let image1 = ImageBitmap::fill_linear_gradient(linear_gradient1.p1.x, linear_gradient1.p1.y, linear_gradient1.p2.x, linear_gradient1.p2.y, &linear_gradient1);
-                return Style::lerp(&Style::from_image(image1), &Style::from_image(image2), t);
+                let image2 = ImageBitmap::fill_radial_gradient(x.unwrap(), y.unwrap(), width.unwrap(), height.unwrap(), data_width.unwrap(), data_height.unwrap(), &radial_gradient2);
+                let image1 = ImageBitmap::fill_linear_gradient(x.unwrap(), y.unwrap(), width.unwrap(), height.unwrap(), data_width.unwrap(), data_height.unwrap(), &linear_gradient1);
+                return Style::lerp(&Style::from_image(image1), &Style::from_image(image2), t, x, y, width, height, data_width, data_height);
             }
             if image2.is_some() {
+                if x.is_none() || y.is_none() || width.is_none() || height.is_none() {
+                    return Err("Bitmap data must be provided if both styles are different kinds of gradients.".to_string());
+                }
                 let image2 = image2.unwrap();
-                let image1 = ImageBitmap::fill_linear_gradient(image2.x, image2.y, image2.width, image2.height, &linear_gradient1);
-                return Style::lerp(&Style::from_image(image1), &Style::from_image(image2), t);
+                let image1 = ImageBitmap::fill_linear_gradient(x.unwrap(), y.unwrap(), width.unwrap(), height.unwrap(), data_width.unwrap(), data_height.unwrap(), &linear_gradient1);
+                return Style::lerp(&Style::from_image(image1), &Style::from_image(image2), t, x, y, width, height, data_width, data_height);
             }
         }
         if radial_gradient1.is_some() {
             let radial_gradient1 = radial_gradient1.unwrap();
             if color2.is_some() {
                 let color2 = color2.unwrap();
-                let radial_gradient2 = RadialGradient::single_color_gradient(radial_gradient1.f, radial_gradient1.c, radial_gradient1.r, color2);
-                return Style::lerp(&Style::from_radial_gradient(radial_gradient1), &Style::from_radial_gradient(radial_gradient2), t);
+                let radial_gradient2 = RadialGradient::single_color_gradient(radial_gradient1.f, radial_gradient1.c, radial_gradient1.r, color2, Some(radial_gradient1.color_stops.len()));
+                return Style::lerp(&Style::from_radial_gradient(radial_gradient1), &Style::from_radial_gradient(radial_gradient2), t, x, y, width, height, data_width, data_height);
             }
             if linear_gradient2.is_some() {
+                if x.is_none() || y.is_none() || width.is_none() || height.is_none() {
+                    return Err("Bitmap data must be provided if both styles are different kinds of gradients.".to_string());
+                }
                 let linear_gradient2 = linear_gradient2.unwrap();
-                let image2 = ImageBitmap::fill_linear_gradient(linear_gradient2.p1.x, linear_gradient2.p1.y, linear_gradient2.p2.x, linear_gradient2.p2.y, &linear_gradient2);
-                let image1 = ImageBitmap::fill_radial_gradient(radial_gradient1.c.x, radial_gradient1.c.y, radial_gradient1.r * 2.0, radial_gradient1.r * 2.0, &radial_gradient1);
-                return Style::lerp(&Style::from_image(image1), &Style::from_image(image2), t);
+                let image2 = ImageBitmap::fill_linear_gradient(x.unwrap(), y.unwrap(), width.unwrap(), height.unwrap(), data_width.unwrap(), data_height.unwrap(), &linear_gradient2);
+                let image1 = ImageBitmap::fill_radial_gradient(x.unwrap(), y.unwrap(), width.unwrap(), height.unwrap(), data_width.unwrap(), data_height.unwrap(), &radial_gradient1);
+                return Style::lerp(&Style::from_image(image1), &Style::from_image(image2), t, x, y, width, height, data_width, data_height);
             }
             if image2.is_some() {
+                if x.is_none() || y.is_none() || width.is_none() || height.is_none() {
+                    return Err("Bitmap data must be provided if both styles are different kinds of gradients.".to_string());
+                }
                 let image2 = image2.unwrap();
-                let image1 = ImageBitmap::fill_radial_gradient(image2.x, image2.y, image2.width / 2.0, image2.height / 2.0, &radial_gradient1);
-                return Style::lerp(&Style::from_image(image1), &Style::from_image(image2), t);
+                let image1 = ImageBitmap::fill_radial_gradient(x.unwrap(), y.unwrap(), width.unwrap(), height.unwrap(), data_width.unwrap(), data_height.unwrap(), &radial_gradient1);
+                return Style::lerp(&Style::from_image(image1), &Style::from_image(image2), t, x, y, width, height, data_width, data_height);
             }
         }
         if image1.is_some() {
             let image1 = image1.unwrap();
             if color2.is_some() {
+                if x.is_none() || y.is_none() || width.is_none() || height.is_none() {
+                    return Err("Bitmap data must be provided if one of the styles is an image.".to_string());
+                }
                 let color2 = color2.unwrap();
-                let image2 = ImageBitmap::fill(image1.x, image1.y, image1.width, image1.height, &color2);
-                return Style::lerp(&Style::from_image(image1), &Style::from_image(image2), t);
+                let image2 = ImageBitmap::fill(x.unwrap(), y.unwrap(), width.unwrap(), height.unwrap(), data_width.unwrap(), data_height.unwrap(), &color2);
+                return Style::lerp(&Style::from_image(image1), &Style::from_image(image2), t, x, y, width, height, data_width, data_height);
             }
             if linear_gradient2.is_some() {
+                if x.is_none() || y.is_none() || width.is_none() || height.is_none() {
+                    return Err("Bitmap data must be provided if one of the styles is an image.".to_string());
+                }
                 let linear_gradient2 = linear_gradient2.unwrap();
-                let image2 = ImageBitmap::fill_linear_gradient(linear_gradient2.p1.x, linear_gradient2.p1.y, linear_gradient2.p2.x, linear_gradient2.p2.y, &linear_gradient2);
-                return Style::lerp(&Style::from_image(image1), &Style::from_image(image2), t);
+                let image2 = ImageBitmap::fill_linear_gradient(x.unwrap(), y.unwrap(), width.unwrap(), height.unwrap(), data_width.unwrap(), data_height.unwrap(), &linear_gradient2);
+                return Style::lerp(&Style::from_image(image1), &Style::from_image(image2), t, x, y, width, height, data_width, data_height);
             }
             if radial_gradient2.is_some() {
+                if x.is_none() || y.is_none() || width.is_none() || height.is_none() {
+                    return Err("Bitmap data must be provided if one of the styles is an image.".to_string());
+                }
                 let radial_gradient2 = radial_gradient2.unwrap();
-                let image2 = ImageBitmap::fill_radial_gradient(radial_gradient2.c.x, radial_gradient2.c.y, radial_gradient2.r * 2.0, radial_gradient2.r * 2.0, &radial_gradient2);
-                return Style::lerp(&Style::from_image(image1), &Style::from_image(image2), t);
+                let image2 = ImageBitmap::fill_radial_gradient(x.unwrap(), y.unwrap(), width.unwrap(), height.unwrap(), data_width.unwrap(), data_height.unwrap(), &radial_gradient2);
+                return Style::lerp(&Style::from_image(image1), &Style::from_image(image2), t, x, y, width, height, data_width, data_height);
             }
         }
-        Style::default()
+        Err("Exactly one of color, linear_gradient, radial_gradient, or image must be provided.".to_string())
     }
 }
 
@@ -1068,23 +1114,24 @@ impl Style {
                             let width = image.abs_bounding_box().width();
                             let height = image.abs_bounding_box().height();
                             let kind = image.kind();
+                            let size = image.size();
+                            let data_width = size.width() as usize;
+                            let data_height = size.height() as usize;
                             match &kind {
                                 usvg::ImageKind::JPEG(data) => {
                                     // data is Arc<Vec<u8>>. Remove the Arc.
-                                    let mut new_data = vec![];
-                                    new_data.extend_from_slice(&data);
-                                    return Style::from_image(ImageBitmap::new(x, y, width, height, new_data));
+                                    let new_data = data.to_vec();
+                                    let image = ImageBitmap::new(x, y, width, height, data_width, data_height, new_data).unwrap();
+                                    return Style::from_image(image);
                                 }
                                 usvg::ImageKind::PNG(data) => {
-                                    let mut new_data = vec![];
-                                    new_data.extend_from_slice(&data);
-                                    let image = ImageBitmap::new(x, y, width, height, new_data);
+                                    let new_data = data.to_vec();
+                                    let image = ImageBitmap::new(x, y, width, height, data_width, data_height, new_data).unwrap();
                                     return Style::from_image(image);
                                 }
                                 usvg::ImageKind::WEBP(data) => {
-                                    let mut new_data = vec![];
-                                    new_data.extend_from_slice(&data);
-                                    let image = ImageBitmap::new(x, y, width, height, new_data);
+                                    let new_data = data.to_vec();
+                                    let image = ImageBitmap::new(x, y, width, height, data_width, data_height, new_data).unwrap();
                                     return Style::from_image(image);
                                 }
                                 _ => {

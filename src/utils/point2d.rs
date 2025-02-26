@@ -51,6 +51,19 @@ impl Point2D {
             y: lerp(point1.y, point2.y, t),
         }
     }
+    /// Gets a cartesian point from polar coordinates.
+    #[wasm_bindgen(return_description = "A 2D point.")]
+    pub fn from_polar(
+        #[wasm_bindgen(param_description = "The radius of the point.")]
+        radius: f32,
+        #[wasm_bindgen(param_description = "The angle of the point.")]
+        angle: f32
+    ) -> Point2D {
+        Point2D {
+            x: radius * angle.cos(),
+            y: radius * angle.sin(),
+        }
+    }
     /// Returns the distance between two Point2Ds.
     #[wasm_bindgen(return_description = "The distance between the two points.")]
     pub fn distance_squared(
@@ -135,6 +148,28 @@ impl Point2D {
         let dot = self.dot(other);
         let magnitude_product = self.magnitude() * other.magnitude();
         (dot / magnitude_product).acos()
+    }
+    /// Gets the direction angle with respect to (0, 0) of the Point2D.
+    #[wasm_bindgen(getter, return_description = "The direction angle of the point.")]
+    pub fn direction(&self) -> f32 {
+        self.y.atan2(self.x)
+    }
+    /// Projects a point onto a line given the start and end points of the line.
+    #[wasm_bindgen(return_description = "The proportion of the line.")]
+    pub fn project_onto_line(
+        &self,
+        #[wasm_bindgen(param_description = "The start point of the line.")]
+        start: &Point2D,
+        #[wasm_bindgen(param_description = "The end point of the line.")]
+        end: &Point2D
+    ) -> f32 {
+        let line = *end - *start;
+        let line_squared = line.magnitude_squared();
+        if line_squared == 0.0 {
+            return 0.0;
+        }
+        let projection = *self - *start;
+        (line.dot(&projection) / line_squared).max(0.0).min(1.0)
     }
 }
 
