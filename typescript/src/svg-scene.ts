@@ -69,6 +69,9 @@ export default class SVGScene extends Scene {
         path.setAttribute("stroke-miterlimit", object.stroke_miter_limit.toString());
         path.setAttribute("stroke-dasharray", object.stroke_dash_array.join(" "));
         path.setAttribute("stroke-dashoffset", object.stroke_dash_offset.toString());
+        if (object.name) {
+            path.setAttribute("class", object.name);
+        }
         path.setAttribute("transform", `matrix(${object.transform.a} ${object.transform.b} ${object.transform.c} ${object.transform.d} ${object.transform.e} ${object.transform.f})`);
         g.appendChild(path);
         if (object.num_children > 0) {
@@ -123,8 +126,7 @@ export default class SVGScene extends Scene {
             linearGradient.setAttribute("y1", linear_gradient.p1.y.toString());
             linearGradient.setAttribute("x2", linear_gradient.p2.x.toString());
             linearGradient.setAttribute("y2", linear_gradient.p2.y.toString());
-            linearGradient.setAttribute("gradientUnits", "userSpaceOnUse");
-            linear_gradient.color_stops.forEach((stop, index) => {
+            linear_gradient.color_stops.forEach(stop => {
                 const stopElement = document.createElementNS("http://www.w3.org/2000/svg", "stop");
                 stopElement.setAttribute("offset", stop.position.toString());
                 stopElement.setAttribute("stop-color", `rgba(${stop.color.red}, ${stop.color.green}, ${stop.color.blue}, ${stop.color.alpha})`);
@@ -142,7 +144,6 @@ export default class SVGScene extends Scene {
             radialGradient.setAttribute("r", radial_gradient.r.toString());
             radialGradient.setAttribute("fx", radial_gradient.f.x.toString());
             radialGradient.setAttribute("fy", radial_gradient.f.y.toString());
-            radialGradient.setAttribute("gradientUnits", "userSpaceOnUse");
             radial_gradient.color_stops.forEach(stop => {
                 const stopElement = document.createElementNS("http://www.w3.org/2000/svg", "stop");
                 stopElement.setAttribute("offset", stop.position.toString());
@@ -159,7 +160,6 @@ export default class SVGScene extends Scene {
             pattern.setAttribute("y", style.image.y.toString());
             pattern.setAttribute("width", style.image.width.toString());
             pattern.setAttribute("height", style.image.height.toString());
-            pattern.setAttribute("patternUnits", "userSpaceOnUse");
             const base64 = style.image.base64;
             const image = document.createElementNS("http://www.w3.org/2000/svg", "image");
             image.setAttribute("x", "0");

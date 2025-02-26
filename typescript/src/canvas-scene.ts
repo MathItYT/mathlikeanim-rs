@@ -34,6 +34,7 @@ export default class CanvasScene extends SVGScene {
      * @returns {Promise<void>} - A promise that resolves when the scene has been rendered.
      */
     async render(): Promise<void> {
+        this.context.clearRect(0, 0, this.width, this.height);
         await super.render().then(async () => {;
             const svgAsBase64 = btoa(new XMLSerializer().serializeToString(this.svg));
             const img = new Image();
