@@ -1,7 +1,9 @@
 use std::{rc::Rc, sync::Arc};
 
+use base64::{prelude::BASE64_STANDARD, Engine};
+use usvg::{ImageHrefResolver, ImageKind};
 use wasm_bindgen::{prelude::*, throw_str};
-use crate::{objects::geometry::triangle::EquilateralTriangle, utils::{bezier::CubicBezierTuple, bounding_box::BoundingBox, console::log, font_face::FontFace, interpolation::IntegerLerp, linear_algebra::TransformationMatrix, point2d::{Path2D, Point2D}, style::{Color, ImageBitmap, Style}}};
+use crate::{objects::geometry::triangle::EquilateralTriangle, utils::{bezier::CubicBezierTuple, bounding_box::BoundingBox, console::log, font_face::FontFace, image_library::ImageLibrary, interpolation::IntegerLerp, linear_algebra::TransformationMatrix, point2d::{Path2D, Point2D}, style::{Color, ImageBitmap, Style}}};
 
 use super::geometry::rectangle::Rectangle;
 
@@ -1141,15 +1143,60 @@ impl VectorObjectBuilder {
         svg: String,
         #[wasm_bindgen(param_description = "Data from font faces to use for text rendering.")]
         font_faces: Option<Vec<FontFace>>,
+        #[wasm_bindgen(param_description = "Image library to use for image rendering.")]
+        image_library: Option<ImageLibrary>,
     ) -> VectorObjectBuilder {
         let mut vector_object_builder = VectorObjectBuilder::default();
         let mut options = usvg::Options::default();
-        let fontdatabase = options.fontdb_mut();
+        let mut fontdatabase = options.fontdb.clone();
         for font_face in font_faces.unwrap_or_default() {
-            fontdatabase.load_font_data(font_face.data());
+            Arc::make_mut(&mut fontdatabase).load_font_data(font_face.data());
         }
-        options.fontdb = Arc::new(fontdatabase.clone());
-        let tree = usvg::Tree::from_str(&svg, &options).unwrap();
+        let image_library = Box::new(image_library.unwrap_or(ImageLibrary::new()));
+        let image_library = Box::leak(image_library);
+        options.image_href_resolver = ImageHrefResolver {
+            resolve_data: Box::new(|mime, data, _opts| {
+                // Don't care about the mime type, just return the data.
+                match mime {
+                    "image/png" => {
+                        Some(ImageKind::PNG(data))
+                    }
+                    "image/jpeg" | "image/jpg" => {
+                        Some(ImageKind::JPEG(data))
+                    }
+                    "image/gif" => {
+                        Some(ImageKind::GIF(data))
+                    }
+                    "image/webp" => {
+                        Some(ImageKind::WEBP(data))
+                    }
+                    "image/svg+xml" => {
+                        let data = image_library.get(&format!("data:image/png;base64,{}", BASE64_STANDARD.encode(data.to_vec())));
+                        if data.is_none() {
+                            return None;
+                        }
+                        Some(ImageKind::PNG(Arc::new(data.unwrap().data())))
+                    }
+                    _ => {
+                        None
+                    }
+                }
+            }),
+            resolve_string: Box::new(|string, _opts| {
+                let data = image_library.get(&string);
+                if data.is_none() {
+                    return None;
+                }
+                Some(ImageKind::PNG(Arc::new(data.unwrap().data())))
+            }),
+        };
+        options.fontdb = fontdatabase;
+        let tree = usvg::Tree::from_str(&svg, &options);
+        if tree.is_err() {
+            log(&format!("Error parsing SVG: {}", tree.err().unwrap()));
+            return vector_object_builder;
+        }
+        let tree = tree.unwrap();
         if !tree.root().has_children() {
             log("The SVG path is empty. No operations were applied.");
             return vector_object_builder;
@@ -1903,9 +1950,9 @@ impl VectorObjectBuilder {
     }
     pub fn from_image(image: &usvg::Image) -> VectorObjectBuilder {
         let kind = image.kind();
-        let size = image.size();
-        let data_width = size.width() as usize;
-        let data_height = size.height() as usize;
+        let dimensions = image.size();
+        let data_width = dimensions.width().round() as usize;
+        let data_height = dimensions.height().round() as usize;
         let data = match &kind {
             usvg::ImageKind::PNG(data) => {
                 let image_data = data.to_vec();
@@ -1925,20 +1972,27 @@ impl VectorObjectBuilder {
             log("Unsupported image format.");
             return VectorObjectBuilder::default();
         }
-        let x = image.abs_bounding_box().x();
-        let y = image.abs_bounding_box().y();
-        let width = image.abs_bounding_box().width();
-        let height = image.abs_bounding_box().height();
+        let x = image.bounding_box().x();
+        let y = image.bounding_box().y();
+        let width = image.bounding_box().width();
+        let height = image.bounding_box().height();
         let mut vector_object_builder = Rectangle::new(
             BoundingBox::new(x, y, width, height).unwrap(),
             None
         ).vector_object_builder().set_stroke_width(0.0, Some(false));
+        let img = ImageBitmap::new(x, y, width, height, data_width, data_height, data.unwrap());
+        if img.is_err() {
+            log("Failed to create image bitmap.");
+            return VectorObjectBuilder::default();
+        }
         vector_object_builder = vector_object_builder.set_fill(
-            Style::from_image(ImageBitmap::new(x, y, width, height, data_width, data_height, data.unwrap()).unwrap()),
+            Style::from_image(img.unwrap()),
             Some(false)
         );
-        let transform = TransformationMatrix::from_svg_transform(image.abs_transform());
-        vector_object_builder = vector_object_builder.set_transform(transform, Some(false));
+        vector_object_builder = vector_object_builder.set_transform(
+            TransformationMatrix::from_svg_transform(image.abs_transform()),
+            Some(false)
+        );
         vector_object_builder
     }
 }

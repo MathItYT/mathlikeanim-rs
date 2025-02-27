@@ -156,10 +156,10 @@ export default class SVGScene extends Scene {
         if (style.image) {
             const pattern = document.createElementNS("http://www.w3.org/2000/svg", "pattern");
             pattern.setAttribute("id", `${prefix}-pattern-${index.join("-")}`);
-            pattern.setAttribute("x", style.image.x.toString());
-            pattern.setAttribute("y", style.image.y.toString());
-            pattern.setAttribute("width", style.image.width.toString());
-            pattern.setAttribute("height", style.image.height.toString());
+            pattern.setAttribute("x", "0");
+            pattern.setAttribute("y", "0");
+            pattern.setAttribute("width", "1");
+            pattern.setAttribute("height", "1");
             const base64 = style.image.base64;
             const image = document.createElementNS("http://www.w3.org/2000/svg", "image");
             image.setAttribute("x", "0");

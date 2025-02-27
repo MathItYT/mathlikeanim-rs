@@ -6,3 +6,4 @@ pub mod linear_algebra;
 pub mod point2d;
 pub mod bounding_box;
 pub mod font_face;
+pub mod image_library;

@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="en" style="font-size:16px"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Source: pkg/index.js</title><!--[if lt IE 9]>
       <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]--><script src="scripts/third-party/hljs.js" defer="defer"></script><script src="scripts/third-party/hljs-line-num.js" defer="defer"></script><script src="scripts/third-party/popper.js" defer="defer"></script><script src="scripts/third-party/tippy.js" defer="defer"></script><script src="scripts/third-party/tocbot.min.js"></script><script>var baseURL="/",locationPathname="";baseURL=(locationPathname=document.location.pathname).substr(0,locationPathname.lastIndexOf("/")+1)</script><link rel="stylesheet" href="styles/clean-jsdoc-theme.min.css"><svg aria-hidden="true" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="display:none"><defs><symbol id="copy-icon" viewbox="0 0 488.3 488.3"><g><path d="M314.25,85.4h-227c-21.3,0-38.6,17.3-38.6,38.6v325.7c0,21.3,17.3,38.6,38.6,38.6h227c21.3,0,38.6-17.3,38.6-38.6V124    C352.75,102.7,335.45,85.4,314.25,85.4z M325.75,449.6c0,6.4-5.2,11.6-11.6,11.6h-227c-6.4,0-11.6-5.2-11.6-11.6V124    c0-6.4,5.2-11.6,11.6-11.6h227c6.4,0,11.6,5.2,11.6,11.6V449.6z"/><path d="M401.05,0h-227c-21.3,0-38.6,17.3-38.6,38.6c0,7.5,6,13.5,13.5,13.5s13.5-6,13.5-13.5c0-6.4,5.2-11.6,11.6-11.6h227    c6.4,0,11.6,5.2,11.6,11.6v325.7c0,6.4-5.2,11.6-11.6,11.6c-7.5,0-13.5,6-13.5,13.5s6,13.5,13.5,13.5c21.3,0,38.6-17.3,38.6-38.6    V38.6C439.65,17.3,422.35,0,401.05,0z"/></g></symbol><symbol id="search-icon" viewBox="0 0 512 512"><g><g><path d="M225.474,0C101.151,0,0,101.151,0,225.474c0,124.33,101.151,225.474,225.474,225.474    c124.33,0,225.474-101.144,225.474-225.474C450.948,101.151,349.804,0,225.474,0z M225.474,409.323    c-101.373,0-183.848-82.475-183.848-183.848S124.101,41.626,225.474,41.626s183.848,82.475,183.848,183.848    S326.847,409.323,225.474,409.323z"/></g></g><g><g><path d="M505.902,476.472L386.574,357.144c-8.131-8.131-21.299-8.131-29.43,0c-8.131,8.124-8.131,21.306,0,29.43l119.328,119.328    c4.065,4.065,9.387,6.098,14.715,6.098c5.321,0,10.649-2.033,14.715-6.098C514.033,497.778,514.033,484.596,505.902,476.472z"/></g></g></symbol><symbol id="font-size-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M11.246 15H4.754l-2 5H.6L7 4h2l6.4 16h-2.154l-2-5zm-.8-2L8 6.885 5.554 13h4.892zM21 12.535V12h2v8h-2v-.535a4 4 0 1 1 0-6.93zM19 18a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/></symbol><symbol id="add-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M11 11V5h2v6h6v2h-6v6h-2v-6H5v-2z"/></symbol><symbol id="minus-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M5 11h14v2H5z"/></symbol><symbol id="dark-theme-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M10 7a7 7 0 0 0 12 4.9v.1c0 5.523-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2h.1A6.979 6.979 0 0 0 10 7zm-6 5a8 8 0 0 0 15.062 3.762A9 9 0 0 1 8.238 4.938 7.999 7.999 0 0 0 4 12z"/></symbol><symbol id="light-theme-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M12 18a6 6 0 1 1 0-12 6 6 0 0 1 0 12zm0-2a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM11 1h2v3h-2V1zm0 19h2v3h-2v-3zM3.515 4.929l1.414-1.414L7.05 5.636 5.636 7.05 3.515 4.93zM16.95 18.364l1.414-1.414 2.121 2.121-1.414 1.414-2.121-2.121zm2.121-14.85l1.414 1.415-2.121 2.121-1.414-1.414 2.121-2.121zM5.636 16.95l1.414 1.414-2.121 2.121-1.414-1.414 2.121-2.121zM23 11v2h-3v-2h3zM4 11v2H1v-2h3z"/></symbol><symbol id="reset-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M18.537 19.567A9.961 9.961 0 0 1 12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10c0 2.136-.67 4.116-1.81 5.74L17 12h3a8 8 0 1 0-2.46 5.772l.997 1.795z"/></symbol><symbol id="down-icon" viewBox="0 0 16 16"><path fill-rule="evenodd" clip-rule="evenodd" d="M12.7803 6.21967C13.0732 6.51256 13.0732 6.98744 12.7803 7.28033L8.53033 11.5303C8.23744 11.8232 7.76256 11.8232 7.46967 11.5303L3.21967 7.28033C2.92678 6.98744 2.92678 6.51256 3.21967 6.21967C3.51256 5.92678 3.98744 5.92678 4.28033 6.21967L8 9.93934L11.7197 6.21967C12.0126 5.92678 12.4874 5.92678 12.7803 6.21967Z"></path></symbol><symbol id="codepen-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M16.5 13.202L13 15.535v3.596L19.197 15 16.5 13.202zM14.697 12L12 10.202 9.303 12 12 13.798 14.697 12zM20 10.869L18.303 12 20 13.131V10.87zM19.197 9L13 4.869v3.596l3.5 2.333L19.197 9zM7.5 10.798L11 8.465V4.869L4.803 9 7.5 10.798zM4.803 15L11 19.131v-3.596l-3.5-2.333L4.803 15zM4 13.131L5.697 12 4 10.869v2.262zM2 9a1 1 0 0 1 .445-.832l9-6a1 1 0 0 1 1.11 0l9 6A1 1 0 0 1 22 9v6a1 1 0 0 1-.445.832l-9 6a1 1 0 0 1-1.11 0l-9-6A1 1 0 0 1 2 15V9z"/></symbol><symbol id="close-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z"/></symbol><symbol id="menu-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M3 4h18v2H3V4zm0 7h18v2H3v-2zm0 7h18v2H3v-2z"/></symbol></defs></svg></head><body data-theme="dark"><div class="sidebar-container"><div class="sidebar" id="sidebar"><div class="sidebar-items-container"><div class="sidebar-section-title with-arrow" data-isopen="false" id="sidebar-classes"><div>Classes</div><svg><use xlink:href="#down-icon"></use></svg></div><div class="sidebar-section-children-container"><div class="sidebar-section-children"><a href="AnchorsAndHandles.html">AnchorsAndHandles</a></div><div class="sidebar-section-children"><a href="Arc.html">Arc</a></div><div class="sidebar-section-children"><a href="BoundingBox.html">BoundingBox</a></div><div class="sidebar-section-children"><a href="Circle.html">Circle</a></div><div class="sidebar-section-children"><a href="Color.html">Color</a></div><div class="sidebar-section-children"><a href="ColorStop.html">ColorStop</a></div><div class="sidebar-section-children"><a href="CubicBezierTuple.html">CubicBezierTuple</a></div><div class="sidebar-section-children"><a href="EquilateralTriangle.html">EquilateralTriangle</a></div><div class="sidebar-section-children"><a href="FontFace.html">FontFace</a></div><div class="sidebar-section-children"><a href="ImageBitmap.html">ImageBitmap</a></div><div class="sidebar-section-children"><a href="IntegerLerp.html">IntegerLerp</a></div><div class="sidebar-section-children"><a href="Line.html">Line</a></div><div class="sidebar-section-children"><a href="LinearGradient.html">LinearGradient</a></div><div class="sidebar-section-children"><a href="Path2D.html">Path2D</a></div><div class="sidebar-section-children"><a href="Point2D.html">Point2D</a></div><div class="sidebar-section-children"><a href="RadialGradient.html">RadialGradient</a></div><div class="sidebar-section-children"><a href="Rectangle.html">Rectangle</a></div><div class="sidebar-section-children"><a href="RightTriangle.html">RightTriangle</a></div><div class="sidebar-section-children"><a href="Square.html">Square</a></div><div class="sidebar-section-children"><a href="Style.html">Style</a></div><div class="sidebar-section-children"><a href="TransformationMatrix.html">TransformationMatrix</a></div><div class="sidebar-section-children"><a href="Triangle.html">Triangle</a></div><div class="sidebar-section-children"><a href="Typst.html">Typst</a></div><div class="sidebar-section-children"><a href="VectorObject.html">VectorObject</a></div><div class="sidebar-section-children"><a href="VectorObjectBuilder.html">VectorObjectBuilder</a></div><div class="sidebar-section-children"><a href="module.exports.html">exports</a></div><div class="sidebar-section-children"><a href="module.exports.html">exports</a></div><div class="sidebar-section-children"><a href="module.exports.html">exports</a></div></div><div class="sidebar-section-title with-arrow" data-isopen="false" id="sidebar-tutorials"><div>Tutorials</div><svg><use xlink:href="#down-icon"></use></svg></div><div class="sidebar-section-children-container"><div class="sidebar-section-children"><a href="tutorial-Initial tutorials.html">Initial tutorials</a></div></div><div class="sidebar-section-title with-arrow" data-isopen="false" id="sidebar-global"><div>Global</div><svg><use xlink:href="#down-icon"></use></svg></div><div class="sidebar-section-children-container"><div class="sidebar-section-children"><a href="global.html#inverse_lerp">inverse_lerp</a></div><div class="sidebar-section-children"><a href="global.html#lerp">lerp</a></div><div class="sidebar-section-children"><a href="global.html#matrix_product">matrix_product</a></div><div class="sidebar-section-children"><a href="global.html#matrix_product_path">matrix_product_path</a></div><div class="sidebar-section-children"><a href="global.html#play">play</a></div><div class="sidebar-section-children"><a href="global.html#render">render</a></div><div class="sidebar-section-children"><a href="global.html#render">render</a></div></div></div></div></div><div class="navbar-container" id="VuAckcnZhf"><nav class="navbar"><div class="navbar-left-items"></div><div class="navbar-right-items"><div class="navbar-right-item"><button class="icon-button search-button" aria-label="open-search"><svg><use xlink:href="#search-icon"></use></svg></button></div><div class="navbar-right-item"><button class="icon-button theme-toggle" aria-label="toggle-theme"><svg><use class="theme-svg-use" xlink:href="#light-theme-icon"></use></svg></button></div><div class="navbar-right-item"><button class="icon-button font-size" aria-label="change-font-size"><svg><use xlink:href="#font-size-icon"></use></svg></button></div></div><nav></nav></nav></div><div class="toc-container"><div class="toc-content"><span class="bold">On this page</span><div id="eed4d2a0bfd64539bb9df78095dec881"></div></div></div><div class="body-wrapper"><div class="main-content"><div class="main-wrapper"><section id="source-page" class="source-page"><header><h1 id="title" class="has-anchor">pkg_index.js</h1></header><article><pre class="prettyprint source lang-js"><code>let wasm;
+    <![endif]--><script src="scripts/third-party/hljs.js" defer="defer"></script><script src="scripts/third-party/hljs-line-num.js" defer="defer"></script><script src="scripts/third-party/popper.js" defer="defer"></script><script src="scripts/third-party/tippy.js" defer="defer"></script><script src="scripts/third-party/tocbot.min.js"></script><script>var baseURL="/",locationPathname="";baseURL=(locationPathname=document.location.pathname).substr(0,locationPathname.lastIndexOf("/")+1)</script><link rel="stylesheet" href="styles/clean-jsdoc-theme.min.css"><svg aria-hidden="true" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="display:none"><defs><symbol id="copy-icon" viewbox="0 0 488.3 488.3"><g><path d="M314.25,85.4h-227c-21.3,0-38.6,17.3-38.6,38.6v325.7c0,21.3,17.3,38.6,38.6,38.6h227c21.3,0,38.6-17.3,38.6-38.6V124    C352.75,102.7,335.45,85.4,314.25,85.4z M325.75,449.6c0,6.4-5.2,11.6-11.6,11.6h-227c-6.4,0-11.6-5.2-11.6-11.6V124    c0-6.4,5.2-11.6,11.6-11.6h227c6.4,0,11.6,5.2,11.6,11.6V449.6z"/><path d="M401.05,0h-227c-21.3,0-38.6,17.3-38.6,38.6c0,7.5,6,13.5,13.5,13.5s13.5-6,13.5-13.5c0-6.4,5.2-11.6,11.6-11.6h227    c6.4,0,11.6,5.2,11.6,11.6v325.7c0,6.4-5.2,11.6-11.6,11.6c-7.5,0-13.5,6-13.5,13.5s6,13.5,13.5,13.5c21.3,0,38.6-17.3,38.6-38.6    V38.6C439.65,17.3,422.35,0,401.05,0z"/></g></symbol><symbol id="search-icon" viewBox="0 0 512 512"><g><g><path d="M225.474,0C101.151,0,0,101.151,0,225.474c0,124.33,101.151,225.474,225.474,225.474    c124.33,0,225.474-101.144,225.474-225.474C450.948,101.151,349.804,0,225.474,0z M225.474,409.323    c-101.373,0-183.848-82.475-183.848-183.848S124.101,41.626,225.474,41.626s183.848,82.475,183.848,183.848    S326.847,409.323,225.474,409.323z"/></g></g><g><g><path d="M505.902,476.472L386.574,357.144c-8.131-8.131-21.299-8.131-29.43,0c-8.131,8.124-8.131,21.306,0,29.43l119.328,119.328    c4.065,4.065,9.387,6.098,14.715,6.098c5.321,0,10.649-2.033,14.715-6.098C514.033,497.778,514.033,484.596,505.902,476.472z"/></g></g></symbol><symbol id="font-size-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M11.246 15H4.754l-2 5H.6L7 4h2l6.4 16h-2.154l-2-5zm-.8-2L8 6.885 5.554 13h4.892zM21 12.535V12h2v8h-2v-.535a4 4 0 1 1 0-6.93zM19 18a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/></symbol><symbol id="add-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M11 11V5h2v6h6v2h-6v6h-2v-6H5v-2z"/></symbol><symbol id="minus-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M5 11h14v2H5z"/></symbol><symbol id="dark-theme-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M10 7a7 7 0 0 0 12 4.9v.1c0 5.523-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2h.1A6.979 6.979 0 0 0 10 7zm-6 5a8 8 0 0 0 15.062 3.762A9 9 0 0 1 8.238 4.938 7.999 7.999 0 0 0 4 12z"/></symbol><symbol id="light-theme-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M12 18a6 6 0 1 1 0-12 6 6 0 0 1 0 12zm0-2a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM11 1h2v3h-2V1zm0 19h2v3h-2v-3zM3.515 4.929l1.414-1.414L7.05 5.636 5.636 7.05 3.515 4.93zM16.95 18.364l1.414-1.414 2.121 2.121-1.414 1.414-2.121-2.121zm2.121-14.85l1.414 1.415-2.121 2.121-1.414-1.414 2.121-2.121zM5.636 16.95l1.414 1.414-2.121 2.121-1.414-1.414 2.121-2.121zM23 11v2h-3v-2h3zM4 11v2H1v-2h3z"/></symbol><symbol id="reset-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M18.537 19.567A9.961 9.961 0 0 1 12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10c0 2.136-.67 4.116-1.81 5.74L17 12h3a8 8 0 1 0-2.46 5.772l.997 1.795z"/></symbol><symbol id="down-icon" viewBox="0 0 16 16"><path fill-rule="evenodd" clip-rule="evenodd" d="M12.7803 6.21967C13.0732 6.51256 13.0732 6.98744 12.7803 7.28033L8.53033 11.5303C8.23744 11.8232 7.76256 11.8232 7.46967 11.5303L3.21967 7.28033C2.92678 6.98744 2.92678 6.51256 3.21967 6.21967C3.51256 5.92678 3.98744 5.92678 4.28033 6.21967L8 9.93934L11.7197 6.21967C12.0126 5.92678 12.4874 5.92678 12.7803 6.21967Z"></path></symbol><symbol id="codepen-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M16.5 13.202L13 15.535v3.596L19.197 15 16.5 13.202zM14.697 12L12 10.202 9.303 12 12 13.798 14.697 12zM20 10.869L18.303 12 20 13.131V10.87zM19.197 9L13 4.869v3.596l3.5 2.333L19.197 9zM7.5 10.798L11 8.465V4.869L4.803 9 7.5 10.798zM4.803 15L11 19.131v-3.596l-3.5-2.333L4.803 15zM4 13.131L5.697 12 4 10.869v2.262zM2 9a1 1 0 0 1 .445-.832l9-6a1 1 0 0 1 1.11 0l9 6A1 1 0 0 1 22 9v6a1 1 0 0 1-.445.832l-9 6a1 1 0 0 1-1.11 0l-9-6A1 1 0 0 1 2 15V9z"/></symbol><symbol id="close-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z"/></symbol><symbol id="menu-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M3 4h18v2H3V4zm0 7h18v2H3v-2zm0 7h18v2H3v-2z"/></symbol></defs></svg></head><body data-theme="dark"><div class="sidebar-container"><div class="sidebar" id="sidebar"><div class="sidebar-items-container"><div class="sidebar-section-title with-arrow" data-isopen="false" id="sidebar-classes"><div>Classes</div><svg><use xlink:href="#down-icon"></use></svg></div><div class="sidebar-section-children-container"><div class="sidebar-section-children"><a href="AnchorsAndHandles.html">AnchorsAndHandles</a></div><div class="sidebar-section-children"><a href="Arc.html">Arc</a></div><div class="sidebar-section-children"><a href="BoundingBox.html">BoundingBox</a></div><div class="sidebar-section-children"><a href="Circle.html">Circle</a></div><div class="sidebar-section-children"><a href="Color.html">Color</a></div><div class="sidebar-section-children"><a href="ColorStop.html">ColorStop</a></div><div class="sidebar-section-children"><a href="CubicBezierTuple.html">CubicBezierTuple</a></div><div class="sidebar-section-children"><a href="EquilateralTriangle.html">EquilateralTriangle</a></div><div class="sidebar-section-children"><a href="FontFace.html">FontFace</a></div><div class="sidebar-section-children"><a href="ImageBitmap.html">ImageBitmap</a></div><div class="sidebar-section-children"><a href="ImageData.html">ImageData</a></div><div class="sidebar-section-children"><a href="ImageLibrary.html">ImageLibrary</a></div><div class="sidebar-section-children"><a href="IntegerLerp.html">IntegerLerp</a></div><div class="sidebar-section-children"><a href="Line.html">Line</a></div><div class="sidebar-section-children"><a href="LinearGradient.html">LinearGradient</a></div><div class="sidebar-section-children"><a href="Path2D.html">Path2D</a></div><div class="sidebar-section-children"><a href="Point2D.html">Point2D</a></div><div class="sidebar-section-children"><a href="RadialGradient.html">RadialGradient</a></div><div class="sidebar-section-children"><a href="Rectangle.html">Rectangle</a></div><div class="sidebar-section-children"><a href="RightTriangle.html">RightTriangle</a></div><div class="sidebar-section-children"><a href="Square.html">Square</a></div><div class="sidebar-section-children"><a href="Style.html">Style</a></div><div class="sidebar-section-children"><a href="TransformationMatrix.html">TransformationMatrix</a></div><div class="sidebar-section-children"><a href="Triangle.html">Triangle</a></div><div class="sidebar-section-children"><a href="Typst.html">Typst</a></div><div class="sidebar-section-children"><a href="VectorObject.html">VectorObject</a></div><div class="sidebar-section-children"><a href="VectorObjectBuilder.html">VectorObjectBuilder</a></div><div class="sidebar-section-children"><a href="module.exports.html">exports</a></div><div class="sidebar-section-children"><a href="module.exports.html">exports</a></div><div class="sidebar-section-children"><a href="module.exports.html">exports</a></div></div><div class="sidebar-section-title with-arrow" data-isopen="false" id="sidebar-tutorials"><div>Tutorials</div><svg><use xlink:href="#down-icon"></use></svg></div><div class="sidebar-section-children-container"><div class="sidebar-section-children"><a href="tutorial-Initial tutorials.html">Initial tutorials</a></div></div><div class="sidebar-section-title with-arrow" data-isopen="false" id="sidebar-global"><div>Global</div><svg><use xlink:href="#down-icon"></use></svg></div><div class="sidebar-section-children-container"><div class="sidebar-section-children"><a href="global.html#inverse_lerp">inverse_lerp</a></div><div class="sidebar-section-children"><a href="global.html#lerp">lerp</a></div><div class="sidebar-section-children"><a href="global.html#matrix_product">matrix_product</a></div><div class="sidebar-section-children"><a href="global.html#matrix_product_path">matrix_product_path</a></div><div class="sidebar-section-children"><a href="global.html#play">play</a></div><div class="sidebar-section-children"><a href="global.html#render">render</a></div><div class="sidebar-section-children"><a href="global.html#render">render</a></div></div></div></div></div><div class="navbar-container" id="VuAckcnZhf"><nav class="navbar"><div class="navbar-left-items"></div><div class="navbar-right-items"><div class="navbar-right-item"><button class="icon-button search-button" aria-label="open-search"><svg><use xlink:href="#search-icon"></use></svg></button></div><div class="navbar-right-item"><button class="icon-button theme-toggle" aria-label="toggle-theme"><svg><use class="theme-svg-use" xlink:href="#light-theme-icon"></use></svg></button></div><div class="navbar-right-item"><button class="icon-button font-size" aria-label="change-font-size"><svg><use xlink:href="#font-size-icon"></use></svg></button></div></div><nav></nav></nav></div><div class="toc-container"><div class="toc-content"><span class="bold">On this page</span><div id="eed4d2a0bfd64539bb9df78095dec881"></div></div></div><div class="body-wrapper"><div class="main-content"><div class="main-wrapper"><section id="source-page" class="source-page"><header><h1 id="title" class="has-anchor">pkg_index.js</h1></header><article><pre class="prettyprint source lang-js"><code>let wasm;
 
 const cachedTextDecoder = (typeof TextDecoder !== 'undefined' ? new TextDecoder('utf-8', { ignoreBOM: true, fatal: true }) : { decode: () => { throw Error('TextDecoder not available') } } );
 
@@ -160,22 +160,6 @@ function _assertClass(instance, klass) {
     }
 }
 
-function addToExternrefTable0(obj) {
-    const idx = wasm.__externref_table_alloc();
-    wasm.__wbindgen_export_2.set(idx, obj);
-    return idx;
-}
-
-function passArrayJsValueToWasm0(array, malloc) {
-    const ptr = malloc(array.length * 4, 4) >>> 0;
-    for (let i = 0; i &lt; array.length; i++) {
-        const add = addToExternrefTable0(array[i]);
-        getDataViewMemory0().setUint32(ptr + 4 * i, add, true);
-    }
-    WASM_VECTOR_LEN = array.length;
-    return ptr;
-}
-
 let cachedFloat32ArrayMemory0 = null;
 
 function getFloat32ArrayMemory0() {
@@ -192,67 +176,10 @@ function passArrayF32ToWasm0(arg, malloc) {
     return ptr;
 }
 
-let cachedUint32ArrayMemory0 = null;
-
-function getUint32ArrayMemory0() {
-    if (cachedUint32ArrayMemory0 === null || cachedUint32ArrayMemory0.byteLength === 0) {
-        cachedUint32ArrayMemory0 = new Uint32Array(wasm.memory.buffer);
-    }
-    return cachedUint32ArrayMemory0;
-}
-
-function passArray32ToWasm0(arg, malloc) {
-    const ptr = malloc(arg.length * 4, 4) >>> 0;
-    getUint32ArrayMemory0().set(arg, ptr / 4);
-    WASM_VECTOR_LEN = arg.length;
-    return ptr;
-}
-
 function getArrayF32FromWasm0(ptr, len) {
     ptr = ptr >>> 0;
     return getFloat32ArrayMemory0().subarray(ptr / 4, ptr / 4 + len);
 }
-
-function getArrayJsValueFromWasm0(ptr, len) {
-    ptr = ptr >>> 0;
-    const mem = getDataViewMemory0();
-    const result = [];
-    for (let i = ptr; i &lt; ptr + 4 * len; i += 4) {
-        result.push(wasm.__wbindgen_export_2.get(mem.getUint32(i, true)));
-    }
-    wasm.__externref_drop_slice(ptr, len);
-    return result;
-}
-
-function takeFromExternrefTable0(idx) {
-    const value = wasm.__wbindgen_export_2.get(idx);
-    wasm.__externref_table_dealloc(idx);
-    return value;
-}
-/**
- * Linearly interpolates between two values given a progress value.
- * @param {number} a - The start value.
- * @param {number} b - The end value.
- * @param {number} t - The progress value.
- * @returns {number} The interpolated value.
- */
-export function lerp(a, b, t) {
-    const ret = wasm.lerp(a, b, t);
-    return ret;
-}
-
-/**
- * Returns the progress value between two numbers given an interpolated value.
- * @param {number} a - The start value.
- * @param {number} b - The end value.
- * @param {number} value - The value to find the progress of.
- * @returns {number} The progress value.
- */
-export function inverse_lerp(a, b, value) {
-    const ret = wasm.inverse_lerp(a, b, value);
-    return ret;
-}
-
 /**
  * Multiplies two matrices together.
  * @param {number[]} a - The first matrix to multiply as a flat array.
@@ -300,6 +227,78 @@ function passArray8ToWasm0(arg, malloc) {
 function getArrayU8FromWasm0(ptr, len) {
     ptr = ptr >>> 0;
     return getUint8ArrayMemory0().subarray(ptr / 1, ptr / 1 + len);
+}
+
+function getArrayJsValueFromWasm0(ptr, len) {
+    ptr = ptr >>> 0;
+    const mem = getDataViewMemory0();
+    const result = [];
+    for (let i = ptr; i &lt; ptr + 4 * len; i += 4) {
+        result.push(wasm.__wbindgen_export_2.get(mem.getUint32(i, true)));
+    }
+    wasm.__externref_drop_slice(ptr, len);
+    return result;
+}
+
+function addToExternrefTable0(obj) {
+    const idx = wasm.__externref_table_alloc();
+    wasm.__wbindgen_export_2.set(idx, obj);
+    return idx;
+}
+
+function passArrayJsValueToWasm0(array, malloc) {
+    const ptr = malloc(array.length * 4, 4) >>> 0;
+    for (let i = 0; i &lt; array.length; i++) {
+        const add = addToExternrefTable0(array[i]);
+        getDataViewMemory0().setUint32(ptr + 4 * i, add, true);
+    }
+    WASM_VECTOR_LEN = array.length;
+    return ptr;
+}
+
+function takeFromExternrefTable0(idx) {
+    const value = wasm.__wbindgen_export_2.get(idx);
+    wasm.__externref_table_dealloc(idx);
+    return value;
+}
+
+let cachedUint32ArrayMemory0 = null;
+
+function getUint32ArrayMemory0() {
+    if (cachedUint32ArrayMemory0 === null || cachedUint32ArrayMemory0.byteLength === 0) {
+        cachedUint32ArrayMemory0 = new Uint32Array(wasm.memory.buffer);
+    }
+    return cachedUint32ArrayMemory0;
+}
+
+function passArray32ToWasm0(arg, malloc) {
+    const ptr = malloc(arg.length * 4, 4) >>> 0;
+    getUint32ArrayMemory0().set(arg, ptr / 4);
+    WASM_VECTOR_LEN = arg.length;
+    return ptr;
+}
+/**
+ * Linearly interpolates between two values given a progress value.
+ * @param {number} a - The start value.
+ * @param {number} b - The end value.
+ * @param {number} t - The progress value.
+ * @returns {number} The interpolated value.
+ */
+export function lerp(a, b, t) {
+    const ret = wasm.lerp(a, b, t);
+    return ret;
+}
+
+/**
+ * Returns the progress value between two numbers given an interpolated value.
+ * @param {number} a - The start value.
+ * @param {number} b - The end value.
+ * @param {number} value - The value to find the progress of.
+ * @returns {number} The progress value.
+ */
+export function inverse_lerp(a, b, value) {
+    const ret = wasm.inverse_lerp(a, b, value);
+    return ret;
 }
 
 const AnchorsAndHandlesFinalization = (typeof FinalizationRegistry === 'undefined')
@@ -1461,12 +1460,17 @@ export class ImageBitmap {
     }
     /**
      * Sets the pixel data of the bitmap.
+     * @param {number} data_width - The number of pixels in a row of the bitmap.
+     * @param {number} data_height - The number of pixels in a column of the bitmap.
      * @param {Uint8Array} data - The pixel data of the bitmap.
      */
-    set data(data) {
+    set_data(data_width, data_height, data) {
         const ptr0 = passArray8ToWasm0(data, wasm.__wbindgen_malloc);
         const len0 = WASM_VECTOR_LEN;
-        wasm.imagebitmap_set_data(this.__wbg_ptr, ptr0, len0);
+        const ret = wasm.imagebitmap_set_data(this.__wbg_ptr, data_width, data_height, ptr0, len0);
+        if (ret[1]) {
+            throw takeFromExternrefTable0(ret[0]);
+        }
     }
     /**
      * Returns the default ImageBitmap, which is an empty bitmap.
@@ -1580,6 +1584,163 @@ export class ImageBitmap {
         _assertClass(bitmap2, ImageBitmap);
         const ret = wasm.imagebitmap_lerp(bitmap1.__wbg_ptr, bitmap2.__wbg_ptr, t);
         return ImageBitmap.__wrap(ret);
+    }
+}
+
+const ImageDataFinalization = (typeof FinalizationRegistry === 'undefined')
+    ? { register: () => {}, unregister: () => {} }
+    : new FinalizationRegistry(ptr => wasm.__wbg_imagedata_free(ptr >>> 0, 1));
+/**
+ * A ImageData represents the data of an image.
+ */
+export class ImageData {
+
+    static __wrap(ptr) {
+        ptr = ptr >>> 0;
+        const obj = Object.create(ImageData.prototype);
+        obj.__wbg_ptr = ptr;
+        ImageDataFinalization.register(obj, obj.__wbg_ptr, obj);
+        return obj;
+    }
+
+    __destroy_into_raw() {
+        const ptr = this.__wbg_ptr;
+        this.__wbg_ptr = 0;
+        ImageDataFinalization.unregister(this);
+        return ptr;
+    }
+
+    free() {
+        const ptr = this.__destroy_into_raw();
+        wasm.__wbg_imagedata_free(ptr, 0);
+    }
+    /**
+     * Creates a new ImageData from image data.
+     * @param {Uint8Array} data
+     */
+    constructor(data) {
+        const ptr0 = passArray8ToWasm0(data, wasm.__wbindgen_malloc);
+        const len0 = WASM_VECTOR_LEN;
+        const ret = wasm.imagedata_new(ptr0, len0);
+        this.__wbg_ptr = ret >>> 0;
+        ImageDataFinalization.register(this, this.__wbg_ptr, this);
+        return this;
+    }
+    /**
+     * Returns the data of the image.
+     * @returns {Uint8Array} The data of the image.
+     */
+    get data() {
+        const ret = wasm.imagedata_data(this.__wbg_ptr);
+        var v1 = getArrayU8FromWasm0(ret[0], ret[1]).slice();
+        wasm.__wbindgen_free(ret[0], ret[1] * 1, 1);
+        return v1;
+    }
+    /**
+     * Clones the image data.
+     * @returns {ImageData}
+     */
+    clone() {
+        const ret = wasm.imagedata_clone(this.__wbg_ptr);
+        return ImageData.__wrap(ret);
+    }
+}
+
+const ImageLibraryFinalization = (typeof FinalizationRegistry === 'undefined')
+    ? { register: () => {}, unregister: () => {} }
+    : new FinalizationRegistry(ptr => wasm.__wbg_imagelibrary_free(ptr >>> 0, 1));
+/**
+ * A ImageLibrary represents a mapping of image names to image data.
+ */
+export class ImageLibrary {
+
+    static __wrap(ptr) {
+        ptr = ptr >>> 0;
+        const obj = Object.create(ImageLibrary.prototype);
+        obj.__wbg_ptr = ptr;
+        ImageLibraryFinalization.register(obj, obj.__wbg_ptr, obj);
+        return obj;
+    }
+
+    __destroy_into_raw() {
+        const ptr = this.__wbg_ptr;
+        this.__wbg_ptr = 0;
+        ImageLibraryFinalization.unregister(this);
+        return ptr;
+    }
+
+    free() {
+        const ptr = this.__destroy_into_raw();
+        wasm.__wbg_imagelibrary_free(ptr, 0);
+    }
+    /**
+     * Creates a new ImageLibrary from image data.
+     */
+    constructor() {
+        const ret = wasm.imagelibrary_new();
+        this.__wbg_ptr = ret >>> 0;
+        ImageLibraryFinalization.register(this, this.__wbg_ptr, this);
+        return this;
+    }
+    /**
+     * Returns the image names in the library.
+     * @returns {string[]} The names of the images in the library.
+     */
+    get keys() {
+        const ret = wasm.imagelibrary_keys(this.__wbg_ptr);
+        var v1 = getArrayJsValueFromWasm0(ret[0], ret[1]).slice();
+        wasm.__wbindgen_free(ret[0], ret[1] * 4, 4);
+        return v1;
+    }
+    /**
+     * Returns the image data
+     * @returns {ImageData[]} The data of the image.
+     */
+    get values() {
+        const ret = wasm.imagelibrary_values(this.__wbg_ptr);
+        var v1 = getArrayJsValueFromWasm0(ret[0], ret[1]).slice();
+        wasm.__wbindgen_free(ret[0], ret[1] * 4, 4);
+        return v1;
+    }
+    /**
+     * Gets the image data for a given image name.
+     * @param {string} name
+     * @returns {ImageData | undefined} The data of the image.
+     */
+    get(name) {
+        const ptr0 = passStringToWasm0(name, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len0 = WASM_VECTOR_LEN;
+        const ret = wasm.imagelibrary_get(this.__wbg_ptr, ptr0, len0);
+        return ret === 0 ? undefined : ImageData.__wrap(ret);
+    }
+    /**
+     * Sets the image data for a given image name.
+     * @param {string} name
+     * @param {ImageData} data
+     */
+    set(name, data) {
+        const ptr0 = passStringToWasm0(name, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len0 = WASM_VECTOR_LEN;
+        _assertClass(data, ImageData);
+        var ptr1 = data.__destroy_into_raw();
+        wasm.imagelibrary_set(this.__wbg_ptr, ptr0, len0, ptr1);
+    }
+    /**
+     * Removes the image data for a given image name.
+     * @param {string} name
+     */
+    remove(name) {
+        const ptr0 = passStringToWasm0(name, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len0 = WASM_VECTOR_LEN;
+        wasm.imagelibrary_remove(this.__wbg_ptr, ptr0, len0);
+    }
+    /**
+     * Clones the image library.
+     * @returns {ImageLibrary}
+     */
+    clone() {
+        const ret = wasm.imagelibrary_clone(this.__wbg_ptr);
+        return ImageLibrary.__wrap(ret);
     }
 }
 
@@ -2392,7 +2553,7 @@ export class Point2D {
      * @returns {Point2D}
      */
     clone() {
-        const ret = wasm.arc_center(this.__wbg_ptr);
+        const ret = wasm.cubicbeziertuple_start_anchor(this.__wbg_ptr);
         return Point2D.__wrap(ret);
     }
     /**
@@ -3256,7 +3417,7 @@ export class TransformationMatrix {
      * @returns {number}
      */
     get a() {
-        const ret = wasm.__wbg_get_point2d_x(this.__wbg_ptr);
+        const ret = wasm.__wbg_get_transformationmatrix_a(this.__wbg_ptr);
         return ret;
     }
     /**
@@ -3264,14 +3425,14 @@ export class TransformationMatrix {
      * @param {number} arg0
      */
     set a(arg0) {
-        wasm.__wbg_set_point2d_x(this.__wbg_ptr, arg0);
+        wasm.__wbg_set_transformationmatrix_a(this.__wbg_ptr, arg0);
     }
     /**
      * The b component of the matrix.
      * @returns {number}
      */
     get b() {
-        const ret = wasm.__wbg_get_point2d_y(this.__wbg_ptr);
+        const ret = wasm.__wbg_get_transformationmatrix_b(this.__wbg_ptr);
         return ret;
     }
     /**
@@ -3279,7 +3440,7 @@ export class TransformationMatrix {
      * @param {number} arg0
      */
     set b(arg0) {
-        wasm.__wbg_set_point2d_y(this.__wbg_ptr, arg0);
+        wasm.__wbg_set_transformationmatrix_b(this.__wbg_ptr, arg0);
     }
     /**
      * The c component of the matrix.
@@ -3536,7 +3697,7 @@ export class Typst {
     }
     /**
      * Creates a new Typst object from a source string.
-     * @param {string} source - The source of the typesetting object.
+     * @param {string} source - The source of the Typst object.
      */
     constructor(source) {
         const ptr0 = passStringToWasm0(source, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
@@ -3548,7 +3709,7 @@ export class Typst {
     }
     /**
      * Returns the source of the Typst object.
-     * @returns {string} The source of the typesetting object.
+     * @returns {string} The source of the Typst object.
      */
     get source() {
         let deferred1_0;
@@ -3564,16 +3725,16 @@ export class Typst {
     }
     /**
      * Renders the Typst object to an SVG string.
-     * @param {FontFace[] | null} [font_faces] - The font faces to use when rendering the typesetting object.
+     * @param {FontFace[] | null} [font_faces] - The font faces to use when rendering the Typst object.
      * @returns {string} The SVG string.
      */
-    render_to_svg(font_faces) {
+    to_svg(font_faces) {
         let deferred3_0;
         let deferred3_1;
         try {
             var ptr0 = isLikeNone(font_faces) ? 0 : passArrayJsValueToWasm0(font_faces, wasm.__wbindgen_malloc);
             var len0 = WASM_VECTOR_LEN;
-            const ret = wasm.typst_render_to_svg(this.__wbg_ptr, ptr0, len0);
+            const ret = wasm.typst_to_svg(this.__wbg_ptr, ptr0, len0);
             var ptr2 = ret[0];
             var len2 = ret[1];
             if (ret[3]) {
@@ -3589,13 +3750,13 @@ export class Typst {
     }
     /**
      * Renders the Typst object to a VectorObjectBuilder.
-     * @param {FontFace[] | null} [font_faces] - The FontFaces to use when rendering the typesetting object, if any.
+     * @param {FontFace[] | null} [font_faces] - The FontFaces to use when rendering the Typst object, if any.
      * @returns {VectorObjectBuilder} A VectorObjectBuilder representing the typesetting object.
      */
-    render_to_vector_object_builder(font_faces) {
+    vector_object_builder(font_faces) {
         var ptr0 = isLikeNone(font_faces) ? 0 : passArrayJsValueToWasm0(font_faces, wasm.__wbindgen_malloc);
         var len0 = WASM_VECTOR_LEN;
-        const ret = wasm.typst_render_to_vector_object_builder(this.__wbg_ptr, ptr0, len0);
+        const ret = wasm.typst_vector_object_builder(this.__wbg_ptr, ptr0, len0);
         if (ret[2]) {
             throw takeFromExternrefTable0(ret[1]);
         }
@@ -4022,14 +4183,20 @@ export class VectorObjectBuilder {
      * Creates a new VectorObjectBuilder from an SVG string.
      * @param {string} svg - The SVG string to create the vector object builder from.
      * @param {FontFace[] | null} [font_faces] - Data from font faces to use for text rendering.
+     * @param {ImageLibrary | null} [image_library] - Image library to use for image rendering.
      * @returns {VectorObjectBuilder} A new vector object builder.
      */
-    static from_svg(svg, font_faces) {
+    static from_svg(svg, font_faces, image_library) {
         const ptr0 = passStringToWasm0(svg, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
         const len0 = WASM_VECTOR_LEN;
         var ptr1 = isLikeNone(font_faces) ? 0 : passArrayJsValueToWasm0(font_faces, wasm.__wbindgen_malloc);
         var len1 = WASM_VECTOR_LEN;
-        const ret = wasm.vectorobjectbuilder_from_svg(ptr0, len0, ptr1, len1);
+        let ptr2 = 0;
+        if (!isLikeNone(image_library)) {
+            _assertClass(image_library, ImageLibrary);
+            ptr2 = image_library.__destroy_into_raw();
+        }
+        const ret = wasm.vectorobjectbuilder_from_svg(ptr0, len0, ptr1, len1, ptr2);
         return VectorObjectBuilder.__wrap(ret);
     }
     /**
@@ -4753,7 +4920,11 @@ function __wbg_get_imports() {
         const ret = arg0.getTime();
         return ret;
     };
-    imports.wbg.__wbg_log_1005d0103de713ad = function(arg0, arg1) {
+    imports.wbg.__wbg_imagedata_new = function(arg0) {
+        const ret = ImageData.__wrap(arg0);
+        return ret;
+    };
+    imports.wbg.__wbg_log_aeab86d7deb9a11e = function(arg0, arg1) {
         console.log(getStringFromWasm0(arg0, arg1));
     };
     imports.wbg.__wbg_new0_f788a2397c7ca929 = function() {
@@ -4896,4 +5067,4 @@ async function __wbg_init(module_or_path) {
 
 export { initSync };
 export default __wbg_init;
-</code></pre></article></section></div></div></div><div class="search-container" id="PkfLWpAbet" style="display:none"><div class="wrapper" id="iCxFxjkHbP"><button class="icon-button search-close-button" id="VjLlGakifb" aria-label="close search"><svg><use xlink:href="#close-icon"></use></svg></button><div class="search-box-c"><svg><use xlink:href="#search-icon"></use></svg> <input type="text" id="vpcKVYIppa" class="search-input" placeholder="Search..." autofocus></div><div class="search-result-c" id="fWwVHRuDuN"><span class="search-result-c-text">Type anything to view search result</span></div></div></div><div class="mobile-menu-icon-container"><button class="icon-button" id="mobile-menu" data-isopen="false" aria-label="menu"><svg><use xlink:href="#menu-icon"></use></svg></button></div><div id="mobile-sidebar" class="mobile-sidebar-container"><div class="mobile-sidebar-wrapper"><div class="mobile-nav-links"></div><div class="mobile-sidebar-items-c"><div class="sidebar-section-title with-arrow" data-isopen="false" id="sidebar-classes"><div>Classes</div><svg><use xlink:href="#down-icon"></use></svg></div><div class="sidebar-section-children-container"><div class="sidebar-section-children"><a href="AnchorsAndHandles.html">AnchorsAndHandles</a></div><div class="sidebar-section-children"><a href="Arc.html">Arc</a></div><div class="sidebar-section-children"><a href="BoundingBox.html">BoundingBox</a></div><div class="sidebar-section-children"><a href="Circle.html">Circle</a></div><div class="sidebar-section-children"><a href="Color.html">Color</a></div><div class="sidebar-section-children"><a href="ColorStop.html">ColorStop</a></div><div class="sidebar-section-children"><a href="CubicBezierTuple.html">CubicBezierTuple</a></div><div class="sidebar-section-children"><a href="EquilateralTriangle.html">EquilateralTriangle</a></div><div class="sidebar-section-children"><a href="FontFace.html">FontFace</a></div><div class="sidebar-section-children"><a href="ImageBitmap.html">ImageBitmap</a></div><div class="sidebar-section-children"><a href="IntegerLerp.html">IntegerLerp</a></div><div class="sidebar-section-children"><a href="Line.html">Line</a></div><div class="sidebar-section-children"><a href="LinearGradient.html">LinearGradient</a></div><div class="sidebar-section-children"><a href="Path2D.html">Path2D</a></div><div class="sidebar-section-children"><a href="Point2D.html">Point2D</a></div><div class="sidebar-section-children"><a href="RadialGradient.html">RadialGradient</a></div><div class="sidebar-section-children"><a href="Rectangle.html">Rectangle</a></div><div class="sidebar-section-children"><a href="RightTriangle.html">RightTriangle</a></div><div class="sidebar-section-children"><a href="Square.html">Square</a></div><div class="sidebar-section-children"><a href="Style.html">Style</a></div><div class="sidebar-section-children"><a href="TransformationMatrix.html">TransformationMatrix</a></div><div class="sidebar-section-children"><a href="Triangle.html">Triangle</a></div><div class="sidebar-section-children"><a href="Typst.html">Typst</a></div><div class="sidebar-section-children"><a href="VectorObject.html">VectorObject</a></div><div class="sidebar-section-children"><a href="VectorObjectBuilder.html">VectorObjectBuilder</a></div><div class="sidebar-section-children"><a href="module.exports.html">exports</a></div><div class="sidebar-section-children"><a href="module.exports.html">exports</a></div><div class="sidebar-section-children"><a href="module.exports.html">exports</a></div></div><div class="sidebar-section-title with-arrow" data-isopen="false" id="sidebar-tutorials"><div>Tutorials</div><svg><use xlink:href="#down-icon"></use></svg></div><div class="sidebar-section-children-container"><div class="sidebar-section-children"><a href="tutorial-Initial tutorials.html">Initial tutorials</a></div></div><div class="sidebar-section-title with-arrow" data-isopen="false" id="sidebar-global"><div>Global</div><svg><use xlink:href="#down-icon"></use></svg></div><div class="sidebar-section-children-container"><div class="sidebar-section-children"><a href="global.html#inverse_lerp">inverse_lerp</a></div><div class="sidebar-section-children"><a href="global.html#lerp">lerp</a></div><div class="sidebar-section-children"><a href="global.html#matrix_product">matrix_product</a></div><div class="sidebar-section-children"><a href="global.html#matrix_product_path">matrix_product_path</a></div><div class="sidebar-section-children"><a href="global.html#play">play</a></div><div class="sidebar-section-children"><a href="global.html#render">render</a></div><div class="sidebar-section-children"><a href="global.html#render">render</a></div></div></div><div class="mobile-navbar-actions"><div class="navbar-right-item"><button class="icon-button search-button" aria-label="open-search"><svg><use xlink:href="#search-icon"></use></svg></button></div><div class="navbar-right-item"><button class="icon-button theme-toggle" aria-label="toggle-theme"><svg><use class="theme-svg-use" xlink:href="#light-theme-icon"></use></svg></button></div><div class="navbar-right-item"><button class="icon-button font-size" aria-label="change-font-size"><svg><use xlink:href="#font-size-icon"></use></svg></button></div></div></div></div><script type="text/javascript" src="scripts/core.min.js"></script><script src="scripts/search.min.js" defer="defer"></script><script src="scripts/third-party/fuse.js" defer="defer"></script><script type="text/javascript">var tocbotInstance=tocbot.init({tocSelector:"#eed4d2a0bfd64539bb9df78095dec881",contentSelector:".main-content",headingSelector:"h1, h2, h3",hasInnerContainers:!0,scrollContainer:".main-content",headingsOffset:130,onClick:bringLinkToView})</script></body></html>
+</code></pre></article></section></div></div></div><div class="search-container" id="PkfLWpAbet" style="display:none"><div class="wrapper" id="iCxFxjkHbP"><button class="icon-button search-close-button" id="VjLlGakifb" aria-label="close search"><svg><use xlink:href="#close-icon"></use></svg></button><div class="search-box-c"><svg><use xlink:href="#search-icon"></use></svg> <input type="text" id="vpcKVYIppa" class="search-input" placeholder="Search..." autofocus></div><div class="search-result-c" id="fWwVHRuDuN"><span class="search-result-c-text">Type anything to view search result</span></div></div></div><div class="mobile-menu-icon-container"><button class="icon-button" id="mobile-menu" data-isopen="false" aria-label="menu"><svg><use xlink:href="#menu-icon"></use></svg></button></div><div id="mobile-sidebar" class="mobile-sidebar-container"><div class="mobile-sidebar-wrapper"><div class="mobile-nav-links"></div><div class="mobile-sidebar-items-c"><div class="sidebar-section-title with-arrow" data-isopen="false" id="sidebar-classes"><div>Classes</div><svg><use xlink:href="#down-icon"></use></svg></div><div class="sidebar-section-children-container"><div class="sidebar-section-children"><a href="AnchorsAndHandles.html">AnchorsAndHandles</a></div><div class="sidebar-section-children"><a href="Arc.html">Arc</a></div><div class="sidebar-section-children"><a href="BoundingBox.html">BoundingBox</a></div><div class="sidebar-section-children"><a href="Circle.html">Circle</a></div><div class="sidebar-section-children"><a href="Color.html">Color</a></div><div class="sidebar-section-children"><a href="ColorStop.html">ColorStop</a></div><div class="sidebar-section-children"><a href="CubicBezierTuple.html">CubicBezierTuple</a></div><div class="sidebar-section-children"><a href="EquilateralTriangle.html">EquilateralTriangle</a></div><div class="sidebar-section-children"><a href="FontFace.html">FontFace</a></div><div class="sidebar-section-children"><a href="ImageBitmap.html">ImageBitmap</a></div><div class="sidebar-section-children"><a href="ImageData.html">ImageData</a></div><div class="sidebar-section-children"><a href="ImageLibrary.html">ImageLibrary</a></div><div class="sidebar-section-children"><a href="IntegerLerp.html">IntegerLerp</a></div><div class="sidebar-section-children"><a href="Line.html">Line</a></div><div class="sidebar-section-children"><a href="LinearGradient.html">LinearGradient</a></div><div class="sidebar-section-children"><a href="Path2D.html">Path2D</a></div><div class="sidebar-section-children"><a href="Point2D.html">Point2D</a></div><div class="sidebar-section-children"><a href="RadialGradient.html">RadialGradient</a></div><div class="sidebar-section-children"><a href="Rectangle.html">Rectangle</a></div><div class="sidebar-section-children"><a href="RightTriangle.html">RightTriangle</a></div><div class="sidebar-section-children"><a href="Square.html">Square</a></div><div class="sidebar-section-children"><a href="Style.html">Style</a></div><div class="sidebar-section-children"><a href="TransformationMatrix.html">TransformationMatrix</a></div><div class="sidebar-section-children"><a href="Triangle.html">Triangle</a></div><div class="sidebar-section-children"><a href="Typst.html">Typst</a></div><div class="sidebar-section-children"><a href="VectorObject.html">VectorObject</a></div><div class="sidebar-section-children"><a href="VectorObjectBuilder.html">VectorObjectBuilder</a></div><div class="sidebar-section-children"><a href="module.exports.html">exports</a></div><div class="sidebar-section-children"><a href="module.exports.html">exports</a></div><div class="sidebar-section-children"><a href="module.exports.html">exports</a></div></div><div class="sidebar-section-title with-arrow" data-isopen="false" id="sidebar-tutorials"><div>Tutorials</div><svg><use xlink:href="#down-icon"></use></svg></div><div class="sidebar-section-children-container"><div class="sidebar-section-children"><a href="tutorial-Initial tutorials.html">Initial tutorials</a></div></div><div class="sidebar-section-title with-arrow" data-isopen="false" id="sidebar-global"><div>Global</div><svg><use xlink:href="#down-icon"></use></svg></div><div class="sidebar-section-children-container"><div class="sidebar-section-children"><a href="global.html#inverse_lerp">inverse_lerp</a></div><div class="sidebar-section-children"><a href="global.html#lerp">lerp</a></div><div class="sidebar-section-children"><a href="global.html#matrix_product">matrix_product</a></div><div class="sidebar-section-children"><a href="global.html#matrix_product_path">matrix_product_path</a></div><div class="sidebar-section-children"><a href="global.html#play">play</a></div><div class="sidebar-section-children"><a href="global.html#render">render</a></div><div class="sidebar-section-children"><a href="global.html#render">render</a></div></div></div><div class="mobile-navbar-actions"><div class="navbar-right-item"><button class="icon-button search-button" aria-label="open-search"><svg><use xlink:href="#search-icon"></use></svg></button></div><div class="navbar-right-item"><button class="icon-button theme-toggle" aria-label="toggle-theme"><svg><use class="theme-svg-use" xlink:href="#light-theme-icon"></use></svg></button></div><div class="navbar-right-item"><button class="icon-button font-size" aria-label="change-font-size"><svg><use xlink:href="#font-size-icon"></use></svg></button></div></div></div></div><script type="text/javascript" src="scripts/core.min.js"></script><script src="scripts/search.min.js" defer="defer"></script><script src="scripts/third-party/fuse.js" defer="defer"></script><script type="text/javascript">var tocbotInstance=tocbot.init({tocSelector:"#eed4d2a0bfd64539bb9df78095dec881",contentSelector:".main-content",headingSelector:"h1, h2, h3",hasInnerContainers:!0,scrollContainer:".main-content",headingsOffset:130,onClick:bringLinkToView})</script></body></html>

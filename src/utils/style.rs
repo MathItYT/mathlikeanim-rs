@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-use image::{codecs::png::PngEncoder, RgbaImage};
+use image::{codecs::png::PngEncoder, guess_format, load_from_memory_with_format, ImageBuffer, RgbaImage};
 use usvg::{Opacity, Paint};
 use wasm_bindgen::prelude::*;
 use base64::{prelude::BASE64_STANDARD, Engine};
@@ -471,7 +471,7 @@ pub struct ImageBitmap {
     /// Number of pixels in a column of the bitmap.
     pub data_height: usize,
     /// Rgba data of the bitmap.
-    rgba_image: RgbaImage
+    rgba_image: ImageBuffer<image::Rgba<u8>, Vec<u8>>,
 }
 
 impl Default for ImageBitmap {
@@ -508,8 +508,13 @@ impl ImageBitmap {
         #[wasm_bindgen(param_description = "The pixel data of the bitmap.")]
         data: Vec<u8>
     ) -> Result<ImageBitmap, JsError> {
-        let rgba_image = RgbaImage::from_raw(data_width as u32, data_height as u32, data);
-        if rgba_image.is_none() {
+        let rgba_image = guess_format(&data).and_then(|format| {
+            let img = load_from_memory_with_format(&data, format)?;
+            let img = img.to_rgba8();
+            Ok(img)
+        });
+        if rgba_image.is_err() {
+            log("Failed to create image bitmap.");
             return Err(JsError::new("Failed to create image bitmap."));
         }
         let rgba_image = rgba_image.unwrap();
@@ -529,13 +534,20 @@ impl ImageBitmap {
         self.rgba_image.clone().into_raw()
     }
     /// Sets the pixel data of the bitmap.
-    #[wasm_bindgen(setter)]
+    #[wasm_bindgen]
     pub fn set_data(
         &mut self,
+        #[wasm_bindgen(param_description = "The number of pixels in a row of the bitmap.")]
+        data_width: f32,
+        #[wasm_bindgen(param_description = "The number of pixels in a column of the bitmap.")]
+        data_height: f32,
         #[wasm_bindgen(param_description = "The pixel data of the bitmap.")]
         data: Vec<u8>
-    ) {
-        self.rgba_image = RgbaImage::from_raw(self.data_width as u32, self.data_height as u32, data).unwrap();
+    ) -> Result<(), JsError> {
+        self.data_width = data_width as usize;
+        self.data_height = data_height as usize;
+        self.rgba_image = RgbaImage::from_raw(data_width as u32, data_height as u32, data).ok_or(JsError::new("Failed to set image bitmap data."))?;
+        Ok(())
     }
     /// Returns the default ImageBitmap, which is an empty bitmap.
     #[wasm_bindgen(return_description = "The default image bitmap.")]
@@ -1111,48 +1123,76 @@ impl Style {
             }
             Paint::Pattern(pattern) => {
                 let root = pattern.root();
+                let bounding_box = pattern.rect();
+                let x = bounding_box.x();
+                let y = bounding_box.y();
+                let width = bounding_box.width();
+                let height = bounding_box.height();
                 for child in root.children() {
-                    match &child {
-                        usvg::Node::Image(image) => {
-                            let x = image.abs_bounding_box().x();
-                            let y = image.abs_bounding_box().y();
-                            let width = image.abs_bounding_box().width();
-                            let height = image.abs_bounding_box().height();
-                            let kind = image.kind();
-                            let size = image.size();
-                            let data_width = size.width() as usize;
-                            let data_height = size.height() as usize;
-                            match &kind {
-                                usvg::ImageKind::JPEG(data) => {
-                                    // data is Arc<Vec<u8>>. Remove the Arc.
-                                    let new_data = data.to_vec();
-                                    let image = ImageBitmap::new(x, y, width, height, data_width, data_height, new_data).unwrap();
-                                    return Style::from_image(image);
-                                }
-                                usvg::ImageKind::PNG(data) => {
-                                    let new_data = data.to_vec();
-                                    let image = ImageBitmap::new(x, y, width, height, data_width, data_height, new_data).unwrap();
-                                    return Style::from_image(image);
-                                }
-                                usvg::ImageKind::WEBP(data) => {
-                                    let new_data = data.to_vec();
-                                    let image = ImageBitmap::new(x, y, width, height, data_width, data_height, new_data).unwrap();
-                                    return Style::from_image(image);
-                                }
-                                _ => {
-                                    log("Unsupported pattern. Fallback to default style (fully transparent black).");
-                                    return Style::default();
-                                }
-                            }
-                        }
-                        _ => {
-                            log("Unsupported pattern. Fallback to default style (fully transparent black).");
-                            return Style::default();
-                        }
-                    }
+                    return Style::from_pattern_child(&child, x, y, width, height);
                 }
                 log("Unsupported pattern. Fallback to default style (fully transparent black).");
                 Style::default()
+            }
+        }
+    }
+    pub fn from_pattern_child(
+        child: &usvg::Node,
+        x: f32,
+        y: f32,
+        width: f32,
+        height: f32,
+    ) -> Style {
+        match &child {
+            usvg::Node::Image(image) => {
+                let kind = image.kind();
+                let size = image.size();
+                let data_width = size.width().round() as usize;
+                let data_height = size.height().round() as usize;
+                match &kind {
+                    usvg::ImageKind::JPEG(data) => {
+                        let new_data = data.to_vec();
+                        let image = ImageBitmap::new(x, y, width, height, data_width, data_height, new_data);
+                        if image.is_err() {
+                            log("Failed to create image bitmap.");
+                            return Style::default();
+                        }
+                        return Style::from_image(image.unwrap());
+                    }
+                    usvg::ImageKind::PNG(data) => {
+                        let new_data = data.to_vec();
+                        let image = ImageBitmap::new(x, y, width, height, data_width, data_height, new_data);
+                        if image.is_err() {
+                            log("Failed to create image bitmap.");
+                            return Style::default();
+                        }
+                        return Style::from_image(image.unwrap());
+                    }
+                    usvg::ImageKind::WEBP(data) => {
+                        let new_data = data.to_vec();
+                        let image = ImageBitmap::new(x, y, width, height, data_width, data_height, new_data);
+                        if image.is_err() {
+                            log("Failed to create image bitmap.");
+                            return Style::default();
+                        }
+                        return Style::from_image(image.unwrap());
+                    }
+                    _ => {
+                        log("Unsupported image format. Fallback to default style (fully transparent black).");
+                        return Style::default();
+                    }
+                }
+            }
+            usvg::Node::Group(group) => {
+                for child in group.children() {
+                    return Style::from_pattern_child(&child, x, y, width, height);
+                }
+                log("Unsupported pattern. Fallback to default style (fully transparent black).");
+                return Style::default();
+            }
+            _ => {
+                log("Unsupported pattern. Fallback to default style (fully transparent black).");
+                return Style::default();
             }
         }
     }

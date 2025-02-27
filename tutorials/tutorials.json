@@ -3,7 +3,8 @@
     "title": "Initial tutorials",
     "children": [
       "Install the library",
-      "Get started"
+      "Get started",
+      "About text and formulas"
     ]
   },
   "Install the library": {
@@ -11,5 +12,8 @@
   },
   "Get started": {
     "title": "Get started"
+  },
+  "About text and formulas": {
+    "title": "About text and formulas"
   }
 }

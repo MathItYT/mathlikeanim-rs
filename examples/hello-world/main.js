@@ -1,4 +1,4 @@
-import init, { Color, Point2D, Style, VectorObjectBuilder, IntegerLerp, FontFace, Typst, Rectangle, BoundingBox, Circle, LinearGradient, ColorStop, VectorObject, RadialGradient, ImageBitmap } from '@mathlikeanim-rs/mathlikeanim-rs'
+import init, { Color, Point2D, Style, VectorObjectBuilder, ImageLibrary, IntegerLerp, FontFace, Typst, Rectangle, BoundingBox, Circle, LinearGradient, ColorStop, VectorObject, RadialGradient, ImageBitmap, ImageData } from '@mathlikeanim-rs/mathlikeanim-rs'
 import { CanvasScene, SVGScene } from '@mathlikeanim-rs/renderer';
 
 const scene = new CanvasScene(1920, 1080);
@@ -11,6 +11,13 @@ let stream;
 const stopRecording = () => {
     recorder.stop();
     stopRecordingButton.removeEventListener('click', stopRecording);
+}
+
+function text(text, x, y, font_size, font_family, fill_style, font_faces) {
+    return VectorObjectBuilder.from_svg(`<svg xmlns="http://www.w3.org/2000/svg">
+        <text x="${x}" y="${y}" font-size="${font_size}" font-family="${font_family}">${text}</text>
+    </svg>`, font_faces)
+        .set_fill(fill_style)
 }
 
 const run = async () => {
@@ -169,49 +176,19 @@ const run = async () => {
     //     .build();
     // scene.objects[1] = c;
     // scene.render();
-    const obj = VectorObjectBuilder.from_svg(`<svg width="120" height="240" version="1.1" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <linearGradient id="Gradient1">
-      <stop class="stop1" offset="0%" />
-      <stop class="stop2" offset="50%" />
-      <stop class="stop3" offset="100%" />
-    </linearGradient>
-    <linearGradient id="Gradient2" x1="0" x2="0" y1="0" y2="1">
-      <stop offset="0%" stop-color="red" />
-      <stop offset="50%" stop-color="black" stop-opacity="0" />
-      <stop offset="100%" stop-color="blue" />
-    </linearGradient>
-  </defs>
-  <style>
-    #rect1 {
-      fill: url(#Gradient1);
-    }
-    .stop1 {
-      stop-color: red;
-    }
-    .stop2 {
-      stop-color: black;
-      stop-opacity: 0;
-    }
-    .stop3 {
-      stop-color: blue;
-    }
-  </style>
-
-  <rect id="rect1" x="10" y="10" rx="15" ry="15" width="100" height="100" />
-  <rect
-    x="10"
-    y="120"
-    rx="15"
-    ry="15"
-    width="100"
-    height="100"
-    fill="url(#Gradient2)" />
-</svg>
-`)
-        .build();
+    const imageLibrary = new ImageLibrary();
+    const data = await fetch('mdn_logo_only_color.png').then(res => res.arrayBuffer()).then(buffer => new Uint8Array(buffer));
+    imageLibrary.set('mdn_logo_only_color.png', new ImageData(data));
+    const obj = text('Hello, World!', 960, 540, 100, 'Latin Modern Math', Style.from_color(new Color(0, 0, 0, 1)), [new FontFace(new Uint8Array(await fetch('latinmodern-math.otf').then(res => res.arrayBuffer())))]).set_name('Text').build();
     scene.objects.push(obj);
-    scene.render();
+    const animations = new Map();
+    animations.set('Text', (old, t) => {
+        return new VectorObjectBuilder(old)
+            .lerp_fill(Style.from_color(new Color(255, 0, 0, 1)), t)
+            .set_name('Text')
+            .build();
+    });
+    await scene.play(animations, 2000, t => t);
 };
 
 const onClick = async () => {

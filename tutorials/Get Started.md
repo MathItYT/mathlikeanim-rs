@@ -209,4 +209,4 @@ Now you can click the play button to see the animation in action!
 
 Congratulations! You have created your first animation with the MathLikeAnim-rs project! 🎉
 
-In the next tutorial, we will learn how to create more complex animations with multiple objects and interactions. Stay tuned!
+In the next tutorial, we will learn how to work with text and formulas in the animations, just [here](./tutorial-About%20text%20and%20formulas.html). See you there! 👋
