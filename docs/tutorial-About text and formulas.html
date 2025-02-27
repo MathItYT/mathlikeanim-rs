@@ -133,7 +133,7 @@ scene.objects.push(formula_obj.build());
             .set_fill(fill_style);
     }
 
-    const fontFace = new Uint8Array(await fetch('/latinmodern-math.otf').then(res => res.arrayBuffer()))
+    const fontFace = new Uint8Array(await fetch('./latinmodern-math.otf').then(res => res.arrayBuffer()))
 
     const run = async () => {
         button.disabled = true;
