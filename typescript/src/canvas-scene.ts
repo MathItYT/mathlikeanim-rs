@@ -1,4 +1,3 @@
-import { TransformationMatrix, VectorObject } from "@mathlikeanim-rs/mathlikeanim-rs";
 import SVGScene from "./svg-scene";
 
 /**
@@ -32,19 +31,19 @@ export default class CanvasScene extends SVGScene {
     /**
      * Renders the scene to the canvas. Preferably don't await to keep the animation smooth.
      * @returns {Promise<void>} - A promise that resolves when the scene has been rendered.
+     * @async
      */
     async render(): Promise<void> {
-        await super.render().then(async () => {
-            const svgAsBase64 = btoa(new XMLSerializer().serializeToString(this.svg));
-            const img = new Image();
-            const promise = new Promise(resolve => {
-                img.onload = () => {
-                    this.context.drawImage(img, 0, 0);
-                    resolve(null);
-                };
-            });
+        await super.render();
+        const svgAsBase64 = btoa(new XMLSerializer().serializeToString(this.svg));
+        const img = new Image();
+        await new Promise(resolve => {
+            img.onload = () => {
+                this.context.clearRect(0, 0, this.width, this.height);
+                this.context.drawImage(img, 0, 0, this.width, this.height);
+                resolve(null);
+            };
             img.src = `data:image/svg+xml;base64,${svgAsBase64}`;
-            await promise;
         });
     }
 }

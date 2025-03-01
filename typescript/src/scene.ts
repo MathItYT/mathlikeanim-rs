@@ -47,31 +47,29 @@ export default abstract class Scene {
      * @param {number} duration - The duration of the animation in milliseconds.
      * @param {Easing} easing - The easing function to use.
      * @returns {Promise<void>} - A promise that resolves when the animation has finished.
+     * @async
      */
-    play(
+    async play(
         animations: Map<string | number, Animation>,
         duration: number,
         easing: Easing,
     ): Promise<void> {
         this.oldObjects = this.objects.map(object => object.clone());
-        return new Promise(resolve => {
-            const start = performance.now();
-            const animate = () => {
-                const t = (performance.now() - start) / duration;
-                if (t < 1) {
-                    const progress = easing(t);
-                    this.animate(animations, progress);
-                    this.render();
-                    requestAnimationFrame(animate);
-                } else {
-                    const progress = easing(1);
-                    this.animate(animations, progress);
-                    this.render();
-                    resolve();
-                }
-            };
-            animate();
-        });
+        const start = performance.now();
+        const animate = async () => {
+            const t = (performance.now() - start) / duration;
+            if (t < 1) {
+                const progress = easing(t);
+                this.animate(animations, progress);
+                await this.render();
+                await new Promise(resolve => requestAnimationFrame(() => animate().then(resolve)));
+            } else {
+                const progress = easing(1);
+                this.animate(animations, progress);
+                await this.render();
+            }
+        };
+        await animate();
     };
 
     /**
@@ -115,6 +113,7 @@ export default abstract class Scene {
      * Renders the scene. Must be implemented by subclasses.
      * @returns {Promise<void>} - A promise that resolves when the scene has been rendered.
      * @abstract
+     * @async
      */
     abstract render(): Promise<void>;
 }

@@ -60,8 +60,8 @@ const run = async () => {
             .set_fill(Style.from_color(new Color(255, 0, 0, 0.5)))
             // Set the stroke color to red with 100% opacity
             .set_stroke(Style.from_color(new Color(255, 0, 0, 1)))
-            // Set the stroke width to 0.05
-            .set_stroke_width(0.05)
+            // Set the stroke width to 10
+            .set_stroke_width(10)
             // Set the name of the object to 'Circle'
             .set_name('Circle')
             // Build the object, this will run Rust WASM code in the background
@@ -157,7 +157,7 @@ init().then(run);
             .vector_object_builder()
             .set_fill(Style.from_color(new Color(255, 0, 0, 0.5)))
             .set_stroke(Style.from_color(new Color(255, 0, 0, 1)))
-            .set_stroke_width(0.05)
+            .set_stroke_width(10)
             .set_name('Circle')
             .build();
         scene.objects.push(new Rectangle(new BoundingBox(0, 0, 1920, 1080))

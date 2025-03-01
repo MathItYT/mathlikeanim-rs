@@ -176,6 +176,11 @@ impl Point2D {
         let projection = *self - *start;
         (line.dot(&projection) / line_squared).max(0.0).min(1.0)
     }
+    /// Checks if a point is finite
+    #[wasm_bindgen(return_description = "A boolean indicating whether the point is finite.")]
+    pub fn is_finite(&self) -> bool {
+        self.x.is_finite() && self.y.is_finite()
+    }
 }
 
 impl Add<Point2D> for Point2D {
@@ -662,6 +667,18 @@ impl Path2D {
         extra_length_per_cubic: Option<f32>
     ) -> f32 {
         self.cubic_bezier_tuples().iter().map(|tuple| tuple.length(samples_per_cubic, extra_length_per_cubic)).sum()
+    }
+
+    /// Gets the first point of the Path2D.
+    #[wasm_bindgen(getter, return_description = "The first point of the path.")]
+    pub fn first(&self) -> Point2D {
+        self.points[0]
+    }
+
+    /// Gets the last point of the Path2D.
+    #[wasm_bindgen(getter, return_description = "The last point of the path.")]
+    pub fn last(&self) -> Option<Point2D> {
+        self.points.last().copied()
     }
 }
 

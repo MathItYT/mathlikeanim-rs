@@ -348,9 +348,20 @@ impl VectorOperation for BecomePartial {
                 become_partial.apply(child);
             }
         }
-        let length = object.path.length(self.samples, self.extra_length);
-        object.stroke_dash_array = Rc::new(vec![length * (self.end - self.start), length]);
-        object.stroke_dash_offset = -length * self.start;
+        let subpaths = object.subpaths();
+        let mut max_length = None;
+        for subpath in subpaths {
+            let length = subpath.length(self.samples, self.extra_length);
+            if max_length.is_none() || length > max_length.unwrap() {
+                max_length = Some(length);
+            }
+        }
+        if max_length.is_none() {
+            return;
+        }
+        let max_length = max_length.unwrap();
+        object.stroke_dash_array = Rc::new(vec![max_length * (self.end - self.start), max_length]);
+        object.stroke_dash_offset = -max_length * self.start;
     }
 }
 
@@ -745,6 +756,29 @@ impl VectorOperation for SetName {
             object.name = Some(Rc::clone(name));
         } else {
             object.name = None;
+        }
+    }
+}
+
+pub struct ActualPathAsPath {
+    pub untransform: Option<bool>,
+    pub recursive: Option<bool>,
+}
+
+impl VectorOperation for ActualPathAsPath {
+    fn apply(&self, object: &mut VectorObject) {
+        object.path = object.actual_path();
+        if self.untransform.unwrap_or(true) {
+            object.transform = TransformationMatrix::identity();
+        }
+        if self.recursive.unwrap_or(true) {
+            for child in &mut object.children {
+                let actual_path_as_path = ActualPathAsPath {
+                    untransform: self.untransform,
+                    recursive: Some(true),
+                };
+                actual_path_as_path.apply(child);
+            }
         }
     }
 }
@@ -1682,6 +1716,19 @@ impl VectorObjectBuilder {
     ) -> VectorObjectBuilder {
         let set_name = Box::new(SetName { name: name.map(Rc::new) });
         self.ops.add_operation(Box::leak(set_name));
+        self
+    }
+    /// Applies the current transformation to the path of the VectorObjectBuilder.
+    #[wasm_bindgen(return_description = "The vector object being built with the apply transformation operation.")]
+    pub fn actual_path_as_path(
+        mut self,
+        #[wasm_bindgen(param_description = "Whether to remove transformations after applying the current transformation to the path, default is true.")]
+        untransform: Option<bool>,
+        #[wasm_bindgen(param_description = "Whether to apply the actual path as path operation to the children of the vector object, default is true.")]
+        recursive: Option<bool>
+    ) -> VectorObjectBuilder {
+        let actual_path_as_path = Box::new(ActualPathAsPath { untransform, recursive });
+        self.ops.add_operation(Box::leak(actual_path_as_path));
         self
     }
     /// Adds a child to the VectorObjectBuilder.

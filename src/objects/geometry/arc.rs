@@ -69,6 +69,7 @@ impl Arc {
             .set_path(path)
             .scale(self.radius, self.radius, None, None)
             .shift(self.center.x, self.center.y, None)
+            .actual_path_as_path(None, None)
     }
 
     /// Returns the center point of the arc.

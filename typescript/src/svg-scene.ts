@@ -26,6 +26,7 @@ export default class SVGScene extends Scene {
     /**
      * Renders the scene to the SVG. Preferably don't await to keep the animation smooth.
      * @returns {Promise<void>} - A promise that resolves when the scene has been rendered.
+     * @async
      */
     async render(): Promise<void> {
         this.svg.innerHTML = "";
