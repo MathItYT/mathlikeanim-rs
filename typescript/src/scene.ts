@@ -28,6 +28,12 @@ export default abstract class Scene {
      * @private
      */
     private oldObjects: VectorObject[];
+    /**
+     * Whether the scene is stopped.
+     * @type {boolean}
+     * @private
+     */
+    private stopped: boolean = false;
 
     /**
      * Creates a new Scene.
@@ -54,23 +60,45 @@ export default abstract class Scene {
         duration: number,
         easing: Easing,
     ): Promise<void> {
+        if (this.stopped) {
+            return;
+        }
         this.oldObjects = this.objects.map(object => object.clone());
         const start = performance.now();
         const animate = async () => {
+            if (this.stopped) {
+                return;
+            }
             const t = (performance.now() - start) / duration;
             if (t < 1) {
                 const progress = easing(t);
                 this.animate(animations, progress);
-                await this.render();
+                this.render();
                 await new Promise(resolve => requestAnimationFrame(() => animate().then(resolve)));
             } else {
                 const progress = easing(1);
                 this.animate(animations, progress);
-                await this.render();
+                this.render();
             }
         };
         await animate();
     };
+
+    /**
+     * Stops the scene.
+     * @returns {void}
+     */
+    stop(): void {
+        this.stopped = true;
+    }
+
+    /**
+     * Resumes the scene.
+     * @returns {void}
+     */
+    resume(): void {
+        this.stopped = false;
+    }
 
     /**
      * Animates the objects. Internal use only.

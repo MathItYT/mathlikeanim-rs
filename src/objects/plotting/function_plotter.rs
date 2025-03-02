@@ -6,7 +6,7 @@ use crate::{objects::vector_object::VectorObjectBuilder, utils::{bezier::CubicBe
 
 /// A ParametricFunctionPlot represents a plot of a parametric function (x(t), y(t)).
 #[wasm_bindgen]
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone)]
 pub struct ParametricFunctionPlot {
     expression_x: Rc<String>,
     expression_y: Rc<String>,
@@ -17,6 +17,9 @@ pub struct ParametricFunctionPlot {
     min_depth: u32,
     max_depth: u32,
     threshold: f32,
+    expr_x: FlatEx<f32, FloatOpsFactory<f32>>,
+    expr_y: FlatEx<f32, FloatOpsFactory<f32>>,
+    composition: Box<&'static dyn Fn(Point2D) -> Point2D>,
 }
 
 #[wasm_bindgen]
@@ -34,7 +37,7 @@ impl ParametricFunctionPlot {
         x_range: ClosedInterval,
         #[wasm_bindgen(param_description = "The y-range of the plot.")]
         y_range: ClosedInterval,
-        #[wasm_bindgen(param_description = "The discontinuities of the plot.")]
+        #[wasm_bindgen(param_description = "The discontinuities of the plot.", unchecked_param_type = "number[]")]
         discontinuities: Option<Vec<f32>>,
         #[wasm_bindgen(param_description = "The minimum depth of the plot.")]
         min_depth: Option<u32>,
@@ -42,21 +45,29 @@ impl ParametricFunctionPlot {
         max_depth: Option<u32>,
         #[wasm_bindgen(param_description = "The threshold of the plot.")]
         threshold: Option<f32>,
-    ) -> ParametricFunctionPlot {
+    ) -> Result<ParametricFunctionPlot, JsError> {
         let discontinuities = discontinuities.unwrap_or_default();
         let min_depth = min_depth.unwrap_or(8);
         let max_depth = max_depth.unwrap_or(14);
         let threshold = threshold.unwrap_or(0.01);
-        ParametricFunctionPlot {
-            expression_x: Rc::new(expression_x),
-            expression_y: Rc::new(expression_y),
-            domain,
-            x_range,
-            y_range,
-            discontinuities: Rc::new(discontinuities),
-            min_depth,
-            max_depth,
-            threshold,
+        let expr_x: Result<FlatEx<_, FloatOpsFactory<f32>>, ExError> = parse(&expression_x);
+        let expr_y: Result<FlatEx<_, FloatOpsFactory<f32>>, ExError> = parse(&expression_y);
+        match (expr_x, expr_y) {
+            (Ok(expr_x), Ok(expr_y)) => Ok(ParametricFunctionPlot {
+                expression_x: Rc::new(expression_x),
+                expression_y: Rc::new(expression_y),
+                domain,
+                x_range,
+                y_range,
+                discontinuities: Rc::new(discontinuities),
+                min_depth,
+                max_depth,
+                threshold,
+                expr_x,
+                expr_y,
+                composition: Box::new(&|point| point),
+            }),
+            _ => Err(JsError::new("Failed to parse parametric function."))
         }
     }
 
@@ -97,7 +108,7 @@ impl ParametricFunctionPlot {
     }
 
     /// Returns the discontinuities of the plot.
-    #[wasm_bindgen(getter, return_description = "The discontinuities of the plot.")]
+    #[wasm_bindgen(getter, return_description = "The discontinuities of the plot.", unchecked_return_type = "number[]")]
     pub fn discontinuities(&self) -> Vec<f32> {
         self.discontinuities.to_vec()
     }
@@ -189,24 +200,14 @@ impl ParametricFunctionPlot {
         #[wasm_bindgen(param_description = "The value to evaluate the parametric function at.")]
         t: f32,
     ) -> Option<Point2D> {
-        let x_expr: Result<FlatEx<_, FloatOpsFactory<f32>>, ExError> = parse(&self.expression_x);
-        let y_expr: Result<FlatEx<_, FloatOpsFactory<f32>>, ExError> = parse(&self.expression_y);
-        match (x_expr, y_expr) {
-            (Ok(x_expr), Ok(y_expr)) => {
-                let x = x_expr.eval(&[t.into()]);
-                let y = y_expr.eval(&[t.into()]);
-                match (x, y) {
-                    (Ok(x), Ok(y)) => Some(Point2D::new(x, y)),
-                    _ => {
-                        error("Failed to evaluate parametric function.");
-                        None
-                    },
-                }
-            }
+        let x = self.expr_x.eval(&[t.into()]);
+        let y = self.expr_y.eval(&[t.into()]);
+        match (x, y) {
+            (Ok(x), Ok(y)) => Some(Point2D::new(x, y)),
             _ => {
-                error("Failed to parse parametric function.");
+                error("Failed to evaluate parametric function.");
                 None
-            }
+            },
         }
     }
 }
@@ -266,10 +267,10 @@ impl ParametricFunctionPlot {
     pub fn on_point(&self, path: &mut Path2D, t: f32, p: &Point2D, previous_was_discontinuity: &mut bool) {
         if self.contains(*p) && p.is_finite() && !self.is_discontinuity(t) {
             if path.is_empty() || *previous_was_discontinuity {
-                path.push(*p);
+                path.push((self.composition)(*p));
                 *previous_was_discontinuity = false;
             } else {
-                path.push_bezier(CubicBezierTuple::from_line(path.last().unwrap(), *p));
+                path.push_bezier(CubicBezierTuple::from_line(path.last().unwrap(), (self.composition)(*p)));
             }
         } else {
             *previous_was_discontinuity = true;
@@ -278,5 +279,9 @@ impl ParametricFunctionPlot {
 
     pub fn on_discontinuity(&self, previous_was_discontinuity: &mut bool) {
         *previous_was_discontinuity = true;
+    }
+
+    pub fn compose(&mut self, composition: Box<&'static dyn Fn(Point2D) -> Point2D>) {
+        self.composition = composition;
     }
 }

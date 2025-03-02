@@ -1,15 +1,15 @@
 {
-    "include": ["src/**/*"],
+    "include": ["worker/**/*.ts"],
     "compilerOptions": {
         "target": "ES2015",
         "module": "ES2015",
-        "lib": ["dom", "es2015"],
+        "lib": ["webworker", "es2015"],
         "moduleResolution": "bundler",
         "declaration": true,
         "declarationMap": true,
         "sourceMap": true,
         "outDir": "dist",
-        "rootDir": "src",
+        "rootDir": "worker",
         "strict": true,
         "noImplicitAny": true,
         "strictNullChecks": true

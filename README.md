@@ -22,14 +22,6 @@ This is an animation library written in Rust, widely inspired by [Manim](https:/
 - 🔴: Not supported.
 
 
-## How to install it?
-If you want to start creating mathematical and interactive animations, you can install it by running:
-
-```bash
-npm i mathlikeanim-rs
-```
-
-
 ## How to use it in the browser?
 You must install the `@mathlikeanim-rs/mathlikeanim-rs` (the Rust core) package and the `@mathlikeanim-rs/renderer`, both from NPM. Then, write an importmap and a module script tag to load the library.
 
@@ -50,7 +42,14 @@ You must install the `@mathlikeanim-rs/mathlikeanim-rs` (the Rust core) package 
     import initWasm from '@mathlikeanim-rs/mathlikeanim-rs';
     import { CanvasScene, SVGScene } from '@mathlikeanim-rs/renderer';
 
-    const scene = new CanvasScene(1920, 1080); // or SVGScene(1920, 1080)
+    const scene = new CanvasScene(
+        // width
+        1920,
+        // height
+        1080,
+        // worker file (usually '/node_modules/@mathlikeanim-rs/renderer/dist/offscreen-canvas-worker.js')
+        'worker.js'
+    ); // or SVGScene(1920, 1080)
     document.body.appendChild(scene.canvas); // or scene.svg
 
     initWasm().then((wasm) => {
@@ -75,4 +74,4 @@ By the moment we don't have any tests, so your contributions are welcome!
 
 
 ## Documentation
-In progress...
+Available [here](https://mathityt.github.io/mathlikeanim-rs/)!

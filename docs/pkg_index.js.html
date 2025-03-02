@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="en" style="font-size:16px"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Source: pkg/index.js</title><!--[if lt IE 9]>
       <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]--><script src="scripts/third-party/hljs.js" defer="defer"></script><script src="scripts/third-party/hljs-line-num.js" defer="defer"></script><script src="scripts/third-party/popper.js" defer="defer"></script><script src="scripts/third-party/tippy.js" defer="defer"></script><script src="scripts/third-party/tocbot.min.js"></script><script>var baseURL="/",locationPathname="";baseURL=(locationPathname=document.location.pathname).substr(0,locationPathname.lastIndexOf("/")+1)</script><link rel="stylesheet" href="styles/clean-jsdoc-theme.min.css"><svg aria-hidden="true" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="display:none"><defs><symbol id="copy-icon" viewbox="0 0 488.3 488.3"><g><path d="M314.25,85.4h-227c-21.3,0-38.6,17.3-38.6,38.6v325.7c0,21.3,17.3,38.6,38.6,38.6h227c21.3,0,38.6-17.3,38.6-38.6V124    C352.75,102.7,335.45,85.4,314.25,85.4z M325.75,449.6c0,6.4-5.2,11.6-11.6,11.6h-227c-6.4,0-11.6-5.2-11.6-11.6V124    c0-6.4,5.2-11.6,11.6-11.6h227c6.4,0,11.6,5.2,11.6,11.6V449.6z"/><path d="M401.05,0h-227c-21.3,0-38.6,17.3-38.6,38.6c0,7.5,6,13.5,13.5,13.5s13.5-6,13.5-13.5c0-6.4,5.2-11.6,11.6-11.6h227    c6.4,0,11.6,5.2,11.6,11.6v325.7c0,6.4-5.2,11.6-11.6,11.6c-7.5,0-13.5,6-13.5,13.5s6,13.5,13.5,13.5c21.3,0,38.6-17.3,38.6-38.6    V38.6C439.65,17.3,422.35,0,401.05,0z"/></g></symbol><symbol id="search-icon" viewBox="0 0 512 512"><g><g><path d="M225.474,0C101.151,0,0,101.151,0,225.474c0,124.33,101.151,225.474,225.474,225.474    c124.33,0,225.474-101.144,225.474-225.474C450.948,101.151,349.804,0,225.474,0z M225.474,409.323    c-101.373,0-183.848-82.475-183.848-183.848S124.101,41.626,225.474,41.626s183.848,82.475,183.848,183.848    S326.847,409.323,225.474,409.323z"/></g></g><g><g><path d="M505.902,476.472L386.574,357.144c-8.131-8.131-21.299-8.131-29.43,0c-8.131,8.124-8.131,21.306,0,29.43l119.328,119.328    c4.065,4.065,9.387,6.098,14.715,6.098c5.321,0,10.649-2.033,14.715-6.098C514.033,497.778,514.033,484.596,505.902,476.472z"/></g></g></symbol><symbol id="font-size-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M11.246 15H4.754l-2 5H.6L7 4h2l6.4 16h-2.154l-2-5zm-.8-2L8 6.885 5.554 13h4.892zM21 12.535V12h2v8h-2v-.535a4 4 0 1 1 0-6.93zM19 18a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/></symbol><symbol id="add-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M11 11V5h2v6h6v2h-6v6h-2v-6H5v-2z"/></symbol><symbol id="minus-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M5 11h14v2H5z"/></symbol><symbol id="dark-theme-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M10 7a7 7 0 0 0 12 4.9v.1c0 5.523-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2h.1A6.979 6.979 0 0 0 10 7zm-6 5a8 8 0 0 0 15.062 3.762A9 9 0 0 1 8.238 4.938 7.999 7.999 0 0 0 4 12z"/></symbol><symbol id="light-theme-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M12 18a6 6 0 1 1 0-12 6 6 0 0 1 0 12zm0-2a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM11 1h2v3h-2V1zm0 19h2v3h-2v-3zM3.515 4.929l1.414-1.414L7.05 5.636 5.636 7.05 3.515 4.93zM16.95 18.364l1.414-1.414 2.121 2.121-1.414 1.414-2.121-2.121zm2.121-14.85l1.414 1.415-2.121 2.121-1.414-1.414 2.121-2.121zM5.636 16.95l1.414 1.414-2.121 2.121-1.414-1.414 2.121-2.121zM23 11v2h-3v-2h3zM4 11v2H1v-2h3z"/></symbol><symbol id="reset-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M18.537 19.567A9.961 9.961 0 0 1 12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10c0 2.136-.67 4.116-1.81 5.74L17 12h3a8 8 0 1 0-2.46 5.772l.997 1.795z"/></symbol><symbol id="down-icon" viewBox="0 0 16 16"><path fill-rule="evenodd" clip-rule="evenodd" d="M12.7803 6.21967C13.0732 6.51256 13.0732 6.98744 12.7803 7.28033L8.53033 11.5303C8.23744 11.8232 7.76256 11.8232 7.46967 11.5303L3.21967 7.28033C2.92678 6.98744 2.92678 6.51256 3.21967 6.21967C3.51256 5.92678 3.98744 5.92678 4.28033 6.21967L8 9.93934L11.7197 6.21967C12.0126 5.92678 12.4874 5.92678 12.7803 6.21967Z"></path></symbol><symbol id="codepen-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M16.5 13.202L13 15.535v3.596L19.197 15 16.5 13.202zM14.697 12L12 10.202 9.303 12 12 13.798 14.697 12zM20 10.869L18.303 12 20 13.131V10.87zM19.197 9L13 4.869v3.596l3.5 2.333L19.197 9zM7.5 10.798L11 8.465V4.869L4.803 9 7.5 10.798zM4.803 15L11 19.131v-3.596l-3.5-2.333L4.803 15zM4 13.131L5.697 12 4 10.869v2.262zM2 9a1 1 0 0 1 .445-.832l9-6a1 1 0 0 1 1.11 0l9 6A1 1 0 0 1 22 9v6a1 1 0 0 1-.445.832l-9 6a1 1 0 0 1-1.11 0l-9-6A1 1 0 0 1 2 15V9z"/></symbol><symbol id="close-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z"/></symbol><symbol id="menu-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M3 4h18v2H3V4zm0 7h18v2H3v-2zm0 7h18v2H3v-2z"/></symbol></defs></svg></head><body data-theme="dark"><div class="sidebar-container"><div class="sidebar" id="sidebar"><div class="sidebar-items-container"><div class="sidebar-section-title with-arrow" data-isopen="false" id="sidebar-classes"><div>Classes</div><svg><use xlink:href="#down-icon"></use></svg></div><div class="sidebar-section-children-container"><div class="sidebar-section-children"><a href="AnchorsAndHandles.html">AnchorsAndHandles</a></div><div class="sidebar-section-children"><a href="Arc.html">Arc</a></div><div class="sidebar-section-children"><a href="BoundingBox.html">BoundingBox</a></div><div class="sidebar-section-children"><a href="Circle.html">Circle</a></div><div class="sidebar-section-children"><a href="ClosedInterval.html">ClosedInterval</a></div><div class="sidebar-section-children"><a href="Color.html">Color</a></div><div class="sidebar-section-children"><a href="ColorStop.html">ColorStop</a></div><div class="sidebar-section-children"><a href="CubicBezierTuple.html">CubicBezierTuple</a></div><div class="sidebar-section-children"><a href="EquilateralTriangle.html">EquilateralTriangle</a></div><div class="sidebar-section-children"><a href="FontFace.html">FontFace</a></div><div class="sidebar-section-children"><a href="ImageBitmap.html">ImageBitmap</a></div><div class="sidebar-section-children"><a href="ImageData.html">ImageData</a></div><div class="sidebar-section-children"><a href="ImageLibrary.html">ImageLibrary</a></div><div class="sidebar-section-children"><a href="IntegerLerp.html">IntegerLerp</a></div><div class="sidebar-section-children"><a href="Line.html">Line</a></div><div class="sidebar-section-children"><a href="LinearGradient.html">LinearGradient</a></div><div class="sidebar-section-children"><a href="ParametricFunctionPlot.html">ParametricFunctionPlot</a></div><div class="sidebar-section-children"><a href="Path2D.html">Path2D</a></div><div class="sidebar-section-children"><a href="Point2D.html">Point2D</a></div><div class="sidebar-section-children"><a href="RadialGradient.html">RadialGradient</a></div><div class="sidebar-section-children"><a href="Rectangle.html">Rectangle</a></div><div class="sidebar-section-children"><a href="RightTriangle.html">RightTriangle</a></div><div class="sidebar-section-children"><a href="Square.html">Square</a></div><div class="sidebar-section-children"><a href="Style.html">Style</a></div><div class="sidebar-section-children"><a href="TransformationMatrix.html">TransformationMatrix</a></div><div class="sidebar-section-children"><a href="Triangle.html">Triangle</a></div><div class="sidebar-section-children"><a href="Typst.html">Typst</a></div><div class="sidebar-section-children"><a href="VectorObject.html">VectorObject</a></div><div class="sidebar-section-children"><a href="VectorObjectBuilder.html">VectorObjectBuilder</a></div><div class="sidebar-section-children"><a href="module.exports.html">exports</a></div><div class="sidebar-section-children"><a href="module.exports.html">exports</a></div><div class="sidebar-section-children"><a href="module.exports.html">exports</a></div></div><div class="sidebar-section-title with-arrow" data-isopen="false" id="sidebar-tutorials"><div>Tutorials</div><svg><use xlink:href="#down-icon"></use></svg></div><div class="sidebar-section-children-container"><div class="sidebar-section-children"><a href="tutorial-Initial tutorials.html">Initial tutorials</a></div></div><div class="sidebar-section-title with-arrow" data-isopen="false" id="sidebar-global"><div>Global</div><svg><use xlink:href="#down-icon"></use></svg></div><div class="sidebar-section-children-container"><div class="sidebar-section-children"><a href="global.html#inverse_lerp">inverse_lerp</a></div><div class="sidebar-section-children"><a href="global.html#lerp">lerp</a></div><div class="sidebar-section-children"><a href="global.html#matrix_product">matrix_product</a></div><div class="sidebar-section-children"><a href="global.html#matrix_product_path">matrix_product_path</a></div><div class="sidebar-section-children"><a href="global.html#play">play</a></div><div class="sidebar-section-children"><a href="global.html#render">render</a></div><div class="sidebar-section-children"><a href="global.html#render">render</a></div></div></div></div></div><div class="navbar-container" id="VuAckcnZhf"><nav class="navbar"><div class="navbar-left-items"></div><div class="navbar-right-items"><div class="navbar-right-item"><button class="icon-button search-button" aria-label="open-search"><svg><use xlink:href="#search-icon"></use></svg></button></div><div class="navbar-right-item"><button class="icon-button theme-toggle" aria-label="toggle-theme"><svg><use class="theme-svg-use" xlink:href="#light-theme-icon"></use></svg></button></div><div class="navbar-right-item"><button class="icon-button font-size" aria-label="change-font-size"><svg><use xlink:href="#font-size-icon"></use></svg></button></div></div><nav></nav></nav></div><div class="toc-container"><div class="toc-content"><span class="bold">On this page</span><div id="eed4d2a0bfd64539bb9df78095dec881"></div></div></div><div class="body-wrapper"><div class="main-content"><div class="main-wrapper"><section id="source-page" class="source-page"><header><h1 id="title" class="has-anchor">pkg_index.js</h1></header><article><pre class="prettyprint source lang-js"><code>let wasm;
+    <![endif]--><script src="scripts/third-party/hljs.js" defer="defer"></script><script src="scripts/third-party/hljs-line-num.js" defer="defer"></script><script src="scripts/third-party/popper.js" defer="defer"></script><script src="scripts/third-party/tippy.js" defer="defer"></script><script src="scripts/third-party/tocbot.min.js"></script><script>var baseURL="/",locationPathname="";baseURL=(locationPathname=document.location.pathname).substr(0,locationPathname.lastIndexOf("/")+1)</script><link rel="stylesheet" href="styles/clean-jsdoc-theme.min.css"><svg aria-hidden="true" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="display:none"><defs><symbol id="copy-icon" viewbox="0 0 488.3 488.3"><g><path d="M314.25,85.4h-227c-21.3,0-38.6,17.3-38.6,38.6v325.7c0,21.3,17.3,38.6,38.6,38.6h227c21.3,0,38.6-17.3,38.6-38.6V124    C352.75,102.7,335.45,85.4,314.25,85.4z M325.75,449.6c0,6.4-5.2,11.6-11.6,11.6h-227c-6.4,0-11.6-5.2-11.6-11.6V124    c0-6.4,5.2-11.6,11.6-11.6h227c6.4,0,11.6,5.2,11.6,11.6V449.6z"/><path d="M401.05,0h-227c-21.3,0-38.6,17.3-38.6,38.6c0,7.5,6,13.5,13.5,13.5s13.5-6,13.5-13.5c0-6.4,5.2-11.6,11.6-11.6h227    c6.4,0,11.6,5.2,11.6,11.6v325.7c0,6.4-5.2,11.6-11.6,11.6c-7.5,0-13.5,6-13.5,13.5s6,13.5,13.5,13.5c21.3,0,38.6-17.3,38.6-38.6    V38.6C439.65,17.3,422.35,0,401.05,0z"/></g></symbol><symbol id="search-icon" viewBox="0 0 512 512"><g><g><path d="M225.474,0C101.151,0,0,101.151,0,225.474c0,124.33,101.151,225.474,225.474,225.474    c124.33,0,225.474-101.144,225.474-225.474C450.948,101.151,349.804,0,225.474,0z M225.474,409.323    c-101.373,0-183.848-82.475-183.848-183.848S124.101,41.626,225.474,41.626s183.848,82.475,183.848,183.848    S326.847,409.323,225.474,409.323z"/></g></g><g><g><path d="M505.902,476.472L386.574,357.144c-8.131-8.131-21.299-8.131-29.43,0c-8.131,8.124-8.131,21.306,0,29.43l119.328,119.328    c4.065,4.065,9.387,6.098,14.715,6.098c5.321,0,10.649-2.033,14.715-6.098C514.033,497.778,514.033,484.596,505.902,476.472z"/></g></g></symbol><symbol id="font-size-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M11.246 15H4.754l-2 5H.6L7 4h2l6.4 16h-2.154l-2-5zm-.8-2L8 6.885 5.554 13h4.892zM21 12.535V12h2v8h-2v-.535a4 4 0 1 1 0-6.93zM19 18a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/></symbol><symbol id="add-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M11 11V5h2v6h6v2h-6v6h-2v-6H5v-2z"/></symbol><symbol id="minus-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M5 11h14v2H5z"/></symbol><symbol id="dark-theme-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M10 7a7 7 0 0 0 12 4.9v.1c0 5.523-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2h.1A6.979 6.979 0 0 0 10 7zm-6 5a8 8 0 0 0 15.062 3.762A9 9 0 0 1 8.238 4.938 7.999 7.999 0 0 0 4 12z"/></symbol><symbol id="light-theme-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M12 18a6 6 0 1 1 0-12 6 6 0 0 1 0 12zm0-2a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM11 1h2v3h-2V1zm0 19h2v3h-2v-3zM3.515 4.929l1.414-1.414L7.05 5.636 5.636 7.05 3.515 4.93zM16.95 18.364l1.414-1.414 2.121 2.121-1.414 1.414-2.121-2.121zm2.121-14.85l1.414 1.415-2.121 2.121-1.414-1.414 2.121-2.121zM5.636 16.95l1.414 1.414-2.121 2.121-1.414-1.414 2.121-2.121zM23 11v2h-3v-2h3zM4 11v2H1v-2h3z"/></symbol><symbol id="reset-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M18.537 19.567A9.961 9.961 0 0 1 12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10c0 2.136-.67 4.116-1.81 5.74L17 12h3a8 8 0 1 0-2.46 5.772l.997 1.795z"/></symbol><symbol id="down-icon" viewBox="0 0 16 16"><path fill-rule="evenodd" clip-rule="evenodd" d="M12.7803 6.21967C13.0732 6.51256 13.0732 6.98744 12.7803 7.28033L8.53033 11.5303C8.23744 11.8232 7.76256 11.8232 7.46967 11.5303L3.21967 7.28033C2.92678 6.98744 2.92678 6.51256 3.21967 6.21967C3.51256 5.92678 3.98744 5.92678 4.28033 6.21967L8 9.93934L11.7197 6.21967C12.0126 5.92678 12.4874 5.92678 12.7803 6.21967Z"></path></symbol><symbol id="codepen-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M16.5 13.202L13 15.535v3.596L19.197 15 16.5 13.202zM14.697 12L12 10.202 9.303 12 12 13.798 14.697 12zM20 10.869L18.303 12 20 13.131V10.87zM19.197 9L13 4.869v3.596l3.5 2.333L19.197 9zM7.5 10.798L11 8.465V4.869L4.803 9 7.5 10.798zM4.803 15L11 19.131v-3.596l-3.5-2.333L4.803 15zM4 13.131L5.697 12 4 10.869v2.262zM2 9a1 1 0 0 1 .445-.832l9-6a1 1 0 0 1 1.11 0l9 6A1 1 0 0 1 22 9v6a1 1 0 0 1-.445.832l-9 6a1 1 0 0 1-1.11 0l-9-6A1 1 0 0 1 2 15V9z"/></symbol><symbol id="close-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z"/></symbol><symbol id="menu-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M3 4h18v2H3V4zm0 7h18v2H3v-2zm0 7h18v2H3v-2z"/></symbol></defs></svg></head><body data-theme="dark"><div class="sidebar-container"><div class="sidebar" id="sidebar"><div class="sidebar-items-container"><div class="sidebar-section-title with-arrow" data-isopen="false" id="sidebar-classes"><div>Classes</div><svg><use xlink:href="#down-icon"></use></svg></div><div class="sidebar-section-children-container"><div class="sidebar-section-children"><a href="AnchorsAndHandles.html">AnchorsAndHandles</a></div><div class="sidebar-section-children"><a href="Arc.html">Arc</a></div><div class="sidebar-section-children"><a href="Axis.html">Axis</a></div><div class="sidebar-section-children"><a href="BoundingBox.html">BoundingBox</a></div><div class="sidebar-section-children"><a href="CartesianAxes.html">CartesianAxes</a></div><div class="sidebar-section-children"><a href="Circle.html">Circle</a></div><div class="sidebar-section-children"><a href="ClosedInterval.html">ClosedInterval</a></div><div class="sidebar-section-children"><a href="Color.html">Color</a></div><div class="sidebar-section-children"><a href="ColorStop.html">ColorStop</a></div><div class="sidebar-section-children"><a href="CubicBezierTuple.html">CubicBezierTuple</a></div><div class="sidebar-section-children"><a href="EquilateralTriangle.html">EquilateralTriangle</a></div><div class="sidebar-section-children"><a href="FontFace.html">FontFace</a></div><div class="sidebar-section-children"><a href="ImageBitmap.html">ImageBitmap</a></div><div class="sidebar-section-children"><a href="ImageData.html">ImageData</a></div><div class="sidebar-section-children"><a href="ImageLibrary.html">ImageLibrary</a></div><div class="sidebar-section-children"><a href="IntegerLerp.html">IntegerLerp</a></div><div class="sidebar-section-children"><a href="Line.html">Line</a></div><div class="sidebar-section-children"><a href="LinearGradient.html">LinearGradient</a></div><div class="sidebar-section-children"><a href="ParametricFunctionPlot.html">ParametricFunctionPlot</a></div><div class="sidebar-section-children"><a href="Path2D.html">Path2D</a></div><div class="sidebar-section-children"><a href="Point2D.html">Point2D</a></div><div class="sidebar-section-children"><a href="RadialGradient.html">RadialGradient</a></div><div class="sidebar-section-children"><a href="Rectangle.html">Rectangle</a></div><div class="sidebar-section-children"><a href="RightTriangle.html">RightTriangle</a></div><div class="sidebar-section-children"><a href="Square.html">Square</a></div><div class="sidebar-section-children"><a href="Style.html">Style</a></div><div class="sidebar-section-children"><a href="Tick.html">Tick</a></div><div class="sidebar-section-children"><a href="TransformationMatrix.html">TransformationMatrix</a></div><div class="sidebar-section-children"><a href="Triangle.html">Triangle</a></div><div class="sidebar-section-children"><a href="Typst.html">Typst</a></div><div class="sidebar-section-children"><a href="VectorObject.html">VectorObject</a></div><div class="sidebar-section-children"><a href="VectorObjectBuilder.html">VectorObjectBuilder</a></div><div class="sidebar-section-children"><a href="module.exports.html">exports</a></div><div class="sidebar-section-children"><a href="module.exports.html">exports</a></div><div class="sidebar-section-children"><a href="module.exports.html">exports</a></div></div><div class="sidebar-section-title with-arrow" data-isopen="false" id="sidebar-tutorials"><div>Tutorials</div><svg><use xlink:href="#down-icon"></use></svg></div><div class="sidebar-section-children-container"><div class="sidebar-section-children"><a href="tutorial-Initial tutorials.html">Initial tutorials</a></div></div><div class="sidebar-section-title with-arrow" data-isopen="false" id="sidebar-global"><div>Global</div><svg><use xlink:href="#down-icon"></use></svg></div><div class="sidebar-section-children-container"><div class="sidebar-section-children"><a href="global.html#inverse_lerp">inverse_lerp</a></div><div class="sidebar-section-children"><a href="global.html#lerp">lerp</a></div><div class="sidebar-section-children"><a href="global.html#matrix_product">matrix_product</a></div><div class="sidebar-section-children"><a href="global.html#matrix_product_path">matrix_product_path</a></div><div class="sidebar-section-children"><a href="global.html#play">play</a></div><div class="sidebar-section-children"><a href="global.html#render">render</a></div><div class="sidebar-section-children"><a href="global.html#render">render</a></div><div class="sidebar-section-children"><a href="global.html#resume">resume</a></div><div class="sidebar-section-children"><a href="global.html#stop">stop</a></div></div></div></div></div><div class="navbar-container" id="VuAckcnZhf"><nav class="navbar"><div class="navbar-left-items"></div><div class="navbar-right-items"><div class="navbar-right-item"><button class="icon-button search-button" aria-label="open-search"><svg><use xlink:href="#search-icon"></use></svg></button></div><div class="navbar-right-item"><button class="icon-button theme-toggle" aria-label="toggle-theme"><svg><use class="theme-svg-use" xlink:href="#light-theme-icon"></use></svg></button></div><div class="navbar-right-item"><button class="icon-button font-size" aria-label="change-font-size"><svg><use xlink:href="#font-size-icon"></use></svg></button></div></div><nav></nav></nav></div><div class="toc-container"><div class="toc-content"><span class="bold">On this page</span><div id="eed4d2a0bfd64539bb9df78095dec881"></div></div></div><div class="body-wrapper"><div class="main-content"><div class="main-wrapper"><section id="source-page" class="source-page"><header><h1 id="title" class="has-anchor">pkg_index.js</h1></header><article><pre class="prettyprint source lang-js"><code>let wasm;
 
 const cachedTextDecoder = (typeof TextDecoder !== 'undefined' ? new TextDecoder('utf-8', { ignoreBOM: true, fatal: true }) : { decode: () => { throw Error('TextDecoder not available') } } );
 
@@ -160,6 +160,51 @@ function _assertClass(instance, klass) {
     }
 }
 
+function addToExternrefTable0(obj) {
+    const idx = wasm.__externref_table_alloc();
+    wasm.__wbindgen_export_2.set(idx, obj);
+    return idx;
+}
+
+function passArrayJsValueToWasm0(array, malloc) {
+    const ptr = malloc(array.length * 4, 4) >>> 0;
+    for (let i = 0; i &lt; array.length; i++) {
+        const add = addToExternrefTable0(array[i]);
+        getDataViewMemory0().setUint32(ptr + 4 * i, add, true);
+    }
+    WASM_VECTOR_LEN = array.length;
+    return ptr;
+}
+
+function getArrayJsValueFromWasm0(ptr, len) {
+    ptr = ptr >>> 0;
+    const mem = getDataViewMemory0();
+    const result = [];
+    for (let i = ptr; i &lt; ptr + 4 * len; i += 4) {
+        result.push(wasm.__wbindgen_export_2.get(mem.getUint32(i, true)));
+    }
+    wasm.__externref_drop_slice(ptr, len);
+    return result;
+}
+
+function takeFromExternrefTable0(idx) {
+    const value = wasm.__wbindgen_export_2.get(idx);
+    wasm.__externref_table_dealloc(idx);
+    return value;
+}
+
+function passArray8ToWasm0(arg, malloc) {
+    const ptr = malloc(arg.length * 1, 1) >>> 0;
+    getUint8ArrayMemory0().set(arg, ptr / 1);
+    WASM_VECTOR_LEN = arg.length;
+    return ptr;
+}
+
+function getArrayU8FromWasm0(ptr, len) {
+    ptr = ptr >>> 0;
+    return getUint8ArrayMemory0().subarray(ptr / 1, ptr / 1 + len);
+}
+
 let cachedFloat32ArrayMemory0 = null;
 
 function getFloat32ArrayMemory0() {
@@ -176,10 +221,50 @@ function passArrayF32ToWasm0(arg, malloc) {
     return ptr;
 }
 
+let cachedUint32ArrayMemory0 = null;
+
+function getUint32ArrayMemory0() {
+    if (cachedUint32ArrayMemory0 === null || cachedUint32ArrayMemory0.byteLength === 0) {
+        cachedUint32ArrayMemory0 = new Uint32Array(wasm.memory.buffer);
+    }
+    return cachedUint32ArrayMemory0;
+}
+
+function passArray32ToWasm0(arg, malloc) {
+    const ptr = malloc(arg.length * 4, 4) >>> 0;
+    getUint32ArrayMemory0().set(arg, ptr / 4);
+    WASM_VECTOR_LEN = arg.length;
+    return ptr;
+}
+
 function getArrayF32FromWasm0(ptr, len) {
     ptr = ptr >>> 0;
     return getFloat32ArrayMemory0().subarray(ptr / 4, ptr / 4 + len);
 }
+/**
+ * Linearly interpolates between two values given a progress value.
+ * @param {number} a - The start value.
+ * @param {number} b - The end value.
+ * @param {number} t - The progress value.
+ * @returns {number} The interpolated value.
+ */
+export function lerp(a, b, t) {
+    const ret = wasm.lerp(a, b, t);
+    return ret;
+}
+
+/**
+ * Returns the progress value between two numbers given an interpolated value.
+ * @param {number} a - The start value.
+ * @param {number} b - The end value.
+ * @param {number} value - The value to find the progress of.
+ * @returns {number} The progress value.
+ */
+export function inverse_lerp(a, b, value) {
+    const ret = wasm.inverse_lerp(a, b, value);
+    return ret;
+}
+
 /**
  * Multiplies two matrices together.
  * @param {number[]} a - The first matrix to multiply as a flat array.
@@ -215,90 +300,6 @@ export function matrix_product_path(matrix, path, a_rows, a_columns, b_columns) 
     _assertClass(path, Path2D);
     const ret = wasm.matrix_product_path(ptr0, len0, path.__wbg_ptr, a_rows, a_columns, b_columns);
     return Path2D.__wrap(ret);
-}
-
-function takeFromExternrefTable0(idx) {
-    const value = wasm.__wbindgen_export_2.get(idx);
-    wasm.__externref_table_dealloc(idx);
-    return value;
-}
-
-function passArray8ToWasm0(arg, malloc) {
-    const ptr = malloc(arg.length * 1, 1) >>> 0;
-    getUint8ArrayMemory0().set(arg, ptr / 1);
-    WASM_VECTOR_LEN = arg.length;
-    return ptr;
-}
-
-function getArrayU8FromWasm0(ptr, len) {
-    ptr = ptr >>> 0;
-    return getUint8ArrayMemory0().subarray(ptr / 1, ptr / 1 + len);
-}
-
-function getArrayJsValueFromWasm0(ptr, len) {
-    ptr = ptr >>> 0;
-    const mem = getDataViewMemory0();
-    const result = [];
-    for (let i = ptr; i &lt; ptr + 4 * len; i += 4) {
-        result.push(wasm.__wbindgen_export_2.get(mem.getUint32(i, true)));
-    }
-    wasm.__externref_drop_slice(ptr, len);
-    return result;
-}
-/**
- * Linearly interpolates between two values given a progress value.
- * @param {number} a - The start value.
- * @param {number} b - The end value.
- * @param {number} t - The progress value.
- * @returns {number} The interpolated value.
- */
-export function lerp(a, b, t) {
-    const ret = wasm.lerp(a, b, t);
-    return ret;
-}
-
-/**
- * Returns the progress value between two numbers given an interpolated value.
- * @param {number} a - The start value.
- * @param {number} b - The end value.
- * @param {number} value - The value to find the progress of.
- * @returns {number} The progress value.
- */
-export function inverse_lerp(a, b, value) {
-    const ret = wasm.inverse_lerp(a, b, value);
-    return ret;
-}
-
-function addToExternrefTable0(obj) {
-    const idx = wasm.__externref_table_alloc();
-    wasm.__wbindgen_export_2.set(idx, obj);
-    return idx;
-}
-
-function passArrayJsValueToWasm0(array, malloc) {
-    const ptr = malloc(array.length * 4, 4) >>> 0;
-    for (let i = 0; i &lt; array.length; i++) {
-        const add = addToExternrefTable0(array[i]);
-        getDataViewMemory0().setUint32(ptr + 4 * i, add, true);
-    }
-    WASM_VECTOR_LEN = array.length;
-    return ptr;
-}
-
-let cachedUint32ArrayMemory0 = null;
-
-function getUint32ArrayMemory0() {
-    if (cachedUint32ArrayMemory0 === null || cachedUint32ArrayMemory0.byteLength === 0) {
-        cachedUint32ArrayMemory0 = new Uint32Array(wasm.memory.buffer);
-    }
-    return cachedUint32ArrayMemory0;
-}
-
-function passArray32ToWasm0(arg, malloc) {
-    const ptr = malloc(arg.length * 4, 4) >>> 0;
-    getUint32ArrayMemory0().set(arg, ptr / 4);
-    WASM_VECTOR_LEN = arg.length;
-    return ptr;
 }
 
 const AnchorsAndHandlesFinalization = (typeof FinalizationRegistry === 'undefined')
@@ -562,6 +563,237 @@ export class Arc {
     }
 }
 
+const AxisFinalization = (typeof FinalizationRegistry === 'undefined')
+    ? { register: () => {}, unregister: () => {} }
+    : new FinalizationRegistry(ptr => wasm.__wbg_axis_free(ptr >>> 0, 1));
+/**
+ * An Axis for plotting data.
+ */
+export class Axis {
+
+    static __wrap(ptr) {
+        ptr = ptr >>> 0;
+        const obj = Object.create(Axis.prototype);
+        obj.__wbg_ptr = ptr;
+        AxisFinalization.register(obj, obj.__wbg_ptr, obj);
+        return obj;
+    }
+
+    __destroy_into_raw() {
+        const ptr = this.__wbg_ptr;
+        this.__wbg_ptr = 0;
+        AxisFinalization.unregister(this);
+        return ptr;
+    }
+
+    free() {
+        const ptr = this.__destroy_into_raw();
+        wasm.__wbg_axis_free(ptr, 0);
+    }
+    /**
+     * Creates a new Axis with the given range and label.
+     * @param {ClosedInterval} range - The range of the axis.
+     * @param {Point2D} render_start - The minimum coordinates of the axis when rendered.
+     * @param {Point2D} render_end - The maximum coordinates of the axis when rendered.
+     * @param {VectorObjectBuilder | null} [label] - The label of the axis.
+     * @param {Tick[] | null} [ticks] - The ticks of the axis.
+     * @param {Style | null} [style] - The style of the axis.
+     * @param {number | null} [stroke_width] - The stroke width of the axis.
+     */
+    constructor(range, render_start, render_end, label, ticks, style, stroke_width) {
+        _assertClass(range, ClosedInterval);
+        var ptr0 = range.__destroy_into_raw();
+        _assertClass(render_start, Point2D);
+        var ptr1 = render_start.__destroy_into_raw();
+        _assertClass(render_end, Point2D);
+        var ptr2 = render_end.__destroy_into_raw();
+        let ptr3 = 0;
+        if (!isLikeNone(label)) {
+            _assertClass(label, VectorObjectBuilder);
+            ptr3 = label.__destroy_into_raw();
+        }
+        var ptr4 = isLikeNone(ticks) ? 0 : passArrayJsValueToWasm0(ticks, wasm.__wbindgen_malloc);
+        var len4 = WASM_VECTOR_LEN;
+        let ptr5 = 0;
+        if (!isLikeNone(style)) {
+            _assertClass(style, Style);
+            ptr5 = style.__destroy_into_raw();
+        }
+        const ret = wasm.axis_new(ptr0, ptr1, ptr2, ptr3, ptr4, len4, ptr5, isLikeNone(stroke_width) ? 0x100000001 : Math.fround(stroke_width));
+        this.__wbg_ptr = ret >>> 0;
+        AxisFinalization.register(this, this.__wbg_ptr, this);
+        return this;
+    }
+    /**
+     * Returns the range of the axis.
+     * @returns {ClosedInterval} The range of the axis.
+     */
+    get range() {
+        const ret = wasm.axis_range(this.__wbg_ptr);
+        return ClosedInterval.__wrap(ret);
+    }
+    /**
+     * Returns the minimum x-coordinate of the axis when rendered.
+     * @returns {Point2D} The minimum x-coordinate of the axis when rendered.
+     */
+    get render_start() {
+        const ret = wasm.axis_render_start(this.__wbg_ptr);
+        return Point2D.__wrap(ret);
+    }
+    /**
+     * Returns the maximum x-coordinate of the axis when rendered.
+     * @returns {Point2D} The maximum x-coordinate of the axis when rendered.
+     */
+    get render_end() {
+        const ret = wasm.axis_render_end(this.__wbg_ptr);
+        return Point2D.__wrap(ret);
+    }
+    /**
+     * Returns the label of the axis.
+     * @returns {VectorObjectBuilder | undefined} The label of the axis.
+     */
+    get label() {
+        const ret = wasm.axis_label(this.__wbg_ptr);
+        return ret === 0 ? undefined : VectorObjectBuilder.__wrap(ret);
+    }
+    /**
+     * Returns the ticks of the axis.
+     * @returns {Tick[]} The ticks of the axis.
+     */
+    get ticks() {
+        const ret = wasm.axis_ticks(this.__wbg_ptr);
+        var v1 = getArrayJsValueFromWasm0(ret[0], ret[1]).slice();
+        wasm.__wbindgen_free(ret[0], ret[1] * 4, 4);
+        return v1;
+    }
+    /**
+     * Returns the style of the axis.
+     * @returns {Style} The style of the axis.
+     */
+    get style() {
+        const ret = wasm.axis_style(this.__wbg_ptr);
+        return Style.__wrap(ret);
+    }
+    /**
+     * Returns the number of ticks on the axis.
+     * @returns {number} The number of ticks on the axis.
+     */
+    get num_ticks() {
+        const ret = wasm.axis_num_ticks(this.__wbg_ptr);
+        return ret >>> 0;
+    }
+    /**
+     * Returns the tick at the given number.
+     * @param {number} num - The number coo
+     * @returns {Tick | undefined} The tick at the given number.
+     */
+    tick(num) {
+        const ret = wasm.axis_tick(this.__wbg_ptr, num);
+        return ret === 0 ? undefined : Tick.__wrap(ret);
+    }
+    /**
+     * Gets the coordinates of a point in the axis.
+     * @param {number} num
+     * @returns {Point2D} The coordinates of the point in the axis.
+     */
+    coord_to_point(num) {
+        const ret = wasm.axis_coord_to_point(this.__wbg_ptr, num);
+        return Point2D.__wrap(ret);
+    }
+    /**
+     * Gets the value of a point in the axis.
+     * @param {Point2D} point
+     * @returns {number} The value of the point in the axis.
+     */
+    point_to_coord(point) {
+        _assertClass(point, Point2D);
+        var ptr0 = point.__destroy_into_raw();
+        const ret = wasm.axis_point_to_coord(this.__wbg_ptr, ptr0);
+        return ret;
+    }
+    /**
+     * Gets the VectorObjectBuilder such that when built and rendered, the axis is drawn.
+     * @param {Point2D | null} [label_direction] - The direction of the label. The default is (1, 0).
+     * @param {number | null} [label_offset] - The offset of the label. The default is 20.0.
+     * @param {Point2D | null} [tick_label_direction] - The direction of the tick label. The default is (0, 1).
+     * @param {number | null} [tick_label_offset] - The offset of the tick label. The default is 10.0.
+     * @param {boolean | null} [add_label] - Whether to add the axis label. The default is true.
+     * @returns {VectorObjectBuilder} A vector object builder with the axis.
+     */
+    vector_object_builder(label_direction, label_offset, tick_label_direction, tick_label_offset, add_label) {
+        let ptr0 = 0;
+        if (!isLikeNone(label_direction)) {
+            _assertClass(label_direction, Point2D);
+            ptr0 = label_direction.__destroy_into_raw();
+        }
+        let ptr1 = 0;
+        if (!isLikeNone(tick_label_direction)) {
+            _assertClass(tick_label_direction, Point2D);
+            ptr1 = tick_label_direction.__destroy_into_raw();
+        }
+        const ret = wasm.axis_vector_object_builder(this.__wbg_ptr, ptr0, isLikeNone(label_offset) ? 0x100000001 : Math.fround(label_offset), ptr1, isLikeNone(tick_label_offset) ? 0x100000001 : Math.fround(tick_label_offset), isLikeNone(add_label) ? 0xFFFFFF : add_label ? 1 : 0);
+        return VectorObjectBuilder.__wrap(ret);
+    }
+    /**
+     * Returns the VectorObjectBuilder with the axis and tip at the end.
+     * @param {VectorObjectBuilder} tip_shape - The shape of the tip. The shape must be pointing to the right and centered to (0, 0), this function will rotate and move it to the correct angle.
+     * @param {Point2D | null} [label_direction] - The direction of the label. The default is (1, 0).
+     * @param {number | null} [label_offset] - The offset of the label. The default is 20.0.
+     * @param {Point2D | null} [tick_label_direction] - The direction of the tick label. The default is (0, 1).
+     * @param {number | null} [tick_label_offset] - The offset of the tick label. The default is 10.0.
+     * @returns {VectorObjectBuilder} A VectorObjectBuilder with the axis and tip at the end.
+     */
+    with_tip_at_the_end(tip_shape, label_direction, label_offset, tick_label_direction, tick_label_offset) {
+        _assertClass(tip_shape, VectorObjectBuilder);
+        var ptr0 = tip_shape.__destroy_into_raw();
+        let ptr1 = 0;
+        if (!isLikeNone(label_direction)) {
+            _assertClass(label_direction, Point2D);
+            ptr1 = label_direction.__destroy_into_raw();
+        }
+        let ptr2 = 0;
+        if (!isLikeNone(tick_label_direction)) {
+            _assertClass(tick_label_direction, Point2D);
+            ptr2 = tick_label_direction.__destroy_into_raw();
+        }
+        const ret = wasm.axis_with_tip_at_the_end(this.__wbg_ptr, ptr0, ptr1, isLikeNone(label_offset) ? 0x100000001 : Math.fround(label_offset), ptr2, isLikeNone(tick_label_offset) ? 0x100000001 : Math.fround(tick_label_offset));
+        return VectorObjectBuilder.__wrap(ret);
+    }
+    /**
+     * Returns the VectorObjectBuilder with the axis and tips at both ends.
+     * @param {VectorObjectBuilder} tip_shape - The shape of the tip. The shape must be pointing to the right, this function will rotate and move it to the correct angle.
+     * @param {Point2D | null} [label_direction] - The direction of the label. The default is (1, 0).
+     * @param {number | null} [label_offset] - The offset of the label. The default is 20.0.
+     * @param {Point2D | null} [tick_label_direction] - The direction of the tick label. The default is (0, 1).
+     * @param {number | null} [tick_label_offset] - The offset of the tick label. The default is 10.0.
+     * @returns {VectorObjectBuilder} A VectorObjectBuilder with the axis and tips at both ends.
+     */
+    with_tips_at_both_ends(tip_shape, label_direction, label_offset, tick_label_direction, tick_label_offset) {
+        _assertClass(tip_shape, VectorObjectBuilder);
+        var ptr0 = tip_shape.__destroy_into_raw();
+        let ptr1 = 0;
+        if (!isLikeNone(label_direction)) {
+            _assertClass(label_direction, Point2D);
+            ptr1 = label_direction.__destroy_into_raw();
+        }
+        let ptr2 = 0;
+        if (!isLikeNone(tick_label_direction)) {
+            _assertClass(tick_label_direction, Point2D);
+            ptr2 = tick_label_direction.__destroy_into_raw();
+        }
+        const ret = wasm.axis_with_tips_at_both_ends(this.__wbg_ptr, ptr0, ptr1, isLikeNone(label_offset) ? 0x100000001 : Math.fround(label_offset), ptr2, isLikeNone(tick_label_offset) ? 0x100000001 : Math.fround(tick_label_offset));
+        return VectorObjectBuilder.__wrap(ret);
+    }
+    /**
+     * Clones the axis.
+     * @returns {Axis}
+     */
+    clone() {
+        const ret = wasm.axis_clone(this.__wbg_ptr);
+        return Axis.__wrap(ret);
+    }
+}
+
 const BoundingBoxFinalization = (typeof FinalizationRegistry === 'undefined')
     ? { register: () => {}, unregister: () => {} }
     : new FinalizationRegistry(ptr => wasm.__wbg_boundingbox_free(ptr >>> 0, 1));
@@ -723,6 +955,273 @@ export class BoundingBox {
     get center() {
         const ret = wasm.boundingbox_center(this.__wbg_ptr);
         return Point2D.__wrap(ret);
+    }
+}
+
+const CartesianAxesFinalization = (typeof FinalizationRegistry === 'undefined')
+    ? { register: () => {}, unregister: () => {} }
+    : new FinalizationRegistry(ptr => wasm.__wbg_cartesianaxes_free(ptr >>> 0, 1));
+/**
+ * A CartesianAxes represents the axes of a Cartesian plot.
+ */
+export class CartesianAxes {
+
+    static __wrap(ptr) {
+        ptr = ptr >>> 0;
+        const obj = Object.create(CartesianAxes.prototype);
+        obj.__wbg_ptr = ptr;
+        CartesianAxesFinalization.register(obj, obj.__wbg_ptr, obj);
+        return obj;
+    }
+
+    __destroy_into_raw() {
+        const ptr = this.__wbg_ptr;
+        this.__wbg_ptr = 0;
+        CartesianAxesFinalization.unregister(this);
+        return ptr;
+    }
+
+    free() {
+        const ptr = this.__destroy_into_raw();
+        wasm.__wbg_cartesianaxes_free(ptr, 0);
+    }
+    /**
+     * Creates a new CartesianAxes with the given x and y axes.
+     * @param {ClosedInterval} x_range - The x-range of the Cartesian axes.
+     * @param {ClosedInterval} y_range - The y-range of the Cartesian axes.
+     * @param {Point2D} render_start - The minimum coordinates of the Cartesian axes when rendered.
+     * @param {Point2D} render_end - The maximum coordinates of the Cartesian axes when rendered.
+     * @param {Style | null} [style] - The style of each axis.
+     * @param {number | null} [stroke_width] - The stroke width of each axis.
+     * @param {VectorObjectBuilder | null} [x_label] - The x-axis label.
+     * @param {VectorObjectBuilder | null} [y_label] - The y-axis label.
+     * @param {Tick[] | null} [x_ticks] - The x-axis ticks.
+     * @param {Tick[] | null} [y_ticks] - The y-axis ticks.
+     */
+    constructor(x_range, y_range, render_start, render_end, style, stroke_width, x_label, y_label, x_ticks, y_ticks) {
+        _assertClass(x_range, ClosedInterval);
+        var ptr0 = x_range.__destroy_into_raw();
+        _assertClass(y_range, ClosedInterval);
+        var ptr1 = y_range.__destroy_into_raw();
+        _assertClass(render_start, Point2D);
+        var ptr2 = render_start.__destroy_into_raw();
+        _assertClass(render_end, Point2D);
+        var ptr3 = render_end.__destroy_into_raw();
+        let ptr4 = 0;
+        if (!isLikeNone(style)) {
+            _assertClass(style, Style);
+            ptr4 = style.__destroy_into_raw();
+        }
+        let ptr5 = 0;
+        if (!isLikeNone(x_label)) {
+            _assertClass(x_label, VectorObjectBuilder);
+            ptr5 = x_label.__destroy_into_raw();
+        }
+        let ptr6 = 0;
+        if (!isLikeNone(y_label)) {
+            _assertClass(y_label, VectorObjectBuilder);
+            ptr6 = y_label.__destroy_into_raw();
+        }
+        var ptr7 = isLikeNone(x_ticks) ? 0 : passArrayJsValueToWasm0(x_ticks, wasm.__wbindgen_malloc);
+        var len7 = WASM_VECTOR_LEN;
+        var ptr8 = isLikeNone(y_ticks) ? 0 : passArrayJsValueToWasm0(y_ticks, wasm.__wbindgen_malloc);
+        var len8 = WASM_VECTOR_LEN;
+        const ret = wasm.cartesianaxes_new(ptr0, ptr1, ptr2, ptr3, ptr4, isLikeNone(stroke_width) ? 0x100000001 : Math.fround(stroke_width), ptr5, ptr6, ptr7, len7, ptr8, len8);
+        this.__wbg_ptr = ret >>> 0;
+        CartesianAxesFinalization.register(this, this.__wbg_ptr, this);
+        return this;
+    }
+    /**
+     * Returns the x-axis of the Cartesian axes.
+     * @returns {Axis} The x-axis of the Cartesian axes.
+     */
+    get x_axis() {
+        const ret = wasm.cartesianaxes_x_axis(this.__wbg_ptr);
+        return Axis.__wrap(ret);
+    }
+    /**
+     * Returns the y-axis of the Cartesian axes.
+     * @returns {Axis} The y-axis of the Cartesian axes.
+     */
+    get y_axis() {
+        const ret = wasm.cartesianaxes_y_axis(this.__wbg_ptr);
+        return Axis.__wrap(ret);
+    }
+    /**
+     * Gets the VectorObjectBuilder such that when built and rendered, the Cartesian axes are drawn.
+     * @param {Point2D | null} [x_label_direction] - The direction of the x-label. The default is (1, 0).
+     * @param {number | null} [x_label_offset] - The offset of the x-label. The default is 20.0.
+     * @param {Point2D | null} [x_tick_label_direction] - The direction of the x-tick label. The default is (0, 1).
+     * @param {number | null} [x_tick_label_offset] - The offset of the x-tick label. The default is 10.0.
+     * @param {Point2D | null} [y_label_direction] - The direction of the y-label. The default is (1, 0).
+     * @param {number | null} [y_label_offset] - The offset of the y-label. The default is 20.0.
+     * @param {Point2D | null} [y_tick_label_direction] - The direction of the y-tick label. The default is (0, 1).
+     * @param {number | null} [y_tick_label_offset] - The offset of the y-tick label. The default is 10.0.
+     * @returns {VectorObjectBuilder} A vector object builder with the Cartesian axes.
+     */
+    vector_object_builder(x_label_direction, x_label_offset, x_tick_label_direction, x_tick_label_offset, y_label_direction, y_label_offset, y_tick_label_direction, y_tick_label_offset) {
+        let ptr0 = 0;
+        if (!isLikeNone(x_label_direction)) {
+            _assertClass(x_label_direction, Point2D);
+            ptr0 = x_label_direction.__destroy_into_raw();
+        }
+        let ptr1 = 0;
+        if (!isLikeNone(x_tick_label_direction)) {
+            _assertClass(x_tick_label_direction, Point2D);
+            ptr1 = x_tick_label_direction.__destroy_into_raw();
+        }
+        let ptr2 = 0;
+        if (!isLikeNone(y_label_direction)) {
+            _assertClass(y_label_direction, Point2D);
+            ptr2 = y_label_direction.__destroy_into_raw();
+        }
+        let ptr3 = 0;
+        if (!isLikeNone(y_tick_label_direction)) {
+            _assertClass(y_tick_label_direction, Point2D);
+            ptr3 = y_tick_label_direction.__destroy_into_raw();
+        }
+        const ret = wasm.cartesianaxes_vector_object_builder(this.__wbg_ptr, ptr0, isLikeNone(x_label_offset) ? 0x100000001 : Math.fround(x_label_offset), ptr1, isLikeNone(x_tick_label_offset) ? 0x100000001 : Math.fround(x_tick_label_offset), ptr2, isLikeNone(y_label_offset) ? 0x100000001 : Math.fround(y_label_offset), ptr3, isLikeNone(y_tick_label_offset) ? 0x100000001 : Math.fround(y_tick_label_offset));
+        return VectorObjectBuilder.__wrap(ret);
+    }
+    /**
+     * Returns the VectorObjectBuilder with the Cartesian axes and tip at the end of both axes.
+     * @param {VectorObjectBuilder} tip_shape - The shape of the tip. The shape must be pointing to the right, this function will rotate and move it to the correct angle.
+     * @param {Point2D | null} [x_label_direction] - The direction of the x-label. The default is (1, 0).
+     * @param {number | null} [x_label_offset] - The offset of the x-label. The default is 20.0.
+     * @param {Point2D | null} [x_tick_label_direction] - The direction of the x-tick label. The default is (0, 1).
+     * @param {number | null} [x_tick_label_offset] - The offset of the x-tick label. The default is 10.0.
+     * @param {Point2D | null} [y_label_direction] - The direction of the y-label. The default is (1, 0).
+     * @param {number | null} [y_label_offset] - The offset of the y-label. The default is 20.0.
+     * @param {Point2D | null} [y_tick_label_direction] - The direction of the y-tick label. The default is (0, 1).
+     * @param {number | null} [y_tick_label_offset] - The offset of the y-tick label. The default is 10.0.
+     * @returns {VectorObjectBuilder} A VectorObjectBuilder with the Cartesian axes and tip at the end of both axes.
+     */
+    with_tips_at_ends(tip_shape, x_label_direction, x_label_offset, x_tick_label_direction, x_tick_label_offset, y_label_direction, y_label_offset, y_tick_label_direction, y_tick_label_offset) {
+        _assertClass(tip_shape, VectorObjectBuilder);
+        var ptr0 = tip_shape.__destroy_into_raw();
+        let ptr1 = 0;
+        if (!isLikeNone(x_label_direction)) {
+            _assertClass(x_label_direction, Point2D);
+            ptr1 = x_label_direction.__destroy_into_raw();
+        }
+        let ptr2 = 0;
+        if (!isLikeNone(x_tick_label_direction)) {
+            _assertClass(x_tick_label_direction, Point2D);
+            ptr2 = x_tick_label_direction.__destroy_into_raw();
+        }
+        let ptr3 = 0;
+        if (!isLikeNone(y_label_direction)) {
+            _assertClass(y_label_direction, Point2D);
+            ptr3 = y_label_direction.__destroy_into_raw();
+        }
+        let ptr4 = 0;
+        if (!isLikeNone(y_tick_label_direction)) {
+            _assertClass(y_tick_label_direction, Point2D);
+            ptr4 = y_tick_label_direction.__destroy_into_raw();
+        }
+        const ret = wasm.cartesianaxes_with_tips_at_ends(this.__wbg_ptr, ptr0, ptr1, isLikeNone(x_label_offset) ? 0x100000001 : Math.fround(x_label_offset), ptr2, isLikeNone(x_tick_label_offset) ? 0x100000001 : Math.fround(x_tick_label_offset), ptr3, isLikeNone(y_label_offset) ? 0x100000001 : Math.fround(y_label_offset), ptr4, isLikeNone(y_tick_label_offset) ? 0x100000001 : Math.fround(y_tick_label_offset));
+        return VectorObjectBuilder.__wrap(ret);
+    }
+    /**
+     * Returns the VectorObjectBuilder with the Cartesian axes and tips at both ends of both axes.
+     * @param {VectorObjectBuilder} tip_shape - The shape of the tip. The shape must be pointing to the right, this function will rotate and move it to the correct angle.
+     * @param {Point2D | null} [x_label_direction] - The direction of the x-label. The default is (1, 0).
+     * @param {number | null} [x_label_offset] - The offset of the x-label. The default is 20.0.
+     * @param {Point2D | null} [x_tick_label_direction] - The direction of the x-tick label. The default is (0, 1).
+     * @param {number | null} [x_tick_label_offset] - The offset of the x-tick label. The default is 10.0.
+     * @param {Point2D | null} [y_label_direction] - The direction of the y-label. The default is (1, 0).
+     * @param {number | null} [y_label_offset] - The offset of the y-label. The default is 20.0.
+     * @param {Point2D | null} [y_tick_label_direction] - The direction of the y-tick label. The default is (0, 1).
+     * @param {number | null} [y_tick_label_offset] - The offset of the y-tick label. The default is 10.0.
+     * @returns {VectorObjectBuilder} A VectorObjectBuilder with the Cartesian axes and tips at both ends of both axes.
+     */
+    with_tips_at_both_ends(tip_shape, x_label_direction, x_label_offset, x_tick_label_direction, x_tick_label_offset, y_label_direction, y_label_offset, y_tick_label_direction, y_tick_label_offset) {
+        _assertClass(tip_shape, VectorObjectBuilder);
+        var ptr0 = tip_shape.__destroy_into_raw();
+        let ptr1 = 0;
+        if (!isLikeNone(x_label_direction)) {
+            _assertClass(x_label_direction, Point2D);
+            ptr1 = x_label_direction.__destroy_into_raw();
+        }
+        let ptr2 = 0;
+        if (!isLikeNone(x_tick_label_direction)) {
+            _assertClass(x_tick_label_direction, Point2D);
+            ptr2 = x_tick_label_direction.__destroy_into_raw();
+        }
+        let ptr3 = 0;
+        if (!isLikeNone(y_label_direction)) {
+            _assertClass(y_label_direction, Point2D);
+            ptr3 = y_label_direction.__destroy_into_raw();
+        }
+        let ptr4 = 0;
+        if (!isLikeNone(y_tick_label_direction)) {
+            _assertClass(y_tick_label_direction, Point2D);
+            ptr4 = y_tick_label_direction.__destroy_into_raw();
+        }
+        const ret = wasm.cartesianaxes_with_tips_at_both_ends(this.__wbg_ptr, ptr0, ptr1, isLikeNone(x_label_offset) ? 0x100000001 : Math.fround(x_label_offset), ptr2, isLikeNone(x_tick_label_offset) ? 0x100000001 : Math.fround(x_tick_label_offset), ptr3, isLikeNone(y_label_offset) ? 0x100000001 : Math.fround(y_label_offset), ptr4, isLikeNone(y_tick_label_offset) ? 0x100000001 : Math.fround(y_tick_label_offset));
+        return VectorObjectBuilder.__wrap(ret);
+    }
+    /**
+     * Returns the associated point of the given coordinates in the Cartesian axes.
+     * @param {Point2D} p
+     * @returns {Point2D} The associated point of the given coordinates in the Cartesian axes.
+     */
+    coord_to_point(p) {
+        _assertClass(p, Point2D);
+        var ptr0 = p.__destroy_into_raw();
+        const ret = wasm.cartesianaxes_coord_to_point(this.__wbg_ptr, ptr0);
+        return Point2D.__wrap(ret);
+    }
+    /**
+     * Returns the associated coordinates of the given point in the Cartesian axes.
+     * @param {Point2D} point
+     * @returns {Point2D} The associated coordinates of the given point in the Cartesian axes.
+     */
+    point_to_coord(point) {
+        _assertClass(point, Point2D);
+        var ptr0 = point.__destroy_into_raw();
+        const ret = wasm.cartesianaxes_point_to_coord(this.__wbg_ptr, ptr0);
+        return Point2D.__wrap(ret);
+    }
+    /**
+     * Returns the ParametricFunctionPlot object with the given function, relative to the Cartesian axes' coordinates.
+     * @param {string} expression_x - The x function to plot.
+     * @param {string} expression_y - The y function to plot.
+     * @param {ClosedInterval} domain - The domain of the parametric function.
+     * @param {ClosedInterval} x_range - The x-range of the plot.
+     * @param {ClosedInterval} y_range - The y-range of the plot.
+     * @param {number[]} discontinuities - The discontinuities of the plot.
+     * @param {number | null} [min_depth] - The minimum depth of the plot.
+     * @param {number | null} [max_depth] - The maximum depth of the plot.
+     * @param {number | null} [threshold] - The threshold of the plot.
+     * @returns {ParametricFunctionPlot} The ParametricFunctionPlot object with the given function.
+     */
+    plot_function(expression_x, expression_y, domain, x_range, y_range, discontinuities, min_depth, max_depth, threshold) {
+        const ptr0 = passStringToWasm0(expression_x, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len0 = WASM_VECTOR_LEN;
+        const ptr1 = passStringToWasm0(expression_y, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len1 = WASM_VECTOR_LEN;
+        _assertClass(domain, ClosedInterval);
+        var ptr2 = domain.__destroy_into_raw();
+        _assertClass(x_range, ClosedInterval);
+        var ptr3 = x_range.__destroy_into_raw();
+        _assertClass(y_range, ClosedInterval);
+        var ptr4 = y_range.__destroy_into_raw();
+        var ptr5 = isLikeNone(discontinuities) ? 0 : passArrayF32ToWasm0(discontinuities, wasm.__wbindgen_malloc);
+        var len5 = WASM_VECTOR_LEN;
+        const ret = wasm.cartesianaxes_plot_function(this.__wbg_ptr, ptr0, len0, ptr1, len1, ptr2, ptr3, ptr4, ptr5, len5, isLikeNone(min_depth) ? 0x100000001 : (min_depth) >>> 0, isLikeNone(max_depth) ? 0x100000001 : (max_depth) >>> 0, isLikeNone(threshold) ? 0x100000001 : Math.fround(threshold));
+        if (ret[2]) {
+            throw takeFromExternrefTable0(ret[1]);
+        }
+        return ParametricFunctionPlot.__wrap(ret[0]);
+    }
+    /**
+     * Clones the Cartesian axes.
+     * @returns {CartesianAxes}
+     */
+    clone() {
+        const ret = wasm.cartesianaxes_clone(this.__wbg_ptr);
+        return CartesianAxes.__wrap(ret);
     }
 }
 
@@ -2255,6 +2754,14 @@ const ParametricFunctionPlotFinalization = (typeof FinalizationRegistry === 'und
  */
 export class ParametricFunctionPlot {
 
+    static __wrap(ptr) {
+        ptr = ptr >>> 0;
+        const obj = Object.create(ParametricFunctionPlot.prototype);
+        obj.__wbg_ptr = ptr;
+        ParametricFunctionPlotFinalization.register(obj, obj.__wbg_ptr, obj);
+        return obj;
+    }
+
     __destroy_into_raw() {
         const ptr = this.__wbg_ptr;
         this.__wbg_ptr = 0;
@@ -2273,7 +2780,7 @@ export class ParametricFunctionPlot {
      * @param {ClosedInterval} domain - The domain of the parametric function.
      * @param {ClosedInterval} x_range - The x-range of the plot.
      * @param {ClosedInterval} y_range - The y-range of the plot.
-     * @param {Float32Array | null} [discontinuities] - The discontinuities of the plot.
+     * @param {number[]} discontinuities - The discontinuities of the plot.
      * @param {number | null} [min_depth] - The minimum depth of the plot.
      * @param {number | null} [max_depth] - The maximum depth of the plot.
      * @param {number | null} [threshold] - The threshold of the plot.
@@ -2292,7 +2799,10 @@ export class ParametricFunctionPlot {
         var ptr5 = isLikeNone(discontinuities) ? 0 : passArrayF32ToWasm0(discontinuities, wasm.__wbindgen_malloc);
         var len5 = WASM_VECTOR_LEN;
         const ret = wasm.parametricfunctionplot_new(ptr0, len0, ptr1, len1, ptr2, ptr3, ptr4, ptr5, len5, isLikeNone(min_depth) ? 0x100000001 : (min_depth) >>> 0, isLikeNone(max_depth) ? 0x100000001 : (max_depth) >>> 0, isLikeNone(threshold) ? 0x100000001 : Math.fround(threshold));
-        this.__wbg_ptr = ret >>> 0;
+        if (ret[2]) {
+            throw takeFromExternrefTable0(ret[1]);
+        }
+        this.__wbg_ptr = ret[0] >>> 0;
         ParametricFunctionPlotFinalization.register(this, this.__wbg_ptr, this);
         return this;
     }
@@ -2370,7 +2880,7 @@ export class ParametricFunctionPlot {
     }
     /**
      * Returns the discontinuities of the plot.
-     * @returns {Float32Array} The discontinuities of the plot.
+     * @returns {number[]} The discontinuities of the plot.
      */
     get discontinuities() {
         const ret = wasm.parametricfunctionplot_discontinuities(this.__wbg_ptr);
@@ -2882,7 +3392,7 @@ export class Point2D {
      * @returns {Point2D}
      */
     clone() {
-        const ret = wasm.cubicbeziertuple_start_anchor(this.__wbg_ptr);
+        const ret = wasm.point2d_clone(this.__wbg_ptr);
         return Point2D.__wrap(ret);
     }
     /**
@@ -3719,6 +4229,106 @@ export class Style {
             throw takeFromExternrefTable0(ret[1]);
         }
         return Style.__wrap(ret[0]);
+    }
+}
+
+const TickFinalization = (typeof FinalizationRegistry === 'undefined')
+    ? { register: () => {}, unregister: () => {} }
+    : new FinalizationRegistry(ptr => wasm.__wbg_tick_free(ptr >>> 0, 1));
+/**
+ * A Tick is a mark on an axis at a specific value.
+ */
+export class Tick {
+
+    static __wrap(ptr) {
+        ptr = ptr >>> 0;
+        const obj = Object.create(Tick.prototype);
+        obj.__wbg_ptr = ptr;
+        TickFinalization.register(obj, obj.__wbg_ptr, obj);
+        return obj;
+    }
+
+    static __unwrap(jsValue) {
+        if (!(jsValue instanceof Tick)) {
+            return 0;
+        }
+        return jsValue.__destroy_into_raw();
+    }
+
+    __destroy_into_raw() {
+        const ptr = this.__wbg_ptr;
+        this.__wbg_ptr = 0;
+        TickFinalization.unregister(this);
+        return ptr;
+    }
+
+    free() {
+        const ptr = this.__destroy_into_raw();
+        wasm.__wbg_tick_free(ptr, 0);
+    }
+    /**
+     * Creates a new Tick with the given value.
+     * @param {number} value - The value of the tick.
+     * @param {VectorObjectBuilder | null} [label] - The label of the tick.
+     * @param {number | null} [size] - The size of the tick.
+     * @param {Style | null} [style] - The style of the tick.
+     * @param {number | null} [stroke_width] - The stroke width of the tick.
+     */
+    constructor(value, label, size, style, stroke_width) {
+        let ptr0 = 0;
+        if (!isLikeNone(label)) {
+            _assertClass(label, VectorObjectBuilder);
+            ptr0 = label.__destroy_into_raw();
+        }
+        let ptr1 = 0;
+        if (!isLikeNone(style)) {
+            _assertClass(style, Style);
+            ptr1 = style.__destroy_into_raw();
+        }
+        const ret = wasm.tick_new(value, ptr0, isLikeNone(size) ? 0x100000001 : Math.fround(size), ptr1, isLikeNone(stroke_width) ? 0x100000001 : Math.fround(stroke_width));
+        this.__wbg_ptr = ret >>> 0;
+        TickFinalization.register(this, this.__wbg_ptr, this);
+        return this;
+    }
+    /**
+     * Returns the value of the tick.
+     * @returns {number} The value of the tick.
+     */
+    get value() {
+        const ret = wasm.tick_value(this.__wbg_ptr);
+        return ret;
+    }
+    /**
+     * Returns the label of the tick, if any.
+     * @returns {VectorObjectBuilder | undefined} The label of the tick.
+     */
+    get label() {
+        const ret = wasm.tick_label(this.__wbg_ptr);
+        return ret === 0 ? undefined : VectorObjectBuilder.__wrap(ret);
+    }
+    /**
+     * Returns the size of the tick.
+     * @returns {number} The size of the tick.
+     */
+    get size() {
+        const ret = wasm.tick_size(this.__wbg_ptr);
+        return ret;
+    }
+    /**
+     * Returns the style of the tick.
+     * @returns {Style} The style of the tick.
+     */
+    get style() {
+        const ret = wasm.tick_style(this.__wbg_ptr);
+        return Style.__wrap(ret);
+    }
+    /**
+     * Returns the stroke width of the tick.
+     * @returns {number} The stroke width of the tick.
+     */
+    get stroke_width() {
+        const ret = wasm.tick_stroke_width(this.__wbg_ptr);
+        return ret;
     }
 }
 
@@ -5260,7 +5870,7 @@ function __wbg_get_imports() {
         const ret = CubicBezierTuple.__wrap(arg0);
         return ret;
     };
-    imports.wbg.__wbg_error_bf1a3164410d143f = function(arg0, arg1) {
+    imports.wbg.__wbg_error_cf5b49c323ad9c18 = function(arg0, arg1) {
         console.error(getStringFromWasm0(arg0, arg1));
     };
     imports.wbg.__wbg_fontface_unwrap = function(arg0) {
@@ -5275,7 +5885,7 @@ function __wbg_get_imports() {
         const ret = ImageData.__wrap(arg0);
         return ret;
     };
-    imports.wbg.__wbg_log_c98885f1aad7702d = function(arg0, arg1) {
+    imports.wbg.__wbg_log_a1cd05195b80661f = function(arg0, arg1) {
         console.log(getStringFromWasm0(arg0, arg1));
     };
     imports.wbg.__wbg_new0_f788a2397c7ca929 = function() {
@@ -5292,6 +5902,14 @@ function __wbg_get_imports() {
     };
     imports.wbg.__wbg_point2d_unwrap = function(arg0) {
         const ret = Point2D.__unwrap(arg0);
+        return ret;
+    };
+    imports.wbg.__wbg_tick_new = function(arg0) {
+        const ret = Tick.__wrap(arg0);
+        return ret;
+    };
+    imports.wbg.__wbg_tick_unwrap = function(arg0) {
+        const ret = Tick.__unwrap(arg0);
         return ret;
     };
     imports.wbg.__wbg_vectorobject_new = function(arg0) {
@@ -5418,4 +6036,4 @@ async function __wbg_init(module_or_path) {
 
 export { initSync };
 export default __wbg_init;
-</code></pre></article></section></div></div></div><div class="search-container" id="PkfLWpAbet" style="display:none"><div class="wrapper" id="iCxFxjkHbP"><button class="icon-button search-close-button" id="VjLlGakifb" aria-label="close search"><svg><use xlink:href="#close-icon"></use></svg></button><div class="search-box-c"><svg><use xlink:href="#search-icon"></use></svg> <input type="text" id="vpcKVYIppa" class="search-input" placeholder="Search..." autofocus></div><div class="search-result-c" id="fWwVHRuDuN"><span class="search-result-c-text">Type anything to view search result</span></div></div></div><div class="mobile-menu-icon-container"><button class="icon-button" id="mobile-menu" data-isopen="false" aria-label="menu"><svg><use xlink:href="#menu-icon"></use></svg></button></div><div id="mobile-sidebar" class="mobile-sidebar-container"><div class="mobile-sidebar-wrapper"><div class="mobile-nav-links"></div><div class="mobile-sidebar-items-c"><div class="sidebar-section-title with-arrow" data-isopen="false" id="sidebar-classes"><div>Classes</div><svg><use xlink:href="#down-icon"></use></svg></div><div class="sidebar-section-children-container"><div class="sidebar-section-children"><a href="AnchorsAndHandles.html">AnchorsAndHandles</a></div><div class="sidebar-section-children"><a href="Arc.html">Arc</a></div><div class="sidebar-section-children"><a href="BoundingBox.html">BoundingBox</a></div><div class="sidebar-section-children"><a href="Circle.html">Circle</a></div><div class="sidebar-section-children"><a href="ClosedInterval.html">ClosedInterval</a></div><div class="sidebar-section-children"><a href="Color.html">Color</a></div><div class="sidebar-section-children"><a href="ColorStop.html">ColorStop</a></div><div class="sidebar-section-children"><a href="CubicBezierTuple.html">CubicBezierTuple</a></div><div class="sidebar-section-children"><a href="EquilateralTriangle.html">EquilateralTriangle</a></div><div class="sidebar-section-children"><a href="FontFace.html">FontFace</a></div><div class="sidebar-section-children"><a href="ImageBitmap.html">ImageBitmap</a></div><div class="sidebar-section-children"><a href="ImageData.html">ImageData</a></div><div class="sidebar-section-children"><a href="ImageLibrary.html">ImageLibrary</a></div><div class="sidebar-section-children"><a href="IntegerLerp.html">IntegerLerp</a></div><div class="sidebar-section-children"><a href="Line.html">Line</a></div><div class="sidebar-section-children"><a href="LinearGradient.html">LinearGradient</a></div><div class="sidebar-section-children"><a href="ParametricFunctionPlot.html">ParametricFunctionPlot</a></div><div class="sidebar-section-children"><a href="Path2D.html">Path2D</a></div><div class="sidebar-section-children"><a href="Point2D.html">Point2D</a></div><div class="sidebar-section-children"><a href="RadialGradient.html">RadialGradient</a></div><div class="sidebar-section-children"><a href="Rectangle.html">Rectangle</a></div><div class="sidebar-section-children"><a href="RightTriangle.html">RightTriangle</a></div><div class="sidebar-section-children"><a href="Square.html">Square</a></div><div class="sidebar-section-children"><a href="Style.html">Style</a></div><div class="sidebar-section-children"><a href="TransformationMatrix.html">TransformationMatrix</a></div><div class="sidebar-section-children"><a href="Triangle.html">Triangle</a></div><div class="sidebar-section-children"><a href="Typst.html">Typst</a></div><div class="sidebar-section-children"><a href="VectorObject.html">VectorObject</a></div><div class="sidebar-section-children"><a href="VectorObjectBuilder.html">VectorObjectBuilder</a></div><div class="sidebar-section-children"><a href="module.exports.html">exports</a></div><div class="sidebar-section-children"><a href="module.exports.html">exports</a></div><div class="sidebar-section-children"><a href="module.exports.html">exports</a></div></div><div class="sidebar-section-title with-arrow" data-isopen="false" id="sidebar-tutorials"><div>Tutorials</div><svg><use xlink:href="#down-icon"></use></svg></div><div class="sidebar-section-children-container"><div class="sidebar-section-children"><a href="tutorial-Initial tutorials.html">Initial tutorials</a></div></div><div class="sidebar-section-title with-arrow" data-isopen="false" id="sidebar-global"><div>Global</div><svg><use xlink:href="#down-icon"></use></svg></div><div class="sidebar-section-children-container"><div class="sidebar-section-children"><a href="global.html#inverse_lerp">inverse_lerp</a></div><div class="sidebar-section-children"><a href="global.html#lerp">lerp</a></div><div class="sidebar-section-children"><a href="global.html#matrix_product">matrix_product</a></div><div class="sidebar-section-children"><a href="global.html#matrix_product_path">matrix_product_path</a></div><div class="sidebar-section-children"><a href="global.html#play">play</a></div><div class="sidebar-section-children"><a href="global.html#render">render</a></div><div class="sidebar-section-children"><a href="global.html#render">render</a></div></div></div><div class="mobile-navbar-actions"><div class="navbar-right-item"><button class="icon-button search-button" aria-label="open-search"><svg><use xlink:href="#search-icon"></use></svg></button></div><div class="navbar-right-item"><button class="icon-button theme-toggle" aria-label="toggle-theme"><svg><use class="theme-svg-use" xlink:href="#light-theme-icon"></use></svg></button></div><div class="navbar-right-item"><button class="icon-button font-size" aria-label="change-font-size"><svg><use xlink:href="#font-size-icon"></use></svg></button></div></div></div></div><script type="text/javascript" src="scripts/core.min.js"></script><script src="scripts/search.min.js" defer="defer"></script><script src="scripts/third-party/fuse.js" defer="defer"></script><script type="text/javascript">var tocbotInstance=tocbot.init({tocSelector:"#eed4d2a0bfd64539bb9df78095dec881",contentSelector:".main-content",headingSelector:"h1, h2, h3",hasInnerContainers:!0,scrollContainer:".main-content",headingsOffset:130,onClick:bringLinkToView})</script></body></html>
+</code></pre></article></section></div></div></div><div class="search-container" id="PkfLWpAbet" style="display:none"><div class="wrapper" id="iCxFxjkHbP"><button class="icon-button search-close-button" id="VjLlGakifb" aria-label="close search"><svg><use xlink:href="#close-icon"></use></svg></button><div class="search-box-c"><svg><use xlink:href="#search-icon"></use></svg> <input type="text" id="vpcKVYIppa" class="search-input" placeholder="Search..." autofocus></div><div class="search-result-c" id="fWwVHRuDuN"><span class="search-result-c-text">Type anything to view search result</span></div></div></div><div class="mobile-menu-icon-container"><button class="icon-button" id="mobile-menu" data-isopen="false" aria-label="menu"><svg><use xlink:href="#menu-icon"></use></svg></button></div><div id="mobile-sidebar" class="mobile-sidebar-container"><div class="mobile-sidebar-wrapper"><div class="mobile-nav-links"></div><div class="mobile-sidebar-items-c"><div class="sidebar-section-title with-arrow" data-isopen="false" id="sidebar-classes"><div>Classes</div><svg><use xlink:href="#down-icon"></use></svg></div><div class="sidebar-section-children-container"><div class="sidebar-section-children"><a href="AnchorsAndHandles.html">AnchorsAndHandles</a></div><div class="sidebar-section-children"><a href="Arc.html">Arc</a></div><div class="sidebar-section-children"><a href="Axis.html">Axis</a></div><div class="sidebar-section-children"><a href="BoundingBox.html">BoundingBox</a></div><div class="sidebar-section-children"><a href="CartesianAxes.html">CartesianAxes</a></div><div class="sidebar-section-children"><a href="Circle.html">Circle</a></div><div class="sidebar-section-children"><a href="ClosedInterval.html">ClosedInterval</a></div><div class="sidebar-section-children"><a href="Color.html">Color</a></div><div class="sidebar-section-children"><a href="ColorStop.html">ColorStop</a></div><div class="sidebar-section-children"><a href="CubicBezierTuple.html">CubicBezierTuple</a></div><div class="sidebar-section-children"><a href="EquilateralTriangle.html">EquilateralTriangle</a></div><div class="sidebar-section-children"><a href="FontFace.html">FontFace</a></div><div class="sidebar-section-children"><a href="ImageBitmap.html">ImageBitmap</a></div><div class="sidebar-section-children"><a href="ImageData.html">ImageData</a></div><div class="sidebar-section-children"><a href="ImageLibrary.html">ImageLibrary</a></div><div class="sidebar-section-children"><a href="IntegerLerp.html">IntegerLerp</a></div><div class="sidebar-section-children"><a href="Line.html">Line</a></div><div class="sidebar-section-children"><a href="LinearGradient.html">LinearGradient</a></div><div class="sidebar-section-children"><a href="ParametricFunctionPlot.html">ParametricFunctionPlot</a></div><div class="sidebar-section-children"><a href="Path2D.html">Path2D</a></div><div class="sidebar-section-children"><a href="Point2D.html">Point2D</a></div><div class="sidebar-section-children"><a href="RadialGradient.html">RadialGradient</a></div><div class="sidebar-section-children"><a href="Rectangle.html">Rectangle</a></div><div class="sidebar-section-children"><a href="RightTriangle.html">RightTriangle</a></div><div class="sidebar-section-children"><a href="Square.html">Square</a></div><div class="sidebar-section-children"><a href="Style.html">Style</a></div><div class="sidebar-section-children"><a href="Tick.html">Tick</a></div><div class="sidebar-section-children"><a href="TransformationMatrix.html">TransformationMatrix</a></div><div class="sidebar-section-children"><a href="Triangle.html">Triangle</a></div><div class="sidebar-section-children"><a href="Typst.html">Typst</a></div><div class="sidebar-section-children"><a href="VectorObject.html">VectorObject</a></div><div class="sidebar-section-children"><a href="VectorObjectBuilder.html">VectorObjectBuilder</a></div><div class="sidebar-section-children"><a href="module.exports.html">exports</a></div><div class="sidebar-section-children"><a href="module.exports.html">exports</a></div><div class="sidebar-section-children"><a href="module.exports.html">exports</a></div></div><div class="sidebar-section-title with-arrow" data-isopen="false" id="sidebar-tutorials"><div>Tutorials</div><svg><use xlink:href="#down-icon"></use></svg></div><div class="sidebar-section-children-container"><div class="sidebar-section-children"><a href="tutorial-Initial tutorials.html">Initial tutorials</a></div></div><div class="sidebar-section-title with-arrow" data-isopen="false" id="sidebar-global"><div>Global</div><svg><use xlink:href="#down-icon"></use></svg></div><div class="sidebar-section-children-container"><div class="sidebar-section-children"><a href="global.html#inverse_lerp">inverse_lerp</a></div><div class="sidebar-section-children"><a href="global.html#lerp">lerp</a></div><div class="sidebar-section-children"><a href="global.html#matrix_product">matrix_product</a></div><div class="sidebar-section-children"><a href="global.html#matrix_product_path">matrix_product_path</a></div><div class="sidebar-section-children"><a href="global.html#play">play</a></div><div class="sidebar-section-children"><a href="global.html#render">render</a></div><div class="sidebar-section-children"><a href="global.html#render">render</a></div><div class="sidebar-section-children"><a href="global.html#resume">resume</a></div><div class="sidebar-section-children"><a href="global.html#stop">stop</a></div></div></div><div class="mobile-navbar-actions"><div class="navbar-right-item"><button class="icon-button search-button" aria-label="open-search"><svg><use xlink:href="#search-icon"></use></svg></button></div><div class="navbar-right-item"><button class="icon-button theme-toggle" aria-label="toggle-theme"><svg><use class="theme-svg-use" xlink:href="#light-theme-icon"></use></svg></button></div><div class="navbar-right-item"><button class="icon-button font-size" aria-label="change-font-size"><svg><use xlink:href="#font-size-icon"></use></svg></button></div></div></div></div><script type="text/javascript" src="scripts/core.min.js"></script><script src="scripts/search.min.js" defer="defer"></script><script src="scripts/third-party/fuse.js" defer="defer"></script><script type="text/javascript">var tocbotInstance=tocbot.init({tocSelector:"#eed4d2a0bfd64539bb9df78095dec881",contentSelector:".main-content",headingSelector:"h1, h2, h3",hasInnerContainers:!0,scrollContainer:".main-content",headingsOffset:130,onClick:bringLinkToView})</script></body></html>

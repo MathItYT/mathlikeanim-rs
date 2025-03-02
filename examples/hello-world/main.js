@@ -1,23 +1,17 @@
-import init, { Color, Point2D, Style, VectorObjectBuilder, ParametricFunctionPlot, ClosedInterval } from '@mathlikeanim-rs/mathlikeanim-rs'
+import init, { Color, Point2D, Style, VectorObjectBuilder, Tick, Typst, FontFace, ClosedInterval, CartesianAxes } from '@mathlikeanim-rs/mathlikeanim-rs'
 import { CanvasScene } from '@mathlikeanim-rs/renderer';
 
-const scene = new CanvasScene(1920, 1080);
+const scene = new CanvasScene(1920, 1080, '/node_modules/@mathlikeanim-rs/renderer/dist/offscreen-canvas-worker.js');
 const renderButton = document.getElementById('render-button');
 const stopRecordingButton = document.getElementById('stop-recording-button');
 let firstTime = true;
 let recorder;
 let chunks = [];
 let stream;
+let data;
 const stopRecording = () => {
     recorder.stop();
     stopRecordingButton.removeEventListener('click', stopRecording);
-}
-
-function text(text, x, y, font_size, font_family, fill_style, font_faces) {
-    return VectorObjectBuilder.from_svg(`<svg xmlns="http://www.w3.org/2000/svg">
-        <text x="${x}" y="${y}" font-size="${font_size}" font-family="${font_family}">${text}</text>
-    </svg>`, font_faces)
-        .set_fill(fill_style)
 }
 
 const run = async () => {
@@ -51,23 +45,51 @@ const run = async () => {
         svg.style.height = 'auto';
         canvasContainer.appendChild(canvas);
         canvasContainer.appendChild(svg);
+        data = new Uint8Array(await fetch('/latinmodern-math.otf').then(response => response.arrayBuffer()));
     }
-    const obj = new ParametricFunctionPlot(
-        't',
-        'sin(t)',
-        new ClosedInterval(-10, 10),
-        new ClosedInterval(-10, 10),
-        new ClosedInterval(-1, 1),
-    ).vector_object_builder
-        .set_stroke(Style.from_color(new Color(255, 0, 0, 1)))
-        .set_stroke_width(1)
-        .set_name('ParametricFunctionPlot')
-        .scale_to_width(1920)
-        .move_to(new Point2D(960, 540))
-        .build();
+    const axes = new CartesianAxes(
+        new ClosedInterval(0, 10),
+        new ClosedInterval(0, 10),
+        new Point2D(960 - 400, 540 + 400),
+        new Point2D(960 + 400, 540 - 400),
+        Style.from_color(new Color(0, 0, 0, 1)),
+        5,
+        new Typst(`#show math.equation: set text(font: "Latin Modern Math")
+  #set page(fill: none)
+  $ x $`).vector_object_builder([new FontFace(data)]).scale(5, 5),
+        new Typst(`#show math.equation: set text(font: "Latin Modern Math")
+    #set page(fill: none)
+    $ y $`).vector_object_builder([new FontFace(data)]).scale(5, 5),
+        [new Tick(5, new Typst(`#show math.equation: set text(font: "Latin Modern Math")
+    #set page(fill: none)
+    $ 5 $`).vector_object_builder([new FontFace(data)]).scale(2.5, 2.5))]
+    );
+    const obj = axes.with_tips_at_ends(VectorObjectBuilder.default_tip_shape(50)).set_name('Axes').build();
     scene.objects.push(obj);
     const animations = new Map();
-    animations.set('ParametricFunctionPlot', (old, t) => {
+    const plot = axes.plot_function(
+        't',
+        't^2 / 10',
+        new ClosedInterval(0, 10),
+        new ClosedInterval(0, 10),
+        new ClosedInterval(0, 10),
+    );
+    const obj2 = plot.vector_object_builder
+        .set_stroke(Style.from_color(new Color(255, 0, 0, 1)))
+        .set_stroke_width(5)
+        .set_name('Plot')
+        .build();
+    console.log(obj2.path);
+    scene.objects.push(obj2);
+    animations.set('Axes', (old, t) => {
+        if (t == 1) {
+            return old;
+        }
+        return new VectorObjectBuilder(old)
+            .become_partial(0, t)
+            .build();
+    });
+    animations.set('Plot', (old, t) => {
         if (t == 1) {
             return old;
         }

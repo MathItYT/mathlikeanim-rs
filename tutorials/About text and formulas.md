@@ -133,7 +133,8 @@ const run = async () => {
     scene.objects = [];
 };
 
-const scene = new CanvasScene(1920, 1080);
+// Replace 'worker.js' with the path to '/node_modules/@mathlikeanim-rs/renderer/dist/offscreen-canvas-worker.js'
+const scene = new CanvasScene(1920, 1080, 'worker.js');
 document.body.appendChild(scene.canvas);
 
 initWasm().then(run);
@@ -266,14 +267,17 @@ scene.objects.push(formula_obj.build());
         button.disabled = false;
     };
 
-    const scene = new CanvasScene(1920, 1080);
+    const scene = new CanvasScene(1920, 1080, './node_modules/@mathlikeanim-rs/renderer/dist/offscreen-canvas-worker.js');
     const button = document.getElementById('run-button');
     const svgContent = await fetch('./assets/play.svg').then(res => res.text());
     button.innerHTML = svgContent;
     button.addEventListener('click', run);
     const canvas = document.getElementById('canvas');
     scene.canvas = canvas;
-    scene.context = canvas.getContext('2d');
+    const offscreen = canvas.transferControlToOffscreen();
+    const worker = new Worker('./node_modules/@mathlikeanim-rs/renderer/dist/offscreen-canvas-worker.js');
+    worker.postMessage(offscreen, [offscreen]);
+    scene.worker = worker;
     canvas.style.width = '80%';
     canvas.style.height = 'auto';
 
@@ -295,11 +299,14 @@ $ sum_(i=1)^n i = (n(n + 1)) / 2 $`);
         scene2.objects = [];
     };
 
-    const scene2 = new CanvasScene(1920, 1080);
+    const scene2 = new CanvasScene(1920, 1080, './node_modules/@mathlikeanim-rs/renderer/dist/offscreen-canvas-worker.js');
     const button2 = document.getElementById('run-button-2');
     const canvas2 = document.getElementById('canvas-2');
     scene2.canvas = canvas2;
-    scene2.context = canvas2.getContext('2d');
+    const offscreen2 = canvas2.transferControlToOffscreen();
+    const worker2 = new Worker('./node_modules/@mathlikeanim-rs/renderer/dist/offscreen-canvas-worker.js');
+    worker2.postMessage(offscreen2, [offscreen2]);
+    scene2.worker = worker2;
     canvas2.style.width = '80%';
     canvas2.style.height = 'auto';
     button2.innerHTML = svgContent;

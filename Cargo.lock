@@ -1183,7 +1183,7 @@ dependencies = [
 
 [[package]]
 name = "mathlikeanim-rs"
-version = "0.14.12"
+version = "0.14.13"
 dependencies = [
  "base64",
  "exmex",

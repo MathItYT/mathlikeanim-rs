@@ -59,6 +59,9 @@ export default class SVGScene extends Scene {
             return;
         }
         const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        if (object.name) {
+            path.setAttribute("class", object.name);
+        }
         path.setAttribute("id", `path-${index.join("-")}`);
         path.setAttribute("d", this.renderPathData(object));
         path.setAttribute("fill", this.renderFill(object, defs, index));

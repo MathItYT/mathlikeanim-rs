@@ -10,22 +10,25 @@ export default class CanvasScene extends SVGScene {
      */
     canvas: HTMLCanvasElement;
     /**
-     * The rendering context.
-     * @type {CanvasRenderingContext2D}
+     * The Worker used to render the scene offscreen.
+     * @type {Worker}
+     * @private
      */
-    context: CanvasRenderingContext2D;
+    worker: Worker;
 
     /**
      * Creates a new CanvasScene.
      * @param {number} width - The width of the canvas.
      * @param {number} height - The height of the canvas.
      */
-    constructor(width: number, height: number) {
+    constructor(width: number, height: number, workerFileName: string) {
         super(width, height);
         this.canvas = document.createElement("canvas");
         this.canvas.width = width;
         this.canvas.height = height;
-        this.context = this.canvas.getContext("2d")!;
+        const offscreen = this.canvas.transferControlToOffscreen();
+        this.worker = new Worker(workerFileName);
+        this.worker.postMessage(offscreen, [offscreen]);
     }
 
     /**
@@ -36,14 +39,11 @@ export default class CanvasScene extends SVGScene {
     async render(): Promise<void> {
         await super.render();
         const svgAsBase64 = btoa(new XMLSerializer().serializeToString(this.svg));
+        const dataUrl = `data:image/svg+xml;base64,${svgAsBase64}`;
         const img = new Image();
-        await new Promise(resolve => {
-            img.onload = () => {
-                this.context.clearRect(0, 0, this.width, this.height);
-                this.context.drawImage(img, 0, 0, this.width, this.height);
-                resolve(null);
-            };
-            img.src = `data:image/svg+xml;base64,${svgAsBase64}`;
-        });
+        img.src = dataUrl;
+        await img.decode();
+        const bmp = await createImageBitmap(img);
+        this.worker.postMessage(bmp, [bmp]);
     }
 }

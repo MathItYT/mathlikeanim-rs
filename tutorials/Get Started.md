@@ -8,7 +8,8 @@ In the last guide, we coded the basic structure of a MathLikeAnim-rs project:
 import initWasm from '@mathlikeanim-rs/mathlikeanim-rs';
 import { CanvasScene, SVGScene } from '@mathlikeanim-rs/renderer';
 
-const scene = new CanvasScene(1920, 1080); // or SVGScene(1920, 1080)
+// Replace 'worker.js' with the server's path to `/node_modules/@mathlikeanim-rs/renderer/dist/offscreen-canvas-worker.js`
+const scene = new CanvasScene(1920, 1080, 'worker.js'); // or SVGScene(1920, 1080)
 document.body.appendChild(scene.canvas); // or scene.svg
 
 initWasm().then((wasm) => {
@@ -26,7 +27,8 @@ import { CanvasScene, SVGScene } from '@mathlikeanim-rs/renderer';
 
 2. We created a new scene with the `CanvasScene` or `SVGScene` class. The constructor of these classes receives the width and height of the scene. We appended the scene's canvas or SVG element to the document body.
 ```javascript
-const scene = new CanvasScene(1920, 1080); // or SVGScene(1920, 1080)
+// Replace 'worker.js' with the server's path to `/node_modules/@mathlikeanim-rs/renderer/dist/offscreen-canvas-worker.js`
+const scene = new CanvasScene(1920, 1080, 'worker.js'); // or SVGScene(1920, 1080)
 document.body.appendChild(scene.canvas); // or scene.svg
 ```
 
@@ -182,14 +184,17 @@ init().then(run);
         button.disabled = false;
     };
 
-    const scene = new CanvasScene(1920, 1080);
+    const scene = new CanvasScene(1920, 1080, './node_modules/@mathlikeanim-rs/renderer/dist/offscreen-canvas-worker.js');
     const button = document.getElementById('run-button');
     const svgContent = await fetch('./assets/play.svg').then(res => res.text());
     button.innerHTML = svgContent;
     button.addEventListener('click', run);
     const canvas = document.getElementById('canvas');
+    const offscreen = canvas.transferControlToOffscreen();
     scene.canvas = canvas;
-    scene.context = canvas.getContext('2d');
+    const worker = new Worker('./node_modules/@mathlikeanim-rs/renderer/dist/offscreen-canvas-worker.js');
+    worker.postMessage(offscreen, [offscreen]);
+    scene.worker = worker;
     canvas.style.width = '80%';
     canvas.style.height = 'auto';
     initWasm().then(() => run());
