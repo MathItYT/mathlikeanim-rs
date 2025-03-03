@@ -16,8 +16,7 @@ import { CanvasScene, SVGScene } from '@mathlikeanim-rs/renderer';
 ### Step 3: Create a scene
 Now you can create a scene with the renderer you want:
 ```javascript
-// Replace 'worker.js' with the path to '/node_modules/@mathlikeanim-rs/renderer/dist/offscreen-canvas-worker.js'
-const scene = new CanvasScene(1920, 1080, 'worker.js'); // or SVGScene(1920, 1080)
+const scene = new CanvasScene(1920, 1080); // or SVGScene(1920, 1080)
 document.body.appendChild(scene.canvas); // or scene.svg
 ```
 

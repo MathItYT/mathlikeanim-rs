@@ -1,7 +1,7 @@
 import init, { Color, Point2D, Style, VectorObjectBuilder, Tick, Typst, FontFace, ClosedInterval, CartesianAxes } from '@mathlikeanim-rs/mathlikeanim-rs'
 import { CanvasScene } from '@mathlikeanim-rs/renderer';
 
-const scene = new CanvasScene(1920, 1080, '/node_modules/@mathlikeanim-rs/renderer/dist/offscreen-canvas-worker.js');
+const scene = new CanvasScene(1920, 1080);
 const renderButton = document.getElementById('render-button');
 const stopRecordingButton = document.getElementById('stop-recording-button');
 let firstTime = true;
@@ -98,6 +98,7 @@ const run = async () => {
             .build();
     });
     await scene.play(animations, 2000, t => t);
+    console.log('done');
     scene.objects.forEach(obj => obj.free());
     scene.objects = [];
 };

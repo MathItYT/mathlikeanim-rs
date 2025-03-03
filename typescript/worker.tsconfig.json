@@ -1,9 +1,9 @@
 {
     "include": ["worker/**/*.ts"],
     "compilerOptions": {
-        "target": "ES2015",
-        "module": "ES2015",
-        "lib": ["webworker", "es2015"],
+        "target": "ES2020",
+        "module": "ES2020",
+        "lib": ["webworker", "es2020"],
         "moduleResolution": "bundler",
         "declaration": true,
         "declarationMap": true,

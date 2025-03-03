@@ -47,8 +47,6 @@ You must install the `@mathlikeanim-rs/mathlikeanim-rs` (the Rust core) package 
         1920,
         // height
         1080,
-        // worker file (usually '/node_modules/@mathlikeanim-rs/renderer/dist/offscreen-canvas-worker.js')
-        'worker.js'
     ); // or SVGScene(1920, 1080)
     document.body.appendChild(scene.canvas); // or scene.svg
 

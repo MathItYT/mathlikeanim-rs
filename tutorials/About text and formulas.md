@@ -133,8 +133,7 @@ const run = async () => {
     scene.objects = [];
 };
 
-// Replace 'worker.js' with the path to '/node_modules/@mathlikeanim-rs/renderer/dist/offscreen-canvas-worker.js'
-const scene = new CanvasScene(1920, 1080, 'worker.js');
+const scene = new CanvasScene(1920, 1080);
 document.body.appendChild(scene.canvas);
 
 initWasm().then(run);
@@ -267,7 +266,7 @@ scene.objects.push(formula_obj.build());
         button.disabled = false;
     };
 
-    const scene = new CanvasScene(1920, 1080, './node_modules/@mathlikeanim-rs/renderer/dist/offscreen-canvas-worker.js');
+    const scene = new CanvasScene(1920, 1080);
     const button = document.getElementById('run-button');
     const svgContent = await fetch('./assets/play.svg').then(res => res.text());
     button.innerHTML = svgContent;
@@ -299,7 +298,7 @@ $ sum_(i=1)^n i = (n(n + 1)) / 2 $`);
         scene2.objects = [];
     };
 
-    const scene2 = new CanvasScene(1920, 1080, './node_modules/@mathlikeanim-rs/renderer/dist/offscreen-canvas-worker.js');
+    const scene2 = new CanvasScene(1920, 1080);
     const button2 = document.getElementById('run-button-2');
     const canvas2 = document.getElementById('canvas-2');
     scene2.canvas = canvas2;
