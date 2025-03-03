@@ -68,10 +68,34 @@ pip install mathlikeanim-rs  # It's an old version of the project
 
 
 ## Development
-If you want to contribute to this project, you can clone a fork of this repository and work with the Rust codebase.
+If you want to contribute to this project, you can clone a fork of this repository and work with the Rust codebase or the TypeScript codebase, and then submit a pull request.
 
-By the moment we don't have any tests, so your contributions are welcome!
+### Rust WASM core
+The Rust WASM core is available in the `src` directory. You can build it by running in the root directory:
+```bash
+make build
+```
 
+### TypeScript renderer
+The TypeScript renderer is available in the `typescript` directory. You can build it by running in the root directory:
+```bash
+make build-ts
+```
+
+### Tests
+By the moment we don't have any tests, so your contributions are welcome! Anyways, you can serve the example page by running:
+```bash
+make serve-example
+```
+If you're developing Rust codebase, you can copy the built (with `make build`) files to the example page by running:
+```bash
+make copy-wasm
+```
+
+If you're developing TypeScript codebase, you can copy the built (with `make build-ts`) files to the example page by running:
+```bash
+make copy-ts
+```
 
 ## Documentation
 Available [here](https://mathityt.github.io/mathlikeanim-rs/)!

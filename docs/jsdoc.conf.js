@@ -17,7 +17,10 @@ module.exports = {
     destination: ".",
     recurse: true,
     verbose: true,
-    readme: "../README.md"
+    readme: "../README.md",
+    theme_opts: {
+      favicon: "./assets/favicon.svg",
+    }
   },
   templates: {
     cleverLinks: true,
