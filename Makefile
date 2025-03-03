@@ -22,3 +22,5 @@ serve-docs:
 	cd docs && http-server
 serve-example:
 	cd examples/hello-world && http-server
+copy-readme-ts:
+	cp -af ./README.md ./typescript/README.md
