@@ -258,10 +258,14 @@ impl LinearGradient {
                 Color::default()
             };
             let color = Color::lerp(&color1, &color2, t);
-            let position = if i < gradient1.color_stops.len() {
+            let position = if i < gradient1.color_stops.len() && i < gradient2.color_stops.len() {
                 lerp(gradient1.color_stops[i].position, gradient2.color_stops[i].position, t)
-            } else {
+            } else if i < gradient2.color_stops.len() {
                 lerp(0.0, gradient2.color_stops[i].position, t)
+            } else if i < gradient1.color_stops.len() {
+                lerp(gradient1.color_stops[i].position, 0.0, t)
+            } else {
+                0.0
             };
             color_stops.push(ColorStop { color, position });
         }
@@ -438,10 +442,14 @@ impl RadialGradient {
                 Color::default()
             };
             let color = Color::lerp(&color1, &color2, t);
-            let position = if i < gradient1.color_stops.len() {
+            let position = if i < gradient1.color_stops.len() && i < gradient2.color_stops.len() {
                 lerp(gradient1.color_stops[i].position, gradient2.color_stops[i].position, t)
-            } else {
+            } else if i < gradient2.color_stops.len() {
                 lerp(0.0, gradient2.color_stops[i].position, t)
+            } else if i < gradient1.color_stops.len() {
+                lerp(gradient1.color_stops[i].position, 0.0, t)
+            } else {
+                0.0
             };
             color_stops.push(ColorStop { color, position });
         }

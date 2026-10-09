@@ -473,7 +473,7 @@ export default {
             const axes = jsonToVectorObject(axesJson);
             return coordsToPoint(axes, x, y, xMin, xMax, yMin, yMax);
         },
-        pointToAXesCoords(axesJson, point, xMin, xMax, yMin, yMax) {
+        pointToAxesCoords(axesJson, point, xMin, xMax, yMin, yMax) {
             const axes = jsonToVectorObject(axesJson);
             return pointToAxesCoords(axes, point, xMin, xMax, yMin, yMax);
         },

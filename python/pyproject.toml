@@ -1,14 +1,15 @@
 [tool.poetry]
 name = "mathlikeanim-rs"
-version = "0.13.27"
+version = "0.14.14"
 description = "A Rust library for creating mathematical animations, now in Python"
 authors = ["MathItYT <benjamin.ubilla@uc.cl>"]
 repository = "https://github.com/MathItYT/mathlikeanim-rs"
 readme = "README.md"
 include = [
-    "mathlikeanim_rs/package-lock.json",
-    "mathlikeanim_rs/node_modules/.package-lock.json",
-    "mathlikeanim_rs/node_modules/mathlikeanim-rs/*",
+    "mathlikeanim_rs/**/*.py",
+    "mathlikeanim_rs/**/*.json",
+    "mathlikeanim_rs/**/*.js",
+    "mathlikeanim_rs/node_modules/",
 ]
 
 [tool.poetry.dependencies]

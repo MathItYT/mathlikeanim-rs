@@ -73,12 +73,12 @@ export default abstract class Scene {
             if (t < 1) {
                 const progress = easing(t);
                 this.animate(animations, progress);
-                this.render();
+                await this.render();
                 await new Promise(resolve => requestAnimationFrame(() => animate().then(resolve)));
             } else {
                 const progress = easing(1);
                 this.animate(animations, progress);
-                this.render();
+                await this.render();
             }
         };
         await animate();
